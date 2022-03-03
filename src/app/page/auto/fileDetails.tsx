@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+
 import {
   Button,
   Card,
@@ -10,8 +13,6 @@ import {
   Checkbox,
 } from 'antd'
 import { AppState } from 'app/model'
-import { useCallback, useState } from 'react'
-import { useSelector } from 'react-redux'
 import IonIcon from 'shared/antd/ionicon'
 
 const AccountInfo = ({

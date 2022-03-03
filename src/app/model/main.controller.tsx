@@ -3,9 +3,18 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 /**
  * Interface & Utility
  */
-
+export type TransferData = Array<[string, string]>
+export enum Status {
+  None,
+  Estimating,
+  Estimated,
+  Sending,
+  Done,
+}
 export type MethodType = {
   methodSelected?: number
+  data: TransferData /* address, amount */
+  status: Status
 }
 
 /**
@@ -15,6 +24,8 @@ export type MethodType = {
 const NAME = 'main'
 const initialState: MethodType = {
   methodSelected: undefined,
+  data: [],
+  status: Status.None,
 }
 
 /**
@@ -29,6 +40,27 @@ export const onSelectMethod = createAsyncThunk(
   },
 )
 
+export const setData = createAsyncThunk(
+  `${NAME}/setData`,
+  async (data: TransferData) => {
+    return { data, status: Status.None }
+  },
+)
+
+export const setDecimalized = createAsyncThunk(
+  `${NAME}/setDecimalized`,
+  async (decimalized: boolean) => {
+    return { decimalized, status: Status.None }
+  },
+)
+
+export const setStatus = createAsyncThunk(
+  `${NAME}/setStatus`,
+  async (status: Status) => {
+    return { status }
+  },
+)
+
 /**
  * Usual procedure
  */
@@ -38,10 +70,19 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      onSelectMethod.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        onSelectMethod.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setData.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setStatus.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

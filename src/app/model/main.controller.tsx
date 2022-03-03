@@ -4,8 +4,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
  * Interface & Utility
  */
 
-export type State = {
-  counter: number
+export type MethodType = {
+  methodSelected?: number
 }
 
 /**
@@ -13,21 +13,19 @@ export type State = {
  */
 
 const NAME = 'main'
-const initialState: State = {
-  counter: 0,
+const initialState: MethodType = {
+  methodSelected: undefined,
 }
 
 /**
  * Actions
  */
 
-export const increaseCounter = createAsyncThunk<State, void, { state: any }>(
-  `${NAME}/increaseCounter`,
-  async (_, { getState }) => {
-    const {
-      main: { counter },
-    } = getState()
-    return { counter: counter + 1 }
+export const onSelectMethod = createAsyncThunk(
+  `${NAME}/onSelectMethod`,
+  async (method?: number) => {
+    if (!method) return
+    return { methodSelected: method }
   },
 )
 
@@ -41,7 +39,7 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     void builder.addCase(
-      increaseCounter.fulfilled,
+      onSelectMethod.fulfilled,
       (state, { payload }) => void Object.assign(state, payload),
     ),
 })

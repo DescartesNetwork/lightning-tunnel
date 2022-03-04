@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 /**
  * Interface & Utility
  */
-export type TransferData = Array<[string, string]>
+export type TransferData = Array<[string, string, string]>
 export enum Status {
   None,
   Estimating,

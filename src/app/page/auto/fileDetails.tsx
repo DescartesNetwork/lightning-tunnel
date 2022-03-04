@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
   Button,
@@ -12,40 +12,59 @@ import {
   Divider,
   Checkbox,
 } from 'antd'
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 import IonIcon from 'shared/antd/ionicon'
+import { setData, TransferData } from 'app/model/main.controller'
+import { shortenAddress } from 'shared/util'
 
-const AccountInfo = ({
-  index = 0,
-  selected = false,
-  onChecked = () => {},
-}: {
+type AccountInfoProps = {
+  email?: string
+  accountAddress?: string
+  amount?: string
   index: number
   selected?: boolean
   onChecked?: (checked: boolean, index: number) => void
-}) => {
+}
+
+const AccountInfo = ({
+  email = '',
+  accountAddress = '',
+  amount = '',
+  index = 0,
+  selected = false,
+  onChecked = (checked: boolean, index: number) => {},
+}: AccountInfoProps) => {
   return (
     <Row gutter={[16, 8]}>
       <Col span={24}>
-        <Row gutter={[16, 8]} align="middle" wrap={false}>
-          {selected && (
-            <Col>
-              <Checkbox onChange={(e) => onChecked(e.target.value, index)} />
-            </Col>
-          )}
+        <Row
+          gutter={[16, 8]}
+          align="middle"
+          justify="space-between"
+          wrap={false}
+        >
           <Col>
-            <Typography.Text type="secondary">#{index + 1}</Typography.Text>
+            <Space>
+              {selected && (
+                <Checkbox
+                  onChange={(e) => onChecked(e.target.checked, index)}
+                />
+              )}
+              <Typography.Text type="secondary">#{index + 1}</Typography.Text>
+            </Space>
           </Col>
-          <Col span={12}>
-            <Tooltip title={'accountAddress'}>
-              <Typography.Text ellipsis>{'accountAddress'}</Typography.Text>
+          <Col>
+            <Typography.Text>{shortenAddress(email, 8)}</Typography.Text>
+          </Col>
+          <Col>
+            <Tooltip title={accountAddress}>
+              <Typography.Text>
+                {shortenAddress(accountAddress)}
+              </Typography.Text>
             </Tooltip>
           </Col>
-          <Col flex="auto">
-            <Space>
-              <Typography.Text>{'display'}</Typography.Text>
-              <Typography.Text>ABC</Typography.Text>
-            </Space>
+          <Col>
+            <Typography.Text>{amount}</Typography.Text>
           </Col>
           <Col>
             <Space align="center">
@@ -75,12 +94,17 @@ const ActionButton = ({
   onSelect,
 }: {
   selected?: boolean
-  onSelect: () => void
+  onSelect: (selected: boolean) => void
 }) => {
-  if (selected) return <Button type="text">Cancle</Button>
+  if (selected)
+    return (
+      <Button type="text" onClick={() => onSelect(false)}>
+        Cancle
+      </Button>
+    )
   return (
     <Space size={24}>
-      <Button type="text" size="small" onClick={onSelect}>
+      <Button type="text" size="small" onClick={() => onSelect(true)}>
         Select
       </Button>
       <Button type="text" size="small" danger>
@@ -91,19 +115,23 @@ const ActionButton = ({
 }
 
 const FileDetails = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const {
     main: { data },
   } = useSelector((state: AppState) => state)
   const [selected, setSelected] = useState(false)
-  const [accountSelected, setAccountSelected] = useState<any>()
+  const [accountSelected, setAccountSelected] = useState<TransferData>([])
 
   const onSelected = (checked: boolean, idx: number) => {
     const nextData = [...accountSelected]
-    if (checked) nextData.push(data[idx])
-    else nextData.splice(idx, 1)
+    const matchedData = data[idx]
+    if (checked) nextData.push(matchedData)
+    else {
+      const idxNextData = nextData.indexOf(matchedData)
+      nextData.splice(idxNextData, 1)
+    }
     setAccountSelected(nextData)
   }
-  console.log(accountSelected, 'account selected')
 
   return (
     <Row gutter={[16, 16]}>
@@ -124,6 +152,7 @@ const FileDetails = () => {
                 size="small"
                 style={{ color: 'inherit' }}
                 icon={<IonIcon name="close-outline" />}
+                onClick={() => dispatch(setData([]))}
               />
             </Col>
           </Row>
@@ -137,24 +166,25 @@ const FileDetails = () => {
                 type="text"
                 size="small"
                 icon={<IonIcon name="trash-outline" />}
+                disabled={!accountSelected.length}
               >
                 Delete
               </Button>
             )}
           </Col>
           <Col>
-            <ActionButton
-              selected={selected}
-              onSelect={() => setSelected(true)}
-            />
+            <ActionButton selected={selected} onSelect={setSelected} />
           </Col>
           <Col span={24}>
             <Card bordered={false} className="card-content">
               <Row gutter={[8, 8]}>
                 {data.length &&
-                  data.map((item, idx) => (
-                    <Col span={24}>
+                  data.map(([email, address, amount], idx) => (
+                    <Col span={24} key={idx + address}>
                       <AccountInfo
+                        accountAddress={address}
+                        amount={amount}
+                        email={email}
                         index={idx}
                         selected={selected}
                         onChecked={onSelected}

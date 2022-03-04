@@ -1,4 +1,5 @@
 import { Card, Col, Row, Typography } from 'antd'
+import PoweredBySentre from 'app/components/poweredBySentre'
 import Action from './action'
 import UploadFile from './uploadFile'
 
@@ -13,7 +14,9 @@ const Auto = () => {
                 Fill in recipient information
               </Typography.Title>
             </Col>
-            <Col>Brand</Col>
+            <Col>
+              <PoweredBySentre />
+            </Col>
           </Row>
         </Col>
         <Col span={24}>

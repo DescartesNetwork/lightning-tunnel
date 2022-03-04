@@ -7,18 +7,22 @@ import Auto from './auto'
 import Manual from './manual'
 import SelectToken from 'app/components/selectTokens'
 import PoweredBySentre from 'app/components/poweredBySentre'
+import IonIcon from 'shared/antd/ionicon'
 
-import { SelectMethod } from 'app/constants'
+import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
-import { onSelectMethod } from 'app/model/main.controller'
+import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
+import { onSelectStep } from 'app/model/steps.controller'
 
 const CardOption = ({
   label,
   description,
+  active,
 }: {
   label: string
   description: string
+  active: boolean
 }) => {
   return (
     <Row>
@@ -27,7 +31,16 @@ const CardOption = ({
           <Col flex="auto">
             <Typography.Title level={5}>{label}</Typography.Title>
           </Col>
-          <Col></Col>
+          <Col>
+            {active ? (
+              <IonIcon
+                name="checkmark-circle"
+                style={{ color: '#F9575E', fontSize: 16 }}
+              />
+            ) : (
+              <IonIcon name="ellipse-outline" />
+            )}
+          </Col>
         </Row>
       </Col>
       <Col span={24}>
@@ -48,6 +61,16 @@ const SelectInputMethod = () => {
     [accounts],
   )
   const singleMints = useSingleMints(myMints)
+
+  const onContinue = () => {
+    dispatch(onSelectMethod(method))
+    dispatch(onSelectStep(Step.one))
+  }
+
+  const onSelectMint = (mintAddress: string) => {
+    setActiveMintAddress(mintAddress)
+    dispatch(onSelectedMint(mintAddress))
+  }
 
   const disabled = useMemo(() => {
     if (activeMintAddress === 'Select' || !method) return true
@@ -71,7 +94,7 @@ const SelectInputMethod = () => {
               <SelectToken
                 activeMintAddress={activeMintAddress}
                 tokens={singleMints}
-                onSelect={(mintAddress) => setActiveMintAddress(mintAddress)}
+                onSelect={onSelectMint}
               />
             </Col>
             <Col span={24}>
@@ -90,6 +113,7 @@ const SelectInputMethod = () => {
                         <CardOption
                           label="Manual"
                           description="With a small number of recipients."
+                          active={method === SelectMethod.manual}
                         />
                       </Radio.Button>
                     </Col>
@@ -98,6 +122,7 @@ const SelectInputMethod = () => {
                         <CardOption
                           label="Automatic"
                           description="Support importing many recipient information quickly by CSV file."
+                          active={method === SelectMethod.auto}
                         />
                       </Radio.Button>
                     </Col>
@@ -110,7 +135,8 @@ const SelectInputMethod = () => {
 
         <Col span={24}>
           <Button
-            onClick={() => dispatch(onSelectMethod(method))}
+            size="large"
+            onClick={onContinue}
             block
             type="primary"
             disabled={disabled}

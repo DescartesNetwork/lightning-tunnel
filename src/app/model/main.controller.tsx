@@ -15,6 +15,7 @@ export type MethodType = {
   methodSelected?: number
   data: TransferData /* address, amount */
   status: Status
+  mintSelected: string
 }
 
 /**
@@ -26,6 +27,7 @@ const initialState: MethodType = {
   methodSelected: undefined,
   data: [],
   status: Status.None,
+  mintSelected: '',
 }
 
 /**
@@ -61,6 +63,13 @@ export const setStatus = createAsyncThunk(
   },
 )
 
+export const onSelectedMint = createAsyncThunk(
+  `${NAME}/selectPool`,
+  async (mintSelected: string) => {
+    return { mintSelected }
+  },
+)
+
 /**
  * Usual procedure
  */
@@ -81,6 +90,10 @@ const slice = createSlice({
       )
       .addCase(
         setStatus.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        onSelectedMint.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

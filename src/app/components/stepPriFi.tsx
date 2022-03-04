@@ -1,6 +1,11 @@
 import { Steps } from 'antd'
+import { AppState } from 'app/model'
+import { useSelector } from 'react-redux'
 
-const StepPriFi = ({ step }: { step: number }) => {
+const StepPriFi = () => {
+  const {
+    steps: { step },
+  } = useSelector((state: AppState) => state)
   return (
     <Steps size="small" direction="vertical" current={step}>
       <Steps.Step description="Select a token" />

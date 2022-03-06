@@ -132,6 +132,9 @@ const FileDetails = () => {
     }
     setAccountSelected(nextData)
   }
+  const onDelete = () => {
+    if (!accountSelected.length) return
+  }
 
   return (
     <Row gutter={[16, 16]}>
@@ -167,6 +170,7 @@ const FileDetails = () => {
                 size="small"
                 icon={<IonIcon name="trash-outline" />}
                 disabled={!accountSelected.length}
+                onClick={onDelete}
               >
                 Delete
               </Button>

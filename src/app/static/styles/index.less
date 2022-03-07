@@ -9,6 +9,8 @@
 }
 .card-content:extend(.radius-8) {
   box-shadow: unset !important;
+  max-height: 300px;
+  overflow: auto;
 }
 .select-token {
   width: 100% !important;
@@ -37,6 +39,18 @@
 .modal-merge-amount {
   .sentre-modal-content {
     border-radius: 16px !important;
+  }
+}
+
+.auto-add-new {
+  .sentre-collapse-item {
+    border: unset !important;
+  }
+  .sentre-collapse-header {
+    display: none !important;
+  }
+  .sentre-collapse-content-box {
+    padding: 24px !important;
   }
 }
 

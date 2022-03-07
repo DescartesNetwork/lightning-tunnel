@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 /**
  * Interface & Utility
  */
-export type TransferData = Array<[string, string]>
+export type TransferData = Array<[string, string, string]>
 export enum Status {
   None,
   Estimating,
@@ -36,9 +36,8 @@ const initialState: MethodType = {
 
 export const onSelectMethod = createAsyncThunk(
   `${NAME}/onSelectMethod`,
-  async (method?: number) => {
-    if (!method) return
-    return { methodSelected: method }
+  async (methodSelected?: number) => {
+    return { methodSelected }
   },
 )
 

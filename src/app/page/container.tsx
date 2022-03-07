@@ -14,6 +14,7 @@ import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
+import ConfirmTransfer from './confirmTransfer'
 
 const CardOption = ({
   label,
@@ -150,9 +151,15 @@ const SelectInputMethod = () => {
 }
 
 const Container = () => {
-  const { methodSelected } = useSelector((state: AppState) => state.main)
+  const {
+    main: { methodSelected },
+    steps: { step },
+  } = useSelector((state: AppState) => state)
+
   if (!methodSelected) return <SelectInputMethod />
-  return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
+  if (step === Step.one)
+    return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
+  return <ConfirmTransfer />
 }
 
 export default Container

@@ -14,6 +14,7 @@ import iconUpload from 'app/static/images/icon-upload.svg'
 import { AppState } from 'app/model'
 import IonIcon from 'shared/antd/ionicon'
 import FileDetails from './fileDetails'
+import { addRecipients, RecipientInfo } from 'app/model/recipients.controller'
 
 const parse = (file: any): Promise<TransferData> => {
   return new Promise((resolve, reject) => {
@@ -24,15 +25,30 @@ const parse = (file: any): Promise<TransferData> => {
   })
 }
 
+const parseArrayToObject = (data: TransferData) => {
+  if (!data || !data.length) return undefined
+  let parsedObj: Record<string, RecipientInfo> = {}
+  data.forEach(([email, address, amount]) => {
+    return (parsedObj[address] = {
+      walletAddress: address,
+      amount: Number(amount),
+      email,
+    })
+  })
+  return parsedObj
+}
+
 const UploadFile = () => {
   const [loading, setLoading] = useState(false)
   const dispatch = useDispatch()
-  const { data } = useSelector((state: AppState) => state.main)
+  const { recipients } = useSelector((state: AppState) => state.recipients)
 
   const upload = async (file: any) => {
     setLoading(true)
     dispatch(setDecimalized(false))
-    dispatch(setData(await parse(file)))
+    const parseFile = await parse(file)
+    const recipients = await parseArrayToObject(parseFile)
+    if (recipients) dispatch(addRecipients({ recipients }))
     setLoading(false)
     return false
   }
@@ -43,7 +59,7 @@ const UploadFile = () => {
     return true
   }
 
-  if (!data.length)
+  if (!Object.keys(recipients).length)
     return (
       <Row gutter={[8, 8]} justify="end">
         <Col span={24}>

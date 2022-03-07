@@ -36,7 +36,7 @@ const Content = ({
   )
 }
 
-const CardTotal = () => {
+export const WrapTotal = () => {
   const {
     recipients: { recipients },
     main: { mintSelected },
@@ -56,20 +56,26 @@ const CardTotal = () => {
   }, [listRecipients])
 
   return (
+    <Row gutter={[8, 8]}>
+      <Col span={24}>
+        <Content label="Quantity" value={listRecipients.length} />
+      </Col>
+      <Col span={24}>
+        <Content label="Total" value={total} mintAddress={mintSelected} />
+      </Col>
+    </Row>
+  )
+}
+
+const CardTotal = () => {
+  return (
     <Card
       bordered={false}
       style={{ borderRadius: 8, boxShadow: 'unset' }}
       bodyStyle={{ padding: '12px 16px' }}
       className="card-total"
     >
-      <Row gutter={[8, 8]}>
-        <Col span={24}>
-          <Content label="Quantity" value={listRecipients.length} />
-        </Col>
-        <Col span={24}>
-          <Content label="Total" value={total} mintAddress={mintSelected} />
-        </Col>
-      </Row>
+      <WrapTotal />
     </Card>
   )
 }

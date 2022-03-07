@@ -8,3 +8,7 @@ export enum Step {
   one = 1,
   two = 2,
 }
+
+export enum CollapseAddNew {
+  activeKey = 'collapse-upload-csv',
+}

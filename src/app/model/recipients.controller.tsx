@@ -26,6 +26,13 @@ const initialState: Recipients = {
 /**
  * Actions
  */
+export const addRecipients = createAsyncThunk<
+  Recipients,
+  { recipients: Record<string, RecipientInfo> },
+  { state: any }
+>(`${NAME}/addRecipients`, async ({ recipients }, { getState }) => {
+  return { recipients }
+})
 
 export const addRecipient = createAsyncThunk<
   Recipients,
@@ -65,6 +72,13 @@ export const mergeRecipient = createAsyncThunk<
   return { recipients: newRecipients }
 })
 
+export const removeRecipients = createAsyncThunk(
+  `${NAME}/removeRecipients`,
+  async () => {
+    return { recipients: {} }
+  },
+)
+
 export const deleteRecipient = createAsyncThunk(
   `${NAME}/deleteRecipient`,
   async ({ walletAddress }: { walletAddress: string }) => {
@@ -73,6 +87,7 @@ export const deleteRecipient = createAsyncThunk(
     return { walletAddress }
   },
 )
+
 /**
  * Usual procedure
  */
@@ -84,11 +99,19 @@ const slice = createSlice({
   extraReducers: (builder) =>
     void builder
       .addCase(
+        addRecipients.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
         addRecipient.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(
         mergeRecipient.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        removeRecipients.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

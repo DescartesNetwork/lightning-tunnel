@@ -66,7 +66,7 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
   }, [recipientInfo])
 
   return (
-    <Row gutter={[8, 8]} align="middle">
+    <Row gutter={[8, 8]} align="middle" justify="space-between" wrap={false}>
       <Col span={8}>
         <Input
           disabled={disabledInput}
@@ -95,22 +95,23 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
           type="number"
         />
       </Col>
-      <Col span={2} style={{ textAlign: 'center' }}>
+      <Col>
         {walletAddress ? (
           <Button
             type="text"
+            size="small"
+            style={{ padding: 0 }}
             onClick={() => dispatch(deleteRecipient({ walletAddress }))}
-          >
-            <span>
-              <IonIcon style={{ fonSize: 20 }} name="trash-outline" />
-            </span>
-          </Button>
+            icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
+          />
         ) : (
           <Button
+            type="text"
+            size="small"
+            style={{ padding: 0 }}
             onClick={addNewRecipient}
             disabled={disabledBtn}
             danger
-            type="text"
           >
             OK
           </Button>

@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from 'shared/antd/mint'
 
 import { AppState } from 'app/model'
+import useTotalTransfer from 'app/hooks/useTotalTransfer'
 
 const Content = ({
   label,
@@ -38,27 +38,15 @@ const Content = ({
 
 export const WrapTotal = () => {
   const {
-    recipients: { recipients },
     main: { mintSelected },
   } = useSelector((sate: AppState) => sate)
 
-  const listRecipients = useMemo(
-    () => Object.values(recipients).map((recipient) => recipient),
-    [recipients],
-  )
-
-  const total = useMemo(() => {
-    let sum = 0
-    for (const recipient of listRecipients) {
-      sum += Number(recipient.amount)
-    }
-    return sum
-  }, [listRecipients])
+  const { total, quantity } = useTotalTransfer()
 
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
-        <Content label="Quantity" value={listRecipients.length} />
+        <Content label="Quantity" value={quantity} />
       </Col>
       <Col span={24}>
         <Content label="Total" value={total} mintAddress={mintSelected} />

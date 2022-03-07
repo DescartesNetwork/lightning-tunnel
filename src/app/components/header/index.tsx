@@ -2,13 +2,11 @@ import { Col, Divider, Row, Space, Typography } from 'antd'
 import PoweredBySentre from 'app/components/poweredBySentre'
 import Setting from './setting'
 
-const Header = () => {
+const Header = ({ label }: { label: string }) => {
   return (
     <Row>
       <Col flex="auto">
-        <Typography.Title level={5}>
-          Fill in recipient information
-        </Typography.Title>
+        <Typography.Title level={5}>{label}</Typography.Title>
       </Col>
       <Col>
         <Space size={16}>

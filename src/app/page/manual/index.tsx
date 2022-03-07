@@ -23,7 +23,7 @@ const Manual = () => {
     [recipients],
   )
   const onBack = useCallback(async () => {
-    await dispatch(onSelectMethod(undefined))
+    await dispatch(onSelectMethod())
     dispatch(removeRecipients())
     dispatch(onSelectStep(Step.zero))
   }, [dispatch])
@@ -57,7 +57,7 @@ const Manual = () => {
         <Col span={24}>
           <Row gutter={[16, 16]}>
             <Col span={12}>
-              <Button size="large" type="ghost" onClick={onBack} block>
+              <Button onClick={onBack} size="large" type="ghost" block>
                 Back
               </Button>
             </Col>

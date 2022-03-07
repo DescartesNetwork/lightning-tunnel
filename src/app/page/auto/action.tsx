@@ -16,7 +16,7 @@ const Action = () => {
   const disabled = !Object.keys(recipients).length
 
   const onBack = useCallback(async () => {
-    await dispatch(onSelectMethod(undefined))
+    await dispatch(onSelectMethod())
     dispatch(removeRecipients())
     dispatch(onSelectStep(Step.zero))
   }, [dispatch])

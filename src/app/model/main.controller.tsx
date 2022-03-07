@@ -36,9 +36,8 @@ const initialState: MethodType = {
 
 export const onSelectMethod = createAsyncThunk(
   `${NAME}/onSelectMethod`,
-  async (method?: number) => {
-    if (!method) return
-    return { methodSelected: method }
+  async (methodSelected?: number) => {
+    return { methodSelected }
   },
 )
 

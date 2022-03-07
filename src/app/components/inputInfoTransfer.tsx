@@ -99,6 +99,8 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
         {walletAddress ? (
           <Button
             type="text"
+            size="small"
+            style={{ padding: 0 }}
             onClick={() => dispatch(deleteRecipient({ walletAddress }))}
             icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
           />

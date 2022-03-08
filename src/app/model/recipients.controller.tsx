@@ -1,18 +1,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { account } from '@senswap/sen-js'
 
 /**
  * Interface & Utility
  */
 
+export type TransferData = Array<[string, string, string]>
 export type RecipientInfo = {
   walletAddress: string
   email: string
   amount: number
 }
 
+export type RecipientsInfo = Record<string, RecipientInfo>
+
 export type Recipients = {
-  recipients: Record<string, RecipientInfo>
+  recipients: RecipientsInfo
 }
 /**
  * Store constructor
@@ -28,7 +30,7 @@ const initialState: Recipients = {
  */
 export const addRecipients = createAsyncThunk<
   Recipients,
-  { recipients: Record<string, RecipientInfo> },
+  { recipients: RecipientsInfo },
   { state: any }
 >(`${NAME}/addRecipients`, async ({ recipients }, { getState }) => {
   return { recipients }
@@ -59,13 +61,14 @@ export const mergeRecipient = createAsyncThunk<
     recipients: { recipients },
   } = getState()
 
-  const { walletAddress, amount: newAmount } = recipient
+  const { walletAddress, amount: newAmount, email: newEmail } = recipient
   const newRecipients = { ...recipients }
 
-  const { amount: oldAmount } = newRecipients[walletAddress]
+  const { amount: oldAmount, email: oldEmail } = newRecipients[walletAddress]
   const amount = Number(oldAmount) + Number(newAmount)
   newRecipients[walletAddress] = {
     ...newRecipients[walletAddress],
+    email: oldEmail || newEmail,
     amount,
   }
 
@@ -82,8 +85,6 @@ export const removeRecipients = createAsyncThunk(
 export const deleteRecipient = createAsyncThunk(
   `${NAME}/deleteRecipient`,
   async ({ walletAddress }: { walletAddress: string }) => {
-    if (!account.isAddress(walletAddress))
-      throw new Error('Invalid order address')
     return { walletAddress }
   },
 )

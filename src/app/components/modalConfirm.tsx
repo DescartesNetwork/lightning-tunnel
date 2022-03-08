@@ -1,10 +1,12 @@
+import { ReactNode } from 'react'
+
 import { Button, Col, Modal, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 type ModalConfirmProps = {
   visible: boolean
   title: string
-  description: string
+  description: ReactNode
   textButtonConfirm: string
   closeModal: (visible: false) => void
   onConfirm: () => void
@@ -36,7 +38,7 @@ const ModalConfirm = (props: ModalConfirmProps) => {
             />
             <Space direction="vertical">
               <Typography.Title level={5}>{title}</Typography.Title>
-              <Typography.Text>{description}</Typography.Text>
+              {description}
             </Space>
           </Space>
         </Col>

@@ -90,3 +90,11 @@ declare namespace JSX {
     'ion-icon': any
   }
 }
+
+/**
+ * Declare import csv
+ */
+declare module '*.csv' {
+  const value: any
+  export default value
+}

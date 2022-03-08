@@ -13,9 +13,10 @@ export enum Status {
 }
 export type MethodType = {
   methodSelected?: number
-  data: TransferData /* address, amount */
   status: Status
   mintSelected: string
+  fileName?: string
+  data: TransferData /* address, amount */
 }
 
 /**
@@ -25,9 +26,10 @@ export type MethodType = {
 const NAME = 'main'
 const initialState: MethodType = {
   methodSelected: undefined,
-  data: [],
   status: Status.None,
   mintSelected: '',
+  fileName: '',
+  data: [],
 }
 
 /**
@@ -41,10 +43,10 @@ export const onSelectMethod = createAsyncThunk(
   },
 )
 
-export const setData = createAsyncThunk(
-  `${NAME}/setData`,
-  async (data: TransferData) => {
-    return { data, status: Status.None }
+export const setFileName = createAsyncThunk(
+  `${NAME}/setFileName`,
+  async (fileName: string) => {
+    return { fileName }
   },
 )
 
@@ -84,7 +86,7 @@ const slice = createSlice({
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(
-        setData.fulfilled,
+        setFileName.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

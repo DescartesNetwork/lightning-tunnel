@@ -2,7 +2,7 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 
-import { Button, Col, Input, Row } from 'antd'
+import { Button, Col, Input, Row, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import ModalConfirm from 'app/components/modalConfirm'
@@ -121,7 +121,9 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
         visible={visible}
         closeModal={setVisible}
         title="Do you want to merge a wallet address?"
-        description={`There are 2 identical wallet addresses: ${existedWallet}`}
+        description={
+          <Typography.Text>{`There are 2 identical wallet addresses: ${existedWallet}`}</Typography.Text>
+        }
         textButtonConfirm="Merge"
         onConfirm={onMerge}
       />

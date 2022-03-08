@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
@@ -12,7 +12,16 @@ import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
 import { removeRecipients } from 'app/model/recipients.controller'
 
+// const ActionButton = ({ isSelect }: { isSelect: boolean }) => {
+//   return (
+//     <Row>
+
+//     </Row>
+//   )
+// }
+
 const Manual = () => {
+  const [select, setSelect] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
     manual: { recipients: manual },
@@ -40,18 +49,34 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
+                {manual.length >= 2 && (
+                  <Col span={24} style={{ textAlign: 'right' }}>
+                    <Button
+                      onClick={() => setSelect(true)}
+                      style={{ padding: 0 }}
+                      type="text"
+                    >
+                      Select
+                    </Button>
+                  </Col>
+                )}
                 {manual &&
-                  manual.map(([walletAddress]) => {
-                    console.log('walletAddress: ', walletAddress)
-                    return (
-                      <Col span={24} key={walletAddress}>
-                        <InputInfoTransfer walletAddress={walletAddress} />
-                      </Col>
-                    )
-                  })}
-                <Col span={24}>
-                  <InputInfoTransfer />
-                </Col>
+                  manual.map(([walletAddress, email, amount], index) => (
+                    <Col span={24} key={walletAddress}>
+                      <InputInfoTransfer
+                        email={email}
+                        amount={amount}
+                        walletAddress={walletAddress}
+                        index={index}
+                        isSelect={select}
+                      />
+                    </Col>
+                  ))}
+                {!select && (
+                  <Col span={24}>
+                    <InputInfoTransfer />
+                  </Col>
+                )}
               </Row>
             </Col>
             <Col span={24}>

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import util from '@senswap/sen-js/dist/utils'
 
-import { Button, Col, Input, Row } from 'antd'
+import { Button, Checkbox, Col, Input, Row } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import ModalConfirm from 'app/components/modalConfirm'
@@ -65,16 +65,23 @@ const ActionButton = ({
 }
 
 const InputInfoTransfer = ({
-  walletAddress: address,
+  walletAddress,
+  email,
+  amount,
+  index,
+  isSelect = false,
 }: {
   walletAddress?: string
+  email?: string
+  amount?: number
+  index?: number
+  isSelect?: boolean
 }) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
   const [visible, setVisible] = useState(false)
   const {
     setting: { decimal },
     main: { mintSelected },
-    manual: { recipients: manual },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
   const mintDecimal = useMintDecimals(mintSelected) || 0
@@ -84,17 +91,11 @@ const InputInfoTransfer = ({
   }
 
   const recipientInfo = useCallback(async () => {
-    if (account.isAddress(address)) {
-      const recipient = manual.find(
-        ([walletAddress]) => walletAddress === address,
-      )
-      if (recipient) {
-        const [walletAddress, email, amount] = recipient
-        return setRecipient({ walletAddress, email, amount })
-      }
+    if (account.isAddress(walletAddress) && amount && email) {
+      return setRecipient({ walletAddress, email, amount })
     }
     return setRecipient(DEFAULT_RECIPIENT)
-  }, [address, manual])
+  }, [walletAddress, amount, email])
 
   const addNewRecipient = () => {
     const { walletAddress, email, amount } = formInput
@@ -115,8 +116,8 @@ const InputInfoTransfer = ({
     return false
   }, [formInput])
 
-  const disabledInput = address ? true : false
-  const amount = decimal
+  const disabledInput = walletAddress ? true : false
+  const actualAmount = decimal
     ? Number(util.decimalize(formInput.amount, mintDecimal))
     : formInput.amount
 
@@ -124,10 +125,13 @@ const InputInfoTransfer = ({
     recipientInfo()
   }, [recipientInfo])
 
-  console.log(formInput)
-
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between" wrap={false}>
+      {isSelect && (
+        <Col>
+          <Checkbox />
+        </Col>
+      )}
       <Col span={8}>
         <Input
           disabled={disabledInput}
@@ -149,20 +153,22 @@ const InputInfoTransfer = ({
       <Col span={6}>
         <Input
           disabled={disabledInput}
-          value={formInput.amount === 0 ? '' : amount}
+          value={formInput.amount === 0 ? '' : actualAmount}
           name="amount"
           placeholder="Amount"
           onChange={onChange}
           type="number"
         />
       </Col>
-      <Col>
-        <ActionButton
-          addNewRecipient={addNewRecipient}
-          disabledBtn={disabledBtn}
-          walletAddress={address}
-        />
-      </Col>
+      {!isSelect && (
+        <Col>
+          <ActionButton
+            addNewRecipient={addNewRecipient}
+            disabledBtn={disabledBtn}
+            walletAddress={walletAddress}
+          />
+        </Col>
+      )}
       <ModalConfirm
         visible={visible}
         closeModal={setVisible}

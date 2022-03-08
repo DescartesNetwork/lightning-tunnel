@@ -14,11 +14,8 @@ import { Button, Col, Input, Row } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import ModalConfirm from 'app/components/modalConfirm'
-import { AppDispatch, AppState } from 'app/model'
-import {
-  deleteRecipient,
-  mergeRecipient,
-} from 'app/model/recipients.controller'
+import { AppState } from 'app/model'
+
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { addRecipient, RecipientInfo } from 'app/model/manual.controller'
 
@@ -37,7 +34,6 @@ const ActionButton = ({
   disabledBtn: boolean
   addNewRecipient: () => void
 }) => {
-  const dispatch = useDispatch<AppDispatch>()
   return (
     <Fragment>
       {walletAddress ? (
@@ -45,7 +41,7 @@ const ActionButton = ({
           type="text"
           size="small"
           style={{ padding: 0 }}
-          onClick={() => dispatch(deleteRecipient({ walletAddress }))}
+          // onClick={() => dispatch(deleteRecipient({ walletAddress }))}
           icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
         />
       ) : (
@@ -104,7 +100,7 @@ const InputInfoTransfer = ({
   }
 
   const onMerge = () => {
-    dispatch(mergeRecipient({ recipient: formInput }))
+    // dispatch(mergeRecipient({ recipient: formInput }))
     setVisible(false)
     return setRecipient(DEFAULT_RECIPIENT)
   }

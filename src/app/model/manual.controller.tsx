@@ -24,13 +24,13 @@ const initialState: Recipients = {
 // /**
 //  * Actions
 //  */
-// export const addRecipients = createAsyncThunk<
-//   Recipients,
-//   { recipients: Record<string, RecipientInfo> },
-//   { state: any }
-// >(`${NAME}/addRecipients`, async ({ recipients }, { getState }) => {
-//   return { recipients }
-// })
+export const addRecipients = createAsyncThunk<
+  Recipients,
+  { recipients: RecipientInfos },
+  { state: any }
+>(`${NAME}/addRecipients`, async ({ recipients }, { getState }) => {
+  return { recipients }
+})
 
 export const addRecipient = createAsyncThunk<
   Recipients,
@@ -61,6 +61,13 @@ export const getRecipient = createAsyncThunk<
 
   return recipient
 })
+
+export const removeRecipients = createAsyncThunk(
+  `${NAME}/removeRecipients`,
+  async () => {
+    return { recipients: {} }
+  },
+)
 
 // export const mergeRecipient = createAsyncThunk<
 //   Recipients,
@@ -102,10 +109,19 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      addRecipient.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        addRecipients.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        addRecipient.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        removeRecipients.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

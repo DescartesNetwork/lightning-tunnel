@@ -1,16 +1,15 @@
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
-import { AppDispatch, AppState } from 'app/model'
-import IonIcon from 'shared/antd/ionicon'
-import AccountInfo from './accountInfo'
-import { deleteRecipient } from 'app/model/recipients.controller'
 import InputInfoTransfer from 'app/components/inputInfoTransfer'
-import { CollapseAddNew } from 'app/constants'
 import { WrapTotal } from 'app/components/cardTotal'
 import AccountInfoHeader from './accountInfoHeader'
-import { isEqual } from 'app/helper/equals'
+
+import { AppState } from 'app/model'
+import IonIcon from 'shared/antd/ionicon'
+import AccountInfo from './accountInfo'
+import { CollapseAddNew } from 'app/constants'
 
 const ActionButton = ({
   activeKey = '',
@@ -53,56 +52,24 @@ const ActionButton = ({
   )
 }
 
-const FileDetails = ({ onRemove }: { onRemove: () => void }) => {
-  const dispatch = useDispatch<AppDispatch>()
+const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
+  // const dispatch = useDispatch<AppDispatch>()
   const {
-    recipients: { recipients },
     main: { fileName },
+    manual: { recipients },
   } = useSelector((state: AppState) => state)
   const [selected, setSelected] = useState(false)
   const [activeKey, setActiveKey] = useState<string>()
   const [loading, setLoading] = useState(false)
-  const [walletsSelected, setWalletsSeletectd] = useState<string[]>([])
+  // const [walletsSelected, setWalletsSeletectd] = useState<string[]>([])
 
-  const onSelected = (checked: boolean, walletAddress: string) => {
-    const nextWalletSelected = [...walletsSelected]
-    if (checked) nextWalletSelected.push(walletAddress)
-    else {
-      const idxOfWallet = nextWalletSelected.indexOf(walletAddress)
-      nextWalletSelected.splice(idxOfWallet, 1)
-    }
-    return setWalletsSeletectd(nextWalletSelected)
-  }
-  const onSelectAll = (checked: boolean) => {
-    if (!recipients) return
-    const recipientAddresses = Object.keys(recipients)
-    let nextWalletSelected = [...recipientAddresses]
-    if (!checked) nextWalletSelected = []
-    return setWalletsSeletectd(nextWalletSelected)
-  }
+  const onSelected = (checked: boolean, index: number) => {}
+  const onSelectAll = (checked: boolean) => {}
+
   const onDelete = async () => {
-    if (!walletsSelected.length || !Object.keys(recipients).length) return
     setLoading(true)
-    if (isEqual(walletsSelected, Object.keys(recipients))) onRemove()
-    else
-      await walletsSelected.forEach((walletAddress) => {
-        if (!!recipients[walletAddress])
-          return dispatch(deleteRecipient({ walletAddress }))
-      })
-    return setLoading(false)
+    setLoading(false)
   }
-
-  const errorData = Object.keys(recipients).filter((addr) => {
-    const { amount, email } = recipients[addr]
-    return !amount || !email
-  })
-
-  const listRecipients = Object.keys(recipients).filter((addr) => {
-    const { amount, email } = recipients[addr]
-    return amount && email
-  })
-
-  const existErrorData = !!errorData.length
 
   return (
     <Row gutter={[16, 16]}>
@@ -137,7 +104,6 @@ const FileDetails = ({ onRemove }: { onRemove: () => void }) => {
                 type="text"
                 size="small"
                 icon={<IonIcon name="trash-outline" />}
-                disabled={!walletsSelected.length}
                 onClick={onDelete}
               >
                 Delete
@@ -170,42 +136,21 @@ const FileDetails = ({ onRemove }: { onRemove: () => void }) => {
                   <Col span={24}>
                     <AccountInfoHeader
                       selected={selected}
-                      error={existErrorData}
                       onChecked={onSelectAll}
                     />
                   </Col>
-                  {errorData &&
-                    errorData.map((addr, idx) => (
-                      <Col
-                        className={
-                          idx + 1 === errorData.length
-                            ? 'last-item-error-data'
-                            : ''
-                        }
-                        span={24}
-                        key={addr + idx}
-                      >
-                        <AccountInfo
-                          accountAddress={addr}
-                          selected={selected}
-                          onChecked={onSelected}
-                          error={existErrorData}
-                          walletsSelected={walletsSelected}
-                        />
-                      </Col>
-                    ))}
-                  {listRecipients &&
-                    listRecipients.map((addr, idx) => (
-                      <Col span={24} key={addr + idx}>
-                        <AccountInfo
-                          accountAddress={addr}
-                          selected={selected}
-                          onChecked={onSelected}
-                          error={existErrorData}
-                          walletsSelected={walletsSelected}
-                        />
-                      </Col>
-                    ))}
+                  {recipients.map(([address, email, amount], idx) => (
+                    <Col span={24} key={address + idx}>
+                      <AccountInfo
+                        accountAddress={address}
+                        email={email}
+                        amount={amount}
+                        selected={selected}
+                        onChecked={onSelected}
+                        index={idx}
+                      />
+                    </Col>
+                  ))}
                 </Row>
               </Card>
             </Spin>

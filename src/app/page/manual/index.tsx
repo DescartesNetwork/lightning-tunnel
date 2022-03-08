@@ -10,7 +10,6 @@ import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
-import { removeRecipients } from 'app/model/recipients.controller'
 
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -24,7 +23,6 @@ const Manual = () => {
   // )
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
-    dispatch(removeRecipients())
     dispatch(onSelectStep(Step.zero))
   }, [dispatch])
 

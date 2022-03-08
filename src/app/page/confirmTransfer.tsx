@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount, useWallet } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
@@ -10,7 +10,6 @@ import PoweredBySentre from 'app/components/poweredBySentre'
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
-import useTotalTransfer from 'app/hooks/useTotalTransfer'
 import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { numeric } from 'shared/util'
@@ -42,7 +41,6 @@ const ConfirmTransfer = () => {
     wallet: { address: walletAddress },
   } = useWallet()
   const dispatch = useDispatch<AppDispatch>()
-  const { total, quantity } = useTotalTransfer()
   const { accounts } = useAccount()
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
@@ -57,11 +55,6 @@ const ConfirmTransfer = () => {
     if (decimal) return setBalance(Number(amount))
     setBalance(Number(utils.undecimalize(amount, mintDecimals)))
   }, [accounts, decimal, mintDecimals, mintSelected, walletAddress])
-
-  const remainingBalance = useMemo(() => {
-    if (!balance) return 0
-    return Number(balance) - total
-  }, [balance, total])
 
   useEffect(() => {
     getBalanceAccount()
@@ -87,7 +80,7 @@ const ConfirmTransfer = () => {
                 <Typography.Text type="secondary">
                   Total transfer
                 </Typography.Text>
-                <Typography.Title level={2}>${total}</Typography.Title>
+                <Typography.Title level={2}>${0}</Typography.Title>
                 <Tag
                   style={{
                     margin: 0,
@@ -111,7 +104,7 @@ const ConfirmTransfer = () => {
                     />
                   </Col>
                   <Col span={24}>
-                    <Content label="Quantity" value={quantity} />
+                    <Content label="Quantity" value={0} />
                   </Col>
                   <Col span={24}>
                     <Content
@@ -129,7 +122,7 @@ const ConfirmTransfer = () => {
                       label="Remaining"
                       value={
                         <Typography.Text>
-                          {numeric(remainingBalance).format('0,0.00[00]')}{' '}
+                          {numeric(0).format('0,0.00[00]')}{' '}
                           <MintSymbol mintAddress={mintSelected} />
                         </Typography.Text>
                       }
@@ -152,12 +145,7 @@ const ConfirmTransfer = () => {
               </Button>
             </Col>
             <Col span={12}>
-              <Button
-                size="large"
-                disabled={remainingBalance < 0}
-                type="primary"
-                block
-              >
+              <Button size="large" disabled={false} type="primary" block>
                 Confirm
               </Button>
             </Col>

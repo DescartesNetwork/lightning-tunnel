@@ -1,86 +1,137 @@
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  ChangeEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import util from '@senswap/sen-js/dist/utils'
 
-import { Button, Col, Input, Row, Typography } from 'antd'
+import { Button, Col, Input, Row } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import ModalConfirm from 'app/components/modalConfirm'
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 import {
-  addRecipient,
   deleteRecipient,
   mergeRecipient,
-  RecipientInfo,
 } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { addRecipient, RecipientInfo } from 'app/model/manual.controller'
 
-const DEFAULT_RECIPIENT: RecipientInfo = {
+const DEFAULT_RECIPIENT = {
   walletAddress: '',
   amount: 0,
   email: '',
 }
 
-const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
-  const [recipient, setRecipient] = useState<RecipientInfo>(DEFAULT_RECIPIENT)
+const ActionButton = ({
+  walletAddress,
+  disabledBtn,
+  addNewRecipient,
+}: {
+  walletAddress?: string
+  disabledBtn: boolean
+  addNewRecipient: () => void
+}) => {
+  const dispatch = useDispatch<AppDispatch>()
+  return (
+    <Fragment>
+      {walletAddress ? (
+        <Button
+          type="text"
+          size="small"
+          style={{ padding: 0 }}
+          onClick={() => dispatch(deleteRecipient({ walletAddress }))}
+          icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
+        />
+      ) : (
+        <Button
+          type="text"
+          size="small"
+          style={{ padding: 0 }}
+          onClick={addNewRecipient}
+          disabled={disabledBtn}
+          danger
+        >
+          OK
+        </Button>
+      )}
+    </Fragment>
+  )
+}
+
+const InputInfoTransfer = ({
+  walletAddress: address,
+}: {
+  walletAddress?: string
+}) => {
+  const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
   const [visible, setVisible] = useState(false)
-  const [existedWallet, setExistedWallet] = useState('')
   const {
-    recipients: { recipients },
     setting: { decimal },
     main: { mintSelected },
+    manual: { recipients: manual },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
   const mintDecimal = useMintDecimals(mintSelected) || 0
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setRecipient({ ...recipient, [e.target.name]: e.target.value })
+    setRecipient({ ...formInput, [e.target.name]: e.target.value })
   }
 
-  const recipientInfo = useCallback(() => {
-    if (account.isAddress(walletAddress))
-      return setRecipient(recipients[walletAddress])
+  const recipientInfo = useCallback(async () => {
+    if (account.isAddress(address)) {
+      const recipient = manual.find(
+        ([walletAddress]) => walletAddress === address,
+      )
+      if (recipient) {
+        const [walletAddress, email, amount] = recipient
+        return setRecipient({ walletAddress, email, amount })
+      }
+    }
     return setRecipient(DEFAULT_RECIPIENT)
-  }, [walletAddress, recipients])
+  }, [address, manual])
 
   const addNewRecipient = () => {
-    const { walletAddress } = recipient
-    if (recipients[walletAddress]) {
-      setVisible(true)
-      return setExistedWallet(walletAddress)
-    }
-    dispatch(addRecipient({ recipient }))
+    const { walletAddress, email, amount } = formInput
+    const recipient: RecipientInfo = [walletAddress, email, amount]
+    dispatch(addRecipient({ recipient: recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
   const onMerge = () => {
-    dispatch(mergeRecipient({ recipient }))
+    dispatch(mergeRecipient({ recipient: formInput }))
     setVisible(false)
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
   const disabledBtn = useMemo(() => {
-    const { amount, walletAddress, email } = recipient
+    const { amount, walletAddress, email } = formInput
     if (!amount || !account.isAddress(walletAddress) || !email) return true
     return false
-  }, [recipient])
+  }, [formInput])
 
-  const disabledInput = walletAddress ? true : false
+  const disabledInput = address ? true : false
   const amount = decimal
-    ? Number(util.decimalize(recipient.amount, mintDecimal))
-    : recipient.amount
+    ? Number(util.decimalize(formInput.amount, mintDecimal))
+    : formInput.amount
 
   useEffect(() => {
     recipientInfo()
   }, [recipientInfo])
+
+  console.log(formInput)
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between" wrap={false}>
       <Col span={8}>
         <Input
           disabled={disabledInput}
-          value={recipient.walletAddress}
+          value={formInput.walletAddress}
           name="walletAddress"
           placeholder="Wallet address"
           onChange={onChange}
@@ -90,7 +141,7 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
         <Input
           disabled={disabledInput}
           onChange={onChange}
-          value={recipient.email}
+          value={formInput.email}
           name="email"
           placeholder="Email"
         />
@@ -98,7 +149,7 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
       <Col span={6}>
         <Input
           disabled={disabledInput}
-          value={recipient.amount === 0 ? '' : amount}
+          value={formInput.amount === 0 ? '' : amount}
           name="amount"
           placeholder="Amount"
           onChange={onChange}
@@ -106,34 +157,17 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
         />
       </Col>
       <Col>
-        {walletAddress ? (
-          <Button
-            type="text"
-            size="small"
-            style={{ padding: 0 }}
-            onClick={() => dispatch(deleteRecipient({ walletAddress }))}
-            icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
-          />
-        ) : (
-          <Button
-            type="text"
-            size="small"
-            style={{ padding: 0 }}
-            onClick={addNewRecipient}
-            disabled={disabledBtn}
-            danger
-          >
-            OK
-          </Button>
-        )}
+        <ActionButton
+          addNewRecipient={addNewRecipient}
+          disabledBtn={disabledBtn}
+          walletAddress={address}
+        />
       </Col>
       <ModalConfirm
         visible={visible}
         closeModal={setVisible}
         title="Do you want to merge a wallet address?"
-        description={
-          <Typography.Text>{`There are 2 identical wallet addresses: ${existedWallet}`}</Typography.Text>
-        }
+        description={`There are 2 identical wallet addresses`}
         textButtonConfirm="Merge"
         onConfirm={onMerge}
       />

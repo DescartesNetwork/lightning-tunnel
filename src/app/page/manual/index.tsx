@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
@@ -15,18 +15,20 @@ import { removeRecipients } from 'app/model/recipients.controller'
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    recipients: { recipients },
+    manual: { recipients: manual },
   } = useSelector((state: AppState) => state)
 
-  const listRecipients = useMemo(
-    () => Object.values(recipients).map((recipient) => recipient),
-    [recipients],
-  )
+  // const listRecipients = useMemo(
+  //   () => Object.values(recipients).map((recipient) => recipient),
+  //   [recipients],
+  // )
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
     dispatch(removeRecipients())
     dispatch(onSelectStep(Step.zero))
   }, [dispatch])
+
+  console.log(manual)
 
   return (
     <Card className="card-priFi" bordered={false}>
@@ -38,12 +40,15 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
-                {listRecipients &&
-                  listRecipients.map(({ walletAddress }) => (
-                    <Col span={24} key={walletAddress}>
-                      <InputInfoTransfer walletAddress={walletAddress} />
-                    </Col>
-                  ))}
+                {manual &&
+                  manual.map(([walletAddress]) => {
+                    console.log('walletAddress: ', walletAddress)
+                    return (
+                      <Col span={24} key={walletAddress}>
+                        <InputInfoTransfer walletAddress={walletAddress} />
+                      </Col>
+                    )
+                  })}
                 <Col span={24}>
                   <InputInfoTransfer />
                 </Col>

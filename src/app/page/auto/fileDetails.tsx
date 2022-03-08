@@ -1,15 +1,16 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
 import InputInfoTransfer from 'app/components/inputInfoTransfer'
 import { WrapTotal } from 'app/components/cardTotal'
 import AccountInfoHeader from './accountInfoHeader'
 
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 import IonIcon from 'shared/antd/ionicon'
 import AccountInfo from './accountInfo'
 import { CollapseAddNew } from 'app/constants'
+import { addRecipients, setErrorDatas } from 'app/model/recipients.controller'
 
 const ActionButton = ({
   activeKey = '',
@@ -53,7 +54,7 @@ const ActionButton = ({
 }
 
 const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
-  // const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>()
   const {
     main: { fileName },
     recipients: { recipients, errorDatas },
@@ -61,13 +62,34 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
   const [selected, setSelected] = useState(false)
   const [activeKey, setActiveKey] = useState<string>()
   const [loading, setLoading] = useState(false)
-  // const [walletsSelected, setWalletsSeletectd] = useState<string[]>([])
+  const [walletsSelected, setWalletsSeletectd] = useState<number[]>([])
 
-  const onSelected = (checked: boolean, index: number) => {}
+  const onSelected = (checked: boolean, index: number) => {
+    const nextWalletsSelected = [...walletsSelected]
+    if (checked) nextWalletsSelected.push(index)
+    else {
+      const idx = nextWalletsSelected.indexOf(index)
+      nextWalletsSelected.splice(idx, 1)
+    }
+    return setWalletsSeletectd(nextWalletsSelected)
+  }
   const onSelectAll = (checked: boolean) => {}
 
   const onDelete = async () => {
+    if (!walletsSelected.length) return
     setLoading(true)
+    const nextRecipients = [...recipients]
+    const nextErrorDatas = [...(errorDatas || [])]
+
+    walletsSelected.forEach((idx) => {
+      const recipientLength = nextRecipients.length
+      if (idx >= recipientLength)
+        nextErrorDatas?.splice(idx - recipientLength, 1)
+      nextRecipients.splice(idx, 1)
+    })
+    dispatch(setErrorDatas({ errorDatas: nextErrorDatas }))
+    dispatch(addRecipients({ recipients: nextRecipients }))
+    setWalletsSeletectd([])
     setLoading(false)
   }
 
@@ -144,7 +166,9 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                       span={24}
                       key={address + idx}
                       className={
-                        idx === errorDatas.length ? 'last-item-error-data' : ''
+                        idx + 1 === errorDatas.length
+                          ? 'last-item-error-data'
+                          : ''
                       }
                     >
                       <AccountInfo
@@ -153,7 +177,8 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
-                        index={idx}
+                        walletsSelected={walletsSelected}
+                        index={recipients.length + idx}
                       />
                     </Col>
                   ))}
@@ -165,6 +190,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
+                        walletsSelected={walletsSelected}
                         index={idx}
                       />
                     </Col>

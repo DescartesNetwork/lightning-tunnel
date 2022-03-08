@@ -1,6 +1,7 @@
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
+import util from '@senswap/sen-js/dist/utils'
 
 import { Button, Col, Input, Row, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -13,6 +14,7 @@ import {
   mergeRecipient,
   RecipientInfo,
 } from 'app/model/recipients.controller'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 const DEFAULT_RECIPIENT: RecipientInfo = {
   walletAddress: '',
@@ -24,8 +26,13 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
   const [recipient, setRecipient] = useState<RecipientInfo>(DEFAULT_RECIPIENT)
   const [visible, setVisible] = useState(false)
   const [existedWallet, setExistedWallet] = useState('')
-  const { recipients } = useSelector((state: AppState) => state.recipients)
+  const {
+    recipients: { recipients },
+    setting: { decimal },
+    main: { mintSelected },
+  } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
+  const mintDecimal = useMintDecimals(mintSelected) || 0
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setRecipient({ ...recipient, [e.target.name]: e.target.value })
@@ -60,6 +67,9 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
   }, [recipient])
 
   const disabledInput = walletAddress ? true : false
+  const amount = decimal
+    ? Number(util.decimalize(recipient.amount, mintDecimal))
+    : recipient.amount
 
   useEffect(() => {
     recipientInfo()
@@ -88,7 +98,7 @@ const InputInfoTransfer = ({ walletAddress }: { walletAddress?: string }) => {
       <Col span={6}>
         <Input
           disabled={disabledInput}
-          value={recipient.amount === 0 ? '' : recipient.amount}
+          value={recipient.amount === 0 ? '' : amount}
           name="amount"
           placeholder="Amount"
           onChange={onChange}

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
-import Header from './header'
+import Header from '../../components/header'
 import InputInfoTransfer from '../../components/inputInfoTransfer'
 import CardTotal from 'app/components/cardTotal'
 
@@ -32,7 +32,7 @@ const Manual = () => {
     <Card className="card-priFi" bordered={false}>
       <Row gutter={[32, 32]}>
         <Col span={24}>
-          <Header />
+          <Header label="Fill in recipient information" />
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]}>

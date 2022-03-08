@@ -14,12 +14,13 @@ import IonIcon from 'shared/antd/ionicon'
 import { shortenAddress } from 'shared/util'
 // import { AppDispatch, AppState } from 'app/model'
 import { useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { AppState } from 'app/model'
 
 type AccountInfoProps = {
   accountAddress?: string
   selected?: boolean
-  error?: boolean
-  walletsSelected?: string[]
+  walletsSelected?: number[]
   email?: string
   amount?: number | string
   index: number
@@ -59,7 +60,6 @@ const AccountInfo = ({
   email = '',
   amount = 0,
   selected = false,
-  error = false,
   walletsSelected = [],
   onChecked = () => {},
   index,
@@ -68,6 +68,9 @@ const AccountInfo = ({
   const [isEdited, setIsEdited] = useState(false)
   const [nextEmail, setNextEmail] = useState('')
   const [nextAmount, setNextAmount] = useState('')
+  const {
+    recipients: { errorDatas },
+  } = useSelector((state: AppState) => state)
 
   const editable = !amount || !email
   const emailValue = isEdited ? nextEmail : shortenAddress(email, 8)
@@ -90,7 +93,7 @@ const AccountInfo = ({
             <Space>
               {selected && (
                 <Checkbox
-                  checked={walletsSelected.includes(accountAddress)}
+                  checked={walletsSelected.includes(index)}
                   onChange={(e) => onChecked(e.target.checked, index)}
                 />
               )}
@@ -120,7 +123,7 @@ const AccountInfo = ({
               disabled={!isEdited}
             />
           </Col>
-          {error && (
+          {!!errorDatas?.length && (
             <Col style={{ minWidth: 70 }}>
               {editable && (
                 <Space align="center">

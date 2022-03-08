@@ -56,7 +56,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
   // const dispatch = useDispatch<AppDispatch>()
   const {
     main: { fileName },
-    manual: { recipients },
+    recipients: { recipients },
   } = useSelector((state: AppState) => state)
   const [selected, setSelected] = useState(false)
   const [activeKey, setActiveKey] = useState<string>()

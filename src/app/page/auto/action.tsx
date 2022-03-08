@@ -12,7 +12,7 @@ import { removeRecipients } from 'app/model/recipients.controller'
 const Action = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    manual: { recipients },
+    recipients: { recipients },
   } = useSelector((state: AppState) => state)
 
   const disabled = !Object.keys(recipients).length

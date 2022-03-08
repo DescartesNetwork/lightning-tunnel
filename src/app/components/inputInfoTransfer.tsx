@@ -15,9 +15,16 @@ import IonIcon from 'shared/antd/ionicon'
 
 import ModalConfirm from 'app/components/modalConfirm'
 import { AppState } from 'app/model'
-
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { addRecipient, RecipientInfo } from 'app/model/recipients.controller'
+
+type InputInfoTransferProps = {
+  walletAddress?: string
+  email?: string
+  amount?: number
+  index?: number
+  isSelect?: boolean
+}
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
@@ -66,13 +73,7 @@ const InputInfoTransfer = ({
   amount,
   index,
   isSelect = false,
-}: {
-  walletAddress?: string
-  email?: string
-  amount?: number
-  index?: number
-  isSelect?: boolean
-}) => {
+}: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
   const [visible, setVisible] = useState(false)
   const {
@@ -96,12 +97,11 @@ const InputInfoTransfer = ({
   const addNewRecipient = () => {
     const { walletAddress, email, amount } = formInput
     const recipient: RecipientInfo = [walletAddress, email, amount]
-    dispatch(addRecipient({ recipient: recipient }))
+    dispatch(addRecipient({ recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
   const onMerge = () => {
-    // dispatch(mergeRecipient({ recipient: formInput }))
     setVisible(false)
     return setRecipient(DEFAULT_RECIPIENT)
   }

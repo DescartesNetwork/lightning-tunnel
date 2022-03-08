@@ -32,7 +32,7 @@ const UploadFile = () => {
   const [loading, setLoading] = useState(false)
 
   const {
-    manual: { recipients },
+    recipients: { recipients },
   } = useSelector((state: AppState) => state)
 
   const upload = useCallback(

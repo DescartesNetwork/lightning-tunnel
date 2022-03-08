@@ -4,7 +4,7 @@ import { devTools, bigintSerializationMiddleware } from 'shared/devTools'
 import main from 'app/model/main.controller'
 import steps from 'app/model/steps.controller'
 import setting from 'app/model/setting.controller'
-import manual from 'app/model/recipients.controller'
+import recipients from 'app/model/recipients.controller'
 
 /**
  * Isolated store
@@ -17,7 +17,7 @@ const model = configureStore({
     main,
     steps,
     setting,
-    manual,
+    recipients,
   },
 })
 

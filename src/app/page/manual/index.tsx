@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { Fragment, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
@@ -11,31 +11,56 @@ import { onSelectStep } from 'app/model/steps.controller'
 import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
 
-// const ActionButton = ({ isSelect }: { isSelect: boolean }) => {
-//   return (
-//     <Row>
-
-//     </Row>
-//   )
-// }
+const ActionButton = ({
+  isSelect,
+  setSelect,
+}: {
+  isSelect: boolean
+  setSelect: (value: boolean) => void
+}) => {
+  return (
+    <Fragment>
+      {isSelect ? (
+        <Row>
+          <Col flex="auto">
+            <Button style={{ padding: 0 }} type="text">
+              Merge
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              onClick={() => setSelect(false)}
+              style={{ padding: 0 }}
+              type="text"
+            >
+              Cancel
+            </Button>
+          </Col>
+        </Row>
+      ) : (
+        <Button
+          onClick={() => setSelect(true)}
+          style={{ padding: 0 }}
+          type="text"
+        >
+          Select
+        </Button>
+      )}
+    </Fragment>
+  )
+}
 
 const Manual = () => {
   const [select, setSelect] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
-    manual: { recipients: manual },
+    recipients: { recipients },
   } = useSelector((state: AppState) => state)
 
-  // const listRecipients = useMemo(
-  //   () => Object.values(recipients).map((recipient) => recipient),
-  //   [recipients],
-  // )
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
     dispatch(onSelectStep(Step.zero))
   }, [dispatch])
-
-  console.log(manual)
 
   return (
     <Card className="card-priFi" bordered={false}>
@@ -47,19 +72,16 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
-                {manual.length >= 2 && (
-                  <Col span={24} style={{ textAlign: 'right' }}>
-                    <Button
-                      onClick={() => setSelect(true)}
-                      style={{ padding: 0 }}
-                      type="text"
-                    >
-                      Select
-                    </Button>
+                {recipients.length >= 2 && (
+                  <Col
+                    span={24}
+                    style={{ textAlign: !select ? 'right' : 'unset' }}
+                  >
+                    <ActionButton isSelect={select} setSelect={setSelect} />
                   </Col>
                 )}
-                {manual &&
-                  manual.map(([walletAddress, email, amount], index) => (
+                {recipients &&
+                  recipients.map(([walletAddress, email, amount], index) => (
                     <Col span={24} key={walletAddress}>
                       <InputInfoTransfer
                         email={email}

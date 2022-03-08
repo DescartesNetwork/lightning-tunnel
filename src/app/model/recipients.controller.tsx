@@ -38,7 +38,7 @@ export const addRecipient = createAsyncThunk<
   { state: any }
 >(`${NAME}/addRecipient`, async ({ recipient }, { getState }) => {
   const {
-    manual: { recipients },
+    recipients: { recipients },
   } = getState()
 
   const newRecipients = [...recipients]
@@ -53,7 +53,7 @@ export const getRecipient = createAsyncThunk<
   { state: any }
 >(`${NAME}/getRecipient`, ({ address }, { getState }) => {
   const {
-    manual: { recipients },
+    recipients: { recipients },
   } = getState()
   const recipient = recipients.find(([walletAddress]: any) => {
     return address === walletAddress

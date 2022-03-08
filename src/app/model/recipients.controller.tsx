@@ -11,6 +11,7 @@ export type RecipientInfos = Array<RecipientInfo>
 
 export type Recipients = {
   recipients: RecipientInfos
+  errorDatas?: RecipientInfos
 }
 /**
  * Store constructor
@@ -19,11 +20,12 @@ export type Recipients = {
 const NAME = 'recipients'
 const initialState: Recipients = {
   recipients: [],
+  errorDatas: [],
 }
 
-// /**
-//  * Actions
-//  */
+/**
+ * Actions
+ */
 export const addRecipients = createAsyncThunk<
   Recipients,
   { recipients: RecipientInfos },
@@ -68,6 +70,14 @@ export const removeRecipients = createAsyncThunk(
     return { recipients: {} }
   },
 )
+
+export const setErrorDatas = createAsyncThunk<
+  Partial<Recipients>,
+  { errorDatas: RecipientInfos },
+  { state: any }
+>(`${NAME}/setErrorDatas`, async ({ errorDatas }, { getState }) => {
+  return { errorDatas }
+})
 
 // export const mergeRecipient = createAsyncThunk<
 //   Recipients,
@@ -120,6 +130,10 @@ const slice = createSlice({
       )
       .addCase(
         removeRecipients.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setErrorDatas.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

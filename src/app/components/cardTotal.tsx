@@ -4,7 +4,6 @@ import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from 'shared/antd/mint'
 
 import { AppState } from 'app/model'
-import useTotalTransfer from 'app/hooks/useTotalTransfer'
 
 const Content = ({
   label,
@@ -41,15 +40,13 @@ export const WrapTotal = () => {
     main: { mintSelected },
   } = useSelector((sate: AppState) => sate)
 
-  const { total, quantity } = useTotalTransfer()
-
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
-        <Content label="Quantity" value={quantity} />
+        <Content label="Quantity" value={0} />
       </Col>
       <Col span={24}>
-        <Content label="Total" value={total} mintAddress={mintSelected} />
+        <Content label="Total" value={0} mintAddress={mintSelected} />
       </Col>
     </Row>
   )

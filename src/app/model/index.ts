@@ -3,7 +3,6 @@ import { devTools, bigintSerializationMiddleware } from 'shared/devTools'
 
 import main from 'app/model/main.controller'
 import steps from 'app/model/steps.controller'
-import recipients from 'app/model/recipients.controller'
 import setting from 'app/model/setting.controller'
 import manual from 'app/model/manual.controller'
 
@@ -17,7 +16,6 @@ const model = configureStore({
   reducer: {
     main,
     steps,
-    recipients,
     setting,
     manual,
   },

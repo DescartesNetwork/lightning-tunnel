@@ -7,11 +7,13 @@ import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
 import { onSelectMethod } from 'app/model/main.controller'
-import { removeRecipients } from 'app/model/recipients.controller'
+import { removeRecipients } from 'app/model/manual.controller'
 
 const Action = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { recipients } = useSelector((state: AppState) => state.recipients)
+  const {
+    manual: { recipients },
+  } = useSelector((state: AppState) => state)
 
   const disabled = !Object.keys(recipients).length
 

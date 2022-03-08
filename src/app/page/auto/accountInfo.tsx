@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux'
+// import { useDispatch, useSelector } from 'react-redux'
 
 import {
   Button,
@@ -12,16 +12,18 @@ import {
 } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 import { shortenAddress } from 'shared/util'
-import { AppDispatch, AppState } from 'app/model'
+// import { AppDispatch, AppState } from 'app/model'
 import { useCallback, useState } from 'react'
-import { mergeRecipient } from 'app/model/recipients.controller'
 
 type AccountInfoProps = {
   accountAddress?: string
   selected?: boolean
   error?: boolean
   walletsSelected?: string[]
-  onChecked?: (checked: boolean, walletAddress: string) => void
+  email?: string
+  amount?: number | string
+  index: number
+  onChecked?: (checked: boolean, index: number) => void
 }
 
 type EditButtonProps = {
@@ -54,33 +56,26 @@ const EditButton = ({
 
 const AccountInfo = ({
   accountAddress = '',
+  email = '',
+  amount = 0,
   selected = false,
   error = false,
   walletsSelected = [],
   onChecked = () => {},
+  index,
 }: AccountInfoProps) => {
-  const dispatch = useDispatch<AppDispatch>()
+  // const dispatch = useDispatch<AppDispatch>()
   const [isEdited, setIsEdited] = useState(false)
   const [nextEmail, setNextEmail] = useState('')
   const [nextAmount, setNextAmount] = useState('')
-  const { recipients } = useSelector((state: AppState) => state.recipients)
-  const { email, walletAddress, amount } = recipients[accountAddress]
 
   const editable = !amount || !email
-  const index = Object.keys(recipients).indexOf(accountAddress)
   const emailValue = isEdited ? nextEmail : shortenAddress(email, 8)
   const amountValue = isEdited ? nextAmount : amount
 
   const onUpdate = useCallback(() => {
-    if (!nextEmail || !nextAmount) return
-    const nextRecipient = {
-      walletAddress,
-      email: nextEmail,
-      amount: Number(nextAmount),
-    }
-    dispatch(mergeRecipient({ recipient: nextRecipient }))
     setIsEdited(false)
-  }, [dispatch, nextAmount, nextEmail, walletAddress])
+  }, [])
 
   return (
     <Row gutter={[16, 8]}>
@@ -96,15 +91,17 @@ const AccountInfo = ({
               {selected && (
                 <Checkbox
                   checked={walletsSelected.includes(accountAddress)}
-                  onChange={(e) => onChecked(e.target.checked, walletAddress)}
+                  onChange={(e) => onChecked(e.target.checked, index)}
                 />
               )}
               <Typography.Text type="secondary">#{index + 1}</Typography.Text>
             </Space>
           </Col>
           <Col style={{ minWidth: 140 }}>
-            <Tooltip title={walletAddress}>
-              <Typography.Text>{shortenAddress(walletAddress)}</Typography.Text>
+            <Tooltip title={accountAddress}>
+              <Typography.Text>
+                {shortenAddress(accountAddress)}
+              </Typography.Text>
             </Tooltip>
           </Col>
           <Col style={{ minWidth: 150 }}>

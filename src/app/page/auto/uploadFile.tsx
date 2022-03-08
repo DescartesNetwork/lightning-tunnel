@@ -16,6 +16,7 @@ import {
   addRecipients,
   RecipientInfos,
   removeRecipients,
+  setErrorDatas,
 } from 'app/model/recipients.controller'
 
 const parse = (file: any): Promise<RecipientInfos> => {
@@ -30,18 +31,27 @@ const parse = (file: any): Promise<RecipientInfos> => {
 const UploadFile = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
-
   const {
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
+
+  const detectErrorData = (data: RecipientInfos) => {
+    const errorDatas = data.filter((recipient) => recipient.includes(''))
+    const successData = data.filter((recipient) => !recipient.includes(''))
+    return { errorDatas, successData }
+  }
 
   const upload = useCallback(
     async (file: any) => {
       setLoading(true)
       dispatch(setDecimalized(false))
-      const recipients = await parse(file)
+      const data = await parse(file)
+      const { errorDatas, successData: recipients } = await detectErrorData(
+        data,
+      )
       dispatch(setFileName(file.name))
       dispatch(addRecipients({ recipients }))
+      dispatch(setErrorDatas({ errorDatas }))
       setLoading(false)
       return false
     },
@@ -71,7 +81,7 @@ const UploadFile = () => {
     fileDownload(file, 'example.csv')
   }
 
-  if (!Object.keys(recipients).length)
+  if (!recipients.length)
     return (
       <Row gutter={[8, 8]} justify="end">
         <Col span={24}>

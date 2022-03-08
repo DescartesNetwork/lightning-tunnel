@@ -56,7 +56,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
   // const dispatch = useDispatch<AppDispatch>()
   const {
     main: { fileName },
-    recipients: { recipients },
+    recipients: { recipients, errorDatas },
   } = useSelector((state: AppState) => state)
   const [selected, setSelected] = useState(false)
   const [activeKey, setActiveKey] = useState<string>()
@@ -139,6 +139,24 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                       onChecked={onSelectAll}
                     />
                   </Col>
+                  {errorDatas?.map(([address, email, amount], idx) => (
+                    <Col
+                      span={24}
+                      key={address + idx}
+                      className={
+                        idx === errorDatas.length ? 'last-item-error-data' : ''
+                      }
+                    >
+                      <AccountInfo
+                        accountAddress={address}
+                        email={email}
+                        amount={amount}
+                        selected={selected}
+                        onChecked={onSelected}
+                        index={idx}
+                      />
+                    </Col>
+                  ))}
                   {recipients.map(([address, email, amount], idx) => (
                     <Col span={24} key={address + idx}>
                       <AccountInfo

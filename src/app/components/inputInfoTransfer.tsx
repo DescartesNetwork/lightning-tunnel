@@ -17,7 +17,7 @@ import ModalConfirm from 'app/components/modalConfirm'
 import { AppState } from 'app/model'
 
 import useMintDecimals from 'shared/hooks/useMintDecimals'
-import { addRecipient, RecipientInfo } from 'app/model/manual.controller'
+import { addRecipient, RecipientInfo } from 'app/model/recipients.controller'
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',

@@ -7,7 +7,7 @@ import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
 import { onSelectMethod } from 'app/model/main.controller'
-import { removeRecipients } from 'app/model/manual.controller'
+import { removeRecipients } from 'app/model/recipients.controller'
 
 const Action = () => {
   const dispatch = useDispatch<AppDispatch>()

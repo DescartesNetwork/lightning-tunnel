@@ -16,7 +16,7 @@ import {
   addRecipients,
   RecipientInfos,
   removeRecipients,
-} from 'app/model/manual.controller'
+} from 'app/model/recipients.controller'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {

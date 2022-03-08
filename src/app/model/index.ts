@@ -4,7 +4,7 @@ import { devTools, bigintSerializationMiddleware } from 'shared/devTools'
 import main from 'app/model/main.controller'
 import steps from 'app/model/steps.controller'
 import setting from 'app/model/setting.controller'
-import manual from 'app/model/manual.controller'
+import manual from 'app/model/recipients.controller'
 
 /**
  * Isolated store

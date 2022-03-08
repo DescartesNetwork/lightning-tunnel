@@ -16,7 +16,7 @@ export type Recipients = {
  * Store constructor
  */
 
-const NAME = 'manual'
+const NAME = 'recipients'
 const initialState: Recipients = {
   recipients: [],
 }

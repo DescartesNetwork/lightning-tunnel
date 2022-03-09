@@ -53,7 +53,6 @@ const ConfirmTransfer = () => {
       mintSelected,
     )
     const { amount } = accounts[accountAddress] || {}
-    console.log(amount)
     if (!amount) return setBalance(0)
     if (decimal) return setBalance(Number(amount))
     setBalance(Number(utils.undecimalize(amount, mintDecimals)))
@@ -67,8 +66,6 @@ const ConfirmTransfer = () => {
   useEffect(() => {
     getBalanceAccount()
   }, [getBalanceAccount])
-
-  console.log(balance)
 
   return (
     <Card bordered={false}>

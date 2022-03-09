@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-// import { account } from '@senswap/sen-js'
 
 /**
  * Interface & Utility
@@ -28,9 +27,8 @@ const initialState: Recipients = {
  */
 export const addRecipients = createAsyncThunk<
   Recipients,
-  { recipients: RecipientInfos },
-  { state: any }
->(`${NAME}/addRecipients`, async ({ recipients }, { getState }) => {
+  { recipients: RecipientInfos }
+>(`${NAME}/addRecipients`, async ({ recipients }) => {
   return { recipients }
 })
 
@@ -79,36 +77,34 @@ export const setErrorDatas = createAsyncThunk<
   return { errorDatas }
 })
 
-// export const mergeRecipient = createAsyncThunk<
-//   Recipients,
-//   { recipient: RecipientInfo },
-//   { state: any }
-// >(`${NAME}/mergeRecipient`, async ({ recipient }, { getState }) => {
-//   const {
-//     recipients: { recipients },
-//   } = getState()
+export const mergeRecipient = createAsyncThunk<
+  Recipients,
+  { listIndex: number[] },
+  { state: any }
+>(`${NAME}/mergeRecipient`, async ({ listIndex }, { getState }) => {
+  const {
+    recipients: { recipients },
+  } = getState()
+  const baseData = [...recipients]
+  let mergeRecipient: RecipientInfo = ['', '', '']
 
-//   const { walletAddress, amount: newAmount } = recipient
-//   const newRecipients = { ...recipients }
+  for (let i = listIndex.length - 1; i >= 0; i--)
+    baseData.splice(listIndex[i], 1)
 
-//   const { amount: oldAmount } = newRecipients[walletAddress]
-//   const amount = Number(oldAmount) + Number(newAmount)
-//   newRecipients[walletAddress] = {
-//     ...newRecipients[walletAddress],
-//     amount,
-//   }
+  let sum = 0
 
-//   return { recipients: newRecipients }
-// })
+  for (const index of listIndex) {
+    const [address, email, amount] = recipients[index]
 
-// export const deleteRecipient = createAsyncThunk(
-//   `${NAME}/deleteRecipient`,
-//   async ({ walletAddress }: { walletAddress: string }) => {
-//     if (!account.isAddress(walletAddress))
-//       throw new Error('Invalid order address')
-//     return { walletAddress }
-//   },
-// )
+    console.log(recipients[index])
+    sum += Number(amount)
+    mergeRecipient = [address, email, sum.toString()]
+  }
+
+  baseData.push(mergeRecipient)
+
+  return { recipients: baseData }
+})
 
 /**
  * Usual procedure
@@ -134,6 +130,10 @@ const slice = createSlice({
       )
       .addCase(
         setErrorDatas.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        mergeRecipient.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

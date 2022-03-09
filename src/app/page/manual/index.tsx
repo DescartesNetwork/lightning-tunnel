@@ -10,20 +10,26 @@ import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
+import { mergeRecipient } from 'app/model/recipients.controller'
 
 const ActionButton = ({
   isSelect,
   setSelect,
+  merge,
 }: {
+  merge: () => void
   isSelect: boolean
   setSelect: (value: boolean) => void
 }) => {
+  const {
+    recipients: { recipients },
+  } = useSelector((state: AppState) => state)
   return (
     <Fragment>
       {isSelect ? (
         <Row>
           <Col flex="auto">
-            <Button style={{ padding: 0 }} type="text">
+            <Button onClick={merge} style={{ padding: 0 }} type="text">
               Merge
             </Button>
           </Col>
@@ -38,13 +44,15 @@ const ActionButton = ({
           </Col>
         </Row>
       ) : (
-        <Button
-          onClick={() => setSelect(true)}
-          style={{ padding: 0 }}
-          type="text"
-        >
-          Select
-        </Button>
+        recipients.length >= 2 && (
+          <Button
+            onClick={() => setSelect(true)}
+            style={{ padding: 0 }}
+            type="text"
+          >
+            Select
+          </Button>
+        )
       )}
     </Fragment>
   )
@@ -62,6 +70,21 @@ const Manual = () => {
     dispatch(onSelectStep(Step.zero))
   }, [dispatch])
 
+  const merge = () => {
+    const list = [0, 1]
+    const ADDRESS_IDX = 0
+
+    for (const idx of list) {
+      if (recipients[idx][ADDRESS_IDX] !== recipients[list[0]][ADDRESS_IDX])
+        return window.notify({
+          type: 'error',
+          description: "Can't merge different wallet addresses!",
+        })
+    }
+
+    return dispatch(mergeRecipient({ listIndex: [0, 1] }))
+  }
+
   return (
     <Card className="card-priFi" bordered={false}>
       <Row gutter={[32, 32]}>
@@ -72,17 +95,21 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
-                {recipients.length >= 2 && (
+                {
                   <Col
                     span={24}
                     style={{ textAlign: !select ? 'right' : 'unset' }}
                   >
-                    <ActionButton isSelect={select} setSelect={setSelect} />
+                    <ActionButton
+                      merge={merge}
+                      isSelect={select}
+                      setSelect={setSelect}
+                    />
                   </Col>
-                )}
+                }
                 {recipients &&
                   recipients.map(([walletAddress, email, amount], index) => (
-                    <Col span={24} key={walletAddress}>
+                    <Col span={24} key={walletAddress + index}>
                       <InputInfoTransfer
                         email={email}
                         amount={amount}

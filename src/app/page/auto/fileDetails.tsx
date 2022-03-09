@@ -11,6 +11,7 @@ import IonIcon from 'shared/antd/ionicon'
 import AccountInfo from './accountInfo'
 import { CollapseAddNew } from 'app/constants'
 import { addRecipients, setErrorDatas } from 'app/model/recipients.controller'
+import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
 
 const ActionButton = ({
   activeKey = '',
@@ -56,50 +57,33 @@ const ActionButton = ({
 const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    main: { fileName },
+    main: { fileName, selectedFile },
     recipients: { recipients, errorDatas },
   } = useSelector((state: AppState) => state)
   const [selected, setSelected] = useState(false)
   const [activeKey, setActiveKey] = useState<string>()
   const [loading, setLoading] = useState(false)
-  const [listWalletPos, setListWalletPos] = useState<number[]>([])
 
-  const onSelected = (checked: boolean, index: number) => {
-    const nextWalletPos = [...listWalletPos]
-    if (checked) nextWalletPos.push(index)
-    else {
-      const idx = nextWalletPos.indexOf(index)
-      nextWalletPos.splice(idx, 1)
-    }
-    return setListWalletPos(nextWalletPos)
-  }
-  const onSelectAll = (checked: boolean) => {
-    const nextRecipients = [...recipients]
-    const nextErrorDatas = [...(errorDatas || [])]
-    if (!checked) return setListWalletPos([])
-    const selectedAll = []
-    for (const idx in nextRecipients) selectedAll.push(Number(idx))
-    for (const idxError in nextErrorDatas)
-      selectedAll.push(nextRecipients.length + Number(idxError))
-    return setListWalletPos(selectedAll)
-  }
+  const onSelected = (checked: boolean, index: number) =>
+    dispatch(onSelectedFile({ checked, index }))
 
-  const onDelete = async () => {
-    if (!listWalletPos.length) return
+  const onDelete = () => {
+    if (!selectedFile?.length) return
     setLoading(true)
     const nextRecipients = [...recipients]
     const nextErrorDatas = [...(errorDatas || [])]
 
     const filterRecipient = nextRecipients.filter(
-      (_, idx) => !listWalletPos.includes(idx),
+      (_, idx) => !selectedFile.includes(idx),
     )
+    // Index of error data in listWalletPos begin from recipients.length
     const filterErrorData = nextErrorDatas.filter(
-      (_, idx) => !listWalletPos.includes(recipients.length + idx),
+      (_, idx) => !selectedFile.includes(recipients.length + idx),
     )
 
     dispatch(setErrorDatas({ errorDatas: filterErrorData }))
     dispatch(addRecipients({ recipients: filterRecipient }))
-    setListWalletPos([])
+    dispatch(removeSelectedFile())
     setLoading(false)
   }
 
@@ -137,7 +121,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                 size="small"
                 icon={<IonIcon name="trash-outline" />}
                 onClick={onDelete}
-                disabled={!listWalletPos.length}
+                disabled={!selectedFile?.length}
               >
                 Delete
               </Button>
@@ -169,7 +153,9 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                   <Col span={24}>
                     <AccountInfoHeader
                       selected={selected}
-                      onChecked={onSelectAll}
+                      onChecked={(checked) =>
+                        dispatch(onSelectedFile({ checked }))
+                      }
                     />
                   </Col>
                   {errorDatas?.map(([address, email, amount], idx) => (
@@ -188,7 +174,6 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
-                        walletsSelected={listWalletPos}
                         index={recipients.length + idx}
                       />
                     </Col>
@@ -201,7 +186,6 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
-                        walletsSelected={listWalletPos}
                         index={idx}
                       />
                     </Col>

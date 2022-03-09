@@ -5,7 +5,7 @@ import fileDownload from 'js-file-download'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 
-import { setDecimalized, setFileName } from 'app/model/main.controller'
+import { setFileName } from 'app/model/main.controller'
 import FileDetails from './fileDetails'
 
 import iconUpload from 'app/static/images/icon-upload.svg'
@@ -44,7 +44,6 @@ const UploadFile = () => {
   const upload = useCallback(
     async (file: any) => {
       setLoading(true)
-      dispatch(setDecimalized(false))
       const data = await parse(file)
       const { errorDatas, successData: recipients } = await detectErrorData(
         data,

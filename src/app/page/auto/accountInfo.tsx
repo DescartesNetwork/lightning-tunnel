@@ -20,7 +20,6 @@ import { AppState } from 'app/model'
 type AccountInfoProps = {
   accountAddress?: string
   selected?: boolean
-  walletsSelected?: number[]
   email?: string
   amount?: number | string
   index: number
@@ -60,7 +59,6 @@ const AccountInfo = ({
   email = '',
   amount = 0,
   selected = false,
-  walletsSelected = [],
   onChecked = () => {},
   index,
 }: AccountInfoProps) => {
@@ -70,6 +68,7 @@ const AccountInfo = ({
   const [nextAmount, setNextAmount] = useState('')
   const {
     recipients: { errorDatas },
+    main: { selectedFile },
   } = useSelector((state: AppState) => state)
 
   const editable = !amount || !email
@@ -93,7 +92,7 @@ const AccountInfo = ({
             <Space>
               {selected && (
                 <Checkbox
-                  checked={walletsSelected.includes(index)}
+                  checked={selectedFile?.includes(index)}
                   onChange={(e) => onChecked(e.target.checked, index)}
                 />
               )}

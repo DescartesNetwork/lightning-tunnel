@@ -12,10 +12,14 @@ import { account, utils } from '@senswap/sen-js'
 import { Button, Checkbox, Col, Input, Row } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import ModalConfirm from 'app/components/modalConfirm'
 import { AppState } from 'app/model'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
-import { addRecipient, RecipientInfo } from 'app/model/recipients.controller'
+import {
+  addRecipient,
+  addRecipients,
+  RecipientInfo,
+  RecipientInfos,
+} from 'app/model/recipients.controller'
 import { toBigInt } from 'app/shared/utils'
 
 type InputInfoTransferProps = {
@@ -36,10 +40,12 @@ const ActionButton = ({
   walletAddress,
   disabledBtn,
   addNewRecipient,
+  remove,
 }: {
   walletAddress?: string
   disabledBtn: boolean
   addNewRecipient: () => void
+  remove: () => void
 }) => {
   return (
     <Fragment>
@@ -48,7 +54,7 @@ const ActionButton = ({
           type="text"
           size="small"
           style={{ padding: 0 }}
-          // onClick={() => dispatch(deleteRecipient({ walletAddress }))}
+          onClick={remove}
           icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
         />
       ) : (
@@ -75,9 +81,9 @@ const InputInfoTransfer = ({
   isSelect = false,
 }: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
-  const [visible, setVisible] = useState(false)
   const {
     main: { mintSelected },
+    recipients: { recipients },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
   const mintDecimal = useMintDecimals(mintSelected) || 0
@@ -104,11 +110,12 @@ const InputInfoTransfer = ({
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
-  const onMerge = () => {
-    setVisible(false)
-    return setRecipient(DEFAULT_RECIPIENT)
+  const remove = () => {
+    if (index === undefined) return
+    const nextData: RecipientInfos = [...recipients]
+    nextData.splice(index, 1)
+    return dispatch(addRecipients({ recipients: nextData }))
   }
-
   const disabledBtn = useMemo(() => {
     const { amount, walletAddress, email } = formInput
     if (!amount || !account.isAddress(walletAddress) || !email) return true
@@ -124,8 +131,6 @@ const InputInfoTransfer = ({
   useEffect(() => {
     recipientInfo()
   }, [recipientInfo])
-
-  console.log('amount: ', amount)
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between" wrap={false}>
@@ -168,17 +173,10 @@ const InputInfoTransfer = ({
             addNewRecipient={addNewRecipient}
             disabledBtn={disabledBtn}
             walletAddress={walletAddress}
+            remove={remove}
           />
         </Col>
       )}
-      <ModalConfirm
-        visible={visible}
-        closeModal={setVisible}
-        title="Do you want to merge a wallet address?"
-        description={`There are 2 identical wallet addresses`}
-        textButtonConfirm="Merge"
-        onConfirm={onMerge}
-      />
     </Row>
   )
 }

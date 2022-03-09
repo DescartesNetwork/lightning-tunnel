@@ -7,8 +7,7 @@ import {
   useState,
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { account } from '@senswap/sen-js'
-import util from '@senswap/sen-js/dist/utils'
+import { account, utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Input, Row } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -17,18 +16,19 @@ import ModalConfirm from 'app/components/modalConfirm'
 import { AppState } from 'app/model'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { addRecipient, RecipientInfo } from 'app/model/recipients.controller'
+import { toBigInt } from 'app/shared/utils'
 
 type InputInfoTransferProps = {
   walletAddress?: string
   email?: string
-  amount?: number
+  amount?: string
   index?: number
   isSelect?: boolean
 }
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
-  amount: 0,
+  amount: '',
   email: '',
 }
 
@@ -77,7 +77,6 @@ const InputInfoTransfer = ({
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
   const [visible, setVisible] = useState(false)
   const {
-    setting: { decimal },
     main: { mintSelected },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
@@ -96,7 +95,11 @@ const InputInfoTransfer = ({
 
   const addNewRecipient = () => {
     const { walletAddress, email, amount } = formInput
-    const recipient: RecipientInfo = [walletAddress, email, amount]
+    const recipient: RecipientInfo = [
+      walletAddress,
+      email,
+      utils.decimalize(amount, mintDecimal).toString(),
+    ]
     dispatch(addRecipient({ recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
@@ -113,13 +116,16 @@ const InputInfoTransfer = ({
   }, [formInput])
 
   const disabledInput = walletAddress ? true : false
-  const actualAmount = decimal
-    ? Number(util.decimalize(formInput.amount, mintDecimal))
-    : formInput.amount
+
+  const display = !toBigInt(amount || '')
+    ? amount
+    : utils.undecimalize(toBigInt(amount || ''), mintDecimal)
 
   useEffect(() => {
     recipientInfo()
   }, [recipientInfo])
+
+  console.log('amount: ', amount)
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between" wrap={false}>
@@ -149,7 +155,7 @@ const InputInfoTransfer = ({
       <Col span={6}>
         <Input
           disabled={disabledInput}
-          value={formInput.amount === 0 ? '' : actualAmount}
+          value={amount ? display : formInput.amount}
           name="amount"
           placeholder="Amount"
           onChange={onChange}

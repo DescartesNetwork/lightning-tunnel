@@ -5,7 +5,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
  * Interface & Utility
  */
 
-export type RecipientInfo = [string, string, number]
+export type RecipientInfo = [string, string, string]
 
 export type RecipientInfos = Array<RecipientInfo>
 

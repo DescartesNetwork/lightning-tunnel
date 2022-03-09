@@ -21,6 +21,7 @@ import {
   RecipientInfos,
 } from 'app/model/recipients.controller'
 import { toBigInt } from 'app/shared/utils'
+import { onSelectedFile } from 'app/model/main.controller'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -82,7 +83,7 @@ const InputInfoTransfer = ({
 }: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
   const {
-    main: { mintSelected },
+    main: { mintSelected, selectedFile },
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
@@ -91,6 +92,9 @@ const InputInfoTransfer = ({
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setRecipient({ ...formInput, [e.target.name]: e.target.value })
   }
+
+  const onSelected = (checked: boolean, index?: number) =>
+    dispatch(onSelectedFile({ checked, index }))
 
   const recipientInfo = useCallback(async () => {
     if (account.isAddress(walletAddress) && amount && email) {
@@ -136,7 +140,10 @@ const InputInfoTransfer = ({
     <Row gutter={[8, 8]} align="middle" justify="space-between" wrap={false}>
       {isSelect && (
         <Col>
-          <Checkbox />
+          <Checkbox
+            checked={selectedFile?.includes(index as number)}
+            onChange={(e) => onSelected(e.target.checked, index)}
+          />
         </Col>
       )}
       <Col span={8}>

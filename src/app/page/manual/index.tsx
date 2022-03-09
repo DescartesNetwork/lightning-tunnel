@@ -8,7 +8,7 @@ import CardTotal from 'app/components/cardTotal'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
-import { onSelectMethod } from 'app/model/main.controller'
+import { onSelectMethod, removeSelectedFile } from 'app/model/main.controller'
 import { Step } from 'app/constants'
 import { mergeRecipient } from 'app/model/recipients.controller'
 
@@ -63,6 +63,7 @@ const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     recipients: { recipients },
+    main: { selectedFile },
   } = useSelector((state: AppState) => state)
 
   const onBack = useCallback(async () => {
@@ -71,18 +72,22 @@ const Manual = () => {
   }, [dispatch])
 
   const merge = () => {
-    const list = [0, 1]
+    console.log(selectedFile, 1)
+    if (!selectedFile?.length) return
     const ADDRESS_IDX = 0
 
-    for (const idx of list) {
-      if (recipients[idx][ADDRESS_IDX] !== recipients[list[0]][ADDRESS_IDX])
+    for (const idx of selectedFile) {
+      if (
+        recipients[idx][ADDRESS_IDX] !==
+        recipients[selectedFile[0]][ADDRESS_IDX]
+      )
         return window.notify({
           type: 'error',
           description: "Can't merge different wallet addresses!",
         })
     }
-
-    return dispatch(mergeRecipient({ listIndex: [0, 1] }))
+    dispatch(mergeRecipient({ listIndex: selectedFile }))
+    return dispatch(removeSelectedFile())
   }
 
   return (
@@ -95,30 +100,27 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
-                {
-                  <Col
-                    span={24}
-                    style={{ textAlign: !select ? 'right' : 'unset' }}
-                  >
-                    <ActionButton
-                      merge={merge}
+                <Col
+                  span={24}
+                  style={{ textAlign: !select ? 'right' : 'unset' }}
+                >
+                  <ActionButton
+                    merge={merge}
+                    isSelect={select}
+                    setSelect={setSelect}
+                  />
+                </Col>
+                {recipients?.map(([walletAddress, email, amount], index) => (
+                  <Col span={24} key={walletAddress + index}>
+                    <InputInfoTransfer
+                      email={email}
+                      amount={amount}
+                      walletAddress={walletAddress}
+                      index={index}
                       isSelect={select}
-                      setSelect={setSelect}
                     />
                   </Col>
-                }
-                {recipients &&
-                  recipients.map(([walletAddress, email, amount], index) => (
-                    <Col span={24} key={walletAddress + index}>
-                      <InputInfoTransfer
-                        email={email}
-                        amount={amount}
-                        walletAddress={walletAddress}
-                        index={index}
-                        isSelect={select}
-                      />
-                    </Col>
-                  ))}
+                ))}
                 {!select && (
                   <Col span={24}>
                     <InputInfoTransfer />

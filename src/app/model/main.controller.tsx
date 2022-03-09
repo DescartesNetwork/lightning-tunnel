@@ -61,7 +61,7 @@ export const onSelectedFile = createAsyncThunk<
   } = getState()
 
   // on select all
-  if (!index) {
+  if (index === undefined) {
     const nextRecipients = [...recipients]
     const nextErrorDatas = [...(errorDatas || [])]
     if (!checked) return { selectedFile: [] }
@@ -78,6 +78,7 @@ export const onSelectedFile = createAsyncThunk<
     const idx = nextSelected.indexOf(index)
     nextSelected.splice(idx, 1)
   }
+  console.log(checked, index, nextSelected, 1)
   return { selectedFile: nextSelected }
 })
 export const removeSelectedFile = createAsyncThunk(

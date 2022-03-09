@@ -101,7 +101,7 @@ export const mergeRecipient = createAsyncThunk<
     mergeRecipient = [address, email, sum.toString()]
   }
 
-  baseData.push(mergeRecipient)
+  baseData.unshift(mergeRecipient)
 
   return { recipients: baseData }
 })

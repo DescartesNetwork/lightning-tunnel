@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
@@ -10,7 +10,11 @@ import { AppDispatch, AppState } from 'app/model'
 import IonIcon from 'shared/antd/ionicon'
 import AccountInfo from './accountInfo'
 import { CollapseAddNew } from 'app/constants'
-import { addRecipients, setErrorDatas } from 'app/model/recipients.controller'
+import {
+  addRecipients,
+  mergeRecipient,
+  setErrorDatas,
+} from 'app/model/recipients.controller'
 import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
 
 const ActionButton = ({
@@ -87,6 +91,37 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
     setLoading(false)
   }
 
+  // Need to merge
+  const duplicated = useMemo(() => {
+    if (!recipients?.length) return false
+    const duplicatedElements = recipients.filter(([address], index) => {
+      const expectedIndex = recipients.findIndex(
+        ([expectedAddress]) => address === expectedAddress,
+      )
+      return expectedIndex !== index && expectedIndex > -1
+    })
+    if (duplicatedElements.length > 0) return true
+    return false
+  }, [recipients])
+
+  const onMerge = () => {
+    if (!duplicated || !selectedFile) return
+    const ADDRESS_IDX = 0
+
+    for (const idx of selectedFile) {
+      if (
+        recipients[idx][ADDRESS_IDX] !==
+        recipients[selectedFile[0]][ADDRESS_IDX]
+      )
+        return window.notify({
+          type: 'error',
+          description: "Can't merge different wallet addresses!",
+        })
+    }
+    dispatch(mergeRecipient({ listIndex: selectedFile }))
+    return dispatch(removeSelectedFile())
+  }
+
   return (
     <Row gutter={[16, 16]}>
       <Col span={24}>
@@ -116,15 +151,26 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
         <Row gutter={[12, 12]}>
           <Col flex="auto">
             {selected && (
-              <Button
-                type="text"
-                size="small"
-                icon={<IonIcon name="trash-outline" />}
-                onClick={onDelete}
-                disabled={!selectedFile?.length}
-              >
-                Delete
-              </Button>
+              <Space>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<IonIcon name="trash-outline" />}
+                  onClick={onDelete}
+                  disabled={!selectedFile?.length}
+                >
+                  Delete
+                </Button>
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<IonIcon name="trash-outline" />}
+                  onClick={onMerge}
+                  disabled={!selectedFile?.length && !duplicated}
+                >
+                  Merge
+                </Button>
+              </Space>
             )}
           </Col>
           <Col>

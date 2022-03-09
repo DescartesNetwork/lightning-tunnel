@@ -62,34 +62,44 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
   const [selected, setSelected] = useState(false)
   const [activeKey, setActiveKey] = useState<string>()
   const [loading, setLoading] = useState(false)
-  const [walletsSelected, setWalletsSeletectd] = useState<number[]>([])
+  const [listWalletPos, setListWalletPos] = useState<number[]>([])
 
   const onSelected = (checked: boolean, index: number) => {
-    const nextWalletsSelected = [...walletsSelected]
-    if (checked) nextWalletsSelected.push(index)
+    const nextWalletPos = [...listWalletPos]
+    if (checked) nextWalletPos.push(index)
     else {
-      const idx = nextWalletsSelected.indexOf(index)
-      nextWalletsSelected.splice(idx, 1)
+      const idx = nextWalletPos.indexOf(index)
+      nextWalletPos.splice(idx, 1)
     }
-    return setWalletsSeletectd(nextWalletsSelected)
+    return setListWalletPos(nextWalletPos)
   }
-  const onSelectAll = (checked: boolean) => {}
+  const onSelectAll = (checked: boolean) => {
+    const nextRecipients = [...recipients]
+    const nextErrorDatas = [...(errorDatas || [])]
+    if (!checked) return setListWalletPos([])
+    const selectedAll = []
+    for (const idx in nextRecipients) selectedAll.push(Number(idx))
+    for (const idxError in nextErrorDatas)
+      selectedAll.push(nextRecipients.length + Number(idxError))
+    return setListWalletPos(selectedAll)
+  }
 
   const onDelete = async () => {
-    if (!walletsSelected.length) return
+    if (!listWalletPos.length) return
     setLoading(true)
     const nextRecipients = [...recipients]
     const nextErrorDatas = [...(errorDatas || [])]
 
-    walletsSelected.forEach((idx) => {
-      const recipientLength = nextRecipients.length
-      if (idx >= recipientLength)
-        nextErrorDatas?.splice(idx - recipientLength, 1)
-      nextRecipients.splice(idx, 1)
-    })
-    dispatch(setErrorDatas({ errorDatas: nextErrorDatas }))
-    dispatch(addRecipients({ recipients: nextRecipients }))
-    setWalletsSeletectd([])
+    const filterRecipient = nextRecipients.filter(
+      (_, idx) => !listWalletPos.includes(idx),
+    )
+    const filterErrorData = nextErrorDatas.filter(
+      (_, idx) => !listWalletPos.includes(recipients.length + idx),
+    )
+
+    dispatch(setErrorDatas({ errorDatas: filterErrorData }))
+    dispatch(addRecipients({ recipients: filterRecipient }))
+    setListWalletPos([])
     setLoading(false)
   }
 
@@ -127,6 +137,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                 size="small"
                 icon={<IonIcon name="trash-outline" />}
                 onClick={onDelete}
+                disabled={!listWalletPos.length}
               >
                 Delete
               </Button>
@@ -177,7 +188,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
-                        walletsSelected={walletsSelected}
+                        walletsSelected={listWalletPos}
                         index={recipients.length + idx}
                       />
                     </Col>
@@ -190,7 +201,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
-                        walletsSelected={walletsSelected}
+                        walletsSelected={listWalletPos}
                         index={idx}
                       />
                     </Col>

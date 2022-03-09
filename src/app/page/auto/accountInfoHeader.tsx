@@ -1,19 +1,23 @@
 import { Checkbox, Col, Row, Space, Typography } from 'antd'
+import { AppState } from 'app/model'
+import { useSelector } from 'react-redux'
 
 type AccountInfoHeaderProps = {
   selected?: boolean
-  error?: boolean
   onChecked?: (checked: boolean) => void
 }
 
 const AccountInfoHeader = ({
   selected = false,
-  error = false,
   onChecked = () => {},
 }: AccountInfoHeaderProps) => {
+  const {
+    recipients: { errorDatas },
+  } = useSelector((state: AppState) => state)
+
   return (
-    <Row gutter={0} align="middle" justify="space-between" wrap={false}>
-      <Col style={{ minWidth: 40 }}>
+    <Row gutter={8} align="middle" justify="space-between" wrap={false}>
+      <Col style={{ minWidth: 60 }}>
         <Space>
           {selected && (
             <Checkbox onChange={(e) => onChecked(e.target.checked)} />
@@ -21,16 +25,16 @@ const AccountInfoHeader = ({
           <Typography.Text type="secondary">No.</Typography.Text>
         </Space>
       </Col>
-      <Col style={{ minWidth: 140 }}>
+      <Col style={{ minWidth: 150 }}>
         <Typography.Title level={5}>Wallet address</Typography.Title>
       </Col>
       <Col style={{ minWidth: 150 }}>
         <Typography.Title level={5}>Email</Typography.Title>
       </Col>
-      <Col>
+      <Col style={{ minWidth: 140 }}>
         <Typography.Title level={5}>Amount</Typography.Title>
       </Col>
-      {error && <Col style={{ minWidth: 70 }} />}
+      {!!errorDatas?.length && <Col style={{ minWidth: 70 }} />}
     </Row>
   )
 }

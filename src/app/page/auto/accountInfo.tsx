@@ -89,7 +89,7 @@ const AccountInfo = ({
           justify="space-between"
           wrap={false}
         >
-          <Col style={{ minWidth: 40 }}>
+          <Col style={{ minWidth: 60 }}>
             <Space>
               {selected && (
                 <Checkbox
@@ -100,7 +100,7 @@ const AccountInfo = ({
               <Typography.Text type="secondary">#{index + 1}</Typography.Text>
             </Space>
           </Col>
-          <Col style={{ minWidth: 140 }}>
+          <Col style={{ minWidth: 150 }}>
             <Tooltip title={accountAddress}>
               <Typography.Text>
                 {shortenAddress(accountAddress)}
@@ -115,7 +115,7 @@ const AccountInfo = ({
               disabled={!isEdited}
             />
           </Col>
-          <Col>
+          <Col style={{ minWidth: 140, textAlign: 'right' }}>
             <Input
               value={amountValue}
               bordered={false}

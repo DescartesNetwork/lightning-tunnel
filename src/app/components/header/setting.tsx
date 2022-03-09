@@ -4,7 +4,8 @@ import { useDispatch } from 'react-redux'
 import IonIcon from 'shared/antd/ionicon'
 
 import { AppDispatch } from 'app/model'
-import { setDecimal, setEncryption } from 'app/model/setting.controller'
+import { setEncryption } from 'app/model/setting.controller'
+import SwitchDecimal from './switch'
 
 const Content = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -12,9 +13,7 @@ const Content = () => {
     <Row gutter={[8, 8]}>
       <Col span={24}>
         <Space size={24}>
-          <Switch
-            onChange={(checked: boolean) => dispatch(setDecimal(checked))}
-          />
+          <SwitchDecimal />
           Decimals
         </Space>
       </Col>

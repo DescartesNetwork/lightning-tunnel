@@ -11,6 +11,8 @@ import { onSelectStep } from 'app/model/steps.controller'
 import { onSelectMethod, removeSelectedFile } from 'app/model/main.controller'
 import { Step } from 'app/constants'
 import { mergeRecipient } from 'app/model/recipients.controller'
+import IonIcon from 'shared/antd/ionicon'
+import useCanMerge from 'app/hooks/useCanMerge'
 
 const ActionButton = ({
   isSelect,
@@ -29,7 +31,12 @@ const ActionButton = ({
       {isSelect ? (
         <Row>
           <Col flex="auto">
-            <Button onClick={merge} style={{ padding: 0 }} type="text">
+            <Button
+              icon={<IonIcon name="git-branch-outline" />}
+              onClick={merge}
+              style={{ padding: 0 }}
+              type="text"
+            >
               Merge
             </Button>
           </Col>
@@ -61,6 +68,7 @@ const ActionButton = ({
 const Manual = () => {
   const [select, setSelect] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
+  const canMerge = useCanMerge()
   const {
     recipients: { recipients },
     main: { selectedFile },
@@ -72,20 +80,13 @@ const Manual = () => {
   }, [dispatch])
 
   const merge = () => {
-    console.log(selectedFile, 1)
     if (!selectedFile?.length) return
-    const ADDRESS_IDX = 0
+    if (!canMerge)
+      return window.notify({
+        type: 'error',
+        description: "Can't merge different wallet addresses & emails!",
+      })
 
-    for (const idx of selectedFile) {
-      if (
-        recipients[idx][ADDRESS_IDX] !==
-        recipients[selectedFile[0]][ADDRESS_IDX]
-      )
-        return window.notify({
-          type: 'error',
-          description: "Can't merge different wallet addresses!",
-        })
-    }
     dispatch(mergeRecipient({ listIndex: selectedFile }))
     return dispatch(removeSelectedFile())
   }

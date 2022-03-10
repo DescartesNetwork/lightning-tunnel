@@ -12,7 +12,7 @@ const Content = ({
   mintAddress,
 }: {
   label: string
-  value: number
+  value: number | string
   mintAddress?: string
 }) => {
   return (

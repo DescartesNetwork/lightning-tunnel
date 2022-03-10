@@ -7,6 +7,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 export type Setting = {
   decimal: boolean
   encryption: boolean
+  disabled: boolean
 }
 
 /**
@@ -15,8 +16,9 @@ export type Setting = {
 
 const NAME = 'setting'
 const initialState: Setting = {
-  decimal: false,
+  decimal: true,
   encryption: false,
+  disabled: false,
 }
 
 /**
@@ -37,6 +39,13 @@ export const setEncryption = createAsyncThunk(
   },
 )
 
+export const setDisabled = createAsyncThunk(
+  `${NAME}/setDisabled`,
+  async (disabled: boolean) => {
+    return { disabled }
+  },
+)
+
 /**
  * Usual procedure
  */
@@ -53,6 +62,10 @@ const slice = createSlice({
       )
       .addCase(
         setEncryption.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setDisabled.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

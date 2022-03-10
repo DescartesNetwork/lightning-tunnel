@@ -78,7 +78,6 @@ export const onSelectedFile = createAsyncThunk<
     const idx = nextSelected.indexOf(index)
     nextSelected.splice(idx, 1)
   }
-  console.log(checked, index, nextSelected, 1)
   return { selectedFile: nextSelected }
 })
 export const removeSelectedFile = createAsyncThunk(

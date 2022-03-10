@@ -85,18 +85,18 @@ export const mergeRecipient = createAsyncThunk<
   const {
     recipients: { recipients },
   } = getState()
-  const baseData = [...recipients]
+  let baseData = [...recipients]
   let mergeRecipient: RecipientInfo = ['', '', '']
 
-  for (let i = listIndex.length - 1; i >= 0; i--)
-    baseData.splice(listIndex[i], 1)
+  baseData = baseData.filter(function (value, index) {
+    return listIndex.indexOf(index) === -1
+  })
 
   let sum = 0
 
   for (const index of listIndex) {
     const [address, email, amount] = recipients[index]
 
-    console.log(recipients[index])
     sum += Number(amount)
     mergeRecipient = [address, email, sum.toString()]
   }

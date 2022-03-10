@@ -7,21 +7,21 @@ import {
   useState,
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { account, utils } from '@senswap/sen-js'
+import { account } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Input, Row } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { AppState } from 'app/model'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import {
   addRecipient,
   addRecipients,
   RecipientInfo,
   RecipientInfos,
 } from 'app/model/recipients.controller'
-import { toBigInt } from 'app/shared/utils'
 import { onSelectedFile } from 'app/model/main.controller'
+import NumericInput from 'shared/antd/numericInput'
+import { setDecimal } from 'app/model/setting.controller'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -83,15 +83,16 @@ const InputInfoTransfer = ({
 }: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
   const {
-    main: { mintSelected, selectedFile },
+    main: { selectedFile },
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
-  const mintDecimal = useMintDecimals(mintSelected) || 0
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setRecipient({ ...formInput, [e.target.name]: e.target.value })
   }
+
+  const onAmount = (val: string) => setRecipient({ ...formInput, amount: val })
 
   const onSelected = (checked: boolean, index?: number) =>
     dispatch(onSelectedFile({ checked, index }))
@@ -103,14 +104,13 @@ const InputInfoTransfer = ({
     return setRecipient(DEFAULT_RECIPIENT)
   }, [walletAddress, amount, email])
 
-  const addNewRecipient = () => {
+  const addNewRecipient = async () => {
     const { walletAddress, email, amount } = formInput
-    const recipient: RecipientInfo = [
-      walletAddress,
-      email,
-      utils.decimalize(amount, mintDecimal).toString(),
-    ]
-    dispatch(addRecipient({ recipient }))
+    if (Number(amount) % 1 !== 0) await dispatch(setDecimal(true))
+
+    const recipient: RecipientInfo = [walletAddress, email, amount]
+
+    await dispatch(addRecipient({ recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
@@ -127,10 +127,6 @@ const InputInfoTransfer = ({
   }, [formInput])
 
   const disabledInput = walletAddress ? true : false
-
-  const display = !toBigInt(amount || '')
-    ? amount
-    : utils.undecimalize(toBigInt(amount || ''), mintDecimal)
 
   useEffect(() => {
     recipientInfo()
@@ -165,13 +161,12 @@ const InputInfoTransfer = ({
         />
       </Col>
       <Col span={6}>
-        <Input
+        <NumericInput
           disabled={disabledInput}
-          value={amount ? display : formInput.amount}
+          value={amount ? amount : formInput.amount}
           name="amount"
           placeholder="Amount"
-          onChange={onChange}
-          type="number"
+          onValue={onAmount}
         />
       </Col>
       {!isSelect && (

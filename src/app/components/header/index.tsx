@@ -1,8 +1,28 @@
+import { useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
 import { Col, Divider, Row, Space, Typography } from 'antd'
-import PoweredBySentre from 'app/components/poweredBySentre'
 import Setting from './setting'
 
+import PoweredBySentre from 'app/components/poweredBySentre'
+import { AppState } from 'app/model'
+import { setDisabled } from 'app/model/setting.controller'
+
 const Header = ({ label }: { label: string }) => {
+  const { recipients } = useSelector((state: AppState) => state.recipients)
+  const dispatch = useDispatch()
+
+  const checkDisableDecimal = useCallback(() => {
+    for (const recipient of recipients) {
+      if (Number(recipient[2]) % 1 !== 0) return dispatch(setDisabled(true))
+    }
+    return dispatch(setDisabled(false))
+  }, [dispatch, recipients])
+
+  useEffect(() => {
+    checkDisableDecimal()
+  }, [checkDisableDecimal])
+
   return (
     <Row>
       <Col flex="auto">

@@ -5,7 +5,7 @@ import { utils } from '@senswap/sen-js'
 import moment from 'moment'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
-import PoweredBySentre from 'app/components/poweredBySentre'
+import Header from 'app/components/header'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
@@ -60,7 +60,7 @@ const ConfirmTransfer = () => {
 
   const remainingBalance = useMemo(() => {
     if (!balance) return 0
-    return Number(balance) - total
+    return Number(balance) - Number(total)
   }, [balance, total])
 
   useEffect(() => {
@@ -71,14 +71,7 @@ const ConfirmTransfer = () => {
     <Card bordered={false}>
       <Row gutter={[32, 32]}>
         <Col span={24}>
-          <Row>
-            <Col flex="auto">
-              <Typography.Title level={5}>Confirm transfer</Typography.Title>
-            </Col>
-            <Col>
-              <PoweredBySentre />
-            </Col>
-          </Row>
+          <Header label="Confirm transfer" />
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]} justify="center">

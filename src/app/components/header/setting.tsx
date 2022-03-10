@@ -1,6 +1,6 @@
-import { Col, Popover, Row, Space, Switch } from 'antd'
 import { useDispatch } from 'react-redux'
 
+import { Col, Popover, Row, Space, Switch } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { AppDispatch } from 'app/model'
@@ -9,6 +9,7 @@ import SwitchDecimal from './switch'
 
 const Content = () => {
   const dispatch = useDispatch<AppDispatch>()
+
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
@@ -38,7 +39,7 @@ const Setting = () => {
         title={null}
         content={<Content />}
       >
-        <IonIcon name="cog-outline" />
+        <IonIcon style={{ cursor: 'pointer' }} name="cog-outline" />
       </Popover>
     </div>
   )

@@ -16,6 +16,7 @@ import {
   setErrorDatas,
 } from 'app/model/recipients.controller'
 import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
+import useCanMerge from 'app/hooks/useCanMerge'
 
 const ActionButton = ({
   activeKey = '',
@@ -59,14 +60,15 @@ const ActionButton = ({
 }
 
 const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
+  const [selected, setSelected] = useState(false)
+  const [activeKey, setActiveKey] = useState<string>()
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
     main: { fileName, selectedFile },
     recipients: { recipients, errorDatas },
   } = useSelector((state: AppState) => state)
-  const [selected, setSelected] = useState(false)
-  const [activeKey, setActiveKey] = useState<string>()
-  const [loading, setLoading] = useState(false)
+  const canMerge = useCanMerge()
 
   const onSelected = (checked: boolean, index: number) =>
     dispatch(onSelectedFile({ checked, index }))
@@ -106,18 +108,12 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
 
   const onMerge = () => {
     if (!duplicated || !selectedFile) return
-    const ADDRESS_IDX = 0
+    if (!canMerge)
+      return window.notify({
+        type: 'error',
+        description: "Can't merge different wallet addresses & emails!",
+      })
 
-    for (const idx of selectedFile) {
-      if (
-        recipients[idx][ADDRESS_IDX] !==
-        recipients[selectedFile[0]][ADDRESS_IDX]
-      )
-        return window.notify({
-          type: 'error',
-          description: "Can't merge different wallet addresses!",
-        })
-    }
     dispatch(mergeRecipient({ listIndex: selectedFile }))
     return dispatch(removeSelectedFile())
   }
@@ -164,7 +160,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                 <Button
                   type="text"
                   size="small"
-                  icon={<IonIcon name="trash-outline" />}
+                  icon={<IonIcon name="git-branch-outline" />}
                   onClick={onMerge}
                   disabled={!selectedFile?.length && !duplicated}
                 >

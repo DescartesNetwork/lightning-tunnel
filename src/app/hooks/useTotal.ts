@@ -32,9 +32,9 @@ const useTotal = () => {
   )
 
   const editedSuccData =
-    errorDatas?.filter(
-      (data) => !data.includes('') || !account.isAddress(data[0]),
-    ) || []
+    errorDatas?.filter((data) => {
+      return !data.includes('') && account.isAddress(data[0])
+    }) || []
   const recipientTotal = calculateTotal(recipients)
   const editedDataTotal = calculateTotal(editedSuccData)
   const editedDataLength = editedSuccData?.length

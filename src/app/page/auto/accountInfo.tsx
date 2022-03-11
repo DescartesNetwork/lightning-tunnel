@@ -51,7 +51,15 @@ const AlertIcon = ({
       </Tooltip>
     )
   if (editable)
-    return <IonIcon name="alert-circle-outline" style={{ color: '#D72311' }} />
+    return (
+      <Tooltip
+        title="Invalid email or amount!"
+        placement="topLeft"
+        arrowPointAtCenter
+      >
+        <IonIcon name="alert-outline" style={{ color: '#d72311' }} />
+      </Tooltip>
+    )
   return <IonIcon name="checkmark-outline" style={{ color: '#03A326' }} />
 }
 

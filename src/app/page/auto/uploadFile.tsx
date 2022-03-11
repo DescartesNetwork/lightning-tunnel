@@ -18,6 +18,7 @@ import {
   removeRecipients,
   setErrorDatas,
 } from 'app/model/recipients.controller'
+import { account } from '@senswap/sen-js'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {
@@ -36,8 +37,12 @@ const UploadFile = () => {
   } = useSelector((state: AppState) => state)
 
   const detectErrorData = (data: RecipientInfos) => {
-    const errorDatas = data.filter((recipient) => recipient.includes(''))
-    const successData = data.filter((recipient) => !recipient.includes(''))
+    const errorDatas = data.filter(
+      (recipient) => recipient.includes('') || !account.isAddress(recipient[0]),
+    )
+    const successData = data.filter(
+      (recipient) => !recipient.includes('') && account.isAddress(recipient[0]),
+    )
     return { errorDatas, successData }
   }
 

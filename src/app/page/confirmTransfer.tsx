@@ -36,7 +36,6 @@ const ConfirmTransfer = () => {
   const [balance, setBalance] = useState(0)
   const {
     main: { mintSelected },
-    setting: { decimal },
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -54,9 +53,8 @@ const ConfirmTransfer = () => {
     )
     const { amount } = accounts[accountAddress] || {}
     if (!amount) return setBalance(0)
-    if (decimal) return setBalance(Number(amount))
-    setBalance(Number(utils.undecimalize(amount, mintDecimals)))
-  }, [accounts, decimal, mintDecimals, mintSelected, walletAddress])
+    return setBalance(Number(utils.undecimalize(amount, mintDecimals)))
+  }, [accounts, mintDecimals, mintSelected, walletAddress])
 
   const remainingBalance = useMemo(() => {
     if (!balance) return 0

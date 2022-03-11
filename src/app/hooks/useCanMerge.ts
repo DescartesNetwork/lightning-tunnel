@@ -13,7 +13,7 @@ const useCanMerge = () => {
   } = useSelector((state: AppState) => state)
 
   const checkCanMerge = useCallback(() => {
-    if (!selectedFile?.length) return
+    if (!selectedFile?.length || !recipients.length) return
     for (const idx of selectedFile) {
       if (
         recipients[idx][ADDRESS_IDX] !==

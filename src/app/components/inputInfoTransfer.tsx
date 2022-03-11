@@ -9,7 +9,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 
-import { Button, Checkbox, Col, Input, Row } from 'antd'
+import { Button, Checkbox, Col, Input, Row, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { AppState } from 'app/model'
@@ -21,7 +21,6 @@ import {
 } from 'app/model/recipients.controller'
 import { onSelectedFile } from 'app/model/main.controller'
 import NumericInput from 'shared/antd/numericInput'
-import { setDecimal } from 'app/model/setting.controller'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -82,6 +81,7 @@ const InputInfoTransfer = ({
   isSelect = false,
 }: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
+  const [error, setError] = useState(false)
   const {
     main: { selectedFile },
     recipients: { recipients },
@@ -106,10 +106,10 @@ const InputInfoTransfer = ({
 
   const addNewRecipient = async () => {
     const { walletAddress, email, amount } = formInput
-    if (Number(amount) % 1 !== 0) await dispatch(setDecimal(true))
+    if (Number(amount) % 1 !== 0) return setError(true)
 
     const recipient: RecipientInfo = [walletAddress, email, amount]
-
+    setError(false)
     await dispatch(addRecipient({ recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
@@ -133,7 +133,7 @@ const InputInfoTransfer = ({
   }, [recipientInfo])
 
   return (
-    <Row gutter={[8, 8]} align="middle" justify="space-between" wrap={false}>
+    <Row gutter={[8, 8]} align="middle" justify="space-between">
       {isSelect && (
         <Col>
           <Checkbox
@@ -177,6 +177,13 @@ const InputInfoTransfer = ({
             walletAddress={walletAddress}
             remove={remove}
           />
+        </Col>
+      )}
+      {error && (
+        <Col span={24}>
+          <Typography.Text type="danger">
+            Should be natural numbers
+          </Typography.Text>
         </Col>
       )}
     </Row>

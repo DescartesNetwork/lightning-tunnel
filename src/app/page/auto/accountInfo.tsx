@@ -163,7 +163,7 @@ const AccountInfo = ({
           <Col style={{ minWidth: 150 }}>
             <Input
               value={emailValue}
-              bordered={false}
+              bordered={isEdited}
               onChange={(e) => setNextEmail(e.target.value)}
               disabled={!isEdited}
             />
@@ -171,7 +171,7 @@ const AccountInfo = ({
           <Col style={{ minWidth: 140, textAlign: 'right' }}>
             <Input
               value={amountValue}
-              bordered={false}
+              bordered={isEdited}
               onChange={(e) => setNextAmount(e.target.value)}
               disabled={!isEdited}
             />

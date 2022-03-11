@@ -7,7 +7,7 @@ export type MethodType = {
   methodSelected?: number
   mintSelected: string
   fileName?: string
-  selectedFile?: number[]
+  selectedFile: number[]
 }
 
 /**

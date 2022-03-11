@@ -162,7 +162,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                   size="small"
                   icon={<IonIcon name="git-branch-outline" />}
                   onClick={onMerge}
-                  disabled={!selectedFile?.length && !duplicated}
+                  disabled={!selectedFile?.length && duplicated}
                 >
                   Merge
                 </Button>

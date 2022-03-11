@@ -13,6 +13,7 @@ const Header = ({ label }: { label: string }) => {
   const dispatch = useDispatch()
 
   const checkDisableDecimal = useCallback(() => {
+    if (!recipients.length) return
     for (const recipient of recipients) {
       if (Number(recipient[2]) % 1 !== 0) return dispatch(setDisabled(true))
     }

@@ -26,13 +26,13 @@ const AccountInfoHeader = ({
         </Space>
       </Col>
       <Col style={{ minWidth: 150 }}>
-        <Typography.Title level={5}>Wallet address</Typography.Title>
+        <Typography.Text type="secondary">Wallet address</Typography.Text>
       </Col>
       <Col style={{ minWidth: 150 }}>
-        <Typography.Title level={5}>Email</Typography.Title>
+        <Typography.Text type="secondary">Email</Typography.Text>
       </Col>
       <Col style={{ minWidth: 140 }}>
-        <Typography.Title level={5}>Amount</Typography.Title>
+        <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
       {!!errorDatas?.length && <Col style={{ minWidth: 70 }} />}
     </Row>

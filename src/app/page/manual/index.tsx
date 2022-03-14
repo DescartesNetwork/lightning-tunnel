@@ -10,7 +10,10 @@ import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { onSelectMethod, removeSelectedFile } from 'app/model/main.controller'
 import { Step } from 'app/constants'
-import { mergeRecipient } from 'app/model/recipients.controller'
+import {
+  mergeRecipient,
+  removeRecipients,
+} from 'app/model/recipients.controller'
 import IonIcon from 'shared/antd/ionicon'
 import useCanMerge from 'app/hooks/useCanMerge'
 
@@ -76,10 +79,11 @@ const Manual = () => {
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
+    await dispatch(removeRecipients())
     dispatch(onSelectStep(Step.zero))
   }, [dispatch])
 
-  const merge = () => {
+  const merge = async () => {
     if (!selectedFile?.length) return
     if (!canMerge)
       return window.notify({
@@ -87,7 +91,7 @@ const Manual = () => {
         description: "Can't merge different wallet addresses & emails!",
       })
 
-    dispatch(mergeRecipient({ listIndex: selectedFile }))
+    await dispatch(mergeRecipient({ listIndex: selectedFile }))
     return dispatch(removeSelectedFile())
   }
 
@@ -111,17 +115,18 @@ const Manual = () => {
                     setSelect={setSelect}
                   />
                 </Col>
-                {recipients?.map(([walletAddress, email, amount], index) => (
-                  <Col span={24} key={walletAddress + index}>
-                    <InputInfoTransfer
-                      email={email}
-                      amount={amount}
-                      walletAddress={walletAddress}
-                      index={index}
-                      isSelect={select}
-                    />
-                  </Col>
-                ))}
+                {recipients &&
+                  recipients.map(([walletAddress, email, amount], index) => (
+                    <Col span={24} key={walletAddress + index}>
+                      <InputInfoTransfer
+                        email={email}
+                        amount={amount}
+                        walletAddress={walletAddress}
+                        index={index}
+                        isSelect={select}
+                      />
+                    </Col>
+                  ))}
                 {!select && (
                   <Col span={24}>
                     <InputInfoTransfer />

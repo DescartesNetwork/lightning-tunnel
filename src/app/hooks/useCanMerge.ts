@@ -13,14 +13,14 @@ const useCanMerge = () => {
   } = useSelector((state: AppState) => state)
 
   const canMerge = useMemo(() => {
-    if (!selectedFile.length) return false
+    if (!selectedFile.length || !recipients) return false
 
-    let defaultData = recipients?.[selectedFile[0]]
+    let defaultData = recipients[selectedFile[0]]
     if (!defaultData) return false
 
     for (const idx of selectedFile) {
       if (
-        idx > recipients.length ||
+        !recipients[idx] ||
         recipients[idx][ADDRESS_IDX] !== defaultData[ADDRESS_IDX] ||
         recipients[idx][EMAIL_IDX] !== defaultData[EMAIL_IDX]
       )

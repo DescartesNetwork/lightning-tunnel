@@ -65,7 +65,7 @@ export const getRecipient = createAsyncThunk<
 export const removeRecipients = createAsyncThunk(
   `${NAME}/removeRecipients`,
   async () => {
-    return { recipients: {} }
+    return { recipients: [] }
   },
 )
 

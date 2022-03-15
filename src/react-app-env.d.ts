@@ -27,6 +27,7 @@ interface Window {
   Slope: any
   solflare: any
   clover_solana: any
+  gapi: any
 }
 
 // For bigint serialization

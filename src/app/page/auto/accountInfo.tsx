@@ -178,16 +178,18 @@ const AccountInfo = ({
           </Col>
           {!!errorDatas?.length && (
             <Col style={{ minWidth: 70 }}>
-              <Space align="center">
-                <AlertIcon editable={editable} wrongAddress={wrongAddress} />
-                <EditButton
-                  isEdited={isEdited}
-                  wrongAddress={wrongAddress}
-                  onEdited={setIsEdited}
-                  onUpdate={onUpdate}
-                  onDelete={onDelete}
-                />
-              </Space>
+              {editable && (
+                <Space align="center">
+                  <AlertIcon editable={editable} wrongAddress={wrongAddress} />
+                  <EditButton
+                    isEdited={isEdited}
+                    wrongAddress={wrongAddress}
+                    onEdited={setIsEdited}
+                    onUpdate={onUpdate}
+                    onDelete={onDelete}
+                  />
+                </Space>
+              )}
             </Col>
           )}
         </Row>

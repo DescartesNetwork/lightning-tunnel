@@ -2,6 +2,7 @@ import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount, useWallet } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
+import { encodeBase64 } from 'tweetnacl-util'
 import moment from 'moment'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
@@ -14,6 +15,7 @@ import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { numeric } from 'shared/util'
 import useTotal from 'app/hooks/useTotal'
+import { TransferData, signCheques, Cheque, keyPair } from 'app/lib/cryptoKey'
 
 const Content = ({
   label = '',
@@ -34,8 +36,10 @@ const Content = ({
 
 const ConfirmTransfer = () => {
   const [balance, setBalance] = useState(0)
+  const [listSig, setListSig] = useState<Cheque[]>([])
   const {
     main: { mintSelected },
+    recipients: { recipients },
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -64,6 +68,34 @@ const ConfirmTransfer = () => {
   useEffect(() => {
     getBalanceAccount()
   }, [getBalanceAccount])
+
+  const dataTransfer = useMemo(() => {
+    const transferData: TransferData[] = []
+    recipients.forEach(([address, email, amount]) => {
+      const transfer: TransferData = {
+        src: walletAddress,
+        des: address,
+        amount,
+        email,
+        startDate: moment(new Date()).format('YYYY/MM/DD'),
+        endDate: moment(new Date()).format('YYYY/MM/DD'),
+      }
+      transferData.push(transfer)
+    })
+    return transferData
+  }, [recipients, walletAddress])
+
+  const signDataTransfer = useCallback(() => {
+    if (!dataTransfer) return
+    const signatures = signCheques(dataTransfer)
+    return setListSig(signatures)
+  }, [dataTransfer])
+
+  useEffect(() => {
+    signDataTransfer()
+  }, [signDataTransfer])
+
+  console.log('listSig: ', listSig, encodeBase64(keyPair.publicKey))
 
   return (
     <Card bordered={false}>

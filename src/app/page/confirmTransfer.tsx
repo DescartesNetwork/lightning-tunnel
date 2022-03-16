@@ -2,8 +2,8 @@ import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount, useWallet } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
-import { encodeBase64 } from 'tweetnacl-util'
 import moment from 'moment'
+import { encodeBase64 } from 'tweetnacl-util'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
@@ -15,7 +15,13 @@ import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { numeric } from 'shared/util'
 import useTotal from 'app/hooks/useTotal'
-import { TransferData, signCheques, Cheque, keyPair } from 'app/lib/cryptoKey'
+import {
+  TransferData,
+  signCheques,
+  Cheque,
+  keyPair,
+  verifyCheque,
+} from 'app/lib/cryptoKey'
 
 const Content = ({
   label = '',
@@ -34,6 +40,14 @@ const Content = ({
   )
 }
 
+const data = {
+  amount: '3',
+  des: '6JsMB6PRrgvb847ZDkPMkJaiab826GhyKfCkQxhWzVTd',
+  email: 'tuanlt161099@gmail.com',
+  endDate: '2022/03/16',
+  src: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
+  startDate: '2022/03/16',
+}
 const ConfirmTransfer = () => {
   const [balance, setBalance] = useState(0)
   const [listSig, setListSig] = useState<Cheque[]>([])
@@ -95,7 +109,15 @@ const ConfirmTransfer = () => {
     signDataTransfer()
   }, [signDataTransfer])
 
-  console.log('listSig: ', listSig, encodeBase64(keyPair.publicKey))
+  console.log('listSig: ', listSig, encodeBase64(keyPair.publicKey.toBytes()))
+  console.log('valid')
+
+  const verify = () => {
+    const sig =
+      '30c5c5d06631afe498535366ad2dd9ef7c21de1112ceede7a5aa934ba423c26ffad5542c37733172d9eac91411d131ac5e1a5cdd645b9d53ce215625cc513106'
+    const valid = verifyCheque(data, sig)
+    console.log(valid)
+  }
 
   return (
     <Card bordered={false}>
@@ -178,6 +200,7 @@ const ConfirmTransfer = () => {
               <Button size="large" disabled={false} type="primary" block>
                 Confirm
               </Button>
+              <Button onClick={verify}>verify</Button>
             </Col>
           </Row>
         </Col>

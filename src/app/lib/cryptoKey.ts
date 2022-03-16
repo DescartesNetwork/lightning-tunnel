@@ -1,8 +1,7 @@
 import { sign } from 'tweetnacl'
+import { Keypair } from '@solana/web3.js'
 
-export const key = Buffer.from('6JsMB6PRrgvb847ZDkPMkJaiab826Ghy')
-
-export const keyPair = sign.keyPair()
+export const keyPair = Keypair.generate()
 
 export type TransferData = {
   src: string
@@ -39,6 +38,10 @@ export const signCheques = (data: TransferData[]) => {
 export const verifyCheque = (data: TransferData, sig: string) => {
   const bufSig = Buffer.from(sig, 'hex')
   const newData = Buffer.from(JSON.stringify(data))
-  const valid = sign.detached.verify(newData, bufSig, keyPair.publicKey)
+  const valid = sign.detached.verify(
+    newData,
+    bufSig,
+    keyPair.publicKey.toBytes(),
+  )
   return valid
 }

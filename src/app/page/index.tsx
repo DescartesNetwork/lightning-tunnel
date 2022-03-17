@@ -22,9 +22,9 @@ const Page = () => {
   const redeem = query.get('redeem')
 
   const canRedeem = useCallback(() => {
+    if (!address || !redeem) return
     if (address !== walletAddress)
       return window.notify({ type: 'warning', description: 'Wrong wallet' })
-    if (!redeem) return
     return dispatch(setVisible(true))
   }, [address, dispatch, redeem, walletAddress])
 

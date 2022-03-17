@@ -4,7 +4,9 @@ import { useState } from 'react'
 // Client ID and API key from the Developer Console
 const CLIENT_ID =
   '31485036005-l9hnktj2733p8ehnku49cee8133n25em.apps.googleusercontent.com'
+// '866342197252-20e9quiivp5knc3ka9op77gh1shi55vn.apps.googleusercontent.com'
 const API_KEY = 'AIzaSyBX964_-df77z-oOhH3r3dCVa7OzHOJAoE'
+// 'AIzaSyClIJJzQjRJRa3B1jOBzochadN2ek8_bWo'
 
 // Array of API discovery doc URLs for APIs used by the quickstart
 const DISCOVERY_DOCS = [
@@ -13,13 +15,9 @@ const DISCOVERY_DOCS = [
 
 // Authorization scopes required by the API; multiple scopes can be
 // included, separated by spaces.
-const SCOPES = 'https://www.googleapis.com/auth/gmail.readonly'
+const SCOPES = 'https://www.googleapis.com/auth/gmail.send'
 
-const AuthGmailApi = ({
-  onConnected = () => {},
-}: {
-  onConnected: (isAuth: boolean) => void
-}) => {
+const AuthGmailApi = () => {
   const [isAuth, setIsAuth] = useState(false)
 
   function onAuthorizeGmail() {
@@ -50,7 +48,6 @@ const AuthGmailApi = ({
 
   const onUpdateStatus = (state: boolean) => {
     setIsAuth(state)
-    onConnected(state)
   }
 
   /**

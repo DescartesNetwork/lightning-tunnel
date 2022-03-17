@@ -109,7 +109,7 @@ const SelectInputMethod = () => {
                   className="select-card"
                 >
                   <Row gutter={[12, 12]}>
-                    <Col span={12}>
+                    <Col xs={24} lg={12}>
                       <Radio.Button value={SelectMethod.manual}>
                         <CardOption
                           label="Manual"
@@ -118,7 +118,7 @@ const SelectInputMethod = () => {
                         />
                       </Radio.Button>
                     </Col>
-                    <Col span={12}>
+                    <Col xs={24} lg={12}>
                       <Radio.Button value={SelectMethod.auto}>
                         <CardOption
                           label="Automatic"

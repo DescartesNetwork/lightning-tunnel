@@ -34,13 +34,13 @@ const Page = () => {
 
   return (
     <Row gutter={[24, 24]} justify="center">
-      <Col span={5}>
+      <Col xs={24} lg={5}>
         <StepPriFi />
       </Col>
-      <Col span={10}>
+      <Col xs={24} md={16} lg={10}>
         <Container />
       </Col>
-      <Col span={5} /> {/** safe place */}
+      <Col xs={0} lg={5} /> {/** safe place */}
       <ModalRedeem visible={visible} />
     </Row>
   )

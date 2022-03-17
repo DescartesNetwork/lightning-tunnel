@@ -4,10 +4,10 @@ import { Button, Card, Col, Modal, Row } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { setVisible } from 'app/model/main.controller'
-import { RootDispatch } from 'os/store'
+import { AppDispatch } from 'app/model'
 
 const ModalRedeem = ({ visible }: { visible: boolean }) => {
-  const dispatch = useDispatch<RootDispatch>()
+  const dispatch = useDispatch<AppDispatch>()
   return (
     <Modal
       visible={visible}

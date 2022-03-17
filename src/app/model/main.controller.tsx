@@ -8,6 +8,7 @@ export type MethodType = {
   mintSelected: string
   fileName?: string
   selectedFile: number[]
+  visible: boolean
 }
 
 /**
@@ -20,6 +21,7 @@ const initialState: MethodType = {
   mintSelected: '',
   fileName: '',
   selectedFile: [],
+  visible: false,
 }
 
 /**
@@ -44,6 +46,13 @@ export const onSelectedMint = createAsyncThunk(
   `${NAME}/onSelectedMint`,
   async (mintSelected: string) => {
     return { mintSelected }
+  },
+)
+
+export const setVisible = createAsyncThunk(
+  `${NAME}/setVisible`,
+  async (visible: boolean) => {
+    return { visible }
   },
 )
 
@@ -115,6 +124,10 @@ const slice = createSlice({
       )
       .addCase(
         removeSelectedFile.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setVisible.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

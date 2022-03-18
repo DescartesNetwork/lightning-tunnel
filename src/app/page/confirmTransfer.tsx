@@ -14,8 +14,6 @@ import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { numeric } from 'shared/util'
 import useTotal from 'app/hooks/useTotal'
-import AuthGmailApi from 'app/components/authGmailApi'
-import { onSendMessage } from 'app/helper'
 
 const Content = ({
   label = '',
@@ -67,16 +65,6 @@ const ConfirmTransfer = () => {
   useEffect(() => {
     getBalanceAccount()
   }, [getBalanceAccount])
-
-  const listEmails = recipients.map((item) => item[1])
-  const argsMsg = {
-    from: 'hi@sentre.com',
-    to: listEmails,
-    subject: 'You have many reward. Claim now.',
-    message: `<table style="background: #f7f7f7; border-radius: 8px; padding:32px;margin: 25px auto;" width="350px"><tbody><tr style="text-align: center; margin-bottom: 24px"><td colspan="2"><h4 style="font-family: "open sans", "helvetica neue", sans-serif;margin: 0">Your payment is here.</h4></td></tr><tr style="text-align: center; margin-bottom: 24px"><td colspan="2"><span style="font-size: 14px">You have just received the token, please check the amount and wallet address then click Collect.</span></td></tr><tr><td><span style="color: #7A7B85">Collection deadline</span></td><td style="text-align: right"><span>16 Nov, 2021 16:00</span></td></tr><tr><td><span style="color: #7A7B85">From wallet address</span></td><td style="text-align: right"><span>8r2t...wdsy</span></td></tr></tr><tr><td><span style="color: #7A7B85">Receiving wallet address</span></td><td style="text-align: right"><span>DS8G...9wAv</span></td></tr><tr><td><span style="color: #7A7B85">Amount</span></td><td style="text-align: right"><span style="color: #F9575E; font-size: 20px; line-height: 28px">1000 SNTR</span></td></tr></tr><tr style="text-align: center; margin-top: 24px"><td colspan="2"><a style="color: #fff;background: #F9575E; border-radius: 8px; padding: 9px 16px; text-decoration: unset" href="${window.location.origin}/app/lighting_tunnel?redeem=true&address=${walletAddress}" target="_blank">Collect</a></td></tr></tbody><table/>`,
-
-    // '<div style="display: flex; flex: 0 0 100%; flex-wrap: wrap; gap: 32px; justify-content: center; padding: 32px; width: 350px; margin: 25px auto; border-radius: 24px; box-shadow: 0 0 15px 5px #dadada"><h4 style="margin: 0">Your payment is here!</h4><p style="margin: 0">You have just received the token, please check the amount and wallet address then click Collect.</p><div style="display: flex; width: 100%; flex: 0 0 100%; flex-wrap: wrap; justify-content: space-between;"><span>Collection deadline</span><span>16 Nov, 2021 16:00</span> <div style="width: 100%"></div><span>From wallet address</span> <span>8r2t...wdsy</span><div style="width: 100%"></div><span>Receiving wallet address</span> <span>DS8G...9wAv</span><div style="width: 100%"></div><span>Amount</span> <span>1000 SNTR</span></div><a style="color: #fff;background: #F9575E; border-radius: 8px; padding: 9px 16px; text-decoration: unset" href="http://localhost:3000/app/lighting_tunnel?redeem&" target="_blank">Collect</a></div>',
-  }
 
   return (
     <Card bordered={false}>
@@ -145,9 +133,6 @@ const ConfirmTransfer = () => {
           </Row>
         </Col>
         <Col span={24}>
-          <AuthGmailApi />
-        </Col>
-        <Col span={24}>
           <Row gutter={[8, 8]}>
             <Col span={12}>
               <Button
@@ -161,7 +146,7 @@ const ConfirmTransfer = () => {
             <Col span={12}>
               <Button
                 size="large"
-                onClick={() => onSendMessage(argsMsg)}
+                onClick={() => {}}
                 type="primary"
                 block
                 // disabled={isAuthGmail}

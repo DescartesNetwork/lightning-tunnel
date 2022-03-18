@@ -23,12 +23,11 @@ export const onSendMessage = async (args: GmailMessage) => {
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '')
-  console.log(args, '  <===', encodedMessage, reallyEncodedMessage)
-  const sendRequest = await window.gapi.client.gmail.users.messages.send({
+  const rsSendMsg = await window.gapi.client.gmail.users.messages.send({
     userId: 'me',
     resource: {
       raw: reallyEncodedMessage,
     },
   })
-  console.log(sendRequest, ' send rq')
+  return rsSendMsg
 }

@@ -16,6 +16,7 @@ import configs from 'app/configs'
 import 'app/static/styles/light.less'
 import 'app/static/styles/dark.less'
 import 'app/static/styles/index.less'
+import { AppWatcher } from './watcher'
 
 const {
   manifest: { appId },
@@ -29,7 +30,9 @@ export const Page = () => {
           <AccountProvider>
             <WalletProvider>
               <Provider store={model}>
-                <PageView />
+                <AppWatcher>
+                  <PageView />
+                </AppWatcher>
               </Provider>
             </WalletProvider>
           </AccountProvider>
@@ -52,7 +55,9 @@ export const Widget = () => {
           <AccountProvider>
             <WalletProvider>
               <Provider store={model}>
-                <WidgetView />
+                <AppWatcher>
+                  <WidgetView />
+                </AppWatcher>
               </Provider>
             </WalletProvider>
           </AccountProvider>

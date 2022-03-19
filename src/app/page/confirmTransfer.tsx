@@ -1,19 +1,19 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useAccount, useWallet } from '@senhub/providers'
-import { utils } from '@senswap/sen-js'
 import moment from 'moment'
+import { BN } from '@project-serum/anchor'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
+import { MintSymbol } from 'shared/antd/mint'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
-import { MintSymbol } from 'shared/antd/mint'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { numeric } from 'shared/util'
 import useTotal from 'app/hooks/useTotal'
+import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
+import { generateCsv, notifyError, notifySuccess } from 'app/helper'
 
 const Content = ({
   label = '',
@@ -33,38 +33,35 @@ const Content = ({
 }
 
 const ConfirmTransfer = () => {
-  const [balance, setBalance] = useState(0)
+  const dispatch = useDispatch<AppDispatch>()
   const {
     main: { mintSelected },
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
-  const dispatch = useDispatch<AppDispatch>()
-  const { accounts } = useAccount()
-  const mintDecimals = useMintDecimals(mintSelected) || 0
+  const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const { total, quantity } = useTotal()
-
-  const getBalanceAccount = useCallback(async () => {
-    const { splt } = window.sentre
-    const accountAddress = await splt.deriveAssociatedAddress(
-      walletAddress,
-      mintSelected,
-    )
-    const { amount } = accounts[accountAddress] || {}
-    if (!amount) return setBalance(0)
-    return setBalance(Number(utils.undecimalize(amount, mintDecimals)))
-  }, [accounts, mintDecimals, mintSelected, walletAddress])
 
   const remainingBalance = useMemo(() => {
     if (!balance) return 0
     return Number(balance) - Number(total)
   }, [balance, total])
 
-  useEffect(() => {
-    getBalanceAccount()
-  }, [getBalanceAccount])
+  const onCreateVault = async () => {
+    try {
+      const transferInfo = recipients.map((e) => {
+        return { amount: new BN(1), walletAddress: e[0] }
+      })
+      const { cheques, txId } = await window.lightningTunnel.initializeVault(
+        mintSelected,
+        transferInfo,
+      )
+      const csvFile = generateCsv(cheques)
+      csvFile.download()
+      notifySuccess('Create', txId)
+    } catch (error) {
+      notifyError(error)
+    }
+  }
 
   return (
     <Card bordered={false}>
@@ -146,7 +143,7 @@ const ConfirmTransfer = () => {
             <Col span={12}>
               <Button
                 size="large"
-                onClick={() => {}}
+                onClick={() => onCreateVault()}
                 type="primary"
                 block
                 // disabled={isAuthGmail}

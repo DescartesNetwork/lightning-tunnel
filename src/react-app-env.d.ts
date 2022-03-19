@@ -16,6 +16,7 @@ interface Window {
     splt: import('@senswap/sen-js').SPLT
     swap: import('@senswap/sen-js').Swap
   }
+  lightningTunnel: import('@senswap/lightning-tunnel').default
   // IPFS
   ipfs?: ReturnType<import('ipfs-core').create>
   // Utility

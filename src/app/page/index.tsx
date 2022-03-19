@@ -1,7 +1,5 @@
 import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
-import { useWallet } from '@senhub/providers'
 
 import { Col, Row } from 'antd'
 import ModalRedeem from 'app/components/modalRedeem'
@@ -10,27 +8,36 @@ import Container from './container'
 
 import { AppDispatch, AppState } from 'app/model'
 import { setVisible } from 'app/model/main.controller'
+import { useAppRouter } from 'app/hooks/useAppRoute'
+import { notifyError, notifySuccess } from 'app/helper'
 
 const Page = () => {
   const { visible } = useSelector((state: AppState) => state.main)
   const dispatch = useDispatch<AppDispatch>()
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
-  const query = new URLSearchParams(useLocation().search)
-  const address = query.get('address')
-  const redeem = query.get('redeem')
+  const { getQuery, pushHistory } = useAppRouter()
+  const transferData = getQuery('transferData')
+  const signature = getQuery('signature')
+  const recoveryId = getQuery('recoveryId')
 
-  const canRedeem = useCallback(() => {
-    if (!address || !redeem) return
-    if (address !== walletAddress)
-      return window.notify({ type: 'warning', description: 'Wrong wallet' })
-    return dispatch(setVisible(true))
-  }, [address, dispatch, redeem, walletAddress])
+  const redeem = useCallback(async () => {
+    if (!transferData || !signature || !recoveryId) return
+    try {
+      const { txId } = await window.lightningTunnel.redeem({
+        transferData,
+        signature,
+        recoveryId: Number(recoveryId),
+      })
+      pushHistory('')
+      notifySuccess('Redeem', txId)
+      return dispatch(setVisible(true))
+    } catch (error) {
+      notifyError(error)
+    }
+  }, [dispatch, pushHistory, recoveryId, signature, transferData])
 
   useEffect(() => {
-    canRedeem()
-  }, [canRedeem])
+    redeem()
+  }, [redeem])
 
   return (
     <Row gutter={[24, 24]} justify="center">

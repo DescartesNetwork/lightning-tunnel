@@ -2,6 +2,8 @@ import { ReactNode, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 import { BN } from '@project-serum/anchor'
+import { utils } from '@senswap/sen-js'
+import { ChequeData } from '@senswap/lightning-tunnel/dist/lib/cheque'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
@@ -14,6 +16,8 @@ import { numeric } from 'shared/util'
 import useTotal from 'app/hooks/useTotal'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import { generateCsv, notifyError, notifySuccess } from 'app/helper'
+import { useAppRouter } from 'app/hooks/useAppRoute'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 const Content = ({
   label = '',
@@ -40,23 +44,42 @@ const ConfirmTransfer = () => {
   } = useSelector((state: AppState) => state)
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const { total, quantity } = useTotal()
+  const { appRoute, generateQuery } = useAppRouter()
+  const decimals = useMintDecimals(mintSelected) || 0
 
   const remainingBalance = useMemo(() => {
     if (!balance) return 0
     return Number(balance) - Number(total)
   }, [balance, total])
 
+  const generateChequesCsv = async (cheques: ChequeData[]) => {
+    const csvData = []
+    for (const cheque of cheques) {
+      const redeem_link = `${window.location.origin}${appRoute}?${generateQuery(
+        cheque,
+      )}`
+      const dataTransfer = await window.lightningTunnel.parseTransferData(
+        cheque.transferData,
+      )
+      const address = dataTransfer.dst
+      const amount = dataTransfer.amount.toString()
+      csvData.push({ address, amount, redeem_link })
+    }
+    const csvFile = generateCsv(csvData)
+    csvFile.download()
+  }
+
   const onCreateVault = async () => {
     try {
-      const transferInfo = recipients.map((e) => {
-        return { amount: new BN(1), walletAddress: e[0] }
+      const transferInfo = recipients.map((recipient) => {
+        const amount = utils.decimalize(recipient[2], decimals).toString()
+        return { amount: new BN(amount), walletAddress: recipient[0] }
       })
       const { cheques, txId } = await window.lightningTunnel.initializeVault(
         mintSelected,
         transferInfo,
       )
-      const csvFile = generateCsv(cheques)
-      csvFile.download()
+      await generateChequesCsv(cheques)
       notifySuccess('Create', txId)
     } catch (error) {
       notifyError(error)

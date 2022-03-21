@@ -18,6 +18,7 @@ import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import { generateCsv, notifyError, notifySuccess } from 'app/helper'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { TransferInfo } from '@senswap/lightning-tunnel'
 
 const Content = ({
   label = '',
@@ -61,7 +62,7 @@ const ConfirmTransfer = () => {
       const dataTransfer = await window.lightningTunnel.parseTransferData(
         cheque.transferData,
       )
-      const address = dataTransfer.dst
+      const address = dataTransfer.authority
       const amount = dataTransfer.amount.toString()
       csvData.push({ address, amount, redeem_link })
     }
@@ -71,13 +72,19 @@ const ConfirmTransfer = () => {
 
   const onCreateVault = async () => {
     try {
-      const transferInfo = recipients.map((recipient) => {
+      const transferInfo: TransferInfo[] = recipients.map((recipient) => {
         const amount = utils.decimalize(recipient[2], decimals).toString()
-        return { amount: new BN(amount), walletAddress: recipient[0] }
+        return {
+          amount: new BN(amount),
+          walletAddress: recipient[0],
+          vestingNumber: new BN(0),
+          vestingTime: new BN(0),
+        }
       })
       const { cheques, txId } = await window.lightningTunnel.initializeVault(
         mintSelected,
         transferInfo,
+        { startTime: new BN(0), endTime: new BN(0) },
       )
       await generateChequesCsv(cheques)
       notifySuccess('Create', txId)

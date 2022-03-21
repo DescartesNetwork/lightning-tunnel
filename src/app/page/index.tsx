@@ -1,19 +1,24 @@
-import { useCallback, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useCallback, useEffect, useState } from 'react'
+import { BN } from '@project-serum/anchor'
 
 import { Col, Row } from 'antd'
 import ModalRedeem from 'app/components/modalRedeem'
 import StepPriFi from 'app/components/stepPriFi'
 import Container from './container'
 
-import { AppDispatch, AppState } from 'app/model'
-import { setVisible } from 'app/model/main.controller'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import { notifyError, notifySuccess } from 'app/helper'
 
 const Page = () => {
-  const { visible } = useSelector((state: AppState) => state.main)
-  const dispatch = useDispatch<AppDispatch>()
+  const [redeemData, setRedeemData] = useState<{
+    amount: BN
+    mint: string
+    visible: boolean
+  }>({
+    visible: false,
+    amount: new BN(0),
+    mint: '',
+  })
   const { getQuery, pushHistory } = useAppRouter()
   const transferData = getQuery('transferData')
   const signature = getQuery('signature')
@@ -22,6 +27,17 @@ const Page = () => {
   const redeem = useCallback(async () => {
     if (!transferData || !signature || !recoveryId) return
     try {
+      const { vault } = await window.lightningTunnel.parseTransferData(
+        transferData,
+      )
+      const vaultData = await window.lightningTunnel.getVaultData(vault)
+      const cert = await window.lightningTunnel.deriveCertAddress(vault)
+      let prevAmount = new BN(0)
+      try {
+        const prevCertData = await window.lightningTunnel.getCertData(cert)
+        prevAmount = prevCertData.amount
+      } catch (error) {}
+
       const { txId } = await window.lightningTunnel.redeem({
         transferData,
         signature,
@@ -29,11 +45,16 @@ const Page = () => {
       })
       pushHistory('')
       notifySuccess('Redeem', txId)
-      return dispatch(setVisible(true))
+      const postCertData = await window.lightningTunnel.getCertData(cert)
+      setRedeemData({
+        visible: true,
+        amount: postCertData.amount.sub(prevAmount),
+        mint: vaultData.mint.toBase58(),
+      })
     } catch (error) {
       notifyError(error)
     }
-  }, [dispatch, pushHistory, recoveryId, signature, transferData])
+  }, [pushHistory, recoveryId, signature, transferData])
 
   useEffect(() => {
     redeem()
@@ -48,7 +69,7 @@ const Page = () => {
         <Container />
       </Col>
       <Col xs={0} lg={5} /> {/** safe place */}
-      <ModalRedeem visible={visible} />
+      <ModalRedeem {...redeemData} />
     </Row>
   )
 }

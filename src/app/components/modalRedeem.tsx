@@ -1,15 +1,31 @@
 import { useDispatch } from 'react-redux'
+import { BN } from '@project-serum/anchor'
 
-import { Button, Col, Modal, Row, Image, Space, Typography } from 'antd'
+import { Col, Modal, Row, Image, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { setVisible } from 'app/model/main.controller'
 import { AppDispatch } from 'app/model'
 
 import GIFT from 'app/static/images/gift.svg'
+import { MintSymbol } from 'shared/antd/mint'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
+import util from '@senswap/sen-js/dist/utils'
 
-const ModalRedeem = ({ visible }: { visible: boolean }) => {
+const ModalRedeem = ({
+  visible,
+  amount,
+  mint,
+}: {
+  amount: BN
+  mint: string
+  visible: boolean
+}) => {
   const dispatch = useDispatch<AppDispatch>()
+  const decimals = useMintDecimals(mint) || 0
+
+  const amountUi = util.undecimalize(BigInt(amount.toString()), decimals)
+
   return (
     <Modal
       visible={visible}
@@ -27,15 +43,15 @@ const ModalRedeem = ({ visible }: { visible: boolean }) => {
             <Space size={4}>
               <Typography.Text type="secondary">Let's take</Typography.Text>
               <Typography.Title level={5} style={{ color: '#F9575E' }}>
-                1000 SNTR
+                {amountUi} <MintSymbol mintAddress={mint} />
               </Typography.Title>
             </Space>
           </Space>
         </Col>
         <Col span={24}>
-          <Button type="primary" onClick={() => alert('Có cái nịt mà redeem')}>
+          {/* <Button type="primary" onClick={() => alert('Có cái nịt mà redeem')}>
             Redeem
-          </Button>
+          </Button> */}
         </Col>
       </Row>
     </Modal>

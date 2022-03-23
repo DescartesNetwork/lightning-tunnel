@@ -34,8 +34,8 @@ const ModalRedeem = ({
   const fecthDistributor = useCallback(
     async (distributorAddr: string) => {
       if (!sdk) return
-      const publicKey = account.fromAddress(distributorAddr)
 
+      const publicKey = account.fromAddress(distributorAddr)
       const distributorW = await MerkleDistributorWrapper.load(sdk, publicKey)
 
       return distributorW
@@ -51,10 +51,9 @@ const ModalRedeem = ({
       amount,
       proof,
       clamaint,
-      distributorInfo: { distributor: distributorAddr, distributorATA },
+      distributorInfo: { distributor: distributorAddr },
     } = claimProof
 
-    console.log(distributorATA, 'ata')
     const distributor = await fecthDistributor(distributorAddr)
 
     if (

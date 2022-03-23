@@ -35,8 +35,14 @@ const Page = () => {
     if (!claimData) return
 
     const proofData = decodeData(claimData)
+
     if (proofData?.clamaint !== walletAddress)
       return window.notify({ type: 'warning', description: 'Wrong proof' })
+
+    console.log(
+      proofData.distributorInfo?.distributorATA,
+      ' associated token address',
+    )
     setClaimProof(proofData)
     return dispatch(setVisible(true))
   }, [dispatch, claimData, walletAddress])

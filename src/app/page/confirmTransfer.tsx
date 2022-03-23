@@ -1,8 +1,10 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount, useWallet } from '@senhub/providers'
-import { utils } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
 import moment from 'moment'
+import { NewFormat } from '@saberhq/merkle-distributor/dist/cjs/utils'
+import { u64 } from '@saberhq/token-utils'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
@@ -12,9 +14,12 @@ import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
 import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
-import { numeric } from 'shared/util'
+import { explorer, numeric } from 'shared/util'
 import useTotal from 'app/hooks/useTotal'
-
+import { createSDK } from './index'
+import { utils as MerkleUtils } from '@saberhq/merkle-distributor'
+import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
+// import useAppRouter from 'app/hooks/useAppRoute'
 const Content = ({
   label = '',
   value = '',
@@ -33,7 +38,11 @@ const Content = ({
 }
 
 const ConfirmTransfer = () => {
+  const [loading, setLoading] = useState(false)
   const [balance, setBalance] = useState(0)
+  const [distributorW, setDistributor] = useState('')
+  const [encodeData, setEncodeData] = useState<Record<string, string>>({})
+
   const {
     main: { mintSelected },
     recipients: { recipients },
@@ -45,6 +54,7 @@ const ConfirmTransfer = () => {
   const { accounts } = useAccount()
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total, quantity } = useTotal()
+  // const { appRoute, generateQuery } = useAppRouter()
 
   const getBalanceAccount = useCallback(async () => {
     const { splt } = window.sentre
@@ -61,6 +71,93 @@ const ConfirmTransfer = () => {
     if (!balance) return 0
     return Number(balance) - Number(total)
   }, [balance, total])
+
+  const tree = useMemo(() => {
+    if (!recipients.length) return
+    const balanceTree: NewFormat[] = []
+    Object.values(recipients).forEach(([address, email, amount]) => {
+      balanceTree.push({
+        address,
+        earnings: utils.decimalize(amount, mintDecimals).toString(),
+      })
+    })
+    return MerkleUtils.parseBalanceMap(balanceTree)
+
+    // return new BalanceTree(balanceTree)
+  }, [recipients, mintDecimals])
+
+  const onConfirm = async () => {
+    const sdk = await createSDK()
+    if (!sdk || !account.isAddress(mintSelected) || !tree) return
+
+    const { claims, merkleRoot } = tree
+    console.log('claims: ', claims)
+
+    setLoading(true)
+    try {
+      const publicKey = account.fromAddress(mintSelected)
+      const { tx, distributor, distributorATA } = await sdk.createDistributor({
+        tokenMint: publicKey,
+        root: merkleRoot,
+        maxNumNodes: new u64(quantity),
+        maxTotalClaim: new u64(
+          utils.decimalize(total, mintDecimals).toString(),
+        ),
+      })
+      const pendingTx = await tx.send()
+      await pendingTx.wait()
+      const txId = pendingTx.signature
+
+      console.log(distributor.toBase58(), 'address')
+      console.log(distributorATA.toBase58(), 'ATA')
+      setDistributor(distributor.toBase58())
+
+      window.notify({
+        type: 'success',
+        description: 'Transfer successfully. Click to view details.',
+        onClick: () => window.open(explorer(txId)),
+      })
+    } catch (err: any) {
+      window.notify({ type: 'error', description: err.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const encyptData = () => {
+    if (!tree) return
+    const { claims } = tree
+    const data: Record<string, string> = {}
+    const listClamaint = Object.keys(claims)
+    listClamaint.forEach((clamaint) => {
+      const { amount, index, proof } = claims[clamaint]
+      const newClaim = {
+        index,
+        proof,
+        amount: amount.toString(),
+        clamaint,
+        distributorW,
+      }
+      const encyptD = bs58.encode(new Buffer(JSON.stringify(newClaim)))
+      data[clamaint] = encyptD
+    })
+    setEncodeData(data)
+  }
+
+  // const generateChequesCsv = async (claims: any[]) => {
+  //   const csvData = []
+  //   for (const claim of Object.keys(encodeData)) {
+  //     const redeem_link = `${window.location.origin}${appRoute}?${generateQuery(
+  //       claims[],
+  //     )}`
+
+  //     const address = dataTransfer.authority
+  //     const amount = dataTransfer.amount.toString()
+  //     csvData.push({ address, amount, redeem_link })
+  //   }
+  //   const csvFile = generateCsv(csvData)
+  //   csvFile.download()
+  // }
 
   useEffect(() => {
     getBalanceAccount()
@@ -146,12 +243,29 @@ const ConfirmTransfer = () => {
             <Col span={12}>
               <Button
                 size="large"
-                onClick={() => {}}
+                onClick={onConfirm}
                 type="primary"
+                loading={loading}
                 block
                 // disabled={isAuthGmail}
               >
                 Confirm
+              </Button>
+            </Col>
+            <Col span={12}>
+              <Button
+                // onClick={generateChequesCsv}
+                size="large"
+                type="primary"
+                loading={loading}
+                block
+              >
+                generate csv
+              </Button>
+            </Col>
+            <Col span={12}>
+              <Button onClick={encyptData} size="large" type="primary" block>
+                encryt
               </Button>
             </Col>
           </Row>

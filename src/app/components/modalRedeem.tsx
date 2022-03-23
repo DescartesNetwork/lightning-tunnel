@@ -1,15 +1,92 @@
+import { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { account } from '@senswap/sen-js'
+import { useWallet } from '@senhub/providers'
+import { PublicKey } from '@solana/web3.js'
+import { u64 } from '@saberhq/token-utils'
+import { MerkleDistributorWrapper } from '@saberhq/merkle-distributor'
 
-import { Button, Col, Modal, Row, Image, Space, Typography } from 'antd'
+import { Modal, Image, Space, Typography, Row, Col, Button } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import { setVisible } from 'app/model/main.controller'
+import { ClaimProof } from 'app/helper'
+import { notifySuccess, notifyError } from 'app/helper'
 import { AppDispatch } from 'app/model'
+import { setVisible } from 'app/model/main.controller'
+import useMerkleSDK from 'app/hooks/useMerkleSDK'
 
 import GIFT from 'app/static/images/gift.svg'
 
-const ModalRedeem = ({ visible }: { visible: boolean }) => {
+const ModalRedeem = ({
+  visible,
+  claimProof,
+}: {
+  visible: boolean
+  claimProof?: ClaimProof
+}) => {
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
+  const {
+    wallet: { address: walletAddress },
+  } = useWallet()
+  const sdk = useMerkleSDK()
+
+  const fecthDistributor = useCallback(
+    async (distributorAddr: string) => {
+      if (!sdk) return
+      const publicKey = account.fromAddress(distributorAddr)
+
+      const distributorW = await MerkleDistributorWrapper.load(sdk, publicKey)
+
+      return distributorW
+    },
+    [sdk],
+  )
+
+  const onClaim = useCallback(async () => {
+    if (!claimProof || !claimProof.distributorInfo) return
+
+    const {
+      index,
+      amount,
+      proof,
+      clamaint,
+      distributorInfo: { distributor: distributorAddr, distributorATA },
+    } = claimProof
+
+    console.log(distributorATA, 'ata')
+    const distributor = await fecthDistributor(distributorAddr)
+
+    if (
+      clamaint !== walletAddress ||
+      !account.isAddress(distributorAddr) ||
+      !distributor
+    )
+      return window.notify({ type: 'warning', description: 'Invalid proof' })
+    setLoading(true)
+    try {
+      const { isClaimed } = await distributor.getClaimStatus(new u64(index))
+      if (isClaimed)
+        return window.notify({ type: 'error', description: 'You have clamied' })
+    } catch (err) {}
+
+    const bufferProof = Buffer.from(proof[0].data)
+    const tx = await distributor.claim({
+      index: new u64(index),
+      amount: new u64(amount),
+      proof: [bufferProof],
+      claimant: new PublicKey(walletAddress),
+    })
+    try {
+      const { signature } = await tx.confirm()
+      return notifySuccess('Claim successfully', signature)
+    } catch (err) {
+      notifyError(err)
+    } finally {
+      setLoading(false)
+    }
+  }, [claimProof, fecthDistributor, walletAddress])
+
   return (
     <Modal
       visible={visible}
@@ -33,7 +110,7 @@ const ModalRedeem = ({ visible }: { visible: boolean }) => {
           </Space>
         </Col>
         <Col span={24}>
-          <Button type="primary" onClick={() => alert('Có cái nịt mà redeem')}>
+          <Button type="primary" onClick={onClaim} loading={loading}>
             Redeem
           </Button>
         </Col>

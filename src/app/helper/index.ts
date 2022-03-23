@@ -1,6 +1,9 @@
 import { ReactNode } from 'react'
-import { explorer } from 'shared/util'
 import CryptoJS from 'crypto-js'
+import { MerkleDistributorInfo } from '@saberhq/merkle-distributor/dist/cjs/utils'
+import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
+
+import { explorer } from 'shared/util'
 
 type GmailMessage = {
   from: string
@@ -8,6 +11,21 @@ type GmailMessage = {
   subject: string
   message: string | ReactNode
 }
+
+export type DistributorInfo = {
+  distributor: string
+  distributorATA: string
+}
+
+export type ClaimProof = {
+  index: number
+  amount: string
+  proof: any
+  clamaint: string
+  distributorInfo?: DistributorInfo
+}
+
+type EncodeData = Record<string, string>
 
 export const onSendMessage = async (args: GmailMessage) => {
   const { from, to, subject, message } = args
@@ -110,4 +128,32 @@ export const decryptKey = (walletAddress: string, encryptData: string) => {
   } catch (error) {
     console.log(error)
   }
+}
+
+export const encodeData = (
+  tree: MerkleDistributorInfo,
+  distributorInfo: DistributorInfo,
+): EncodeData => {
+  if (!tree) return {}
+  const { claims } = tree
+  const data: EncodeData = {}
+  const listClamaint = Object.keys(claims)
+  listClamaint.forEach((clamaint) => {
+    const { amount, index, proof } = claims[clamaint]
+    const newClaim = {
+      index,
+      proof,
+      amount: amount.toString(),
+      clamaint,
+      distributorInfo,
+    }
+    const encyptD = bs58.encode(new Buffer(JSON.stringify(newClaim)))
+    data[clamaint] = encyptD
+  })
+  return data
+}
+
+export const decodeData = (data: string): ClaimProof => {
+  const bufData = bs58.decode(data)
+  return JSON.parse(new Buffer(bufData).toString())
 }

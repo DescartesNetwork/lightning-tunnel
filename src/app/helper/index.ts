@@ -1,16 +1,8 @@
-import { ReactNode } from 'react'
 import CryptoJS from 'crypto-js'
 import { MerkleDistributorInfo } from '@saberhq/merkle-distributor/dist/cjs/utils'
 import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
 
 import { explorer } from 'shared/util'
-
-type GmailMessage = {
-  from: string
-  to: string[]
-  subject: string
-  message: string | ReactNode
-}
 
 export type DistributorInfo = {
   distributor: string
@@ -21,36 +13,11 @@ export type ClaimProof = {
   index: number
   amount: string
   proof: any
-  clamaint: string
+  claimant: string
   distributorInfo?: DistributorInfo
 }
 
-type EncodeData = Record<string, string>
-
-export const onSendMessage = async (args: GmailMessage) => {
-  const { from, to, subject, message } = args
-  const msg =
-    `From: ${from}\r\n` +
-    `To: ${to.toString()}\r\n` +
-    'Content-Type: text/html; charset=utf-8\r\n' +
-    `Subject: ${subject}\r\n\r\n` +
-    message
-
-  // The body needs to be base64url encoded.
-  const encodedMessage = window.btoa(msg)
-
-  const reallyEncodedMessage = encodedMessage
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
-  const rsSendMsg = await window.gapi.client.gmail.users.messages.send({
-    userId: 'me',
-    resource: {
-      raw: reallyEncodedMessage,
-    },
-  })
-  return rsSendMsg
-}
+export type EncodeData = Record<string, string>
 
 export const notifySuccess = (content: string, txId: string) => {
   return window.notify({
@@ -137,18 +104,18 @@ export const encodeData = (
   if (!tree) return {}
   const { claims } = tree
   const data: EncodeData = {}
-  const listClamaint = Object.keys(claims)
-  listClamaint.forEach((clamaint) => {
-    const { amount, index, proof } = claims[clamaint]
+  const listClaimant = Object.keys(claims)
+  listClaimant.forEach((claimant) => {
+    const { amount, index, proof } = claims[claimant]
     const newClaim = {
       index,
       proof,
       amount: amount.toString(),
-      clamaint,
+      claimant,
       distributorInfo,
     }
     const encyptD = bs58.encode(new Buffer(JSON.stringify(newClaim)))
-    data[clamaint] = encyptD
+    data[claimant] = encyptD
   })
   return data
 }

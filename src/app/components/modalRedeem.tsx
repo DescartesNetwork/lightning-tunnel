@@ -31,7 +31,7 @@ const ModalRedeem = ({
   } = useWallet()
   const sdk = useMerkleSDK()
 
-  const fecthDistributor = useCallback(
+  const fetchDistributor = useCallback(
     async (distributorAddr: string) => {
       if (!sdk) return
 
@@ -50,14 +50,14 @@ const ModalRedeem = ({
       index,
       amount,
       proof,
-      clamaint,
+      claimant,
       distributorInfo: { distributor: distributorAddr },
     } = claimProof
 
-    const distributor = await fecthDistributor(distributorAddr)
+    const distributor = await fetchDistributor(distributorAddr)
 
     if (
-      clamaint !== walletAddress ||
+      claimant !== walletAddress ||
       !account.isAddress(distributorAddr) ||
       !distributor
     )
@@ -85,7 +85,7 @@ const ModalRedeem = ({
     } finally {
       setLoading(false)
     }
-  }, [claimProof, dispatch, fecthDistributor, walletAddress])
+  }, [claimProof, dispatch, fetchDistributor, walletAddress])
 
   return (
     <Modal

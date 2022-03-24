@@ -16,7 +16,7 @@ type ClaimProof = {
   index: number
   amount: string
   proof: any
-  clamaint: string
+  claimant: string
 }
 
 const Page = () => {
@@ -29,14 +29,14 @@ const Page = () => {
   } = useWallet()
   const dispatch = useDispatch<AppDispatch>()
   const query = new URLSearchParams(useLocation().search)
-  const claimData = query.get('claim-proof')
+  const claimData = query.get('redeem')
 
   const canRedeem = useCallback(() => {
     if (!claimData) return
 
     const proofData = decodeData(claimData)
 
-    if (proofData?.clamaint !== walletAddress)
+    if (proofData?.claimant !== walletAddress)
       return window.notify({ type: 'warning', description: 'Wrong proof' })
 
     console.log(

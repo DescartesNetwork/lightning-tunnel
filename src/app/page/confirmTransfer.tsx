@@ -18,7 +18,8 @@ import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'app/hooks/useTotal'
 import useMerkleSDK from 'app/hooks/useMerkleSDK'
-import { encodeData } from 'app/helper'
+import { EncodeData, encodeData, generateCsv } from 'app/helper'
+import { useAppRouter } from 'app/hooks/useAppRoute'
 
 const Content = ({
   label = '',
@@ -40,6 +41,7 @@ const Content = ({
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
   const [balance, setBalance] = useState(0)
+  const [dataEncoded, setDataEncoded] = useState<EncodeData>({})
   const {
     main: { mintSelected },
     recipients: { recipients },
@@ -52,6 +54,7 @@ const ConfirmTransfer = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total, quantity } = useTotal()
   const sdk = useMerkleSDK()
+  const { appRoute, generateQuery } = useAppRouter()
 
   const getBalanceAccount = useCallback(async () => {
     const { splt } = window.sentre
@@ -79,62 +82,82 @@ const ConfirmTransfer = () => {
       })
     })
     return MerkleUtils.parseBalanceMap(balanceTree)
-
-    // return new BalanceTree(balanceTree)
   }, [recipients, mintDecimals])
 
-  const onConfirm = useCallback(async () => {
+  const generateChequesCsv = async () => {
+    if (!tree) return
+    const { claims } = tree
+    const csvData = []
+    for (const address of Object.keys(dataEncoded)) {
+      const redeem_link = `${window.location.origin}${appRoute}?${generateQuery(
+        { redeem: dataEncoded[address] },
+      )}`
+
+      const amount = utils.undecimalize(
+        BigInt(claims[address].amount.toString()),
+        mintDecimals,
+      )
+      csvData.push({ address, amount, redeem_link })
+    }
+    const csvFile = generateCsv(csvData)
+    csvFile.download()
+  }
+
+  const onConfirm = async () => {
     if (!sdk || !account.isAddress(mintSelected) || !tree) return
 
     const { merkleRoot } = tree
     setLoading(true)
     try {
+      const { splt, wallet } = window.sentre
+      if (!wallet) throw Error('Please connect wallet')
+
+      const maxTotalClaim = utils.decimalize(total, mintDecimals).toString()
       const publicKey = account.fromAddress(mintSelected)
+
       const { tx, distributor, distributorATA } = await sdk.createDistributor({
         tokenMint: publicKey,
         root: merkleRoot,
         maxNumNodes: new u64(quantity),
-        maxTotalClaim: new u64(
-          utils.decimalize(total, mintDecimals).toString(),
-        ),
+        maxTotalClaim: new u64(maxTotalClaim),
       })
       const pendingTx = await tx.send()
       await pendingTx.wait()
-      const txId = pendingTx.signature
+
       const distributorInfo = {
         distributor: distributor.toBase58(),
         distributorATA: distributorATA.toBase58(),
       }
 
       const data = encodeData(tree, distributorInfo)
-      console.log(data)
+      setDataEncoded(data)
+
+      // Transfer token to DistributorATA
+      const srcAddress = await splt.deriveAssociatedAddress(
+        walletAddress,
+        mintSelected,
+      )
+
+      const { txId: txIdTransfer } = await splt.transfer(
+        BigInt(maxTotalClaim),
+        srcAddress,
+        distributorInfo.distributorATA,
+        wallet,
+      )
+
+      await generateChequesCsv()
 
       return window.notify({
         type: 'success',
         description: 'Transfer successfully. Click to view details.',
-        onClick: () => window.open(explorer(txId)),
+        onClick: () => window.open(explorer(txIdTransfer)),
       })
     } catch (err: any) {
       window.notify({ type: 'error', description: err.message })
     } finally {
       setLoading(false)
     }
-  }, [mintDecimals, mintSelected, quantity, sdk, total, tree])
-
-  // const generateChequesCsv = async (claims: any[]) => {
-  //   const csvData = []
-  //   for (const claim of Object.keys(encodeData)) {
-  //     const redeem_link = `${window.location.origin}${appRoute}?${generateQuery(
-  //       claims[],
-  //     )}`
-
-  //     const address = dataTransfer.authority
-  //     const amount = dataTransfer.amount.toString()
-  //     csvData.push({ address, amount, redeem_link })
-  //   }
-  //   const csvFile = generateCsv(csvData)
-  //   csvFile.download()
-  // }
+  }
 
   useEffect(() => {
     getBalanceAccount()
@@ -224,7 +247,6 @@ const ConfirmTransfer = () => {
                 type="primary"
                 loading={loading}
                 block
-                // disabled={isAuthGmail}
               >
                 Confirm
               </Button>

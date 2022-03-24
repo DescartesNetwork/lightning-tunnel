@@ -1,6 +1,4 @@
-import CryptoJS from 'crypto-js'
 import { MerkleDistributorInfo } from '@saberhq/merkle-distributor/dist/cjs/utils'
-import { bs58 } from '@project-serum/anchor/dist/cjs/utils/bytes'
 
 import { explorer } from 'shared/util'
 
@@ -18,7 +16,7 @@ export type ClaimProof = {
   mintAddress: string
 }
 
-export type EncodeData = Record<string, string>
+export type EncodeData = Record<string, ClaimProof>
 
 export const notifySuccess = (content: string, txId: string) => {
   return window.notify({
@@ -73,31 +71,6 @@ export const generateCsv = (data: Record<string, any>[]) => {
   }
 }
 
-export const encryptKey = (walletAddress: string, data: any) => {
-  const encJson = CryptoJS.AES.encrypt(
-    JSON.stringify(data),
-    walletAddress,
-  ).toString()
-  const encryptKey = CryptoJS.enc.Base64.stringify(
-    CryptoJS.enc.Utf8.parse(encJson),
-  )
-  return encryptKey
-}
-
-export const decryptKey = (walletAddress: string, encryptData: string) => {
-  try {
-    const decData = CryptoJS.enc.Base64.parse(encryptData).toString(
-      CryptoJS.enc.Utf8,
-    )
-    const bytes = CryptoJS.AES.decrypt(decData, walletAddress).toString(
-      CryptoJS.enc.Utf8,
-    )
-    return JSON.parse(bytes)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 export const encodeData = (
   tree: MerkleDistributorInfo,
   distributorInfo: DistributorInfo,
@@ -117,13 +90,7 @@ export const encodeData = (
       distributorInfo,
       mintAddress,
     }
-    const encyptD = bs58.encode(new Buffer(JSON.stringify(newClaim)))
-    data[claimant] = encyptD
+    data[claimant] = newClaim
   })
   return data
-}
-
-export const decodeData = (data: string): ClaimProof => {
-  const bufData = bs58.decode(data)
-  return JSON.parse(new Buffer(bufData).toString())
 }

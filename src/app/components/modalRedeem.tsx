@@ -82,11 +82,11 @@ const ModalRedeem = ({
     try {
       const { signature } = await tx.confirm()
       notifySuccess('Claim successfully', signature)
-      return dispatch(setVisible(false))
     } catch (err) {
       notifyError(err)
     } finally {
       setLoading(false)
+      return dispatch(setVisible(false))
     }
   }, [claimProof, dispatch, fetchDistributor, walletAddress])
 

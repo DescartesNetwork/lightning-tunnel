@@ -9,8 +9,9 @@ import Container from './container'
 
 import { AppDispatch, AppState } from 'app/model'
 import { setVisible } from 'app/model/main.controller'
-import { ClaimProof, decodeData } from 'app/helper'
+import { ClaimProof } from 'app/helper'
 import { useWallet } from '@senhub/providers'
+import IPFS from 'shared/pdb/ipfs'
 
 const Page = () => {
   const [claimProof, setClaimProof] = useState<ClaimProof>()
@@ -22,19 +23,22 @@ const Page = () => {
   } = useWallet()
   const dispatch = useDispatch<AppDispatch>()
   const query = new URLSearchParams(useLocation().search)
-  const claimData = query.get('redeem')
+  const cid = query.get('redeem')
 
-  const canRedeem = useCallback(() => {
-    if (!claimData) return
+  const canRedeem = useCallback(async () => {
+    if (!cid) return
+    const ipfs = new IPFS()
+    const claimantData = await ipfs.get(cid)
 
-    const proofData = decodeData(claimData)
+    for (const claimant of Object.keys(claimantData)) {
+      if (claimant === walletAddress) {
+        setClaimProof(claimantData[claimant])
+        return dispatch(setVisible(true))
+      }
+    }
 
-    if (proofData?.claimant !== walletAddress)
-      return window.notify({ type: 'warning', description: 'Wrong proof' })
-
-    setClaimProof(proofData)
-    return dispatch(setVisible(true))
-  }, [dispatch, claimData, walletAddress])
+    return window.notify({ type: 'warning', description: 'wrong wallet' })
+  }, [cid, walletAddress, dispatch])
 
   useEffect(() => {
     canRedeem()

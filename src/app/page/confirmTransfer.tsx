@@ -18,8 +18,11 @@ import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'app/hooks/useTotal'
 import useMerkleSDK from 'app/hooks/useMerkleSDK'
-import { EncodeData, encodeData, generateCsv } from 'app/helper'
+import { encodeData } from 'app/helper'
 import { useAppRouter } from 'app/hooks/useAppRoute'
+import PDB from 'shared/pdb'
+import IPFS from 'shared/pdb/ipfs'
+import ModalShare from 'app/components/modalShare'
 
 const Content = ({
   label = '',
@@ -41,6 +44,8 @@ const Content = ({
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
   const [balance, setBalance] = useState(0)
+  const [visible, setVisible] = useState(false)
+  const [redeemLink, setRedeemLink] = useState('')
   const {
     main: { mintSelected },
     recipients: { recipients },
@@ -83,25 +88,6 @@ const ConfirmTransfer = () => {
     return MerkleUtils.parseBalanceMap(balanceTree)
   }, [recipients, mintDecimals])
 
-  const generateChequesCsv = async (dataEncoded: EncodeData) => {
-    if (!tree) return
-    const { claims } = tree
-    const csvData = []
-    for (const address of Object.keys(dataEncoded)) {
-      const redeem_link = `${window.location.origin}${appRoute}?${generateQuery(
-        { redeem: dataEncoded[address] },
-      )}`
-
-      const amount = utils.undecimalize(
-        BigInt(claims[address].amount.toString()),
-        mintDecimals,
-      )
-      csvData.push({ address, amount, redeem_link })
-    }
-    const csvFile = generateCsv(csvData)
-    csvFile.download()
-  }
-
   const onConfirm = async () => {
     if (!sdk || !account.isAddress(mintSelected) || !tree) return
 
@@ -128,8 +114,6 @@ const ConfirmTransfer = () => {
         distributorATA: distributorATA.toBase58(),
       }
 
-      const dataEncoded = encodeData(tree, distributorInfo, mintSelected)
-
       // Transfer token to DistributorATA
       const srcAddress = await splt.deriveAssociatedAddress(
         walletAddress,
@@ -142,13 +126,28 @@ const ConfirmTransfer = () => {
         distributorInfo.distributorATA,
         wallet,
       )
-
-      await generateChequesCsv(dataEncoded)
-      return window.notify({
+      window.notify({
         type: 'success',
         description: 'Transfer successfully. Click to view details.',
         onClick: () => window.open(explorer(txIdTransfer)),
       })
+
+      /**Save history */
+      const ipfs = new IPFS()
+      const db = new PDB(walletAddress).createInstance('lightning_tunnel')
+
+      const oldHistory = await db.getItem('history')
+      const newHistory = oldHistory ? [oldHistory] : []
+      const dataEncoded = encodeData(tree, distributorInfo, mintSelected)
+      const cid = await ipfs.set(dataEncoded)
+      newHistory.push(cid)
+      db.setItem('history', newHistory)
+
+      const redeemAt = `${window.location.origin}${appRoute}?${generateQuery({
+        redeem: cid,
+      })}`
+      setRedeemLink(redeemAt)
+      return setVisible(true)
     } catch (err: any) {
       window.notify({ type: 'error', description: err.message })
     } finally {
@@ -251,6 +250,11 @@ const ConfirmTransfer = () => {
           </Row>
         </Col>
       </Row>
+      <ModalShare
+        visible={visible}
+        setVisible={setVisible}
+        redeemLink={redeemLink}
+      />
     </Card>
   )
 }

@@ -41,7 +41,6 @@ const Content = ({
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
   const [balance, setBalance] = useState(0)
-  const [dataEncoded, setDataEncoded] = useState<EncodeData>({})
   const {
     main: { mintSelected },
     recipients: { recipients },
@@ -84,7 +83,7 @@ const ConfirmTransfer = () => {
     return MerkleUtils.parseBalanceMap(balanceTree)
   }, [recipients, mintDecimals])
 
-  const generateChequesCsv = async () => {
+  const generateChequesCsv = async (dataEncoded: EncodeData) => {
     if (!tree) return
     const { claims } = tree
     const csvData = []
@@ -129,8 +128,7 @@ const ConfirmTransfer = () => {
         distributorATA: distributorATA.toBase58(),
       }
 
-      const data = encodeData(tree, distributorInfo)
-      setDataEncoded(data)
+      const dataEncoded = encodeData(tree, distributorInfo, mintSelected)
 
       // Transfer token to DistributorATA
       const srcAddress = await splt.deriveAssociatedAddress(
@@ -145,8 +143,7 @@ const ConfirmTransfer = () => {
         wallet,
       )
 
-      await generateChequesCsv()
-
+      await generateChequesCsv(dataEncoded)
       return window.notify({
         type: 'success',
         description: 'Transfer successfully. Click to view details.',

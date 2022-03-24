@@ -15,6 +15,7 @@ export type ClaimProof = {
   proof: any
   claimant: string
   distributorInfo?: DistributorInfo
+  mintAddress: string
 }
 
 export type EncodeData = Record<string, string>
@@ -100,6 +101,7 @@ export const decryptKey = (walletAddress: string, encryptData: string) => {
 export const encodeData = (
   tree: MerkleDistributorInfo,
   distributorInfo: DistributorInfo,
+  mintAddress: string,
 ): EncodeData => {
   if (!tree) return {}
   const { claims } = tree
@@ -113,6 +115,7 @@ export const encodeData = (
       amount: amount.toString(),
       claimant,
       distributorInfo,
+      mintAddress,
     }
     const encyptD = bs58.encode(new Buffer(JSON.stringify(newClaim)))
     data[claimant] = encyptD

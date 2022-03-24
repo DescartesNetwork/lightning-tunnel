@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { account } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
 import { useWallet } from '@senhub/providers'
 import { PublicKey } from '@solana/web3.js'
 import { u64 } from '@saberhq/token-utils'
@@ -16,6 +16,8 @@ import { setVisible } from 'app/model/main.controller'
 import useMerkleSDK from 'app/hooks/useMerkleSDK'
 
 import GIFT from 'app/static/images/gift.svg'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { MintSymbol } from 'shared/antd/mint'
 
 const ModalRedeem = ({
   visible,
@@ -30,6 +32,7 @@ const ModalRedeem = ({
     wallet: { address: walletAddress },
   } = useWallet()
   const sdk = useMerkleSDK()
+  const mintDecimals = useMintDecimals(claimProof?.mintAddress || '') || 0
 
   const fetchDistributor = useCallback(
     async (distributorAddr: string) => {
@@ -104,7 +107,11 @@ const ModalRedeem = ({
             <Space size={4}>
               <Typography.Text type="secondary">Let's take</Typography.Text>
               <Typography.Title level={5} style={{ color: '#F9575E' }}>
-                1000 SNTR
+                {utils.undecimalize(
+                  BigInt(claimProof?.amount || 0),
+                  mintDecimals,
+                )}{' '}
+                <MintSymbol mintAddress={claimProof?.mintAddress || ''} />
               </Typography.Title>
             </Space>
           </Space>

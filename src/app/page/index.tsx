@@ -9,15 +9,8 @@ import Container from './container'
 
 import { AppDispatch, AppState } from 'app/model'
 import { setVisible } from 'app/model/main.controller'
-import { decodeData } from 'app/helper'
+import { ClaimProof, decodeData } from 'app/helper'
 import { useWallet } from '@senhub/providers'
-
-type ClaimProof = {
-  index: number
-  amount: string
-  proof: any
-  claimant: string
-}
 
 const Page = () => {
   const [claimProof, setClaimProof] = useState<ClaimProof>()
@@ -39,10 +32,6 @@ const Page = () => {
     if (proofData?.claimant !== walletAddress)
       return window.notify({ type: 'warning', description: 'Wrong proof' })
 
-    console.log(
-      proofData.distributorInfo?.distributorATA,
-      ' associated token address',
-    )
     setClaimProof(proofData)
     return dispatch(setVisible(true))
   }, [dispatch, claimData, walletAddress])

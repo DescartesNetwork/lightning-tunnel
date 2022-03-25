@@ -80,7 +80,7 @@ const Manual = () => {
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
     await dispatch(removeRecipients())
-    dispatch(onSelectStep(Step.zero))
+    dispatch(onSelectStep(Step.one))
   }, [dispatch])
 
   const merge = async () => {
@@ -150,7 +150,7 @@ const Manual = () => {
               <Button
                 size="large"
                 type="primary"
-                onClick={() => dispatch(onSelectStep(Step.two))}
+                onClick={() => dispatch(onSelectStep(Step.three))}
                 block
               >
                 Continue

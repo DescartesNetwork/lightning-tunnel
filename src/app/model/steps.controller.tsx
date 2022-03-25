@@ -15,7 +15,7 @@ export type Steps = {
 
 const NAME = 'steps'
 const initialState: Steps = {
-  step: Step.zero,
+  step: Step.one,
 }
 
 /**

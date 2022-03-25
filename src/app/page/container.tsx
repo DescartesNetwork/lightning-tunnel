@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
@@ -6,8 +6,8 @@ import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
 import Auto from './auto'
 import Manual from './manual'
 import SelectToken from 'app/components/selectTokens'
-import PoweredBySentre from 'app/components/poweredBySentre'
 import IonIcon from 'shared/antd/ionicon'
+import Header from 'app/components/header'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
@@ -26,28 +26,30 @@ const CardOption = ({
   active: boolean
 }) => {
   return (
-    <Row>
-      <Col span={24}>
-        <Row>
-          <Col flex="auto">
+    <Fragment>
+      {active ? (
+        <IonIcon
+          name="checkbox-sharp"
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            color: '#42E6EB',
+            fontSize: 20,
+          }}
+        />
+      ) : null}
+      <Row gutter={[12, 12]}>
+        <Col span={24}>
+          <Col span={24}>
             <Typography.Title level={5}>{label}</Typography.Title>
           </Col>
-          <Col>
-            {active ? (
-              <IonIcon
-                name="checkmark-circle"
-                style={{ color: '#F9575E', fontSize: 16 }}
-              />
-            ) : (
-              <IonIcon name="ellipse-outline" />
-            )}
-          </Col>
-        </Row>
-      </Col>
-      <Col span={24}>
-        <Typography.Text type="secondary">{description}</Typography.Text>
-      </Col>
-    </Row>
+        </Col>
+        <Col span={24}>
+          <Typography.Text type="secondary">{description}</Typography.Text>
+        </Col>
+      </Row>
+    </Fragment>
   )
 }
 
@@ -65,7 +67,7 @@ const SelectInputMethod = () => {
 
   const onContinue = () => {
     dispatch(onSelectMethod(method))
-    dispatch(onSelectStep(Step.one))
+    dispatch(onSelectStep(Step.two))
   }
 
   const onSelectMint = (mintAddress: string) => {
@@ -82,12 +84,7 @@ const SelectInputMethod = () => {
     <Card className="card-priFi" bordered={false}>
       <Row gutter={[32, 32]} align="middle">
         <Col span={24}>
-          <Row>
-            <Col flex="auto" />
-            <Col>
-              <PoweredBySentre />
-            </Col>
-          </Row>
+          <Header label="Select a token and filled type" />
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]}>
@@ -157,7 +154,7 @@ const Container = () => {
   } = useSelector((state: AppState) => state)
 
   if (!methodSelected) return <SelectInputMethod />
-  if (step === Step.one)
+  if (step === Step.two)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />
 }

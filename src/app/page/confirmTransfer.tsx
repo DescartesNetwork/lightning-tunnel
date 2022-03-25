@@ -230,7 +230,7 @@ const ConfirmTransfer = () => {
             <Col span={12}>
               <Button
                 size="large"
-                onClick={() => dispatch(onSelectStep(Step.one))}
+                onClick={() => dispatch(onSelectStep(Step.two))}
                 block
               >
                 Back

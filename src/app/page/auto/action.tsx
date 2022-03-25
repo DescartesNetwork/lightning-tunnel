@@ -20,7 +20,7 @@ const Action = () => {
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
     dispatch(removeRecipients())
-    dispatch(onSelectStep(Step.zero))
+    dispatch(onSelectStep(Step.two))
   }, [dispatch])
 
   return (
@@ -33,7 +33,7 @@ const Action = () => {
       <Col span={12}>
         <Button
           size="large"
-          onClick={() => dispatch(onSelectStep(Step.two))}
+          onClick={() => dispatch(onSelectStep(Step.three))}
           type="primary"
           disabled={disabled}
           block

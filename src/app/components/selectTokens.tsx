@@ -22,7 +22,9 @@ const SelectToken = ({
       <Select.Option value={DEFAULT_VALUE}>
         <Space>
           <IonIcon style={{ fontSize: 25 }} name="help-outline" />
-          <Typography.Text>Select a token</Typography.Text>
+          <Typography.Text style={{ fontSize: 16 }}>
+            Select a token
+          </Typography.Text>
         </Space>
       </Select.Option>
       {tokens.map((tokenAddress) => (

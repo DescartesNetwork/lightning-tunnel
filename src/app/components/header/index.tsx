@@ -1,13 +1,39 @@
-import { Col, Divider, Row, Space, Typography } from 'antd'
+import { Col, Divider, Radio, Row, Space, Typography } from 'antd'
 import Setting from './setting'
 
 import PoweredBySentre from 'app/components/poweredBySentre'
+import { Step } from 'app/constants'
+import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
+import { AppState } from 'app/model'
 
 const Header = ({ label }: { label: string }) => {
+  const { step } = useSelector((state: AppState) => state.steps)
+
+  const stepOneValue = useMemo(() => {
+    if (step === Step.two) return Step.two
+    if (step === Step.three) return Step.three
+    return Step.one
+  }, [step])
+
+  const stepTwoValue = useMemo(() => {
+    if (step === Step.three) return Step.three
+    return Step.two
+  }, [step])
+
   return (
     <Row>
       <Col flex="auto">
-        <Typography.Title level={5}>{label}</Typography.Title>
+        <Space direction="vertical" size={12}>
+          <Radio.Group value={step} className="steps" buttonStyle="solid">
+            <Space>
+              <Radio.Button className="rate-btn" value={stepOneValue} />
+              <Radio.Button className="rate-btn" value={stepTwoValue} />
+              <Radio.Button className="rate-btn" value={Step.three} />
+            </Space>
+          </Radio.Group>
+          <Typography.Title level={5}>{label}</Typography.Title>
+        </Space>
       </Col>
       <Col>
         <Space size={16}>

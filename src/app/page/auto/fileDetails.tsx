@@ -191,7 +191,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
           <Col span={24}>
             <Spin spinning={loading}>
               <Card bordered={false} className="card-content">
-                <Row gutter={[8, 8]}>
+                <Row gutter={[8, 13]}>
                   <Col span={24}>
                     <AccountInfoHeader
                       selected={selected}
@@ -200,7 +200,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                       }
                     />
                   </Col>
-                  {errorDatas?.map(([address, email, amount], idx) => (
+                  {errorDatas?.map(([address, amount], idx) => (
                     <Col
                       span={24}
                       key={address + idx}
@@ -212,7 +212,6 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                     >
                       <AccountInfo
                         accountAddress={address}
-                        email={email}
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
@@ -220,11 +219,10 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                       />
                     </Col>
                   ))}
-                  {recipients.map(([address, email, amount], idx) => (
+                  {recipients.map(([address, amount], idx) => (
                     <Col span={24} key={address + idx}>
                       <AccountInfo
                         accountAddress={address}
-                        email={email}
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}

@@ -1,7 +1,7 @@
 import { Modal, Image, Space, Typography, Row, Col, Button } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import GIFT from 'app/static/images/gift.svg'
+import TWITTER from 'app/static/images/twitter.svg'
 
 const ModalShare = ({
   visible,
@@ -30,14 +30,16 @@ const ModalShare = ({
       closeIcon={<IonIcon name="close-outline" />}
       onCancel={() => setVisible(false)}
       footer={null}
+      className="card-lightning"
+      style={{ paddingBottom: 0 }}
     >
       <Row gutter={[32, 32]} style={{ textAlign: 'center' }}>
         <Col span={24}>
-          <Image src={GIFT} preview={false} />
+          <Image src={TWITTER} preview={false} />
         </Col>
         <Col span={24}>
           <Space direction="vertical" size={4}>
-            <Typography.Title level={3}>Share on Twitter!!</Typography.Title>
+            <Typography.Title level={3}>Share on Twitter!</Typography.Title>
             <Space size={4}>
               <Typography.Text type="secondary">
                 You need to share this transaction in order for the recipient to

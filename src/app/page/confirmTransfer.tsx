@@ -79,7 +79,7 @@ const ConfirmTransfer = () => {
   const tree = useMemo(() => {
     if (!recipients.length) return
     const balanceTree: NewFormat[] = []
-    Object.values(recipients).forEach(([address, email, amount]) => {
+    Object.values(recipients).forEach(([address, amount]) => {
       balanceTree.push({
         address,
         earnings: utils.decimalize(amount, mintDecimals).toString(),
@@ -92,6 +92,8 @@ const ConfirmTransfer = () => {
     if (!sdk || !account.isAddress(mintSelected) || !tree) return
 
     const { merkleRoot } = tree
+    console.log('merkleRoot, ', merkleRoot)
+    console.log('tree,', tree)
     setLoading(true)
     try {
       const { splt, wallet } = window.sentre

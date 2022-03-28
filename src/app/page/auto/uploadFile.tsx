@@ -40,6 +40,7 @@ const UploadFile = () => {
     const errorDatas = data.filter(
       (recipient) => recipient.includes('') || !account.isAddress(recipient[0]),
     )
+
     const successData = data.filter(
       (recipient) => !recipient.includes('') && account.isAddress(recipient[0]),
     )

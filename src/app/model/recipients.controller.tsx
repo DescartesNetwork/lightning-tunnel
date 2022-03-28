@@ -4,7 +4,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
  * Interface & Utility
  */
 
-export type RecipientInfo = [string, string, string]
+export type RecipientInfo = [string, string]
 
 export type RecipientInfos = Array<RecipientInfo>
 
@@ -69,6 +69,20 @@ export const removeRecipients = createAsyncThunk(
   },
 )
 
+export const removeRecipient = createAsyncThunk<
+  Partial<Recipients>,
+  { recipient: RecipientInfo },
+  { state: any }
+>(`${NAME}/removeRecipient`, async ({ recipient }, { getState }) => {
+  const {
+    recipients: { recipients },
+  } = getState()
+  const newRecipients = [...recipients]
+  const index = newRecipients.indexOf(recipient)
+  if (index > -1) newRecipients.splice(index, 1)
+  return { recipients: newRecipients }
+})
+
 export const setErrorDatas = createAsyncThunk<
   Partial<Recipients>,
   { errorDatas: RecipientInfos },
@@ -86,7 +100,7 @@ export const mergeRecipient = createAsyncThunk<
     recipients: { recipients },
   } = getState()
   let baseData = [...recipients]
-  let mergeRecipient: RecipientInfo = ['', '', '']
+  let mergeRecipient: RecipientInfo = ['', '']
 
   baseData = baseData.filter(function (value, index) {
     return listIndex.indexOf(index) === -1
@@ -95,10 +109,10 @@ export const mergeRecipient = createAsyncThunk<
   let sum = 0
 
   for (const index of listIndex) {
-    const [address, email, amount] = recipients[index]
+    const [address, amount] = recipients[index]
 
     sum += Number(amount)
-    mergeRecipient = [address, email, sum.toString()]
+    mergeRecipient = [address, sum.toString()]
   }
 
   baseData.unshift(mergeRecipient)
@@ -134,6 +148,10 @@ const slice = createSlice({
       )
       .addCase(
         mergeRecipient.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        removeRecipient.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

@@ -18,13 +18,14 @@ import {
   addRecipients,
   RecipientInfo,
   RecipientInfos,
+  removeRecipient,
 } from 'app/model/recipients.controller'
 import { onSelectedFile } from 'app/model/main.controller'
 import NumericInput from 'shared/antd/numericInput'
+import ModalMerge from './modalMerge'
 
 type InputInfoTransferProps = {
   walletAddress?: string
-  email?: string
   amount?: string
   index?: number
   isSelect?: boolean
@@ -33,7 +34,6 @@ type InputInfoTransferProps = {
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
   amount: '',
-  email: '',
 }
 
 const ActionButton = ({
@@ -74,13 +74,14 @@ const ActionButton = ({
 
 const InputInfoTransfer = ({
   walletAddress,
-  email,
   amount,
   index,
   isSelect = false,
 }: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
   const [error, setError] = useState(false)
+  const [visible, setVisible] = useState(false)
+
   const {
     main: { selectedFile },
     recipients: { recipients },
@@ -97,19 +98,38 @@ const InputInfoTransfer = ({
     dispatch(onSelectedFile({ checked, index }))
 
   const recipientInfo = useCallback(async () => {
-    if (account.isAddress(walletAddress) && amount && email) {
-      return setRecipient({ walletAddress, email, amount })
+    if (account.isAddress(walletAddress) && amount) {
+      return setRecipient({ walletAddress, amount })
     }
     return setRecipient(DEFAULT_RECIPIENT)
-  }, [walletAddress, amount, email])
+  }, [walletAddress, amount])
 
   const addNewRecipient = async () => {
-    const { walletAddress, email, amount } = formInput
+    const { walletAddress, amount } = formInput
     if (Number(amount) % 1 !== 0) return setError(true)
 
-    const recipient: RecipientInfo = [walletAddress, email, amount]
+    for (const [address] of recipients) {
+      if (walletAddress === address) return setVisible(true)
+    }
+
+    const recipient: RecipientInfo = [walletAddress, amount]
     setError(false)
     await dispatch(addRecipient({ recipient }))
+    return setRecipient(DEFAULT_RECIPIENT)
+  }
+
+  const onMerge = async () => {
+    const { walletAddress, amount } = formInput
+    const recipient = recipients.find(([address]) => address === walletAddress)
+    if (!recipient) return
+
+    const newAmount = Number(recipient[1]) + Number(amount)
+    const nextRecipient: RecipientInfo = [walletAddress, newAmount.toString()]
+
+    await dispatch(removeRecipient({ recipient }))
+    await dispatch(addRecipient({ recipient: nextRecipient }))
+    await setVisible(false)
+
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
@@ -119,12 +139,13 @@ const InputInfoTransfer = ({
     nextData.splice(index, 1)
     return dispatch(addRecipients({ recipients: nextData }))
   }
+
   const disabledBtn = useMemo(() => {
     const { amount, walletAddress } = formInput
+
     if (!amount || !account.isAddress(walletAddress)) return true
     return false
   }, [formInput])
-
   const disabledInput = walletAddress ? true : false
 
   useEffect(() => {
@@ -149,6 +170,7 @@ const InputInfoTransfer = ({
           placeholder="Wallet address"
           onChange={onChange}
           className="recipient-input"
+          autoComplete="off"
         />
       </Col>
       <Col span={6}>
@@ -159,6 +181,7 @@ const InputInfoTransfer = ({
           placeholder="Amount"
           onValue={onAmount}
           className="recipient-input"
+          autoComplete="off"
         />
       </Col>
       {!isSelect && (
@@ -178,6 +201,11 @@ const InputInfoTransfer = ({
           </Typography.Text>
         </Col>
       )}
+      <ModalMerge
+        onConfirm={onMerge}
+        visible={visible}
+        setVisible={setVisible}
+      />
     </Row>
   )
 }

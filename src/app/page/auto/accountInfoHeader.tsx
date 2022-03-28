@@ -16,22 +16,22 @@ const AccountInfoHeader = ({
   } = useSelector((state: AppState) => state)
 
   return (
-    <Row gutter={8} align="middle" justify="space-between" wrap={false}>
+    <Row gutter={[16, 8]} align="middle" wrap={false}>
       <Col style={{ minWidth: 60 }}>
         <Space>
           {selected && (
-            <Checkbox onChange={(e) => onChecked(e.target.checked)} />
+            <Checkbox
+              className="lightning-checkbox"
+              onChange={(e) => onChecked(e.target.checked)}
+            />
           )}
           <Typography.Text type="secondary">No.</Typography.Text>
         </Space>
       </Col>
-      <Col style={{ minWidth: 150 }}>
+      <Col style={{ minWidth: 296 }}>
         <Typography.Text type="secondary">Wallet address</Typography.Text>
       </Col>
-      <Col style={{ minWidth: 150 }}>
-        <Typography.Text type="secondary">Email</Typography.Text>
-      </Col>
-      <Col style={{ minWidth: 140 }}>
+      <Col style={{ minWidth: 100 }}>
         <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
       {!!errorDatas?.length && <Col style={{ minWidth: 70 }} />}

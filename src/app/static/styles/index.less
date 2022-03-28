@@ -104,7 +104,7 @@
 }
 
 .auto-add-new {
-  background: rgba(35, 51, 51, 0.6) !important;
+  background: #394747 !important;
 
   .lightning_tunnel-collapse-item {
     border: unset !important;
@@ -119,7 +119,6 @@
 .recipient-input {
   background: rgba(35, 51, 51, 0.6) !important;
   border-radius: 0 !important;
-  border: none !important;
   height: 40px !important;
 }
 .card-total {
@@ -131,6 +130,21 @@
   background-color: rgba(35, 51, 51, 0.4) !important    ;
   box-shadow: 0px 4px 96px rgba(20, 244, 250, 0.12) !important;
   border: 1px solid #42e6eb !important;
+  backdrop-filter: blur(24px) !important;
+  .lightning_tunnel-modal-content {
+    background-color: rgba(35, 51, 51, 0.4) !important;
+    backdrop-filter: blur(24px) !important;
+  }
+}
+.lightning-checkbox {
+  .lightning_tunnel-checkbox-inner {
+    background: transparent !important;
+    border: solid 1px #a7adad !important;
+  }
+  .lightning_tunnel-checkbox-checked {
+    background: #42e6eb !important;
+    color: #233333 !important;
+  }
 }
 
 .upload-file {

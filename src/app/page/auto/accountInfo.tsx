@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
@@ -12,6 +12,8 @@ import {
   Input,
 } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
+import NumericInput from 'shared/antd/numericInput'
+
 import { shortenAddress } from 'shared/util'
 import { AppDispatch, AppState } from 'app/model'
 import { setErrorDatas } from 'app/model/recipients.controller'
@@ -57,7 +59,7 @@ const AlertIcon = ({
         placement="topLeft"
         arrowPointAtCenter
       >
-        <IonIcon name="alert-outline" style={{ color: '#d72311' }} />
+        <IonIcon name="warning-outline" style={{ color: '#d72311' }} />
       </Tooltip>
     )
   return <IonIcon name="checkmark-outline" style={{ color: '#03A326' }} />
@@ -97,7 +99,6 @@ const EditButton = ({
 
 const AccountInfo = ({
   accountAddress = '',
-  email = '',
   amount = 0,
   selected = false,
   onChecked = () => {},
@@ -105,16 +106,15 @@ const AccountInfo = ({
 }: AccountInfoProps) => {
   const dispatch = useDispatch<AppDispatch>()
   const [isEdited, setIsEdited] = useState(false)
-  const [nextEmail, setNextEmail] = useState('')
   const [nextAmount, setNextAmount] = useState('')
   const {
     recipients: { errorDatas, recipients },
     main: { selectedFile },
   } = useSelector((state: AppState) => state)
+  const amountRef = useRef<Input>(null!)
 
-  const editable = !amount || !email
+  const editable = !amount
   const wrongAddress = !account.isAddress(accountAddress)
-  const emailValue = isEdited ? nextEmail : shortenAddress(email, 8)
   const amountValue = isEdited ? nextAmount : amount
   const idxErrData = index - recipients.length
 
@@ -122,9 +122,9 @@ const AccountInfo = ({
     if (!errorDatas?.length || index - errorDatas.length < 0) return
     const nextErrorData = [...errorDatas]
     const [[address]] = nextErrorData.splice(idxErrData, 1)
-    nextErrorData.unshift([address, nextEmail, nextAmount])
+    nextErrorData.unshift([address, nextAmount])
     dispatch(setErrorDatas({ errorDatas: nextErrorData }))
-  }, [dispatch, errorDatas, idxErrData, index, nextAmount, nextEmail])
+  }, [dispatch, errorDatas, idxErrData, index, nextAmount])
 
   const onDelete = useCallback(async () => {
     if (!errorDatas?.length) return
@@ -133,67 +133,57 @@ const AccountInfo = ({
     dispatch(setErrorDatas({ errorDatas: nextErrData }))
   }, [dispatch, errorDatas, idxErrData])
 
+  const onEdit = (visible: boolean) => {
+    setIsEdited(visible)
+    if (amountRef.current) amountRef.current.focus()
+  }
+
   return (
-    <Row gutter={[16, 8]}>
-      <Col span={24}>
-        <Row
-          gutter={[16, 8]}
-          align="middle"
-          justify="space-between"
-          wrap={false}
-        >
-          <Col style={{ minWidth: 60 }}>
-            <Space>
-              {selected && (
-                <Checkbox
-                  checked={selectedFile?.includes(index)}
-                  onChange={(e) => onChecked(e.target.checked, index)}
-                />
-              )}
-              <Typography.Text type="secondary">#{index + 1}</Typography.Text>
-            </Space>
-          </Col>
-          <Col style={{ minWidth: 150 }}>
-            <Tooltip title={accountAddress}>
-              <Typography.Text>
-                {shortenAddress(accountAddress)}
-              </Typography.Text>
-            </Tooltip>
-          </Col>
-          <Col style={{ minWidth: 150 }}>
-            <Input
-              value={emailValue}
-              bordered={isEdited}
-              onChange={(e) => setNextEmail(e.target.value)}
-              disabled={!isEdited}
+    <Row gutter={[16, 8]} align="middle" justify="space-between" wrap={false}>
+      <Col style={{ minWidth: 60 }}>
+        <Space>
+          {selected && (
+            <Checkbox
+              checked={selectedFile?.includes(index)}
+              onChange={(e) => onChecked(e.target.checked, index)}
+              className="lightning-checkbox"
             />
-          </Col>
-          <Col style={{ minWidth: 140, textAlign: 'right' }}>
-            <Input
-              value={amountValue}
-              bordered={isEdited}
-              onChange={(e) => setNextAmount(e.target.value)}
-              disabled={!isEdited}
-            />
-          </Col>
-          {!!errorDatas?.length && (
-            <Col style={{ minWidth: 70 }}>
-              {editable && (
-                <Space align="center">
-                  <AlertIcon editable={editable} wrongAddress={wrongAddress} />
-                  <EditButton
-                    isEdited={isEdited}
-                    wrongAddress={wrongAddress}
-                    onEdited={setIsEdited}
-                    onUpdate={onUpdate}
-                    onDelete={onDelete}
-                  />
-                </Space>
-              )}
-            </Col>
           )}
-        </Row>
+          <Typography.Text type="secondary">#{index + 1}</Typography.Text>
+        </Space>
       </Col>
+      <Col style={{ minWidth: 296 }}>
+        <Tooltip title={accountAddress}>
+          <Typography.Text>{shortenAddress(accountAddress)}</Typography.Text>
+        </Tooltip>
+      </Col>
+      <Col style={{ minWidth: 100 }}>
+        <NumericInput
+          value={amountValue}
+          bordered={isEdited}
+          onChange={(e) => setNextAmount(e.target.value)}
+          disabled={!isEdited}
+          style={{ padding: 0 }}
+          className="recipient-input"
+          ref={amountRef}
+        />
+      </Col>
+      {!!errorDatas?.length && (
+        <Col style={{ minWidth: 70 }}>
+          {editable && (
+            <Space align="center">
+              <AlertIcon editable={editable} wrongAddress={wrongAddress} />
+              <EditButton
+                isEdited={isEdited}
+                wrongAddress={wrongAddress}
+                onEdited={onEdit}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+              />
+            </Space>
+          )}
+        </Col>
+      )}
     </Row>
   )
 }

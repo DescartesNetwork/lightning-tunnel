@@ -15,7 +15,7 @@ import { AppDispatch } from 'app/model'
 import { setVisible } from 'app/model/main.controller'
 import useMerkleSDK from 'app/hooks/useMerkleSDK'
 
-import GIFT from 'app/static/images/gift.svg'
+import REDEEM from 'app/static/images/redeem.svg'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { MintSymbol } from 'shared/antd/mint'
 
@@ -47,6 +47,7 @@ const ModalRedeem = ({
   )
 
   const onClaim = useCallback(async () => {
+    console.log(claimProof)
     if (!claimProof || !claimProof.distributorInfo) return
 
     const {
@@ -72,11 +73,12 @@ const ModalRedeem = ({
         return window.notify({ type: 'error', description: 'You have clamied' })
     } catch (err) {}
 
-    const bufferProof = Buffer.from(proof[0].data)
+    const bufferProof = !proof.length ? [] : [Buffer.from(proof[0].data)]
+
     const tx = await distributor.claim({
       index: new u64(index),
       amount: new u64(amount),
-      proof: [bufferProof],
+      proof: bufferProof,
       claimant: new PublicKey(walletAddress),
     })
     try {
@@ -96,17 +98,19 @@ const ModalRedeem = ({
       closeIcon={<IonIcon name="close-outline" />}
       onCancel={() => dispatch(setVisible(false))}
       footer={null}
+      className="card-lightning"
+      style={{ paddingBottom: 0 }}
     >
       <Row gutter={[32, 32]} style={{ textAlign: 'center' }}>
         <Col span={24}>
-          <Image src={GIFT} preview={false} />
+          <Image src={REDEEM} preview={false} />
         </Col>
         <Col span={24}>
           <Space direction="vertical" size={4}>
-            <Typography.Title level={3}>Successfully!</Typography.Title>
+            <Typography.Title level={3}>Redemption!</Typography.Title>
             <Space size={4}>
               <Typography.Text type="secondary">Let's take</Typography.Text>
-              <Typography.Title level={5} style={{ color: '#F9575E' }}>
+              <Typography.Title level={5} style={{ color: '#42E6EB' }}>
                 {utils.undecimalize(
                   BigInt(claimProof?.amount || 0),
                   mintDecimals,

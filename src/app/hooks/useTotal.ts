@@ -18,7 +18,7 @@ const useTotal = () => {
     if (!data.length) return 0
     let sum = 0
     data.map((item) => {
-      const amount = item[2]
+      const amount = item[1]
 
       return (sum += Number(amount))
     })

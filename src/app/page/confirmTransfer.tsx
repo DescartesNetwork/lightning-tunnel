@@ -160,7 +160,7 @@ const ConfirmTransfer = () => {
   }, [getBalanceAccount])
 
   return (
-    <Card bordered={false}>
+    <Card bordered={false} className="card-lightning">
       <Row gutter={[32, 32]}>
         <Col span={24}>
           <Header label="Confirm transfer" />
@@ -169,16 +169,14 @@ const ConfirmTransfer = () => {
           <Row gutter={[24, 24]} justify="center">
             <Col>
               <Space direction="vertical" size={12} align="center">
-                <Typography.Text type="secondary">
-                  Total transfer
-                </Typography.Text>
-                <Typography.Title level={2}>{total}</Typography.Title>
+                <Typography.Text>Total transfer</Typography.Text>
+                <Typography.Title level={1}>{total}</Typography.Title>
                 <Tag
                   style={{
                     margin: 0,
                     borderRadius: 4,
-                    color: 'rgb(249, 88, 96)',
-                    background: 'rgba(249, 88, 96, 0.1)',
+                    color: 'rgb(66, 230, 235)',
+                    background: 'rgba(66, 230, 235, 0.1)',
                     border: 'unset',
                   }}
                 >
@@ -187,7 +185,7 @@ const ConfirmTransfer = () => {
               </Space>
             </Col>
             <Col span={24}>
-              <Card bordered={false} className="card-content">
+              <Card bordered={false} className="card-total">
                 <Row gutter={[8, 8]}>
                   <Col span={24}>
                     <Content
@@ -232,8 +230,9 @@ const ConfirmTransfer = () => {
                 size="large"
                 onClick={() => dispatch(onSelectStep(Step.two))}
                 block
+                type="ghost"
               >
-                Back
+                BACK
               </Button>
             </Col>
             <Col span={12}>
@@ -244,7 +243,7 @@ const ConfirmTransfer = () => {
                 loading={loading}
                 block
               >
-                Confirm
+                TRANSFER
               </Button>
             </Col>
           </Row>

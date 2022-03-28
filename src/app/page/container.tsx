@@ -81,7 +81,7 @@ const SelectInputMethod = () => {
   }, [activeMintAddress, method])
 
   return (
-    <Card className="card-priFi" bordered={false}>
+    <Card className="card-lightning" bordered={false}>
       <Row gutter={[32, 32]} align="middle">
         <Col span={24}>
           <Header label="Select a token and filled type" />

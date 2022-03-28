@@ -61,10 +61,9 @@ const ActionButton = ({
         <Button
           type="text"
           size="small"
-          style={{ padding: 0 }}
+          style={{ padding: 0, color: '#42E6EB' }}
           onClick={addNewRecipient}
           disabled={disabledBtn}
-          danger
         >
           OK
         </Button>
@@ -121,8 +120,8 @@ const InputInfoTransfer = ({
     return dispatch(addRecipients({ recipients: nextData }))
   }
   const disabledBtn = useMemo(() => {
-    const { amount, walletAddress, email } = formInput
-    if (!amount || !account.isAddress(walletAddress) || !email) return true
+    const { amount, walletAddress } = formInput
+    if (!amount || !account.isAddress(walletAddress)) return true
     return false
   }, [formInput])
 
@@ -142,22 +141,14 @@ const InputInfoTransfer = ({
           />
         </Col>
       )}
-      <Col span={8}>
+      <Col span={16}>
         <Input
           disabled={disabledInput}
           value={formInput.walletAddress}
           name="walletAddress"
           placeholder="Wallet address"
           onChange={onChange}
-        />
-      </Col>
-      <Col span={8}>
-        <Input
-          disabled={disabledInput}
-          onChange={onChange}
-          value={formInput.email}
-          name="email"
-          placeholder="Email"
+          className="recipient-input"
         />
       </Col>
       <Col span={6}>
@@ -167,6 +158,7 @@ const InputInfoTransfer = ({
           name="amount"
           placeholder="Amount"
           onValue={onAmount}
+          className="recipient-input"
         />
       </Col>
       {!isSelect && (

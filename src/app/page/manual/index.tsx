@@ -96,7 +96,7 @@ const Manual = () => {
   }
 
   return (
-    <Card className="card-priFi" bordered={false}>
+    <Card className="card-lightning" bordered={false}>
       <Row gutter={[32, 32]}>
         <Col span={24}>
           <Header label="Fill in recipient information" />

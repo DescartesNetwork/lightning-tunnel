@@ -45,15 +45,15 @@ const ActionButton = ({
   return (
     <Space size={24}>
       <Button type="text" size="small" onClick={() => onSelect(true)}>
-        Select
+        SELECT
       </Button>
       <Button
         type="text"
         size="small"
         onClick={() => onCollapsed(CollapseAddNew.activeKey)}
-        danger
+        style={{ color: '#42E6EB' }}
       >
-        Add more
+        ADD MORE
       </Button>
     </Space>
   )

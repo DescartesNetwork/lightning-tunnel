@@ -20,13 +20,13 @@ const Action = () => {
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
     dispatch(removeRecipients())
-    dispatch(onSelectStep(Step.two))
+    dispatch(onSelectStep(Step.one))
   }, [dispatch])
 
   return (
     <Row gutter={[16, 16]}>
       <Col span={12}>
-        <Button size="large" onClick={onBack} block>
+        <Button type="ghost" size="large" onClick={onBack} block>
           Back
         </Button>
       </Col>

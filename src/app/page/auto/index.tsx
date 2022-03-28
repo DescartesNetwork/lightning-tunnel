@@ -5,7 +5,7 @@ import Header from 'app/components/header'
 
 const Auto = () => {
   return (
-    <Card bordered={false}>
+    <Card bordered={false} className="card-lightning">
       <Row gutter={[32, 32]}>
         <Col span={24}>
           <Header label="Fill in recipient information" />

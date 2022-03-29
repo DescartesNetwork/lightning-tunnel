@@ -6,9 +6,9 @@ import IonIcon from 'shared/antd/ionicon'
 
 import PDB from 'shared/pdb'
 import { HISTORY_COLUMN } from './column'
+import { History } from 'app/constants'
 
 import './index.less'
-import { History } from 'app/page/confirmTransfer'
 
 const ListHistory = ({
   visible,

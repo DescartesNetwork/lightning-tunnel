@@ -12,7 +12,7 @@ import Header from 'app/components/header'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
-import { Step } from 'app/constants'
+import { History, Step } from 'app/constants'
 import { explorer, numeric } from 'shared/util'
 import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
@@ -39,13 +39,6 @@ const Content = ({
       <Col>{value}</Col>
     </Row>
   )
-}
-
-export type History = {
-  time: string
-  mint: string
-  total: string | number
-  cid: string
 }
 
 const ConfirmTransfer = () => {

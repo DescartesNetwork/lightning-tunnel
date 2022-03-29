@@ -8,7 +8,6 @@ import IonIcon from 'shared/antd/ionicon'
 import PoweredBySentre from 'app/components/poweredBySentre'
 
 import { Step } from 'app/constants'
-
 import { AppState } from 'app/model'
 
 const Header = ({ label }: { label: string }) => {

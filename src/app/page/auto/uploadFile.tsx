@@ -14,11 +14,13 @@ import IonIcon from 'shared/antd/ionicon'
 import exampleCSV from 'app/static/base/example.csv'
 import {
   addRecipients,
+  RecipientInfo,
   RecipientInfos,
   removeRecipients,
   setErrorDatas,
 } from 'app/model/recipients.controller'
 import { account } from '@senswap/sen-js'
+import ModalMerge from 'app/components/modalMerge'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {
@@ -32,6 +34,10 @@ const parse = (file: any): Promise<RecipientInfos> => {
 const UploadFile = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [listDuplicate, setListDuplicate] = useState<
+    Record<string, RecipientInfo>
+  >({})
   const {
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
@@ -40,7 +46,6 @@ const UploadFile = () => {
     const errorDatas = data.filter(
       (recipient) => recipient.includes('') || !account.isAddress(recipient[0]),
     )
-
     const successData = data.filter(
       (recipient) => !recipient.includes('') && account.isAddress(recipient[0]),
     )
@@ -50,22 +55,56 @@ const UploadFile = () => {
   const upload = useCallback(
     async (file: any) => {
       setLoading(true)
+
       const data = await parse(file)
       const { errorDatas, successData: recipients } = await detectErrorData(
         data,
       )
+      if (errorDatas) dispatch(setErrorDatas({ errorDatas }))
+
+      const recipient: Record<string, RecipientInfo> = {}
+      let isDuplicate = false
+      for (const [address, amount] of recipients) {
+        if (recipient[address]) {
+          isDuplicate = true
+          const [walletAddress, oldAmount] = recipient[address]
+          const newAmount = Number(oldAmount) + Number(amount)
+          recipient[address] = [walletAddress, newAmount.toString()]
+        } else recipient[address] = [address, amount]
+      }
+
+      if (isDuplicate) {
+        setListDuplicate(recipient)
+        setLoading(false)
+        setVisible(true)
+        dispatch(setFileName(file.name))
+        return true
+      }
+
       dispatch(setFileName(file.name))
       dispatch(addRecipients({ recipients }))
-      dispatch(setErrorDatas({ errorDatas }))
       setLoading(false)
+      setVisible(false)
       return false
     },
     [dispatch],
   )
+  const onMerge = () => {
+    const recipients = Object.values(listDuplicate)
+    dispatch(addRecipients({ recipients }))
+    return setVisible(false)
+  }
+
+  const onCancel = () => {
+    setVisible(false)
+    dispatch(setFileName(''))
+    setListDuplicate({})
+  }
 
   const remove = async () => {
     setLoading(true)
     dispatch(removeRecipients())
+    setListDuplicate({})
     setLoading(false)
     return true
   }
@@ -126,6 +165,12 @@ const UploadFile = () => {
             Download sample
           </Button>
         </Col>
+        <ModalMerge
+          visible={visible}
+          setVisible={setVisible}
+          onConfirm={onMerge}
+          onCancel={onCancel}
+        />
       </Row>
     )
   return <FileDetails onRemove={remove} />

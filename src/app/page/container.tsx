@@ -52,10 +52,12 @@ const CardOption = ({
 }
 
 const SelectInputMethod = () => {
-  const [method, setMethod] = useState<number | undefined>()
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
   const dispatch = useDispatch()
   const { accounts } = useAccount()
+  const {
+    main: { methodSelected },
+  } = useSelector((state: AppState) => state)
 
   const myMints = useMemo(
     () => Object.values(accounts).map((acc) => acc.mint),
@@ -63,20 +65,15 @@ const SelectInputMethod = () => {
   )
   const singleMints = useSingleMints(myMints)
 
-  const onContinue = () => {
-    dispatch(onSelectMethod(method))
-    dispatch(onSelectStep(Step.two))
-  }
-
   const onSelectMint = (mintAddress: string) => {
     setActiveMintAddress(mintAddress)
     dispatch(onSelectedMint(mintAddress))
   }
 
   const disabled = useMemo(() => {
-    if (activeMintAddress === 'Select' || !method) return true
+    if (activeMintAddress === 'Select' || !methodSelected) return true
     return false
-  }, [activeMintAddress, method])
+  }, [activeMintAddress, methodSelected])
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -99,7 +96,7 @@ const SelectInputMethod = () => {
                   Fill in information transfer by
                 </Typography.Text>
                 <Radio.Group
-                  onChange={(e) => setMethod(e.target.value)}
+                  onChange={(e) => dispatch(onSelectMethod(e.target.value))}
                   style={{ width: '100%' }}
                   className="select-card"
                 >
@@ -109,7 +106,7 @@ const SelectInputMethod = () => {
                         <CardOption
                           label="Manual"
                           description="With a small number of recipients."
-                          active={method === SelectMethod.manual}
+                          active={methodSelected === SelectMethod.manual}
                         />
                       </Radio.Button>
                     </Col>
@@ -118,7 +115,7 @@ const SelectInputMethod = () => {
                         <CardOption
                           label="Automatic"
                           description="Support importing many recipient information quickly by CSV file."
-                          active={method === SelectMethod.auto}
+                          active={methodSelected === SelectMethod.auto}
                         />
                       </Radio.Button>
                     </Col>
@@ -132,7 +129,7 @@ const SelectInputMethod = () => {
         <Col span={24}>
           <Button
             size="large"
-            onClick={onContinue}
+            onClick={() => dispatch(onSelectStep(Step.two))}
             block
             type="primary"
             disabled={disabled}
@@ -151,7 +148,7 @@ const Container = () => {
     steps: { step },
   } = useSelector((state: AppState) => state)
 
-  if (!methodSelected) return <SelectInputMethod />
+  if (step === Step.one) return <SelectInputMethod />
   if (step === Step.two)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />

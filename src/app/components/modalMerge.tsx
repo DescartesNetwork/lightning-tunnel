@@ -5,10 +5,12 @@ const ModalMerge = ({
   visible,
   setVisible,
   onConfirm,
+  onCancel,
 }: {
   visible: boolean
   setVisible: (visible: boolean) => void
   onConfirm: () => void
+  onCancel: () => void
 }) => {
   return (
     <Modal
@@ -39,7 +41,7 @@ const ModalMerge = ({
 
         <Col span={24} style={{ textAlign: 'right' }}>
           <Space>
-            <Button onClick={() => setVisible(false)} type="ghost">
+            <Button onClick={onCancel} type="ghost">
               cancel
             </Button>
             <Button onClick={onConfirm} type="primary">

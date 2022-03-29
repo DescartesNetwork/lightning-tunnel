@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { SelectMethod } from 'app/constants'
 
 /**
  * Interface & Utility
@@ -17,7 +18,7 @@ export type MethodType = {
 
 const NAME = 'main'
 const initialState: MethodType = {
-  methodSelected: undefined,
+  methodSelected: SelectMethod.manual,
   mintSelected: '',
   fileName: '',
   selectedFile: [],

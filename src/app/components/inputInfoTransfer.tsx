@@ -192,6 +192,7 @@ const InputInfoTransfer = ({
         onConfirm={onMerge}
         visible={visible}
         setVisible={setVisible}
+        onCancel={() => setVisible(false)}
       />
     </Row>
   )

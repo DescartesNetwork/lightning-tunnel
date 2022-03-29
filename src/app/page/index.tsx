@@ -36,7 +36,10 @@ const Page = () => {
       }
     }
 
-    return window.notify({ type: 'warning', description: 'wrong wallet' })
+    return window.notify({
+      type: 'warning',
+      description: 'You are not on the list.',
+    })
   }, [cid, walletAddress, dispatch])
 
   useEffect(() => {

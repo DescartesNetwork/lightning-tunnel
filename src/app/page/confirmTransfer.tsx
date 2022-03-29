@@ -12,7 +12,7 @@ import Header from 'app/components/header'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
-import { Step } from 'app/constants'
+import { History, Step } from 'app/constants'
 import { explorer, numeric } from 'shared/util'
 import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
@@ -92,8 +92,6 @@ const ConfirmTransfer = () => {
     if (!sdk || !account.isAddress(mintSelected) || !tree) return
 
     const { merkleRoot } = tree
-    console.log('merkleRoot, ', merkleRoot)
-    console.log('tree,', tree)
     setLoading(true)
     try {
       const { splt, wallet } = window.sentre
@@ -138,11 +136,18 @@ const ConfirmTransfer = () => {
       const ipfs = new IPFS()
       const db = new PDB(walletAddress).createInstance('lightning_tunnel')
 
-      const oldHistory = await db.getItem('history')
-      const newHistory = oldHistory ? [oldHistory] : []
+      const oldHistory: History[] = (await db.getItem('history')) || []
+      const newHistory = [...oldHistory]
       const dataEncoded = encodeData(tree, distributorInfo, mintSelected)
       const cid = await ipfs.set(dataEncoded)
-      newHistory.push(cid)
+
+      const history: History = {
+        cid,
+        total,
+        time: new Date().toString(),
+        mint: mintSelected,
+      }
+      newHistory.push(history)
       db.setItem('history', newHistory)
 
       const redeemAt = `${window.location.origin}${appRoute}?${generateQuery({

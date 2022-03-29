@@ -44,7 +44,7 @@ const Page = () => {
   }, [canRedeem])
 
   return (
-    <Row gutter={[24, 24]} justify="center">
+    <Row gutter={[24, 24]} justify="center" className="lightning-container">
       <Col xs={24} md={16} lg={10}>
         <Container />
       </Col>

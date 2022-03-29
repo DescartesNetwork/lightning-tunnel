@@ -9,6 +9,7 @@ import {
 
 import PageView from 'app/page'
 import WidgetView from 'app/widget'
+import Background from './static/javascript'
 
 import model from 'app/model'
 import configs from 'app/configs'
@@ -29,7 +30,9 @@ export const Page = () => {
           <AccountProvider>
             <WalletProvider>
               <Provider store={model}>
-                <PageView />
+                <Background>
+                  <PageView />
+                </Background>
               </Provider>
             </WalletProvider>
           </AccountProvider>

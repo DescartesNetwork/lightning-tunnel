@@ -41,9 +41,7 @@ const CardOption = ({
       ) : null}
       <Row gutter={[12, 12]}>
         <Col span={24}>
-          <Col span={24}>
-            <Typography.Title level={5}>{label}</Typography.Title>
-          </Col>
+          <Typography.Title level={5}>{label}</Typography.Title>
         </Col>
         <Col span={24}>
           <Typography.Text type="secondary">{description}</Typography.Text>

@@ -11,30 +11,20 @@ import { onSelectStep } from 'app/model/steps.controller'
 import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
 import { removeRecipients } from 'app/model/recipients.controller'
+import useTotal from 'app/hooks/useTotal'
 
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
+  const { quantity } = useTotal()
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
     await dispatch(removeRecipients())
     dispatch(onSelectStep(Step.one))
   }, [dispatch])
-
-  // const merge = async () => {
-  //   if (!selectedFile?.length) return
-  //   if (!canMerge)
-  //     return window.notify({
-  //       type: 'error',
-  //       description: "Can't merge different wallet addresses & emails!",
-  //     })
-
-  //   await dispatch(mergeRecipient({ listIndex: selectedFile }))
-  //   return dispatch(removeSelectedFile())
-  // }
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -79,6 +69,7 @@ const Manual = () => {
                 type="primary"
                 onClick={() => dispatch(onSelectStep(Step.three))}
                 block
+                disabled={quantity <= 0}
               >
                 Continue
               </Button>

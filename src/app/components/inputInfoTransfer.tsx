@@ -1,15 +1,8 @@
-import {
-  ChangeEvent,
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { ChangeEvent, Fragment, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 
-import { Button, Checkbox, Col, Input, Row, Typography } from 'antd'
+import { Button, Checkbox, Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { AppState } from 'app/model'
@@ -38,12 +31,10 @@ const DEFAULT_RECIPIENT = {
 
 const ActionButton = ({
   walletAddress,
-  disabledBtn,
   addNewRecipient,
   remove,
 }: {
   walletAddress?: string
-  disabledBtn: boolean
   addNewRecipient: () => void
   remove: () => void
 }) => {
@@ -63,7 +54,6 @@ const ActionButton = ({
           size="small"
           style={{ padding: 0, color: '#42E6EB' }}
           onClick={addNewRecipient}
-          disabled={disabledBtn}
         >
           OK
         </Button>
@@ -79,7 +69,7 @@ const InputInfoTransfer = ({
   isSelect = false,
 }: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState('')
   const [visible, setVisible] = useState(false)
 
   const {
@@ -106,14 +96,17 @@ const InputInfoTransfer = ({
 
   const addNewRecipient = async () => {
     const { walletAddress, amount } = formInput
-    if (Number(amount) % 1 !== 0) return setError(true)
+
+    if (!account.isAddress(walletAddress))
+      return setError('Wrong wallet address')
+    if (Number(amount) % 1 !== 0) return setError('Should be natural numbers')
 
     for (const [address] of recipients) {
       if (walletAddress === address) return setVisible(true)
     }
 
     const recipient: RecipientInfo = [walletAddress, amount]
-    setError(false)
+    setError('')
     await dispatch(addRecipient({ recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
@@ -129,7 +122,7 @@ const InputInfoTransfer = ({
     await dispatch(removeRecipient({ recipient }))
     await dispatch(addRecipient({ recipient: nextRecipient }))
     await setVisible(false)
-
+    if (error) setError('')
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
@@ -140,12 +133,6 @@ const InputInfoTransfer = ({
     return dispatch(addRecipients({ recipients: nextData }))
   }
 
-  const disabledBtn = useMemo(() => {
-    const { amount, walletAddress } = formInput
-
-    if (!amount || !account.isAddress(walletAddress)) return true
-    return false
-  }, [formInput])
   const disabledInput = walletAddress ? true : false
 
   useEffect(() => {
@@ -188,7 +175,6 @@ const InputInfoTransfer = ({
         <Col>
           <ActionButton
             addNewRecipient={addNewRecipient}
-            disabledBtn={disabledBtn}
             walletAddress={walletAddress}
             remove={remove}
           />
@@ -196,9 +182,10 @@ const InputInfoTransfer = ({
       )}
       {error && (
         <Col span={24}>
-          <Typography.Text type="danger">
-            Should be natural numbers
-          </Typography.Text>
+          <Space>
+            <IonIcon style={{ color: '#f2323f' }} name="warning-outline" />
+            <Typography.Text type="danger">{error}</Typography.Text>
+          </Space>
         </Col>
       )}
       <ModalMerge

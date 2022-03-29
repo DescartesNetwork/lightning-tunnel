@@ -47,8 +47,8 @@ const ModalRedeem = ({
   )
 
   const onClaim = useCallback(async () => {
-    console.log(claimProof)
     if (!claimProof || !claimProof.distributorInfo) return
+    setLoading(true)
 
     const {
       index,
@@ -66,12 +66,20 @@ const ModalRedeem = ({
       !distributor
     )
       return window.notify({ type: 'warning', description: 'Invalid proof' })
-    setLoading(true)
+
     try {
       const { isClaimed } = await distributor.getClaimStatus(new u64(index))
-      if (isClaimed)
-        return window.notify({ type: 'error', description: 'You have clamied' })
-    } catch (err) {}
+      if (isClaimed) {
+        return window.notify({
+          type: 'error',
+          description: 'Tokens has been redeemed',
+        })
+      }
+    } catch (err) {
+    } finally {
+      setLoading(false)
+      dispatch(setVisible(false))
+    }
 
     const bufferProof = !proof.length ? [] : [Buffer.from(proof[0].data)]
 
@@ -109,7 +117,7 @@ const ModalRedeem = ({
           <Space direction="vertical" size={4}>
             <Typography.Title level={3}>Redemption!</Typography.Title>
             <Space size={4}>
-              <Typography.Text type="secondary">Let's take</Typography.Text>
+              <Typography.Text type="secondary">Let's take</Typography.Text>{' '}
               <Typography.Title level={5} style={{ color: '#42E6EB' }}>
                 {utils.undecimalize(
                   BigInt(claimProof?.amount || 0),

@@ -21,6 +21,7 @@ const Content = () => {
       <Col span={24}>
         <Space size={24}>
           <Switch
+            disabled
             onChange={(checked: boolean) => dispatch(setEncryption(checked))}
           />
           Encryption confidential information
@@ -39,7 +40,10 @@ const Setting = () => {
         title={null}
         content={<Content />}
       >
-        <IonIcon style={{ cursor: 'pointer' }} name="cog-outline" />
+        <IonIcon
+          style={{ cursor: 'pointer', fontSize: 16 }}
+          name="cog-outline"
+        />
       </Popover>
     </div>
   )

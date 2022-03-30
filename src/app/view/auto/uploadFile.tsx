@@ -55,7 +55,7 @@ const UploadFile = () => {
       errorDatas = errorDatas.map(([address, amount]) => {
         const actualAmount = decimal
           ? Number(amount) * 10 ** mintDecimals
-          : amount
+          : Number(amount)
 
         return [address, BigInt(actualAmount)]
       })
@@ -64,6 +64,7 @@ const UploadFile = () => {
         (recipient) =>
           !recipient.includes('') && account.isAddress(recipient[0]),
       )
+
       return { errorDatas, successData }
     },
     [decimal, mintDecimals],

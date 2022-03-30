@@ -21,6 +21,7 @@ import {
 } from 'app/model/recipients.controller'
 import { account } from '@senswap/sen-js'
 import ModalMerge from 'app/components/modalMerge'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {
@@ -40,17 +41,33 @@ const UploadFile = () => {
   >({})
   const {
     recipients: { recipients },
+    main: { mintSelected },
+    setting: { decimal },
   } = useSelector((state: AppState) => state)
+  const mintDecimals = useMintDecimals(mintSelected) || 0
 
-  const detectErrorData = (data: RecipientInfos) => {
-    const errorDatas = data.filter(
-      (recipient) => recipient.includes('') || !account.isAddress(recipient[0]),
-    )
-    const successData = data.filter(
-      (recipient) => !recipient.includes('') && account.isAddress(recipient[0]),
-    )
-    return { errorDatas, successData }
-  }
+  const detectErrorData = useCallback(
+    (data: RecipientInfos) => {
+      let errorDatas = data.filter(
+        (recipient) =>
+          recipient.includes('') || !account.isAddress(recipient[0]),
+      )
+      errorDatas = errorDatas.map(([address, amount]) => {
+        const actualAmount = decimal
+          ? Number(amount) * 10 ** mintDecimals
+          : amount
+
+        return [address, BigInt(actualAmount)]
+      })
+
+      const successData = data.filter(
+        (recipient) =>
+          !recipient.includes('') && account.isAddress(recipient[0]),
+      )
+      return { errorDatas, successData }
+    },
+    [decimal, mintDecimals],
+  )
 
   const upload = useCallback(
     async (file: any) => {
@@ -65,12 +82,17 @@ const UploadFile = () => {
       const recipient: Record<string, RecipientInfo> = {}
       let isDuplicate = false
       for (const [address, amount] of recipients) {
+        const nextAmount = decimal
+          ? Number(amount) * 10 ** mintDecimals
+          : Number(amount)
+
         if (recipient[address]) {
           isDuplicate = true
           const [walletAddress, oldAmount] = recipient[address]
-          const newAmount = Number(oldAmount) + Number(amount)
-          recipient[address] = [walletAddress, newAmount.toString()]
-        } else recipient[address] = [address, amount]
+
+          const newAmount = oldAmount + BigInt(nextAmount)
+          recipient[address] = [walletAddress, newAmount]
+        } else recipient[address] = [address, BigInt(nextAmount)]
       }
 
       if (isDuplicate) {
@@ -87,7 +109,7 @@ const UploadFile = () => {
       setVisible(false)
       return false
     },
-    [dispatch],
+    [decimal, detectErrorData, dispatch, mintDecimals],
   )
   const onMerge = () => {
     const recipients = Object.values(listDuplicate)

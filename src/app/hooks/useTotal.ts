@@ -1,18 +1,14 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { account, utils } from '@senswap/sen-js'
+import { account } from '@senswap/sen-js'
 
 import { AppState } from 'app/model'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { RecipientInfos } from 'app/model/recipients.controller'
 
 const useTotal = () => {
   const {
-    main: { mintSelected },
     recipients: { recipients, errorDatas },
-    setting: { decimal },
   } = useSelector((state: AppState) => state)
-  const mintDecimals = useMintDecimals(mintSelected) || 0
 
   const calculateTotal = (data: RecipientInfos) => {
     if (!data.length) return 0
@@ -36,7 +32,7 @@ const useTotal = () => {
   const quantity = useMemo(() => recipients.length, [recipients])
 
   return {
-    total: decimal ? total : utils.undecimalize(BigInt(total), mintDecimals),
+    total: BigInt(total),
     quantity: quantity + editedDataLength,
   }
 }

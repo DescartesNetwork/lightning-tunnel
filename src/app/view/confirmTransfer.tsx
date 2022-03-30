@@ -1,11 +1,10 @@
+import moment from 'moment'
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount, useWallet } from '@senhub/providers'
 import { account, utils } from '@senswap/sen-js'
 import { NewFormat } from '@saberhq/merkle-distributor/dist/cjs/utils'
-import { u64 } from '@saberhq/token-utils'
 import { utils as MerkleUtils } from '@saberhq/merkle-distributor'
-import moment from 'moment'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
@@ -18,12 +17,11 @@ import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'app/hooks/useTotal'
 import useMerkleSDK from 'app/hooks/useMerkleSDK'
-import { encodeData } from 'app/helper'
+import { encodeData, toU64 } from 'app/helper'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import PDB from 'shared/pdb'
 import IPFS from 'shared/pdb/ipfs'
 import ModalShare from 'app/components/modalShare'
-import { BN } from '@project-serum/anchor'
 
 const Content = ({
   label = '',
@@ -74,8 +72,8 @@ const ConfirmTransfer = () => {
 
   const remainingBalance = useMemo(() => {
     if (!balance) return 0
-    return Number(balance) - Number(total)
-  }, [balance, total])
+    return Number(balance) - Number(utils.undecimalize(total, mintDecimals))
+  }, [balance, mintDecimals, total])
 
   const tree = useMemo(() => {
     if (!recipients.length) return
@@ -83,11 +81,11 @@ const ConfirmTransfer = () => {
     Object.values(recipients).forEach(([address, amount]) => {
       balanceTree.push({
         address,
-        earnings: utils.decimalize(amount, mintDecimals).toString(),
+        earnings: amount.toString(),
       })
     })
     return MerkleUtils.parseBalanceMap(balanceTree)
-  }, [recipients, mintDecimals])
+  }, [recipients])
 
   const onConfirm = async () => {
     if (!sdk || !account.isAddress(mintSelected) || !tree) return
@@ -98,14 +96,14 @@ const ConfirmTransfer = () => {
       const { splt, wallet } = window.sentre
       if (!wallet) throw Error('Please connect wallet')
 
-      const maxTotalClaim = utils.decimalize(total, mintDecimals).toString()
+      const maxTotalClaim = total.toString()
       const publicKey = account.fromAddress(mintSelected)
 
       const { tx, distributor, distributorATA } = await sdk.createDistributor({
         tokenMint: publicKey,
         root: merkleRoot,
-        maxNumNodes: u64.fromBuffer(new BN(quantity).toBuffer('le', 8)),
-        maxTotalClaim: u64.fromBuffer(new BN(maxTotalClaim).toBuffer('le', 8)),
+        maxNumNodes: toU64(quantity),
+        maxTotalClaim: toU64(maxTotalClaim),
       })
       const pendingTx = await tx.send()
       await pendingTx.wait()
@@ -144,7 +142,7 @@ const ConfirmTransfer = () => {
 
       const history: History = {
         cid,
-        total,
+        total: utils.undecimalize(total, mintDecimals),
         time: new Date().toString(),
         mint: mintSelected,
       }
@@ -178,7 +176,9 @@ const ConfirmTransfer = () => {
             <Col>
               <Space direction="vertical" size={12} align="center">
                 <Typography.Text>Total transfer</Typography.Text>
-                <Typography.Title level={1}>{total}</Typography.Title>
+                <Typography.Title level={1}>
+                  {utils.undecimalize(total, mintDecimals)}
+                </Typography.Title>
                 <Tag
                   style={{
                     margin: 0,

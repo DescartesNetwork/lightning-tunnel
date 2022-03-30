@@ -5,6 +5,8 @@ import { MintSymbol } from 'shared/antd/mint'
 
 import { AppState } from 'app/model'
 import useTotal from 'app/hooks/useTotal'
+import { utils } from '@senswap/sen-js'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 const Content = ({
   label,
@@ -41,6 +43,7 @@ export const WrapTotal = () => {
     main: { mintSelected },
   } = useSelector((sate: AppState) => sate)
   const { total, quantity } = useTotal()
+  const mintDecimals = useMintDecimals(mintSelected) || 0
 
   return (
     <Row gutter={[8, 8]}>
@@ -48,7 +51,11 @@ export const WrapTotal = () => {
         <Content label="Quantity" value={quantity} />
       </Col>
       <Col span={24}>
-        <Content label="Total" value={total} mintAddress={mintSelected} />
+        <Content
+          label="Total"
+          value={utils.undecimalize(total, mintDecimals)}
+          mintAddress={mintSelected}
+        />
       </Col>
     </Row>
   )

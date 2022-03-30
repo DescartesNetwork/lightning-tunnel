@@ -1,4 +1,6 @@
+import BN from 'bn.js'
 import { MerkleDistributorInfo } from '@saberhq/merkle-distributor/dist/cjs/utils'
+import { u64 } from '@saberhq/token-utils'
 
 import { explorer } from 'shared/util'
 
@@ -93,4 +95,10 @@ export const encodeData = (
     data[claimant] = newClaim
   })
   return data
+}
+
+export const toU64 = (a: number | string) => {
+  const bn = new BN(a)
+  const buf = bn.toArray('le', 8)
+  return u64.fromBuffer(Buffer.from(buf))
 }

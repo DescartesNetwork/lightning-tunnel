@@ -1,5 +1,6 @@
 import { forwardRef, useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { account, utils } from '@senswap/sen-js'
 
 import { Button, Col, Row, Space, Typography, Tooltip, Checkbox } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -8,13 +9,13 @@ import NumericInput from 'shared/antd/numericInput'
 import { shortenAddress } from 'shared/util'
 import { AppDispatch, AppState } from 'app/model'
 import { setErrorDatas } from 'app/model/recipients.controller'
-import { account } from '@senswap/sen-js'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 type AccountInfoProps = {
   accountAddress?: string
   selected?: boolean
   email?: string
-  amount?: number | string
+  amount?: bigint
   index: number
   onChecked?: (checked: boolean, index: number) => void
 }
@@ -92,7 +93,7 @@ const AccountInfo = forwardRef(
   (
     {
       accountAddress = '',
-      amount = 0,
+      amount = BigInt(0),
       selected = false,
       onChecked = () => {},
       index,
@@ -104,20 +105,23 @@ const AccountInfo = forwardRef(
     const [nextAmount, setNextAmount] = useState('')
     const {
       recipients: { errorDatas, recipients },
-      main: { selectedFile },
+      main: { selectedFile, mintSelected },
     } = useSelector((state: AppState) => state)
     const amountRef = useRef(ref)
+    const mintDecimals = useMintDecimals(mintSelected) || 0
 
     const editable = !amount
     const wrongAddress = !account.isAddress(accountAddress)
-    const amountValue = isEdited ? nextAmount : amount
+    const amountValue = isEdited
+      ? nextAmount
+      : utils.undecimalize(amount, mintDecimals)
     const idxErrData = index - recipients.length
 
     const onUpdate = useCallback(() => {
       if (!errorDatas?.length || index - errorDatas.length < 0) return
       const nextErrorData = [...errorDatas]
       const [[address]] = nextErrorData.splice(idxErrData, 1)
-      nextErrorData.unshift([address, nextAmount])
+      nextErrorData.unshift([address, BigInt(nextAmount)])
       dispatch(setErrorDatas({ errorDatas: nextErrorData }))
     }, [dispatch, errorDatas, idxErrData, index, nextAmount])
 
@@ -147,12 +151,12 @@ const AccountInfo = forwardRef(
             <Typography.Text type="secondary">#{index + 1}</Typography.Text>
           </Space>
         </Col>
-        <Col span={13}>
+        <Col span={12}>
           <Tooltip title={accountAddress}>
             <Typography.Text>{shortenAddress(accountAddress)}</Typography.Text>
           </Tooltip>
         </Col>
-        <Col span={5}>
+        <Col span={6}>
           <NumericInput
             value={amountValue}
             bordered={isEdited}

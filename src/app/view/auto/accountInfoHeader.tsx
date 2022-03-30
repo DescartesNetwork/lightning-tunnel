@@ -28,10 +28,10 @@ const AccountInfoHeader = ({
           <Typography.Text type="secondary">No.</Typography.Text>
         </Space>
       </Col>
-      <Col span={13}>
+      <Col span={12}>
         <Typography.Text type="secondary">Wallet address</Typography.Text>
       </Col>
-      <Col span={5}>
+      <Col span={6}>
         <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
       {!!errorDatas?.length && <Col span={3} />}

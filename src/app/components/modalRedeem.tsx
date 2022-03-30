@@ -3,13 +3,12 @@ import { useDispatch } from 'react-redux'
 import { account, utils } from '@senswap/sen-js'
 import { useWallet } from '@senhub/providers'
 import { PublicKey } from '@solana/web3.js'
-import { u64 } from '@saberhq/token-utils'
 import { MerkleDistributorWrapper } from '@saberhq/merkle-distributor'
 
 import { Modal, Image, Space, Typography, Row, Col, Button } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import { ClaimProof } from 'app/helper'
+import { ClaimProof, toU64 } from 'app/helper'
 import { notifySuccess, notifyError } from 'app/helper'
 import { AppDispatch } from 'app/model'
 import { setVisible } from 'app/model/main.controller'
@@ -18,7 +17,6 @@ import useMerkleSDK from 'app/hooks/useMerkleSDK'
 import REDEEM from 'app/static/images/redeem.svg'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { MintSymbol } from 'shared/antd/mint'
-import { BN } from '@project-serum/anchor'
 
 const ModalRedeem = ({
   visible,
@@ -69,9 +67,7 @@ const ModalRedeem = ({
       return window.notify({ type: 'warning', description: 'Invalid proof' })
 
     try {
-      const { isClaimed } = await distributor.getClaimStatus(
-        u64.fromBuffer(new BN(index).toBuffer('le', 8)),
-      )
+      const { isClaimed } = await distributor.getClaimStatus(toU64(index))
       if (isClaimed) {
         return window.notify({
           type: 'error',
@@ -87,8 +83,8 @@ const ModalRedeem = ({
     const bufferProof = !proof.length ? [] : [Buffer.from(proof[0].data)]
 
     const tx = await distributor.claim({
-      index: u64.fromBuffer(new BN(index).toBuffer('le', 8)),
-      amount: u64.fromBuffer(new BN(amount).toBuffer('le', 8)),
+      index: toU64(index),
+      amount: toU64(amount),
       proof: bufferProof,
       claimant: new PublicKey(walletAddress),
     })

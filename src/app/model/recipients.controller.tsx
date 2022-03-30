@@ -4,7 +4,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
  * Interface & Utility
  */
 
-export type RecipientInfo = [string, string]
+export type RecipientInfo = [string, bigint]
 
 export type RecipientInfos = Array<RecipientInfo>
 
@@ -100,19 +100,18 @@ export const mergeRecipient = createAsyncThunk<
     recipients: { recipients },
   } = getState()
   let baseData = [...recipients]
-  let mergeRecipient: RecipientInfo = ['', '']
+  let mergeRecipient: RecipientInfo = ['', BigInt(0)]
 
   baseData = baseData.filter(function (value, index) {
     return listIndex.indexOf(index) === -1
   })
 
-  let sum = 0
+  let sum = BigInt(0)
 
   for (const index of listIndex) {
     const [address, amount] = recipients[index]
-
-    sum += Number(amount)
-    mergeRecipient = [address, sum.toString()]
+    sum += BigInt(amount)
+    mergeRecipient = [address, sum]
   }
 
   baseData.unshift(mergeRecipient)

@@ -12,7 +12,7 @@ import { ClaimProof } from 'app/helper'
 import { useWallet } from '@senhub/providers'
 import IPFS from 'shared/pdb/ipfs'
 
-const Page = () => {
+const View = () => {
   const [claimProof, setClaimProof] = useState<ClaimProof>()
   const {
     main: { visible },
@@ -56,4 +56,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default View

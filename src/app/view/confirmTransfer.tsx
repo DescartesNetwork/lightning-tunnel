@@ -23,6 +23,7 @@ import { useAppRouter } from 'app/hooks/useAppRoute'
 import PDB from 'shared/pdb'
 import IPFS from 'shared/pdb/ipfs'
 import ModalShare from 'app/components/modalShare'
+import { BN } from '@project-serum/anchor'
 
 const Content = ({
   label = '',
@@ -103,8 +104,8 @@ const ConfirmTransfer = () => {
       const { tx, distributor, distributorATA } = await sdk.createDistributor({
         tokenMint: publicKey,
         root: merkleRoot,
-        maxNumNodes: new u64(quantity),
-        maxTotalClaim: new u64(maxTotalClaim),
+        maxNumNodes: u64.fromBuffer(new BN(quantity).toBuffer('le', 8)),
+        maxTotalClaim: u64.fromBuffer(new BN(maxTotalClaim).toBuffer('le', 8)),
       })
       const pendingTx = await tx.send()
       await pendingTx.wait()

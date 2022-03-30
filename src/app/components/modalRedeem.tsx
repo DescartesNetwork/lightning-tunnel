@@ -18,6 +18,7 @@ import useMerkleSDK from 'app/hooks/useMerkleSDK'
 import REDEEM from 'app/static/images/redeem.svg'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { MintSymbol } from 'shared/antd/mint'
+import { BN } from '@project-serum/anchor'
 
 const ModalRedeem = ({
   visible,
@@ -68,7 +69,9 @@ const ModalRedeem = ({
       return window.notify({ type: 'warning', description: 'Invalid proof' })
 
     try {
-      const { isClaimed } = await distributor.getClaimStatus(new u64(index))
+      const { isClaimed } = await distributor.getClaimStatus(
+        u64.fromBuffer(new BN(index).toBuffer('le', 8)),
+      )
       if (isClaimed) {
         return window.notify({
           type: 'error',
@@ -84,8 +87,8 @@ const ModalRedeem = ({
     const bufferProof = !proof.length ? [] : [Buffer.from(proof[0].data)]
 
     const tx = await distributor.claim({
-      index: new u64(index),
-      amount: new u64(amount),
+      index: u64.fromBuffer(new BN(index).toBuffer('le', 8)),
+      amount: u64.fromBuffer(new BN(amount).toBuffer('le', 8)),
       proof: bufferProof,
       claimant: new PublicKey(walletAddress),
     })

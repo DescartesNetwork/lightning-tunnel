@@ -140,7 +140,7 @@ const AccountInfo = ({
 
   return (
     <Row gutter={[16, 8]} align="middle" justify="space-between" wrap={false}>
-      <Col style={{ minWidth: 60 }}>
+      <Col span={3}>
         <Space>
           {selected && (
             <Checkbox
@@ -152,24 +152,25 @@ const AccountInfo = ({
           <Typography.Text type="secondary">#{index + 1}</Typography.Text>
         </Space>
       </Col>
-      <Col style={{ minWidth: 296 }}>
+      <Col span={13}>
         <Tooltip title={accountAddress}>
           <Typography.Text>{shortenAddress(accountAddress)}</Typography.Text>
         </Tooltip>
       </Col>
-      <Col style={{ minWidth: 100 }}>
+      <Col span={5}>
         <NumericInput
           value={amountValue}
           bordered={isEdited}
           onChange={(e) => setNextAmount(e.target.value)}
           disabled={!isEdited}
           style={{ padding: 0 }}
-          className="recipient-input"
+          className="recipient-input-auto"
           ref={amountRef}
+          autoFocus
         />
       </Col>
       {!!errorDatas?.length && (
-        <Col style={{ minWidth: 70 }}>
+        <Col span={3}>
           {editable && (
             <Space align="center">
               <AlertIcon editable={editable} wrongAddress={wrongAddress} />

@@ -102,10 +102,8 @@ const UploadFile = () => {
   }
 
   const remove = async () => {
-    setLoading(true)
     dispatch(removeRecipients())
     setListDuplicate({})
-    setLoading(false)
     return true
   }
 

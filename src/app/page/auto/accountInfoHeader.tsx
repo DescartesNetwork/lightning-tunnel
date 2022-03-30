@@ -16,8 +16,8 @@ const AccountInfoHeader = ({
   } = useSelector((state: AppState) => state)
 
   return (
-    <Row gutter={[16, 8]} align="middle" wrap={false}>
-      <Col style={{ minWidth: 60 }}>
+    <Row gutter={[16, 8]} align="middle" wrap={false} justify="space-between">
+      <Col span={3}>
         <Space>
           {selected && (
             <Checkbox
@@ -28,13 +28,13 @@ const AccountInfoHeader = ({
           <Typography.Text type="secondary">No.</Typography.Text>
         </Space>
       </Col>
-      <Col style={{ minWidth: 296 }}>
+      <Col span={13}>
         <Typography.Text type="secondary">Wallet address</Typography.Text>
       </Col>
-      <Col style={{ minWidth: 100 }}>
+      <Col span={5}>
         <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
-      {!!errorDatas?.length && <Col style={{ minWidth: 70 }} />}
+      {!!errorDatas?.length && <Col span={3} />}
     </Row>
   )
 }

@@ -1,22 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
 import InputInfoTransfer from 'app/components/inputInfoTransfer'
 import { WrapTotal } from 'app/components/cardTotal'
 import AccountInfoHeader from './accountInfoHeader'
+import AccountInfo from './accountInfo'
+import IonIcon from 'shared/antd/ionicon'
 
 import { AppDispatch, AppState } from 'app/model'
-import IonIcon from 'shared/antd/ionicon'
-import AccountInfo from './accountInfo'
 import { CollapseAddNew } from 'app/constants'
-import {
-  addRecipients,
-  mergeRecipient,
-  setErrorDatas,
-} from 'app/model/recipients.controller'
+import { addRecipients, setErrorDatas } from 'app/model/recipients.controller'
 import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
-import useCanMerge from 'app/hooks/useCanMerge'
 
 const ActionButton = ({
   activeKey = '',
@@ -68,7 +63,6 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
     main: { fileName, selectedFile },
     recipients: { recipients, errorDatas },
   } = useSelector((state: AppState) => state)
-  const canMerge = useCanMerge()
 
   const onSelected = (checked: boolean, index: number) =>
     dispatch(onSelectedFile({ checked, index }))
@@ -91,31 +85,6 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
     dispatch(addRecipients({ recipients: filterRecipient }))
     dispatch(removeSelectedFile())
     setLoading(false)
-  }
-
-  // Need to merge
-  const duplicated = useMemo(() => {
-    if (!recipients?.length) return false
-    const duplicatedElements = recipients.filter(([address], index) => {
-      const expectedIndex = recipients.findIndex(
-        ([expectedAddress]) => address === expectedAddress,
-      )
-      return expectedIndex !== index && expectedIndex > -1
-    })
-    if (duplicatedElements.length > 0) return true
-    return false
-  }, [recipients])
-
-  const onMerge = () => {
-    if (!duplicated || !selectedFile) return
-    if (!canMerge)
-      return window.notify({
-        type: 'error',
-        description: "Can't merge different wallet addresses & emails!",
-      })
-
-    dispatch(mergeRecipient({ listIndex: selectedFile }))
-    return dispatch(removeSelectedFile())
   }
 
   return (
@@ -147,26 +116,15 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
         <Row gutter={[12, 12]}>
           <Col flex="auto">
             {selected && (
-              <Space>
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<IonIcon name="trash-outline" />}
-                  onClick={onDelete}
-                  disabled={!selectedFile?.length}
-                >
-                  Delete
-                </Button>
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<IonIcon name="git-branch-outline" />}
-                  onClick={onMerge}
-                  disabled={!selectedFile?.length && duplicated}
-                >
-                  Merge
-                </Button>
-              </Space>
+              <Button
+                type="text"
+                size="small"
+                icon={<IonIcon name="trash-outline" />}
+                onClick={onDelete}
+                disabled={!selectedFile?.length}
+              >
+                Delete
+              </Button>
             )}
           </Col>
           <Col>

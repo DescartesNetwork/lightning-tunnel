@@ -7,7 +7,7 @@ import CustomAppIcon from './customAppIcon'
 
 import { RootState, useRootDispatch, useRootSelector } from 'os/store'
 import { setVisibleInstaller } from 'os/store/ui.reducer'
-import SearchEngine from 'os/view/market/searchEngine'
+import SearchEngine from 'os/view/header/search/searchEngine'
 import { randChoose } from 'os/helpers/utils'
 
 const SUGGESTION_LIMIT = 6
@@ -29,7 +29,7 @@ const Installer = () => {
 
   const closeInstaller = useCallback(async () => {
     await dispatch(setVisibleInstaller(false))
-    return history.push('/dashboard')
+    return history.push('/welcome')
   }, [dispatch, history])
 
   const onSearch = useCallback(async () => {

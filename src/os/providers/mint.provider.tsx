@@ -9,6 +9,7 @@ import {
   ReactNode,
   useMemo,
 } from 'react'
+import { account } from '@senswap/sen-js'
 
 import {
   useRootDispatch,
@@ -17,15 +18,14 @@ import {
   RootDispatch,
 } from 'os/store'
 import { getMint as _getMint, MintsState } from 'os/store/mints.reducer'
-import TokenProvider from './tokenProvider'
-import { account } from '@senswap/sen-js'
+import TokenProvider from 'shared/tokenProvider'
 
 const tokenProvider = new TokenProvider()
 const Context = createContext<MintProvider>({} as MintProvider)
 
 export type MintProvider = {
   mints: MintsState
-  getMint: (...agrs: Parameters<typeof _getMint>) => Promise<MintsState>
+  getMint: (...args: Parameters<typeof _getMint>) => Promise<MintsState>
   getDecimals: (mintAddress: string) => Promise<number>
   tokenProvider: TokenProvider
 }
@@ -37,8 +37,8 @@ const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useRootDispatch<RootDispatch>()
   const { mints, pools } = useRootSelector((state: RootState) => state)
   const getMint = useCallback(
-    async (...agrs: Parameters<typeof _getMint>) =>
-      await dispatch(_getMint(...agrs)).unwrap(),
+    async (...args: Parameters<typeof _getMint>) =>
+      await dispatch(_getMint(...args)).unwrap(),
     [dispatch],
   )
   const getDecimals = useCallback(

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
+import { useUI, useWallet } from '@senhub/providers'
 
 import { Col, Row } from 'antd'
 import ModalRedeem from 'app/components/modalRedeem'
@@ -9,14 +10,16 @@ import Container from './container'
 import { AppDispatch, AppState } from 'app/model'
 import { setVisible } from 'app/model/main.controller'
 import { ClaimProof } from 'app/helper'
-import { useWallet } from '@senhub/providers'
 import IPFS from 'shared/pdb/ipfs'
 
-const Page = () => {
+import BG from 'app/static/images/background-LT.png'
+
+const View = () => {
   const [claimProof, setClaimProof] = useState<ClaimProof>()
   const {
     main: { visible },
   } = useSelector((state: AppState) => state)
+  const { setBackground } = useUI()
   const {
     wallet: { address: walletAddress },
   } = useWallet()
@@ -46,6 +49,10 @@ const Page = () => {
     canRedeem()
   }, [canRedeem])
 
+  useEffect(() => {
+    setBackground({ light: BG, dark: BG })
+  }, [setBackground])
+
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">
       <Col xs={24} md={16} lg={10}>
@@ -56,4 +63,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default View

@@ -1,12 +1,13 @@
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import { account } from '@senswap/sen-js'
 
 import { Row, Col, Button, Space } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
-import Wallet from 'os/view/header/wallet'
+import Wallet from 'os/view/wallet'
 import Brand from 'os/components/brand'
 import ActionCenter from '../actionCenter'
 import ContextMenu from './contextMenu'
+import Search from './search'
 
 import {
   useRootDispatch,
@@ -16,15 +17,16 @@ import {
 } from 'os/store'
 import { setWalkthrough, WalkThroughType } from 'os/store/walkthrough.reducer'
 import { net } from 'shared/runtime'
+import { setVisible } from 'os/store/search.reducer'
 
-type NavButtonProps = {
+export type NavButtonProps = {
   id: string
   iconName: string
   title: string
   onClick: () => void
 }
 
-const NavButton = ({ id, iconName, title, onClick }: NavButtonProps) => {
+export const NavButton = ({ id, iconName, title, onClick }: NavButtonProps) => {
   const { width } = useRootSelector((state: RootState) => state.ui)
   return (
     <Button
@@ -39,22 +41,16 @@ const NavButton = ({ id, iconName, title, onClick }: NavButtonProps) => {
 }
 
 const Header = () => {
-  const dispatch = useRootDispatch<RootDispatch>()
-  const history = useHistory()
   const {
     wallet: { address: walletAddress },
     ui: { width, theme },
     walkthrough: { run, step },
   } = useRootSelector((state: RootState) => state)
+  const dispatch = useRootDispatch<RootDispatch>()
+  const history = useHistory()
+  const { pathname } = useLocation()
 
-  const onDashboard = async () => {
-    if (run && step === 3)
-      await dispatch(
-        setWalkthrough({ type: WalkThroughType.NewComer, step: 4 }),
-      )
-    return history.push('/dashboard')
-  }
-
+  const onSearch = () => dispatch(setVisible(true))
   const onStore = async () => {
     if (run && step === 0)
       await dispatch(
@@ -78,14 +74,14 @@ const Header = () => {
       </Col>
       <Col>
         <Space align="center">
-          {account.isAddress(walletAddress) && (
+          {pathname.startsWith('/store') ? (
             <NavButton
-              id="dashboard-nav-button"
-              iconName="grid-outline"
-              onClick={onDashboard}
-              title="Dashboard"
+              id="search-nav-button"
+              iconName="search-outline"
+              onClick={onSearch}
+              title="Search"
             />
-          )}
+          ) : null}
           <NavButton
             id="store-nav-button"
             iconName="bag-handle-outline"
@@ -95,6 +91,7 @@ const Header = () => {
           {!account.isAddress(walletAddress) ? <Wallet /> : <ActionCenter />}
         </Space>
       </Col>
+      <Search />
     </Row>
   )
 }

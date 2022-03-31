@@ -10,7 +10,7 @@
 @import './shared.os.less';
 
 body {
-  background: url('../images/light-bg.png');
+  background: url('../images/bg/light-bg.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -85,8 +85,8 @@ body {
 }
 .@{ant-prefix}-card {
   box-shadow: @LIGHT_SHADOW1;
-  .glass {
-    background-color: color(~`('@{card-background}99') `);
-    backdrop-filter: blur(4px);
+  &.glass {
+    background-color: color(~`('@{card-background}aa') `);
+    backdrop-filter: blur(16px);
   }
 }

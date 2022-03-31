@@ -2,15 +2,15 @@ import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
+import { account } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
-
-import { setFileName } from 'app/model/main.controller'
 import FileDetails from './fileDetails'
+import IonIcon from 'shared/antd/ionicon'
+import ModalMerge from 'app/components/modalMerge'
 
 import iconUpload from 'app/static/images/icon-upload.svg'
 import { AppState } from 'app/model'
-import IonIcon from 'shared/antd/ionicon'
 import exampleCSV from 'app/static/base/example.csv'
 import {
   addRecipients,
@@ -19,9 +19,8 @@ import {
   removeRecipients,
   setErrorDatas,
 } from 'app/model/recipients.controller'
-import { account } from '@senswap/sen-js'
-import ModalMerge from 'app/components/modalMerge'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { setFileName } from 'app/model/main.controller'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {

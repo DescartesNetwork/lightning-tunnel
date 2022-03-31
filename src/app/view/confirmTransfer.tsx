@@ -1,6 +1,6 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useAccount, useWallet } from '@senhub/providers'
+import { useWallet } from '@senhub/providers'
 import { account, utils } from '@senswap/sen-js'
 import { NewFormat } from '@saberhq/merkle-distributor/dist/cjs/utils'
 import { u64 } from '@saberhq/token-utils'
@@ -23,6 +23,7 @@ import { useAppRouter } from 'app/hooks/useAppRoute'
 import PDB from 'shared/pdb'
 import IPFS from 'shared/pdb/ipfs'
 import ModalShare from 'app/components/modalShare'
+import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 
 const Content = ({
   label = '',
@@ -43,7 +44,6 @@ const Content = ({
 
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
-  const [balance, setBalance] = useState(0)
   const [visible, setVisible] = useState(false)
   const [redeemLink, setRedeemLink] = useState('')
   const {
@@ -54,35 +54,24 @@ const ConfirmTransfer = () => {
     wallet: { address: walletAddress },
   } = useWallet()
   const dispatch = useDispatch<AppDispatch>()
-  const { accounts } = useAccount()
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total, quantity } = useTotal()
   const sdk = useMerkleSDK()
   const { appRoute, generateQuery } = useAppRouter()
-
-  const getBalanceAccount = useCallback(async () => {
-    const { splt } = window.sentre
-    const accountAddress = await splt.deriveAssociatedAddress(
-      walletAddress,
-      mintSelected,
-    )
-    const { amount } = accounts[accountAddress] || {}
-    if (!amount) return setBalance(0)
-    return setBalance(Number(utils.undecimalize(amount, mintDecimals)))
-  }, [accounts, mintDecimals, mintSelected, walletAddress])
+  const { balance } = useAccountBalanceByMintAddress(mintSelected)
 
   const remainingBalance = useMemo(() => {
     if (!balance) return 0
-    return Number(balance) - Number(total)
+    return balance - total
   }, [balance, total])
 
   const tree = useMemo(() => {
-    if (!recipients.length) return
+    if (!recipients.length || !mintDecimals) return
     const balanceTree: NewFormat[] = []
     Object.values(recipients).forEach(([address, amount]) => {
       balanceTree.push({
         address,
-        earnings: utils.decimalize(amount, mintDecimals).toString(),
+        earnings: (Number(amount) * 10 ** mintDecimals).toString(),
       })
     })
     return MerkleUtils.parseBalanceMap(balanceTree)
@@ -98,10 +87,10 @@ const ConfirmTransfer = () => {
       if (!wallet) throw Error('Please connect wallet')
 
       const maxTotalClaim = utils.decimalize(total, mintDecimals).toString()
-      const publicKey = account.fromAddress(mintSelected)
+      const accountAddress = account.fromAddress(mintSelected)
 
       const { tx, distributor, distributorATA } = await sdk.createDistributor({
-        tokenMint: publicKey,
+        tokenMint: accountAddress,
         root: merkleRoot,
         maxNumNodes: new u64(quantity),
         maxTotalClaim: new u64(maxTotalClaim),
@@ -147,7 +136,7 @@ const ConfirmTransfer = () => {
         time: new Date().toString(),
         mint: mintSelected,
       }
-      newHistory.push(history)
+      newHistory.unshift(history)
       db.setItem('history', newHistory)
 
       const redeemAt = `${window.location.origin}${appRoute}?${generateQuery({
@@ -161,10 +150,6 @@ const ConfirmTransfer = () => {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    getBalanceAccount()
-  }, [getBalanceAccount])
 
   return (
     <Card bordered={false} className="card-lightning">

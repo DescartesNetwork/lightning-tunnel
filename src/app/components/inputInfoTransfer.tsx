@@ -177,7 +177,7 @@ const InputInfoTransfer = ({
           name="amount"
           placeholder="Amount"
           onValue={onAmount}
-          className="recipient-input"
+          className={error ? 'recipient-input-error' : 'recipient-input'}
           autoComplete="off"
         />
       </Col>

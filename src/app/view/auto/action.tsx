@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row } from 'antd'
@@ -8,14 +8,20 @@ import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
 import { onSelectMethod } from 'app/model/main.controller'
 import { removeRecipients } from 'app/model/recipients.controller'
+import useValidateAmount from 'app/hooks/useValidateAmount'
 
 const Action = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    recipients: { recipients },
+    recipients: { recipients, errorData },
   } = useSelector((state: AppState) => state)
+  const { isError } = useValidateAmount()
 
-  const disabled = !Object.keys(recipients).length
+  const disabled = useMemo(() => {
+    if (!Object.keys(recipients).length || isError || errorData?.length)
+      return true
+    return false
+  }, [errorData, isError, recipients])
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())

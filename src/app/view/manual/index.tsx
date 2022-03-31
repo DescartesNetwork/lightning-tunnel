@@ -12,6 +12,7 @@ import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
 import { removeRecipients } from 'app/model/recipients.controller'
 import useTotal from 'app/hooks/useTotal'
+import useValidateAmount from 'app/hooks/useValidateAmount'
 
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -19,6 +20,7 @@ const Manual = () => {
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
   const { quantity } = useTotal()
+  const { isError } = useValidateAmount()
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
@@ -69,7 +71,7 @@ const Manual = () => {
                 type="primary"
                 onClick={() => dispatch(onSelectStep(Step.three))}
                 block
-                disabled={quantity <= 0}
+                disabled={quantity <= 0 || isError}
               >
                 Continue
               </Button>

@@ -5,13 +5,14 @@ import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
 import InputInfoTransfer from 'app/components/inputInfoTransfer'
 import { WrapTotal } from 'app/components/cardTotal'
 import AccountInfoHeader from './accountInfoHeader'
-
-import { AppDispatch, AppState } from 'app/model'
 import IonIcon from 'shared/antd/ionicon'
 import AccountInfo from './accountInfo'
+
+import { AppDispatch, AppState } from 'app/model'
 import { CollapseAddNew } from 'app/constants'
 import { addRecipients, setErrorData } from 'app/model/recipients.controller'
 import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
+import useValidateAmount from 'app/hooks/useValidateAmount'
 
 const ActionButton = ({
   activeKey = '',
@@ -63,6 +64,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
     main: { fileName, selectedFile },
     recipients: { recipients, errorData },
   } = useSelector((state: AppState) => state)
+  const { isError } = useValidateAmount()
 
   const onSelected = (checked: boolean, index: number) =>
     dispatch(onSelectedFile({ checked, index }))
@@ -194,6 +196,16 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
               </Card>
             </Spin>
           </Col>
+          {isError && (
+            <Col span={24}>
+              <Space size={12}>
+                <IonIcon style={{ color: '#F9575E' }} name="warning-outline" />
+                <Typography.Text style={{ color: '#F9575E' }}>
+                  Should be natural numbers
+                </Typography.Text>
+              </Space>
+            </Col>
+          )}
           <Col span={24}>
             <WrapTotal />
           </Col>

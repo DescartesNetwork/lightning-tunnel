@@ -85,9 +85,8 @@ export const removeRecipient = createAsyncThunk<
 
 export const setErrorData = createAsyncThunk<
   Partial<Recipients>,
-  { errorData: RecipientInfos },
-  { state: any }
->(`${NAME}/setErrorDatas`, async ({ errorData }, { getState }) => {
+  { errorData: RecipientInfos }
+>(`${NAME}/setErrorDatas`, async ({ errorData }) => {
   return { errorData }
 })
 

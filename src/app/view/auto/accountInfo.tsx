@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useRef, useState } from 'react'
+import { forwardRef, useCallback, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row, Space, Typography, Tooltip, Checkbox } from 'antd'
@@ -105,6 +105,7 @@ const AccountInfo = forwardRef(
     const {
       recipients: { errorData, recipients },
       main: { selectedFile },
+      setting: { decimal },
     } = useSelector((state: AppState) => state)
     const amountRef = useRef(ref)
 
@@ -133,6 +134,12 @@ const AccountInfo = forwardRef(
       if (amountRef.current) amountRef.current.focus()
     }
 
+    const validateAmount = useMemo(() => {
+      if (!amountValue) return false
+      if (!decimal && Number(amount) % 1 !== 0) return true
+      return false
+    }, [amount, amountValue, decimal])
+
     return (
       <Row gutter={[16, 8]} align="middle" justify="space-between" wrap={false}>
         <Col span={3}>
@@ -159,7 +166,9 @@ const AccountInfo = forwardRef(
             onChange={(e) => setNextAmount(e.target.value)}
             disabled={!isEdited}
             style={{ padding: 0 }}
-            className="recipient-input"
+            className={
+              validateAmount ? 'recipient-input-error' : 'recipient-input-auto'
+            }
             ref={amountRef}
           />
         </Col>

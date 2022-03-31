@@ -41,7 +41,7 @@ const ListHistory = ({
       className="card-lightning"
       style={{ paddingBottom: 0 }}
     >
-      <Row gutter={[32, 32]}>
+      <Row gutter={[32, 32]} style={{ height: 500 }} className="scrollbar">
         <Col span={24}>
           <Typography.Title level={5}>Transfer history</Typography.Title>
         </Col>

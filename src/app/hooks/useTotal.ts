@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { account, utils } from '@senswap/sen-js'
 
@@ -14,17 +14,21 @@ const useTotal = () => {
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
-  const calculateTotal = (recipientInfos: RecipientInfos) => {
-    if (!recipientInfos.length) return 0
-    let sum = 0
-    for (const recipient of recipientInfos) {
-      const amount = recipient[1]
-      if (Number(amount) % 1 !== 0 && !decimal) continue
-      sum += Number(amount)
-    }
+  const calculateTotal = useCallback(
+    (recipientInfos: RecipientInfos) => {
+      if (!recipientInfos.length || !mintDecimals) return 0
+      let sum = 0
+      for (const recipient of recipientInfos) {
+        const amount = recipient[1]
+        if (Number(amount) % 1 !== 0 && !decimal) continue
+        const lamports = Number(amount) * 10 ** mintDecimals
+        sum += lamports
+      }
 
-    return sum
-  }
+      return Number(utils.undecimalize(BigInt(sum), mintDecimals))
+    },
+    [decimal, mintDecimals],
+  )
 
   const editedSuccData =
     errorData?.filter((data) => {
@@ -32,12 +36,15 @@ const useTotal = () => {
     }) || []
   const recipientTotal = calculateTotal(recipients)
   const editedDataTotal = calculateTotal(editedSuccData)
+
   const total = recipientTotal + editedDataTotal
   const editedDataLength = editedSuccData?.length
   const quantity = useMemo(() => recipients.length, [recipients])
 
   return {
-    total: decimal ? total : utils.undecimalize(BigInt(total), mintDecimals),
+    total: decimal
+      ? total
+      : Number(utils.undecimalize(BigInt(total), mintDecimals)),
     quantity: quantity + editedDataLength,
   }
 }

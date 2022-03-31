@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { account, utils } from '@senswap/sen-js'
 import { useWallet } from '@senhub/providers'
@@ -18,6 +18,7 @@ import useMerkleSDK from 'app/hooks/useMerkleSDK'
 import REDEEM from 'app/static/images/redeem.svg'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { MintSymbol } from 'shared/antd/mint'
+import { useAppRouter } from 'app/hooks/useAppRoute'
 
 const ModalRedeem = ({
   visible,
@@ -32,6 +33,7 @@ const ModalRedeem = ({
     wallet: { address: walletAddress },
   } = useWallet()
   const sdk = useMerkleSDK()
+  const { pushHistory } = useAppRouter()
   const mintDecimals = useMintDecimals(claimProof?.mintAddress || '') || 0
 
   const fetchDistributor = useCallback(
@@ -46,6 +48,20 @@ const ModalRedeem = ({
     [sdk],
   )
 
+  const bufferProof: Buffer[] = useMemo(() => {
+    const buffProof: Buffer[] = []
+
+    if (!claimProof) return buffProof
+    const { proof } = claimProof
+
+    if (!proof.length) return buffProof
+
+    proof.forEach(({ data }: any) => {
+      buffProof.push(Buffer.from(data))
+    })
+    return buffProof
+  }, [claimProof])
+
   const onClaim = useCallback(async () => {
     if (!claimProof || !claimProof.distributorInfo) return
     setLoading(true)
@@ -53,7 +69,6 @@ const ModalRedeem = ({
     const {
       index,
       amount,
-      proof,
       claimant,
       distributorInfo: { distributor: distributorAddr },
     } = claimProof
@@ -78,27 +93,34 @@ const ModalRedeem = ({
     } catch (err) {
     } finally {
       setLoading(false)
+      pushHistory('')
       dispatch(setVisible(false))
     }
 
-    const bufferProof = !proof.length ? [] : [Buffer.from(proof[0].data)]
-
-    const tx = await distributor.claim({
-      index: new u64(index),
-      amount: new u64(amount),
-      proof: bufferProof,
-      claimant: new PublicKey(walletAddress),
-    })
     try {
+      const tx = await distributor.claim({
+        index: new u64(index),
+        amount: new u64(amount),
+        proof: bufferProof,
+        claimant: new PublicKey(walletAddress),
+      })
       const { signature } = await tx.confirm()
       notifySuccess('Claim successfully', signature)
     } catch (err) {
       notifyError(err)
     } finally {
       setLoading(false)
+      pushHistory('')
       return dispatch(setVisible(false))
     }
-  }, [claimProof, dispatch, fetchDistributor, walletAddress])
+  }, [
+    bufferProof,
+    claimProof,
+    dispatch,
+    fetchDistributor,
+    pushHistory,
+    walletAddress,
+  ])
 
   return (
     <Modal

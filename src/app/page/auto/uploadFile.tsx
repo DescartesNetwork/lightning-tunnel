@@ -2,23 +2,24 @@ import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
+import { account } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
-
-import { setFileName } from 'app/model/main.controller'
 import FileDetails from './fileDetails'
+import ModalMerge from 'app/components/modalMerge'
+import IonIcon from 'shared/antd/ionicon'
 
 import iconUpload from 'app/static/images/icon-upload.svg'
 import { AppState } from 'app/model'
-import IonIcon from 'shared/antd/ionicon'
 import exampleCSV from 'app/static/base/example.csv'
 import {
   addRecipients,
+  RecipientInfo,
   RecipientInfos,
   removeRecipients,
-  setErrorDatas,
+  setErrorData,
 } from 'app/model/recipients.controller'
-import { account } from '@senswap/sen-js'
+import { setFileName } from 'app/model/main.controller'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {
@@ -32,42 +33,78 @@ const parse = (file: any): Promise<RecipientInfos> => {
 const UploadFile = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [listDuplicate, setListDuplicate] = useState<
+    Record<string, RecipientInfo>
+  >({})
   const {
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
 
-  const detectErrorData = (data: RecipientInfos) => {
-    const errorDatas = data.filter(
+  const detectErrorData = useCallback((data: RecipientInfos) => {
+    const errorData = data.filter(
       (recipient) => recipient.includes('') || !account.isAddress(recipient[0]),
     )
 
     const successData = data.filter(
       (recipient) => !recipient.includes('') && account.isAddress(recipient[0]),
     )
-    return { errorDatas, successData }
-  }
+    return { errorData, successData }
+  }, [])
 
   const upload = useCallback(
     async (file: any) => {
       setLoading(true)
+
       const data = await parse(file)
-      const { errorDatas, successData: recipients } = await detectErrorData(
-        data,
-      )
+      const { errorData, successData: recipients } = await detectErrorData(data)
+      if (errorData) dispatch(setErrorData({ errorData }))
+
+      const recipient: Record<string, RecipientInfo> = {}
+      let isDuplicate = false
+      for (const [address, amount] of recipients) {
+        if (recipient[address]) {
+          isDuplicate = true
+          const [walletAddress, oldAmount] = recipient[address]
+
+          const newAmount = Number(oldAmount) + Number(amount)
+          recipient[address] = [walletAddress, newAmount.toString()]
+        } else recipient[address] = [address, amount]
+      }
+
+      if (isDuplicate) {
+        setListDuplicate(recipient)
+        setLoading(false)
+        setVisible(true)
+        dispatch(setFileName(file.name))
+        return true
+      }
+
       dispatch(setFileName(file.name))
       dispatch(addRecipients({ recipients }))
-      dispatch(setErrorDatas({ errorDatas }))
       setLoading(false)
+      setVisible(false)
       return false
     },
-    [dispatch],
+    [detectErrorData, dispatch],
   )
 
   const remove = async () => {
-    setLoading(true)
     dispatch(removeRecipients())
-    setLoading(false)
+    setListDuplicate({})
     return true
+  }
+
+  const onMerge = () => {
+    const recipients = Object.values(listDuplicate)
+    dispatch(addRecipients({ recipients }))
+    return setVisible(false)
+  }
+
+  const onCancel = () => {
+    setVisible(false)
+    dispatch(setFileName(''))
+    setListDuplicate({})
   }
 
   const getFileCSV = async (fileCSV: string) => {
@@ -126,6 +163,12 @@ const UploadFile = () => {
             Download sample
           </Button>
         </Col>
+        <ModalMerge
+          visible={visible}
+          setVisible={setVisible}
+          onConfirm={onMerge}
+          onCancel={onCancel}
+        />
       </Row>
     )
   return <FileDetails onRemove={remove} />

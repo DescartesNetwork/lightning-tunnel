@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
@@ -10,13 +10,8 @@ import { AppDispatch, AppState } from 'app/model'
 import IonIcon from 'shared/antd/ionicon'
 import AccountInfo from './accountInfo'
 import { CollapseAddNew } from 'app/constants'
-import {
-  addRecipients,
-  mergeRecipient,
-  setErrorDatas,
-} from 'app/model/recipients.controller'
+import { addRecipients, setErrorData } from 'app/model/recipients.controller'
 import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
-import useCanMerge from 'app/hooks/useCanMerge'
 
 const ActionButton = ({
   activeKey = '',
@@ -66,9 +61,8 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     main: { fileName, selectedFile },
-    recipients: { recipients, errorDatas },
+    recipients: { recipients, errorData },
   } = useSelector((state: AppState) => state)
-  const canMerge = useCanMerge()
 
   const onSelected = (checked: boolean, index: number) =>
     dispatch(onSelectedFile({ checked, index }))
@@ -77,45 +71,20 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
     if (!selectedFile?.length) return
     setLoading(true)
     const nextRecipients = [...recipients]
-    const nextErrorDatas = [...(errorDatas || [])]
+    const nextErrorData = [...(errorData || [])]
 
     const filterRecipient = nextRecipients.filter(
       (_, idx) => !selectedFile.includes(idx),
     )
     // Index of error data in listWalletPos begin from recipients.length
-    const filterErrorData = nextErrorDatas.filter(
+    const filterErrorData = nextErrorData.filter(
       (_, idx) => !selectedFile.includes(recipients.length + idx),
     )
 
-    dispatch(setErrorDatas({ errorDatas: filterErrorData }))
+    dispatch(setErrorData({ errorData: filterErrorData }))
     dispatch(addRecipients({ recipients: filterRecipient }))
     dispatch(removeSelectedFile())
     setLoading(false)
-  }
-
-  // Need to merge
-  const duplicated = useMemo(() => {
-    if (!recipients?.length) return false
-    const duplicatedElements = recipients.filter(([address], index) => {
-      const expectedIndex = recipients.findIndex(
-        ([expectedAddress]) => address === expectedAddress,
-      )
-      return expectedIndex !== index && expectedIndex > -1
-    })
-    if (duplicatedElements.length > 0) return true
-    return false
-  }, [recipients])
-
-  const onMerge = () => {
-    if (!duplicated || !selectedFile) return
-    if (!canMerge)
-      return window.notify({
-        type: 'error',
-        description: "Can't merge different wallet addresses & emails!",
-      })
-
-    dispatch(mergeRecipient({ listIndex: selectedFile }))
-    return dispatch(removeSelectedFile())
   }
 
   return (
@@ -157,15 +126,6 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                 >
                   Delete
                 </Button>
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<IonIcon name="git-branch-outline" />}
-                  onClick={onMerge}
-                  disabled={!selectedFile?.length && duplicated}
-                >
-                  Merge
-                </Button>
               </Space>
             )}
           </Col>
@@ -200,12 +160,12 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                       }
                     />
                   </Col>
-                  {errorDatas?.map(([address, amount], idx) => (
+                  {errorData?.map(([address, amount], idx) => (
                     <Col
                       span={24}
                       key={address + idx}
                       className={
-                        idx + 1 === errorDatas.length
+                        idx + 1 === errorData.length
                           ? 'last-item-error-data'
                           : ''
                       }

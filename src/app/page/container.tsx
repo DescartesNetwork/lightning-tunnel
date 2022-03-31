@@ -52,7 +52,7 @@ const CardOption = ({
 }
 
 const SelectInputMethod = () => {
-  const [method, setMethod] = useState<number | undefined>()
+  const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
   const dispatch = useDispatch()
   const { accounts } = useAccount()

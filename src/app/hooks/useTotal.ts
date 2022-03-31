@@ -9,7 +9,7 @@ import { RecipientInfos } from 'app/model/recipients.controller'
 const useTotal = () => {
   const {
     main: { mintSelected },
-    recipients: { recipients, errorDatas },
+    recipients: { recipients, errorData },
     setting: { decimal },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
@@ -26,7 +26,7 @@ const useTotal = () => {
   }
 
   const editedSuccData =
-    errorDatas?.filter((data) => {
+    errorData?.filter((data) => {
       return !data.includes('') && account.isAddress(data[0])
     }) || []
   const recipientTotal = calculateTotal(recipients)

@@ -75,6 +75,7 @@ const InputInfoTransfer = ({
   const {
     main: { selectedFile },
     recipients: { recipients },
+    setting: { decimal },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
 
@@ -99,7 +100,6 @@ const InputInfoTransfer = ({
 
     if (!account.isAddress(walletAddress))
       return setError('Wrong wallet address')
-    if (Number(amount) % 1 !== 0) return setError('Should be natural numbers')
 
     for (const [address] of recipients) {
       if (walletAddress === address) return setVisible(true)
@@ -133,11 +133,21 @@ const InputInfoTransfer = ({
     return dispatch(addRecipients({ recipients: nextData }))
   }
 
+  const validateAmount = useCallback(() => {
+    if (!amount) return
+    if (decimal) return setError('')
+    if (Number(amount) % 1 !== 0) return setError('Should be natural numbers')
+  }, [amount, decimal])
+
   const disabledInput = walletAddress ? true : false
 
   useEffect(() => {
     recipientInfo()
   }, [recipientInfo])
+
+  useEffect(() => {
+    validateAmount()
+  }, [validateAmount])
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between">

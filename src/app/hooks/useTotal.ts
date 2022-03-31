@@ -14,14 +14,15 @@ const useTotal = () => {
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
-  const calculateTotal = (data: RecipientInfos) => {
-    if (!data.length) return 0
+  const calculateTotal = (recipientInfos: RecipientInfos) => {
+    if (!recipientInfos.length) return 0
     let sum = 0
-    data.map((item) => {
-      const amount = item[1]
+    for (const recipient of recipientInfos) {
+      const amount = recipient[1]
+      if (Number(amount) % 1 !== 0 && !decimal) continue
+      sum += Number(amount)
+    }
 
-      return (sum += Number(amount))
-    })
     return sum
   }
 

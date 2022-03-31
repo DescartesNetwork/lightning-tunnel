@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { Col, Divider, Radio, Row, Space, Typography } from 'antd'
+import { Col, Radio, Row, Space, Typography } from 'antd'
 import Setting from './setting'
 import History from './history'
 import IonIcon from 'shared/antd/ionicon'
-import PoweredBySentre from 'app/components/poweredBySentre'
 
 import { Step } from 'app/constants'
 import { AppState } from 'app/model'
@@ -41,11 +40,6 @@ const Header = ({ label }: { label: string }) => {
       </Col>
       <Col>
         <Space size={16}>
-          <PoweredBySentre />
-          <Divider
-            type="vertical"
-            style={{ margin: 0, borderLeft: '1px solid #D3D3D6' }}
-          />
           <IonIcon
             style={{ cursor: 'pointer', fontSize: 16 }}
             name="document-text-outline"

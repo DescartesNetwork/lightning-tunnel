@@ -13,7 +13,7 @@ const AccountInfoHeader = ({
   onChecked = () => {},
 }: AccountInfoHeaderProps) => {
   const {
-    recipients: { errorDatas },
+    recipients: { errorData },
   } = useSelector((state: AppState) => state)
 
   return (
@@ -35,7 +35,7 @@ const AccountInfoHeader = ({
       <Col span={6}>
         <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
-      {!!errorDatas?.length && <Col span={3} />}
+      {!!errorData?.length && <Col span={3} />}
     </Row>
   )
 }

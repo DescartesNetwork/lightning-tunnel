@@ -10,7 +10,7 @@ import IonIcon from 'shared/antd/ionicon'
 
 import { AppDispatch, AppState } from 'app/model'
 import { CollapseAddNew } from 'app/constants'
-import { addRecipients, setErrorDatas } from 'app/model/recipients.controller'
+import { addRecipients, setErrorData } from 'app/model/recipients.controller'
 import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
 
 const ActionButton = ({
@@ -61,7 +61,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     main: { fileName, selectedFile },
-    recipients: { recipients, errorDatas },
+    recipients: { recipients, errorData },
   } = useSelector((state: AppState) => state)
 
   const onSelected = (checked: boolean, index: number) =>
@@ -71,17 +71,17 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
     if (!selectedFile?.length) return
     setLoading(true)
     const nextRecipients = [...recipients]
-    const nextErrorDatas = [...(errorDatas || [])]
+    const nextErrorData = [...(errorData || [])]
 
     const filterRecipient = nextRecipients.filter(
       (_, idx) => !selectedFile.includes(idx),
     )
     // Index of error data in listWalletPos begin from recipients.length
-    const filterErrorData = nextErrorDatas.filter(
+    const filterErrorData = nextErrorData.filter(
       (_, idx) => !selectedFile.includes(recipients.length + idx),
     )
 
-    dispatch(setErrorDatas({ errorDatas: filterErrorData }))
+    dispatch(setErrorData({ errorData: filterErrorData }))
     dispatch(addRecipients({ recipients: filterRecipient }))
     dispatch(removeSelectedFile())
     setLoading(false)
@@ -158,12 +158,12 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                       }
                     />
                   </Col>
-                  {errorDatas?.map(([address, amount], idx) => (
+                  {errorData?.map(([address, amount], idx) => (
                     <Col
                       span={24}
                       key={address + idx}
                       className={
-                        idx + 1 === errorDatas.length
+                        idx + 1 === errorData.length
                           ? 'last-item-error-data'
                           : ''
                       }

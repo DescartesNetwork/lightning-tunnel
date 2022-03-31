@@ -7,7 +7,7 @@ import { RecipientInfos } from 'app/model/recipients.controller'
 
 const useTotal = () => {
   const {
-    recipients: { recipients, errorDatas },
+    recipients: { recipients, errorData },
   } = useSelector((state: AppState) => state)
 
   const calculateTotal = (data: RecipientInfos) => {
@@ -22,7 +22,7 @@ const useTotal = () => {
   }
 
   const editedSuccData =
-    errorDatas?.filter((data) => {
+    errorData?.filter((data) => {
       return !data.includes('') && account.isAddress(data[0])
     }) || []
   const recipientTotal = calculateTotal(recipients)

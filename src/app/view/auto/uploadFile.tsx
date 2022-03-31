@@ -17,16 +17,18 @@ import {
   RecipientInfo,
   RecipientInfos,
   removeRecipients,
-  setErrorDatas,
+  setErrorData,
 } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'app/model/main.controller'
 
-const parse = (file: any): Promise<RecipientInfos> => {
+type FileRecipient = Array<[string, string]>
+
+const parse = (file: any): Promise<FileRecipient> => {
   return new Promise((resolve, reject) => {
     return Papa.parse(file, {
       skipEmptyLines: true,
-      complete: ({ data }) => resolve(data as RecipientInfos),
+      complete: ({ data }) => resolve(data as FileRecipient),
     })
   })
 }
@@ -46,25 +48,30 @@ const UploadFile = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
   const detectErrorData = useCallback(
-    (data: RecipientInfos) => {
-      let errorDatas = data.filter(
+    (data: FileRecipient) => {
+      const filterErrorData = data.filter(
         (recipient) =>
           recipient.includes('') || !account.isAddress(recipient[0]),
       )
-      errorDatas = errorDatas.map(([address, amount]) => {
-        const actualAmount = decimal
-          ? Number(amount) * 10 ** mintDecimals
-          : Number(amount)
+      const errorData: RecipientInfos = filterErrorData.map(
+        ([address, amount]) => {
+          const actualAmount = decimal
+            ? Number(amount) * 10 ** mintDecimals
+            : Number(amount)
 
-        return [address, BigInt(actualAmount)]
-      })
+          return [address, BigInt(actualAmount)]
+        },
+      )
 
-      const successData = data.filter(
+      const filterSuccessData = data.filter(
         (recipient) =>
           !recipient.includes('') && account.isAddress(recipient[0]),
       )
+      const successData: RecipientInfos = filterSuccessData.map(
+        ([address, amount]) => [address, BigInt(amount)],
+      )
 
-      return { errorDatas, successData }
+      return { errorData, successData }
     },
     [decimal, mintDecimals],
   )
@@ -74,10 +81,8 @@ const UploadFile = () => {
       setLoading(true)
 
       const data = await parse(file)
-      const { errorDatas, successData: recipients } = await detectErrorData(
-        data,
-      )
-      if (errorDatas) dispatch(setErrorDatas({ errorDatas }))
+      const { errorData, successData: recipients } = await detectErrorData(data)
+      if (errorData) dispatch(setErrorData({ errorData }))
 
       const recipient: Record<string, RecipientInfo> = {}
       let isDuplicate = false
@@ -111,6 +116,7 @@ const UploadFile = () => {
     },
     [decimal, detectErrorData, dispatch, mintDecimals],
   )
+
   const onMerge = () => {
     const recipients = Object.values(listDuplicate)
     dispatch(addRecipients({ recipients }))

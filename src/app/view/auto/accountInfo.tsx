@@ -8,7 +8,7 @@ import NumericInput from 'shared/antd/numericInput'
 
 import { shortenAddress } from 'shared/util'
 import { AppDispatch, AppState } from 'app/model'
-import { setErrorDatas } from 'app/model/recipients.controller'
+import { setErrorData } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 type AccountInfoProps = {
@@ -104,7 +104,7 @@ const AccountInfo = forwardRef(
     const [isEdited, setIsEdited] = useState(false)
     const [nextAmount, setNextAmount] = useState('')
     const {
-      recipients: { errorDatas, recipients },
+      recipients: { errorData, recipients },
       main: { selectedFile, mintSelected },
     } = useSelector((state: AppState) => state)
     const amountRef = useRef(ref)
@@ -118,19 +118,19 @@ const AccountInfo = forwardRef(
     const idxErrData = index - recipients.length
 
     const onUpdate = useCallback(() => {
-      if (!errorDatas?.length || index - errorDatas.length < 0) return
-      const nextErrorData = [...errorDatas]
+      if (!errorData?.length || index - errorData.length < 0) return
+      const nextErrorData = [...errorData]
       const [[address]] = nextErrorData.splice(idxErrData, 1)
       nextErrorData.unshift([address, BigInt(nextAmount)])
-      dispatch(setErrorDatas({ errorDatas: nextErrorData }))
-    }, [dispatch, errorDatas, idxErrData, index, nextAmount])
+      dispatch(setErrorData({ errorData: nextErrorData }))
+    }, [dispatch, errorData, idxErrData, index, nextAmount])
 
     const onDelete = useCallback(async () => {
-      if (!errorDatas?.length) return
-      const nextErrData = [...errorDatas]
+      if (!errorData?.length) return
+      const nextErrData = [...errorData]
       nextErrData.splice(idxErrData, 1)
-      dispatch(setErrorDatas({ errorDatas: nextErrData }))
-    }, [dispatch, errorDatas, idxErrData])
+      dispatch(setErrorData({ errorData: nextErrData }))
+    }, [dispatch, errorData, idxErrData])
 
     const onEdit = (visible: boolean) => {
       setIsEdited(visible)
@@ -168,7 +168,7 @@ const AccountInfo = forwardRef(
             autoFocus
           />
         </Col>
-        {!!errorDatas?.length && (
+        {!!errorData?.length && (
           <Col span={3}>
             {editable && (
               <Space align="center">

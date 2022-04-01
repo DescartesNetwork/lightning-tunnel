@@ -45,11 +45,7 @@ const AlertIcon = ({
     )
   if (editable)
     return (
-      <Tooltip
-        title="Invalid email or amount!"
-        placement="topLeft"
-        arrowPointAtCenter
-      >
+      <Tooltip title="Invalid  amount!" placement="topLeft" arrowPointAtCenter>
         <IonIcon name="warning-outline" style={{ color: '#d72311' }} />
       </Tooltip>
     )
@@ -110,12 +106,12 @@ const AccountInfo = forwardRef(
     const amountRef = useRef(ref)
 
     const editable = !amount
-    const wrongAddress = !account.isAddress(accountAddress)
+    const isValidAddress = !account.isAddress(accountAddress)
     const amountValue = isEdited ? nextAmount : amount
     const idxErrData = index - recipients.length
 
     const onUpdate = useCallback(() => {
-      if (!errorData?.length || index - errorData.length < 0) return
+      if (!errorData.length || index - errorData.length < 0) return
       const nextErrorData = [...errorData]
       const [[address]] = nextErrorData.splice(idxErrData, 1)
       nextErrorData.unshift([address, nextAmount])
@@ -123,7 +119,7 @@ const AccountInfo = forwardRef(
     }, [dispatch, errorData, idxErrData, index, nextAmount])
 
     const onDelete = useCallback(async () => {
-      if (!errorData?.length) return
+      if (!errorData.length) return
       const nextErrData = [...errorData]
       nextErrData.splice(idxErrData, 1)
       dispatch(setErrorData({ errorData: nextErrData }))
@@ -156,14 +152,16 @@ const AccountInfo = forwardRef(
         </Col>
         <Col span={12}>
           <Tooltip title={accountAddress}>
-            <Typography.Text>{shortenAddress(accountAddress)}</Typography.Text>
+            <Typography.Text style={{ color: isValidAddress ? '#F9575E' : '' }}>
+              {shortenAddress(accountAddress)}
+            </Typography.Text>
           </Tooltip>
         </Col>
         <Col span={6}>
           <NumericInput
             value={amountValue}
             bordered={isEdited}
-            onChange={(e) => setNextAmount(e.target.value)}
+            onValue={setNextAmount}
             disabled={!isEdited}
             style={{ padding: 0 }}
             className={
@@ -172,14 +170,14 @@ const AccountInfo = forwardRef(
             ref={amountRef}
           />
         </Col>
-        {!!errorData?.length && (
+        {!!errorData.length && (
           <Col span={3}>
             {editable && (
               <Space align="center">
-                <AlertIcon editable={editable} wrongAddress={wrongAddress} />
+                <AlertIcon editable={editable} wrongAddress={isValidAddress} />
                 <EditButton
                   isEdited={isEdited}
-                  wrongAddress={wrongAddress}
+                  wrongAddress={isValidAddress}
                   onEdited={onEdit}
                   onUpdate={onUpdate}
                   onDelete={onDelete}

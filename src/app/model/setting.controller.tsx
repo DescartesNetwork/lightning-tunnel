@@ -4,7 +4,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
  * Interface & Utility
  */
 
-export type Setting = {
+export type SettingState = {
   decimal: boolean
   encryption: boolean
   disabled: boolean
@@ -15,7 +15,7 @@ export type Setting = {
  */
 
 const NAME = 'setting'
-const initialState: Setting = {
+const initialState: SettingState = {
   decimal: true,
   encryption: false,
   disabled: false,

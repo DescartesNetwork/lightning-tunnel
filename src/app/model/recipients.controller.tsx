@@ -8,16 +8,16 @@ export type RecipientInfo = [string, string]
 
 export type RecipientInfos = Array<RecipientInfo>
 
-export type Recipients = {
+export type RecipientState = {
   recipients: RecipientInfos
-  errorData?: RecipientInfos
+  errorData: RecipientInfos
 }
 /**
  * Store constructor
  */
 
 const NAME = 'recipients'
-const initialState: Recipients = {
+const initialState: RecipientState = {
   recipients: [],
   errorData: [],
 }
@@ -26,14 +26,14 @@ const initialState: Recipients = {
  * Actions
  */
 export const addRecipients = createAsyncThunk<
-  Recipients,
+  Partial<RecipientState>,
   { recipients: RecipientInfos }
 >(`${NAME}/addRecipients`, async ({ recipients }) => {
   return { recipients }
 })
 
 export const addRecipient = createAsyncThunk<
-  Recipients,
+  Partial<RecipientState>,
   { recipient: RecipientInfo },
   { state: any }
 >(`${NAME}/addRecipient`, async ({ recipient }, { getState }) => {
@@ -47,21 +47,6 @@ export const addRecipient = createAsyncThunk<
   return { recipients: newRecipients }
 })
 
-export const getRecipient = createAsyncThunk<
-  Recipients,
-  { address: string },
-  { state: any }
->(`${NAME}/getRecipient`, ({ address }, { getState }) => {
-  const {
-    recipients: { recipients },
-  } = getState()
-  const recipient = recipients.find(([walletAddress]: any) => {
-    return address === walletAddress
-  })
-
-  return recipient
-})
-
 export const removeRecipients = createAsyncThunk(
   `${NAME}/removeRecipients`,
   async () => {
@@ -70,7 +55,7 @@ export const removeRecipients = createAsyncThunk(
 )
 
 export const removeRecipient = createAsyncThunk<
-  Partial<Recipients>,
+  Partial<RecipientState>,
   { recipient: RecipientInfo },
   { state: any }
 >(`${NAME}/removeRecipient`, async ({ recipient }, { getState }) => {
@@ -84,39 +69,10 @@ export const removeRecipient = createAsyncThunk<
 })
 
 export const setErrorData = createAsyncThunk<
-  Partial<Recipients>,
+  Partial<RecipientState>,
   { errorData: RecipientInfos }
 >(`${NAME}/setErrorDatas`, async ({ errorData }) => {
   return { errorData }
-})
-
-export const mergeRecipient = createAsyncThunk<
-  Recipients,
-  { listIndex: number[] },
-  { state: any }
->(`${NAME}/mergeRecipient`, async ({ listIndex }, { getState }) => {
-  const {
-    recipients: { recipients },
-  } = getState()
-  let baseData = [...recipients]
-  let mergeRecipient: RecipientInfo = ['', '']
-
-  baseData = baseData.filter(function (value, index) {
-    return listIndex.indexOf(index) === -1
-  })
-
-  let sum = 0
-
-  for (const index of listIndex) {
-    const [address, amount] = recipients[index]
-
-    sum += Number(amount)
-    mergeRecipient = [address, sum.toString()]
-  }
-
-  baseData.unshift(mergeRecipient)
-
-  return { recipients: baseData }
 })
 
 /**
@@ -145,10 +101,7 @@ const slice = createSlice({
         setErrorData.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
-      .addCase(
-        mergeRecipient.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
+
       .addCase(
         removeRecipient.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),

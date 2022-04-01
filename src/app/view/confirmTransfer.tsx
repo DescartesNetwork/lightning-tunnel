@@ -233,6 +233,7 @@ const ConfirmTransfer = () => {
                 onClick={onConfirm}
                 type="primary"
                 loading={loading}
+                disabled={remainingBalance < 0}
                 block
               >
                 TRANSFER

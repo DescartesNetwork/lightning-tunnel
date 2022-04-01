@@ -162,7 +162,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                       }
                     />
                   </Col>
-                  {errorData?.map(([address, amount], idx) => (
+                  {errorData.map(([address, amount], idx) => (
                     <Col
                       span={24}
                       key={address + idx}

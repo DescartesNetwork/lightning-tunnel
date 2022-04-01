@@ -51,14 +51,13 @@ const ModalRedeem = ({
   const bufferProof: Buffer[] = useMemo(() => {
     const buffProof: Buffer[] = []
 
-    if (!claimProof) return buffProof
+    if (!claimProof?.proof) return buffProof
     const { proof } = claimProof
-
-    if (!proof.length) return buffProof
 
     proof.forEach(({ data }: any) => {
       buffProof.push(Buffer.from(data))
     })
+
     return buffProof
   }, [claimProof])
 
@@ -104,8 +103,14 @@ const ModalRedeem = ({
         proof: bufferProof,
         claimant: new PublicKey(walletAddress),
       })
-      const { signature } = await tx.confirm()
-      notifySuccess('Claim successfully', signature)
+      const {
+        signature,
+        response: { meta },
+      } = await tx.confirm()
+
+      if (meta?.err) return notifyError('Something went wrong')
+
+      return notifySuccess('Claim successfully', signature)
     } catch (err) {
       notifyError(err)
     } finally {

@@ -77,38 +77,25 @@ const ModalShare = ({
           </Space>
         </Col>
         <Col span={24}>
-          <Button type="primary" onClick={onShare}>
-            Share now
-          </Button>
-        </Col>
-        <Col span={24}>
-          <Row gutter={[8, 8]}>
-            <Col span={24} style={{ textAlign: 'left' }}>
-              <Typography.Text>Or copy link</Typography.Text>
+          <Row gutter={8} justify="space-between">
+            <Col className="share-link" span={20}>
+              <Typography.Text>{shortenRedeemLink(redeemLink)}</Typography.Text>
             </Col>
-            <Col span={24}>
-              <Row gutter={8} justify="space-between">
-                <Col className="share-link" span={20}>
-                  <Typography.Text>
-                    {shortenRedeemLink(redeemLink)}
-                  </Typography.Text>
-                </Col>
-                <Col span={4}>
-                  <Tooltip title="Copied" visible={copied}>
-                    <CopyToClipboard text={redeemLink}>
-                      <Button
-                        style={{ height: 40 }}
-                        type="ghost"
-                        onClick={onCopy}
-                      >
-                        copy
-                      </Button>
-                    </CopyToClipboard>
-                  </Tooltip>
-                </Col>
-              </Row>
+            <Col span={4}>
+              <Tooltip title="Copied" visible={copied}>
+                <CopyToClipboard text={redeemLink}>
+                  <Button size="large" type="ghost" onClick={onCopy}>
+                    copy
+                  </Button>
+                </CopyToClipboard>
+              </Tooltip>
             </Col>
           </Row>
+        </Col>
+        <Col span={24}>
+          <Button size="large" type="primary" block onClick={onShare}>
+            Share now
+          </Button>
         </Col>
       </Row>
     </Modal>

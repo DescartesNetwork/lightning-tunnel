@@ -27,6 +27,7 @@ interface Window {
   Slope: any
   solflare: any
   clover_solana: any
+  gapi: any
 }
 
 // For bigint serialization
@@ -46,19 +47,12 @@ type ComponentManifest = {
     email: string
   }
   tags: string[]
-  supportedViews: Array<'page' | 'widget'>
   description: string
   verified: boolean
 }
 // List of application manifests
 type SenReg = Record<string, ComponentManifest | undefined>
-// Widget size
-type WidgetSize = 'small' | 'middle' | 'large'
-type WidgetType = 'default' | 'solid'
-type WidgetConfig = {
-  size?: WidgetSize
-  type?: WidgetType
-}
+// Coingeckko Data
 type CgkData = {
   icon: any
   symbol: any
@@ -74,7 +68,6 @@ type CgkData = {
  * Declare module
  */
 declare module '*.md'
-declare module 'flexsearch'
 declare module '@senhub/context' {
   export * from 'os/store/context'
 }
@@ -89,4 +82,12 @@ declare namespace JSX {
   interface IntrinsicElements {
     'ion-icon': any
   }
+}
+
+/**
+ * Declare import csv
+ */
+declare module '*.csv' {
+  const value: any
+  export default value
 }

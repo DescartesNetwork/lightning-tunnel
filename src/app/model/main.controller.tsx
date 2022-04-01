@@ -3,9 +3,12 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 /**
  * Interface & Utility
  */
-
-export type MethodType = {
+export type MainState = {
   methodSelected?: number
+  mintSelected: string
+  fileName?: string
+  selectedFile: number[]
+  visible: boolean
 }
 
 /**
@@ -13,8 +16,12 @@ export type MethodType = {
  */
 
 const NAME = 'main'
-const initialState: MethodType = {
+const initialState: MainState = {
   methodSelected: undefined,
+  mintSelected: '',
+  fileName: '',
+  selectedFile: [],
+  visible: false,
 }
 
 /**
@@ -23,9 +30,69 @@ const initialState: MethodType = {
 
 export const onSelectMethod = createAsyncThunk(
   `${NAME}/onSelectMethod`,
-  async (method?: number) => {
-    if (!method) return
-    return { methodSelected: method }
+  async (methodSelected?: number) => {
+    return { methodSelected }
+  },
+)
+
+export const setFileName = createAsyncThunk(
+  `${NAME}/setFileName`,
+  async (fileName: string) => {
+    return { fileName }
+  },
+)
+
+export const onSelectedMint = createAsyncThunk(
+  `${NAME}/onSelectedMint`,
+  async (mintSelected: string) => {
+    return { mintSelected }
+  },
+)
+
+export const setVisible = createAsyncThunk(
+  `${NAME}/setVisible`,
+  async (visible: boolean) => {
+    return { visible }
+  },
+)
+
+export const onSelectedFile = createAsyncThunk<
+  Partial<MainState>,
+  {
+    checked: boolean
+    index?: number
+  },
+  { state: any }
+>(`${NAME}/onSelectedFile`, async ({ checked, index }, { getState }) => {
+  const {
+    main: { selectedFile },
+    recipients: { recipients, errorData },
+  } = getState()
+
+  // on select all
+  if (index === undefined) {
+    const nextRecipients = [...recipients]
+    const nextErrorData = [...(errorData || [])]
+    if (!checked) return { selectedFile: [] }
+    const selectedAll = []
+    for (const idx in nextRecipients) selectedAll.push(Number(idx))
+    for (const idxError in nextErrorData)
+      selectedAll.push(nextRecipients.length + Number(idxError))
+    return { selectedFile: selectedAll }
+  }
+
+  const nextSelected = [...selectedFile]
+  if (checked) nextSelected.push(index)
+  else {
+    const idx = nextSelected.indexOf(index)
+    nextSelected.splice(idx, 1)
+  }
+  return { selectedFile: nextSelected }
+})
+export const removeSelectedFile = createAsyncThunk(
+  `${NAME}/removeSelectedFile`,
+  async () => {
+    return { selectedFile: [] }
   },
 )
 
@@ -38,10 +105,31 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      onSelectMethod.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        onSelectMethod.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setFileName.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        onSelectedMint.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        onSelectedFile.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        removeSelectedFile.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setVisible.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

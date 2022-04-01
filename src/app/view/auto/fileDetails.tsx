@@ -28,7 +28,7 @@ const ActionButton = ({
   if (selected)
     return (
       <Button type="text" size="small" onClick={() => onSelect(false)}>
-        Cancle
+        Cancel
       </Button>
     )
   if (activeKey)

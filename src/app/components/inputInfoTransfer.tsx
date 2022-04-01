@@ -1,6 +1,6 @@
 import { ChangeEvent, Fragment, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { account } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -16,6 +16,7 @@ import {
 import { onSelectedFile } from 'app/model/main.controller'
 import NumericInput from 'shared/antd/numericInput'
 import ModalMerge from './modalMerge'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -69,15 +70,17 @@ const InputInfoTransfer = ({
   isSelect = false,
 }: InputInfoTransferProps) => {
   const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
-  const [error, setError] = useState('')
+  const [amountError, setAmountError] = useState('')
+  const [walletError, setWalletError] = useState('')
   const [visible, setVisible] = useState(false)
 
   const {
-    main: { selectedFile },
+    main: { selectedFile, mintSelected },
     recipients: { recipients },
     setting: { decimal },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
+  const mintDecimals = useMintDecimals(mintSelected) || 0
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setRecipient({ ...formInput, [e.target.name]: e.target.value })
@@ -99,14 +102,14 @@ const InputInfoTransfer = ({
     const { walletAddress, amount } = formInput
 
     if (!account.isAddress(walletAddress))
-      return setError('Wrong wallet address')
+      return setWalletError('Wrong wallet address')
 
     for (const [address] of recipients) {
       if (walletAddress === address) return setVisible(true)
     }
 
     const recipient: RecipientInfo = [walletAddress, amount]
-    setError('')
+    setWalletError('')
     await dispatch(addRecipient({ recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
@@ -114,15 +117,24 @@ const InputInfoTransfer = ({
   const onMerge = async () => {
     const { walletAddress, amount } = formInput
     const recipient = recipients.find(([address]) => address === walletAddress)
-    if (!recipient) return
+    if (!recipient || !mintDecimals) return
 
-    const newAmount = Number(recipient[1]) + Number(amount)
-    const nextRecipient: RecipientInfo = [walletAddress, newAmount.toString()]
+    const newAmount =
+      utils.decimalize(recipient[1], mintDecimals) +
+      utils.decimalize(amount, mintDecimals)
+
+    const nextRecipient: RecipientInfo = [
+      walletAddress,
+      utils.undecimalize(newAmount, mintDecimals),
+    ]
 
     await dispatch(removeRecipient({ recipient }))
     await dispatch(addRecipient({ recipient: nextRecipient }))
     await setVisible(false)
-    if (error) setError('')
+    if (amountError || walletError) {
+      setAmountError('')
+      setWalletError('')
+    }
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
@@ -135,8 +147,9 @@ const InputInfoTransfer = ({
 
   const validateAmount = useCallback(() => {
     if (!amount) return
-    if (decimal) return setError('')
-    if (Number(amount) % 1 !== 0) return setError('Should be natural numbers')
+    if (decimal) return setAmountError('')
+    if (Number(amount) % 1 !== 0)
+      return setAmountError('Should be natural numbers')
   }, [amount, decimal])
 
   const disabledInput = walletAddress ? true : false
@@ -177,7 +190,7 @@ const InputInfoTransfer = ({
           name="amount"
           placeholder="Amount"
           onValue={onAmount}
-          className={error ? 'recipient-input-error' : 'recipient-input'}
+          className={amountError ? 'recipient-input-error' : 'recipient-input'}
           autoComplete="off"
         />
       </Col>
@@ -190,11 +203,13 @@ const InputInfoTransfer = ({
           />
         </Col>
       )}
-      {error && (
+      {(walletError || amountError) && (
         <Col span={24}>
           <Space>
             <IonIcon style={{ color: '#f2323f' }} name="warning-outline" />
-            <Typography.Text type="danger">{error}</Typography.Text>
+            <Typography.Text type="danger">
+              {walletError || amountError}
+            </Typography.Text>
           </Space>
         </Col>
       )}

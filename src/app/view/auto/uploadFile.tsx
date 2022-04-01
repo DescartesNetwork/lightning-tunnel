@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
-import { account } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import FileDetails from './fileDetails'
@@ -20,6 +20,7 @@ import {
   setErrorData,
 } from 'app/model/recipients.controller'
 import { setFileName } from 'app/model/main.controller'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {
@@ -39,7 +40,9 @@ const UploadFile = () => {
   >({})
   const {
     recipients: { recipients },
+    main: { mintSelected },
   } = useSelector((state: AppState) => state)
+  const mintDecimals = useMintDecimals(mintSelected) || 0
 
   const detectErrorData = useCallback((data: RecipientInfos) => {
     const errorData = data.filter(
@@ -59,6 +62,7 @@ const UploadFile = () => {
       const data = await parse(file)
       const { errorData, successData: recipients } = await detectErrorData(data)
       if (errorData) dispatch(setErrorData({ errorData }))
+      if (!mintDecimals) return
 
       const recipient: Record<string, RecipientInfo> = {}
       let isDuplicate = false
@@ -67,8 +71,14 @@ const UploadFile = () => {
           isDuplicate = true
           const [walletAddress, oldAmount] = recipient[address]
 
-          const newAmount = Number(oldAmount) + Number(amount)
-          recipient[address] = [walletAddress, newAmount.toString()]
+          const newAmount =
+            utils.decimalize(oldAmount, mintDecimals) +
+            utils.decimalize(amount, mintDecimals)
+
+          recipient[address] = [
+            walletAddress,
+            utils.undecimalize(newAmount, mintDecimals),
+          ]
         } else recipient[address] = [address, amount]
       }
 
@@ -86,7 +96,7 @@ const UploadFile = () => {
       setVisible(false)
       return false
     },
-    [detectErrorData, dispatch],
+    [detectErrorData, dispatch, mintDecimals],
   )
 
   const remove = async () => {

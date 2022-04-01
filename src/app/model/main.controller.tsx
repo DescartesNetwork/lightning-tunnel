@@ -66,17 +66,17 @@ export const onSelectedFile = createAsyncThunk<
 >(`${NAME}/onSelectedFile`, async ({ checked, index }, { getState }) => {
   const {
     main: { selectedFile },
-    recipients: { recipients, errorDatas },
+    recipients: { recipients, errorData },
   } = getState()
 
   // on select all
   if (index === undefined) {
     const nextRecipients = [...recipients]
-    const nextErrorDatas = [...(errorDatas || [])]
+    const nextErrorData = [...(errorData || [])]
     if (!checked) return { selectedFile: [] }
     const selectedAll = []
     for (const idx in nextRecipients) selectedAll.push(Number(idx))
-    for (const idxError in nextErrorDatas)
+    for (const idxError in nextErrorData)
       selectedAll.push(nextRecipients.length + Number(idxError))
     return { selectedFile: selectedAll }
   }

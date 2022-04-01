@@ -43,7 +43,7 @@ const useTotal = () => {
   const quantity = useMemo(() => recipients.length, [recipients])
 
   return {
-    total: Number(utils.undecimalize(total, mintDecimals)),
+    total: utils.undecimalize(total, mintDecimals).toString(),
     quantity: quantity + editedDataLength,
   }
 }

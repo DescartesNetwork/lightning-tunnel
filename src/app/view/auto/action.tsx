@@ -1,3 +1,4 @@
+import { account } from '@senswap/sen-js'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -17,11 +18,18 @@ const Action = () => {
   } = useSelector((state: AppState) => state)
   const { isError } = useValidateAmount()
 
-  const disabled = useMemo(() => {
-    if (!Object.keys(recipients).length || isError || errorData?.length)
-      return true
+  const existedValidData = useMemo(() => {
+    if (!errorData) return false
+    for (const [address, amount] of errorData) {
+      if (!account.isAddress(address) || !amount) return true
+    }
     return false
-  }, [errorData, isError, recipients])
+  }, [errorData])
+
+  const disabled = useMemo(() => {
+    if (!recipients.length || isError || existedValidData) return true
+    return false
+  }, [existedValidData, isError, recipients.length])
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())

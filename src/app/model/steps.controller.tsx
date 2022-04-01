@@ -5,7 +5,7 @@ import { Step } from 'app/constants'
  * Interface & Utility
  */
 
-export type Steps = {
+export type StepState = {
   step: number
 }
 
@@ -14,7 +14,7 @@ export type Steps = {
  */
 
 const NAME = 'steps'
-const initialState: Steps = {
+const initialState: StepState = {
   step: Step.one,
 }
 

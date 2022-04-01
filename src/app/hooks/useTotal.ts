@@ -6,45 +6,44 @@ import { AppState } from 'app/model'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { RecipientInfos } from 'app/model/recipients.controller'
 
+const ADDRESS_INDEX = 0
+const AMOUNT_INDEX = 1
+
 const useTotal = () => {
   const {
     main: { mintSelected },
     recipients: { recipients, errorData },
-    setting: { decimal },
+    setting: { decimal: isDecimal },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
-  const calculateTotal = useCallback(
+  const calcTotalLamports = useCallback(
     (recipientInfos: RecipientInfos) => {
-      if (!recipientInfos.length || !mintDecimals) return 0
-      let sum = 0
+      if (!recipientInfos.length || !mintDecimals) return BigInt(0)
+      let lamports = BigInt(0)
       for (const recipient of recipientInfos) {
-        const amount = recipient[1]
-        if (Number(amount) % 1 !== 0 && !decimal) continue
-        const lamports = Number(amount) * 10 ** mintDecimals
-        sum += lamports
+        const amount = recipient[AMOUNT_INDEX]
+        if (isDecimal) lamports += utils.decimalize(amount, mintDecimals)
+        else if (Number(amount) % 1 === 0) lamports += BigInt(amount)
       }
 
-      return Number(utils.undecimalize(BigInt(sum), mintDecimals))
+      return lamports
     },
-    [decimal, mintDecimals],
+    [isDecimal, mintDecimals],
   )
 
-  const editedSuccData =
-    errorData?.filter((data) => {
-      return !data.includes('') && account.isAddress(data[0])
-    }) || []
-  const recipientTotal = calculateTotal(recipients)
-  const editedDataTotal = calculateTotal(editedSuccData)
+  const editedSuccessData = errorData.filter(
+    (data) => !data.includes('') && account.isAddress(data[ADDRESS_INDEX]),
+  )
+  const recipientTotal = calcTotalLamports(recipients)
+  const editedDataTotal = calcTotalLamports(editedSuccessData)
 
   const total = recipientTotal + editedDataTotal
-  const editedDataLength = editedSuccData?.length
+  const editedDataLength = editedSuccessData.length
   const quantity = useMemo(() => recipients.length, [recipients])
 
   return {
-    total: decimal
-      ? total
-      : Number(utils.undecimalize(BigInt(total), mintDecimals)),
+    total: Number(utils.undecimalize(total, mintDecimals)),
     quantity: quantity + editedDataLength,
   }
 }

@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 /**
  * Interface & Utility
  */
-export type MethodType = {
+export type MainState = {
   methodSelected?: number
   mintSelected: string
   fileName?: string
@@ -16,7 +16,7 @@ export type MethodType = {
  */
 
 const NAME = 'main'
-const initialState: MethodType = {
+const initialState: MainState = {
   methodSelected: undefined,
   mintSelected: '',
   fileName: '',
@@ -57,7 +57,7 @@ export const setVisible = createAsyncThunk(
 )
 
 export const onSelectedFile = createAsyncThunk<
-  Partial<MethodType>,
+  Partial<MainState>,
   {
     checked: boolean
     index?: number

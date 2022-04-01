@@ -34,7 +34,7 @@ const AccountInfoHeader = ({
       <Col span={6}>
         <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
-      {!!errorData?.length && <Col span={3} />}
+      {!!errorData.length && <Col span={3} />}
     </Row>
   )
 }

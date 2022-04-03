@@ -62,7 +62,7 @@ const ConfirmTransfer = () => {
 
   const remainingBalance = useMemo(() => {
     if (!balance) return 0
-    return balance - total
+    return balance - Number(total)
   }, [balance, total])
 
   const tree = useMemo(() => {

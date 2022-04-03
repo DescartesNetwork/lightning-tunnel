@@ -6,7 +6,8 @@ import { account } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import FileDetails from './fileDetails'
-import ModalMerge from 'app/components/modalMerge'
+import ModalMerge from 'app/components/commonModal'
+
 import IonIcon from 'shared/antd/ionicon'
 
 import iconUpload from 'app/static/images/icon-upload.svg'
@@ -164,14 +165,17 @@ const UploadFile = () => {
           </Button>
         </Col>
         <ModalMerge
+          title="Do you want to merge wallet addresses?"
+          description="There are some wallet addresses that are the same."
           visible={visible}
           setVisible={setVisible}
           onConfirm={onMerge}
           onCancel={onCancel}
+          btnText="merge"
         />
       </Row>
     )
-  return <FileDetails onRemove={remove} />
+  return <FileDetails remove={remove} />
 }
 
 export default UploadFile

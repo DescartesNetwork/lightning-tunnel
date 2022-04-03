@@ -15,7 +15,7 @@ import {
 } from 'app/model/recipients.controller'
 import { onSelectedFile } from 'app/model/main.controller'
 import NumericInput from 'shared/antd/numericInput'
-import ModalMerge from './modalMerge'
+import ModalMerge from './commonModal'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -199,6 +199,9 @@ const InputInfoTransfer = ({
         </Col>
       )}
       <ModalMerge
+        title="Do you want to merge wallet addresses?"
+        description="There are some wallet addresses that are the same."
+        btnText="merge"
         onConfirm={onMerge}
         visible={visible}
         setVisible={setVisible}

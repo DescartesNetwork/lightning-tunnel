@@ -7,6 +7,7 @@ import { WrapTotal } from 'app/components/cardTotal'
 import AccountInfoHeader from './accountInfoHeader'
 import IonIcon from 'shared/antd/ionicon'
 import AccountInfo from './accountInfo'
+import ModalDeleteFile from 'app/components/commonModal'
 
 import { AppDispatch, AppState } from 'app/model'
 import { CollapseAddNew } from 'app/constants'
@@ -55,10 +56,11 @@ const ActionButton = ({
   )
 }
 
-const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
+const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
   const [selected, setSelected] = useState(false)
   const [activeKey, setActiveKey] = useState<string>()
   const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
     main: { fileName, selectedFile },
@@ -108,7 +110,7 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
                 size="small"
                 style={{ color: 'inherit' }}
                 icon={<IonIcon name="close-outline" />}
-                onClick={onRemove}
+                onClick={() => setVisible(true)}
               />
             </Col>
           </Row>
@@ -211,6 +213,15 @@ const FileDetails = ({ onRemove = () => {} }: { onRemove?: () => void }) => {
           </Col>
         </Row>
       </Col>
+      <ModalDeleteFile
+        title="Do you want to delete this file? "
+        description="Data will not be saved."
+        visible={visible}
+        setVisible={setVisible}
+        onConfirm={remove}
+        onCancel={() => setVisible(false)}
+        btnText="delete"
+      />
     </Row>
   )
 }

@@ -1,2 +1,0 @@
-"use strict";(globalThis.webpackChunklightning_tunnel=globalThis.webpackChunklightning_tunnel||[]).push([[898],{19898:(e,a,t)=>{t.r(a),t.d(a,{logo:()=>s,panels:()=>l,readme:()=>i});var n=t(59062);t(92950);const s=t.p+"static/media/logo.edd6e68b96629106774ae0fdbf3926d7.svg";var i=t(89374);const l=[n]},89374:(e,a,t)=>{e.exports=t.p+"static/media/README.ff93448fef94ea73029b.md"},59062:(e,a,t)=>{e.exports=t.p+"static/media/panel.6ce7bc345912340df001.png"}}]);
-//# sourceMappingURL=898.1284ac89.chunk.js.map

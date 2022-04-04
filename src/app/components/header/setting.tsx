@@ -24,7 +24,7 @@ const Content = () => {
             disabled
             onChange={(checked: boolean) => dispatch(setEncryption(checked))}
           />
-          Encryption confidential information
+          Encrypt confidential information
         </Space>
       </Col>
     </Row>

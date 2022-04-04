@@ -70,8 +70,7 @@ const ModalShare = ({
             <Typography.Title level={3}>Share on Twitter!</Typography.Title>
             <Space size={4}>
               <Typography.Text type="secondary">
-                You need to share this transaction in order for the recipient to
-                get the token.
+                Share this link so your recipients can get their tokens
               </Typography.Text>
             </Space>
           </Space>

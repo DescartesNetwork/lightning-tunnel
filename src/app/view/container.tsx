@@ -82,7 +82,7 @@ const SelectInputMethod = () => {
     <Card className="card-lightning" bordered={false}>
       <Row gutter={[32, 32]} align="middle">
         <Col span={24}>
-          <Header label="Select a token and filled type" />
+          <Header label="Select token type and input method" />
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]}>
@@ -96,7 +96,7 @@ const SelectInputMethod = () => {
             <Col span={24}>
               <Space size={12} direction="vertical" style={{ width: '100%' }}>
                 <Typography.Text>
-                  Fill in information transfer by
+                  Choose transfer info input method
                 </Typography.Text>
                 <Radio.Group
                   onChange={(e) => setMethod(e.target.value)}
@@ -117,7 +117,7 @@ const SelectInputMethod = () => {
                       <Radio.Button value={SelectMethod.auto}>
                         <CardOption
                           label="Automatic"
-                          description="Support importing many recipient information quickly by CSV file."
+                          description="Support bulk import with a CSV file."
                           active={method === SelectMethod.auto}
                         />
                       </Radio.Button>

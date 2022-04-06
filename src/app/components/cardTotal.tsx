@@ -1,37 +1,22 @@
 import { useSelector } from 'react-redux'
+import { ReactNode } from 'react'
 
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from 'shared/antd/mint'
 
 import { AppState } from 'app/model'
 import useTotal from 'app/hooks/useTotal'
+import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
+import { numeric } from 'shared/util'
+import useRemainingBalance from 'app/hooks/useRemainingBalance'
 
-const Content = ({
-  label,
-  value,
-  mintAddress,
-}: {
-  label: string
-  value: number | string
-  mintAddress?: string
-}) => {
+const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   return (
     <Row>
       <Col flex="auto">
         <Typography.Text type="secondary">{label}</Typography.Text>
       </Col>
-      <Col>
-        {mintAddress ? (
-          <Space size={4}>
-            <Typography.Title level={5}>{value}</Typography.Title>
-            <Typography.Title level={5}>
-              <MintSymbol mintAddress={mintAddress} />
-            </Typography.Title>
-          </Space>
-        ) : (
-          <Typography.Text>{value}</Typography.Text>
-        )}
-      </Col>
+      <Col>{value}</Col>
     </Row>
   )
 }
@@ -41,14 +26,59 @@ export const WrapTotal = () => {
     main: { mintSelected },
   } = useSelector((sate: AppState) => sate)
   const { total, quantity } = useTotal()
+  const { balance } = useAccountBalanceByMintAddress(mintSelected)
+  const remainingBalance = useRemainingBalance(mintSelected)
 
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
-        <Content label="Quantity" value={quantity} />
+        <Content
+          label="Quantity"
+          value={<Typography.Text>{quantity}</Typography.Text>}
+        />
       </Col>
       <Col span={24}>
-        <Content label="Total" value={total} mintAddress={mintSelected} />
+        <Content
+          label="Total"
+          value={
+            <Space size={4}>
+              <Typography.Title level={5}>{total}</Typography.Title>
+              <Typography.Title level={5}>
+                <MintSymbol mintAddress={mintSelected} />
+              </Typography.Title>
+            </Space>
+          }
+        />
+      </Col>
+      <Col span={24}>
+        <Content
+          label="Your balance"
+          value={
+            <Space size={4}>
+              <Typography.Text>
+                {numeric(balance).format('0,0.00[0000]')}
+              </Typography.Text>
+              <Typography.Text>
+                <MintSymbol mintAddress={mintSelected} />
+              </Typography.Text>
+            </Space>
+          }
+        />
+      </Col>
+      <Col span={24}>
+        <Content
+          label="Remaining"
+          value={
+            <Space size={4}>
+              <Typography.Text>
+                {numeric(remainingBalance).format('0,0.00[0000]')}
+              </Typography.Text>
+              <Typography.Text>
+                <MintSymbol mintAddress={mintSelected} />
+              </Typography.Text>
+            </Space>
+          }
+        />
       </Col>
     </Row>
   )

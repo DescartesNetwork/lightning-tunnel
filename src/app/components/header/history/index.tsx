@@ -9,6 +9,8 @@ import { HISTORY_COLUMN } from './column'
 import { History } from 'app/constants'
 
 import './index.less'
+import { useSelector } from 'react-redux'
+import { AppState } from 'app/model'
 
 const ListHistory = ({
   visible,
@@ -17,16 +19,20 @@ const ListHistory = ({
   visible: boolean
   setVisible: (visible: boolean) => void
 }) => {
+  const [histories, setHistories] = useState<History[]>([])
+  const {
+    main: { currentHistory },
+  } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
   } = useWallet()
-  const [histories, setHistories] = useState<History[]>([])
 
   const fetchHistory = useCallback(async () => {
     const db = new PDB(walletAddress).createInstance('lightning_tunnel')
     const history: History[] = (await db.getItem('history')) || []
+    if (currentHistory) history.push(currentHistory)
     return setHistories(history)
-  }, [walletAddress])
+  }, [currentHistory, walletAddress])
 
   useEffect(() => {
     fetchHistory()

@@ -100,7 +100,7 @@ const AccountInfo = forwardRef(
     const [nextAmount, setNextAmount] = useState('')
     const {
       recipients: { errorData, recipients },
-      main: { selectedFile },
+      file: { selectedFile },
       setting: { decimal },
     } = useSelector((state: AppState) => state)
     const amountRef = useRef(ref)

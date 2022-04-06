@@ -5,6 +5,7 @@ import main from 'app/model/main.controller'
 import steps from 'app/model/steps.controller'
 import setting from 'app/model/setting.controller'
 import recipients from 'app/model/recipients.controller'
+import file from 'app/model/file.controller'
 
 /**
  * Isolated store
@@ -18,6 +19,7 @@ const model = configureStore({
     steps,
     setting,
     recipients,
+    file,
   },
 })
 

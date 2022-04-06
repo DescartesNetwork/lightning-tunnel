@@ -14,9 +14,10 @@ import {
   RecipientInfos,
   removeRecipient,
 } from 'app/model/recipients.controller'
-import { onSelectedFile } from 'app/model/main.controller'
 import NumericInput from 'shared/antd/numericInput'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { onSelectedFile } from 'app/model/file.controller'
+import { setIsTyping } from 'app/model/main.controller'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -75,9 +76,10 @@ const InputInfoTransfer = ({
   const [visible, setVisible] = useState(false)
 
   const {
-    main: { selectedFile, mintSelected },
+    main: { mintSelected },
     recipients: { recipients },
     setting: { decimal },
+    file: { selectedFile },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
   const mintDecimals = useMintDecimals(mintSelected) || 0
@@ -145,6 +147,12 @@ const InputInfoTransfer = ({
     return dispatch(addRecipients({ recipients: nextData }))
   }
 
+  const checkIsTyping = useCallback(() => {
+    if (formInput.walletAddress || formInput.amount)
+      return dispatch(setIsTyping(true))
+    return dispatch(setIsTyping(false))
+  }, [dispatch, formInput])
+
   const validateAmount = useCallback(() => {
     if (!amount) return
     if (decimal) return setAmountError('')
@@ -161,6 +169,10 @@ const InputInfoTransfer = ({
   useEffect(() => {
     validateAmount()
   }, [validateAmount])
+
+  useEffect(() => {
+    checkIsTyping()
+  }, [checkIsTyping])
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between">

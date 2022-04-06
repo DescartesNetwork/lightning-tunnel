@@ -24,6 +24,8 @@ import PDB from 'shared/pdb'
 import IPFS from 'shared/pdb/ipfs'
 import ModalShare from 'app/components/modalShare'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
+import { setCurrentHistory } from 'app/model/main.controller'
+import useRemainingBalance from 'app/hooks/useRemainingBalance'
 
 const Content = ({
   label = '',
@@ -57,13 +59,9 @@ const ConfirmTransfer = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total, quantity } = useTotal()
   const sdk = useMerkleSDK()
-  const { appRoute, generateQuery } = useAppRouter()
+  const { appRoute } = useAppRouter()
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
-
-  const remainingBalance = useMemo(() => {
-    if (!balance) return 0
-    return balance - Number(total)
-  }, [balance, total])
+  const remainingBalance = useRemainingBalance(mintSelected)
 
   const tree = useMemo(() => {
     if (!recipients.length || !mintDecimals) return
@@ -137,11 +135,10 @@ const ConfirmTransfer = () => {
         mint: mintSelected,
       }
       newHistory.unshift(history)
+      dispatch(setCurrentHistory(history))
       db.setItem('history', newHistory)
 
-      const redeemAt = `${window.location.origin}${appRoute}?${generateQuery({
-        redeem: cid,
-      })}`
+      const redeemAt = `${window.location.origin}${appRoute}/redeem/${cid}`
       setRedeemLink(redeemAt)
       return setVisible(true)
     } catch (err: any) {

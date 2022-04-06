@@ -4,6 +4,7 @@ import { account, utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
+import ModalMerge from './commonModal'
 
 import { AppState } from 'app/model'
 import {
@@ -15,7 +16,6 @@ import {
 } from 'app/model/recipients.controller'
 import { onSelectedFile } from 'app/model/main.controller'
 import NumericInput from 'shared/antd/numericInput'
-import ModalMerge from './modalMerge'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 type InputInfoTransferProps = {
@@ -214,6 +214,9 @@ const InputInfoTransfer = ({
         </Col>
       )}
       <ModalMerge
+        title="Do you want to merge wallet addresses?"
+        description="There are some wallet addresses that are the same."
+        btnText="merge"
         onConfirm={onMerge}
         visible={visible}
         setVisible={setVisible}

@@ -1,17 +1,25 @@
 import { Button, Col, Modal, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-const ModalMerge = ({
-  visible,
-  setVisible,
-  onConfirm,
-  onCancel,
-}: {
+type ModalProps = {
   visible: boolean
   setVisible: (visible: boolean) => void
+  title: string
+  description: string
   onConfirm: () => void
   onCancel: () => void
-}) => {
+  btnText: string
+}
+
+const CommonModal = ({
+  visible,
+  setVisible,
+  title,
+  description,
+  onConfirm,
+  onCancel,
+  btnText,
+}: ModalProps) => {
   return (
     <Modal
       visible={visible}
@@ -29,12 +37,8 @@ const ModalMerge = ({
               style={{ color: '#FA8C16', fontSize: 18 }}
             />
             <Space size={4} direction="vertical">
-              <Typography.Text>
-                Do you want to merge wallet addresses?
-              </Typography.Text>
-              <Typography.Text type="secondary">
-                There are some wallet addresses that are the same.
-              </Typography.Text>
+              <Typography.Text>{title}</Typography.Text>
+              <Typography.Text type="secondary">{description}</Typography.Text>
             </Space>
           </Space>
         </Col>
@@ -45,7 +49,7 @@ const ModalMerge = ({
               cancel
             </Button>
             <Button onClick={onConfirm} type="primary">
-              merge
+              {btnText}
             </Button>
           </Space>
         </Col>
@@ -54,4 +58,4 @@ const ModalMerge = ({
   )
 }
 
-export default ModalMerge
+export default CommonModal

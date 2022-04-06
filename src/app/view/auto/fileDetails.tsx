@@ -12,7 +12,7 @@ import ModalDeleteFile from 'app/components/commonModal'
 import { AppDispatch, AppState } from 'app/model'
 import { CollapseAddNew } from 'app/constants'
 import { addRecipients, setErrorData } from 'app/model/recipients.controller'
-import { onSelectedFile, removeSelectedFile } from 'app/model/main.controller'
+import { onSelectedFile, removeSelectedFile } from 'app/model/file.controller'
 import useValidateAmount from 'app/hooks/useValidateAmount'
 
 const ActionButton = ({
@@ -63,7 +63,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
   const [visible, setVisible] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
-    main: { fileName, selectedFile },
+    file: { fileName, selectedFile },
     recipients: { recipients, errorData },
   } = useSelector((state: AppState) => state)
   const { isError } = useValidateAmount()

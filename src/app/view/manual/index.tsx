@@ -13,20 +13,25 @@ import { Step } from 'app/constants'
 import { removeRecipients } from 'app/model/recipients.controller'
 import useTotal from 'app/hooks/useTotal'
 import useValidateAmount from 'app/hooks/useValidateAmount'
+import useRemainingBalance from 'app/hooks/useRemainingBalance'
 
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     recipients: { recipients },
+    main: { mintSelected, isTyping },
   } = useSelector((state: AppState) => state)
   const { quantity } = useTotal()
   const { isError } = useValidateAmount()
+  const remainingBalance = useRemainingBalance(mintSelected)
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
     await dispatch(removeRecipients())
     dispatch(onSelectStep(Step.one))
   }, [dispatch])
+
+  const disabled = quantity <= 0 || isError || remainingBalance < 0 || isTyping
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -71,7 +76,7 @@ const Manual = () => {
                 type="primary"
                 onClick={() => dispatch(onSelectStep(Step.three))}
                 block
-                disabled={quantity <= 0 || isError}
+                disabled={disabled}
               >
                 Continue
               </Button>

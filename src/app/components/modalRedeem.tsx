@@ -110,7 +110,7 @@ const ModalRedeem = ({
 
       if (meta?.err) return notifyError('Something went wrong')
 
-      return notifySuccess('Claim successfully', signature)
+      return notifySuccess('Claim', signature)
     } catch (err) {
       notifyError(err)
     } finally {

@@ -20,8 +20,8 @@ import {
   removeRecipients,
   setErrorData,
 } from 'app/model/recipients.controller'
-import { setFileName } from 'app/model/main.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { setFileName } from 'app/model/file.controller'
 
 const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {

@@ -148,10 +148,17 @@ const InputInfoTransfer = ({
   }
 
   const checkIsTyping = useCallback(() => {
+    if (amount || walletAddress) return
     if (formInput.walletAddress || formInput.amount)
       return dispatch(setIsTyping(true))
     return dispatch(setIsTyping(false))
-  }, [dispatch, formInput])
+  }, [
+    amount,
+    dispatch,
+    formInput.amount,
+    formInput.walletAddress,
+    walletAddress,
+  ])
 
   const validateAmount = useCallback(() => {
     if (!amount) return

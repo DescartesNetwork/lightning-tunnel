@@ -33,6 +33,8 @@ const Manual = () => {
 
   const disabled = quantity <= 0 || isError || remainingBalance < 0 || isTyping
 
+  console.log(isTyping, 1)
+
   return (
     <Card className="card-lightning" bordered={false}>
       <Row gutter={[32, 32]}>

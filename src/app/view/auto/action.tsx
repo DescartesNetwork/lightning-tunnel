@@ -29,17 +29,12 @@ const Action = () => {
     return false
   }, [errorData])
 
-  const disabled = useMemo(() => {
-    if (
-      !recipients.length ||
-      isError ||
-      existedValidData ||
-      isTyping ||
-      remainingBalance < 0
-    )
-      return true
-    return false
-  }, [recipients.length, isError, existedValidData, isTyping, remainingBalance])
+  const disabled =
+    !recipients.length ||
+    isError ||
+    existedValidData ||
+    isTyping ||
+    remainingBalance < 0
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())

@@ -6,7 +6,7 @@ import { PublicKey } from '@solana/web3.js'
 import { u64 } from '@saberhq/token-utils'
 import { MerkleDistributorWrapper } from '@saberhq/merkle-distributor'
 
-import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
+import { Image, Space, Typography, Row, Col, Button, Card, Spin } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { ClaimProof } from 'app/helper'
@@ -21,6 +21,7 @@ import REDEEM from 'app/static/images/redeem.svg'
 
 const Redeem = () => {
   const [loading, setLoading] = useState(false)
+  const [loadingPage, setLoadingPage] = useState(false)
   const [claimProof, setClaimProof] = useState<ClaimProof>()
 
   const {
@@ -33,18 +34,23 @@ const Redeem = () => {
 
   const canRedeem = useCallback(async () => {
     if (!params.cid) return
+    setLoadingPage(true)
+
     const ipfs = new IPFS()
     const claimantData = await ipfs.get(params.cid)
 
     for (const claimant of Object.keys(claimantData)) {
-      if (claimant === walletAddress)
-        return setClaimProof(claimantData[claimant])
+      if (claimant === walletAddress) {
+        setClaimProof(claimantData[claimant])
+        return setLoadingPage(false)
+      }
     }
 
-    return window.notify({
+    window.notify({
       type: 'warning',
       description: 'You are not on the list.',
     })
+    return setLoadingPage(false)
   }, [params.cid, walletAddress])
 
   const fetchDistributor = useCallback(
@@ -130,47 +136,51 @@ const Redeem = () => {
   }, [canRedeem])
 
   return (
-    <Row gutter={[24, 24]} justify="center" className="lightning-container">
-      <Col xs={24} md={16} lg={10}>
-        <Card className="card-lightning" bordered={false}>
-          <Row gutter={[32, 32]} style={{ textAlign: 'center' }}>
-            <Col span={24} style={{ textAlign: 'left' }}>
-              <Button
-                type="text"
-                icon={<IonIcon name="arrow-back-outline" />}
-                onClick={() => pushHistory('')}
-                style={{ margin: -12 }}
-              >
-                Back
-              </Button>
-            </Col>
-            <Col span={24}>
-              <Image src={REDEEM} preview={false} />
-            </Col>
-            <Col span={24}>
-              <Space direction="vertical" size={4}>
-                <Typography.Title level={3}>Redemption!</Typography.Title>
-                <Space size={4}>
-                  <Typography.Text type="secondary">Let's take</Typography.Text>{' '}
-                  <Typography.Title level={5} style={{ color: '#42E6EB' }}>
-                    {utils.undecimalize(
-                      BigInt(claimProof?.amount || 0),
-                      mintDecimals,
-                    )}{' '}
-                    <MintSymbol mintAddress={claimProof?.mintAddress || ''} />
-                  </Typography.Title>
+    <Spin spinning={loadingPage}>
+      <Row gutter={[24, 24]} justify="center" className="lightning-container">
+        <Col xs={24} md={16} lg={10}>
+          <Card className="card-lightning" bordered={false}>
+            <Row gutter={[32, 32]} style={{ textAlign: 'center' }}>
+              <Col span={24} style={{ textAlign: 'left' }}>
+                <Button
+                  type="text"
+                  icon={<IonIcon name="arrow-back-outline" />}
+                  onClick={() => pushHistory('')}
+                  style={{ margin: -12 }}
+                >
+                  Back
+                </Button>
+              </Col>
+              <Col span={24}>
+                <Image src={REDEEM} preview={false} />
+              </Col>
+              <Col span={24}>
+                <Space direction="vertical" size={4}>
+                  <Typography.Title level={3}>Redemption!</Typography.Title>
+                  <Space size={4}>
+                    <Typography.Text type="secondary">
+                      Let's take
+                    </Typography.Text>{' '}
+                    <Typography.Title level={5} style={{ color: '#42E6EB' }}>
+                      {utils.undecimalize(
+                        BigInt(claimProof?.amount || 0),
+                        mintDecimals,
+                      )}{' '}
+                      <MintSymbol mintAddress={claimProof?.mintAddress || ''} />
+                    </Typography.Title>
+                  </Space>
                 </Space>
-              </Space>
-            </Col>
-            <Col span={24}>
-              <Button type="primary" onClick={onClaim} loading={loading}>
-                Redeem
-              </Button>
-            </Col>
-          </Row>
-        </Card>
-      </Col>
-    </Row>
+              </Col>
+              <Col span={24}>
+                <Button type="primary" onClick={onClaim} loading={loading}>
+                  Redeem
+                </Button>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+    </Spin>
   )
 }
 

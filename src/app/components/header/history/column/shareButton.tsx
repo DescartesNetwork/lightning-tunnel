@@ -6,10 +6,12 @@ import ModalShare from 'app/components/modalShare'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 
 const ShareButton = ({ cid }: { cid: string }) => {
-  const { appRoute } = useAppRouter()
+  const { appRoute, generateQuery } = useAppRouter()
 
   const [visible, setVisible] = useState(false)
-  const redeemLink = `${window.location.origin}${appRoute}/redeem/${cid}`
+  const redeemLink = `${
+    window.location.origin
+  }${appRoute}/redeem/${cid}?${generateQuery({ autoInstall: 'true' })}`
   return (
     <Fragment>
       <Button

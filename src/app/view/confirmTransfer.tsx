@@ -60,11 +60,9 @@ const ConfirmTransfer = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total, quantity } = useTotal()
   const sdk = useMerkleSDK()
-  const { appRoute } = useAppRouter()
+  const { appRoute, generateQuery } = useAppRouter()
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const remainingBalance = useRemainingBalance(mintSelected)
-
-  console.log(recipients)
 
   const tree = useMemo(() => {
     if (!recipients.length || !mintDecimals) return
@@ -143,7 +141,10 @@ const ConfirmTransfer = () => {
       dispatch(setCurrentHistory(history))
       db.setItem('history', newHistory)
 
-      const redeemAt = `${window.location.origin}${appRoute}/redeem/${cid}`
+      const redeemAt = `${
+        window.location.origin
+      }${appRoute}/redeem/${cid}?${generateQuery({ autoInstall: 'true' })}`
+
       setRedeemLink(redeemAt)
       return setVisible(true)
     } catch (err: any) {

@@ -64,6 +64,8 @@ const ConfirmTransfer = () => {
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const remainingBalance = useRemainingBalance(mintSelected)
 
+  console.log(recipients)
+
   const tree = useMemo(() => {
     if (!recipients.length || !mintDecimals) return
     const balanceTree: NewFormat[] = []
@@ -71,7 +73,7 @@ const ConfirmTransfer = () => {
       balanceTree.push({
         address,
         earnings: isDecimal
-          ? (Number() * 10 ** mintDecimals).toString()
+          ? (Number(amount) * 10 ** mintDecimals).toString()
           : amount,
       })
     })

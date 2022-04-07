@@ -64,6 +64,8 @@ const ConfirmTransfer = () => {
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const remainingBalance = useRemainingBalance(mintSelected)
 
+  console.log(recipients)
+
   const tree = useMemo(() => {
     if (!recipients.length || !mintDecimals) return
     const balanceTree: NewFormat[] = []

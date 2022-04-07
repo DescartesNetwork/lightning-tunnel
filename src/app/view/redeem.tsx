@@ -37,20 +37,26 @@ const Redeem = () => {
     setLoadingCard(true)
 
     const ipfs = new IPFS()
-    const claimantData = await ipfs.get(params.cid)
 
-    for (const claimant of Object.keys(claimantData)) {
-      if (claimant === walletAddress) {
-        setClaimProof(claimantData[claimant])
-        return setLoadingCard(false)
+    try {
+      const claimantData = await ipfs.get(params.cid)
+      for (const claimant of Object.keys(claimantData)) {
+        if (claimant === walletAddress)
+          return setClaimProof(claimantData[claimant])
       }
-    }
 
-    window.notify({
-      type: 'warning',
-      description: 'You are not on the list.',
-    })
-    return setLoadingCard(false)
+      return window.notify({
+        type: 'warning',
+        description: 'You are not on the list.',
+      })
+    } catch (err) {
+      return window.notify({
+        type: 'error',
+        description: 'Redeem code not found',
+      })
+    } finally {
+      return setLoadingCard(false)
+    }
   }, [params.cid, walletAddress])
 
   const fetchDistributor = useCallback(

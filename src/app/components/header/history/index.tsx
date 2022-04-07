@@ -30,7 +30,7 @@ const ListHistory = ({
   const fetchHistory = useCallback(async () => {
     const db = new PDB(walletAddress).createInstance('lightning_tunnel')
     const history: History[] = (await db.getItem('history')) || []
-    if (currentHistory) history.push(currentHistory)
+    if (currentHistory) return setHistories(history)
     return setHistories(history)
   }, [currentHistory, walletAddress])
 

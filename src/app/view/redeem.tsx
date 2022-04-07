@@ -137,8 +137,6 @@ const Redeem = () => {
     canRedeem()
   }, [canRedeem])
 
-  console.log(1, claimProof)
-
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">
       <Col xs={24} md={16} lg={12} xl={10}>

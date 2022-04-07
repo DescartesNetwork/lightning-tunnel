@@ -66,7 +66,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
     file: { fileName, selectedFile },
     recipients: { recipients, errorData },
   } = useSelector((state: AppState) => state)
-  const { isError } = useValidateAmount()
+  const { amountError } = useValidateAmount()
 
   const onSelected = (checked: boolean, index: number) =>
     dispatch(onSelectedFile({ checked, index }))
@@ -198,7 +198,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
               </Card>
             </Spin>
           </Col>
-          {isError && (
+          {amountError && (
             <Col span={24}>
               <Space size={12}>
                 <IonIcon style={{ color: '#F9575E' }} name="warning-outline" />

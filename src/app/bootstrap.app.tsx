@@ -8,7 +8,7 @@ import {
 } from '@senhub/providers'
 
 import View from 'app/view'
-import Background from './static/javascript'
+import AnimationBackground from 'app/components/animationBackground'
 
 import model from 'app/model'
 import configs from 'app/configs'
@@ -29,9 +29,9 @@ export const Page = () => {
           <AccountProvider>
             <WalletProvider>
               <Provider store={model}>
-                <Background>
+                <AnimationBackground>
                   <View />
-                </Background>
+                </AnimationBackground>
               </Provider>
             </WalletProvider>
           </AccountProvider>

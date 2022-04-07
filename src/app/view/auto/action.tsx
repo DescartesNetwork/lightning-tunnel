@@ -10,13 +10,16 @@ import { Step } from 'app/constants'
 import { onSelectMethod } from 'app/model/main.controller'
 import { removeRecipients } from 'app/model/recipients.controller'
 import useValidateAmount from 'app/hooks/useValidateAmount'
+import useRemainingBalance from 'app/hooks/useRemainingBalance'
 
 const Action = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     recipients: { recipients, errorData },
+    main: { isTyping, mintSelected },
   } = useSelector((state: AppState) => state)
-  const { isError } = useValidateAmount()
+  const { amountError } = useValidateAmount()
+  const remainingBalance = useRemainingBalance(mintSelected)
 
   const existedValidData = useMemo(() => {
     if (!errorData) return false
@@ -26,10 +29,12 @@ const Action = () => {
     return false
   }, [errorData])
 
-  const disabled = useMemo(() => {
-    if (!recipients.length || isError || existedValidData) return true
-    return false
-  }, [existedValidData, isError, recipients.length])
+  const disabled =
+    !recipients.length ||
+    amountError ||
+    existedValidData ||
+    isTyping ||
+    remainingBalance < 0
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())

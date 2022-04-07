@@ -1,5 +1,6 @@
 import { forwardRef, useCallback, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { account } from '@senswap/sen-js'
 
 import { Button, Col, Row, Space, Typography, Tooltip, Checkbox } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -8,7 +9,6 @@ import NumericInput from 'shared/antd/numericInput'
 import { shortenAddress } from 'shared/util'
 import { AppDispatch, AppState } from 'app/model'
 import { setErrorData } from 'app/model/recipients.controller'
-import { account } from '@senswap/sen-js'
 
 type AccountInfoProps = {
   accountAddress?: string

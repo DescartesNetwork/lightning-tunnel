@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
 
-import '../styles/star.scss'
+import 'app/static/styles/star.scss'
 
-export default function Background({ children }: { children: ReactNode }) {
+const AnimationBackground = ({ children }: { children: ReactNode }) => {
   return (
     <div className="background-container">
       {children}
@@ -14,3 +14,5 @@ export default function Background({ children }: { children: ReactNode }) {
     </div>
   )
 }
+
+export default AnimationBackground

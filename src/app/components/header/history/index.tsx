@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useWallet } from '@senhub/providers'
 
 import { Col, Modal, Row, Space, Typography, Table } from 'antd'
@@ -7,10 +8,9 @@ import IonIcon from 'shared/antd/ionicon'
 import PDB from 'shared/pdb'
 import { HISTORY_COLUMN } from './column'
 import { History } from 'app/constants'
+import { AppState } from 'app/model'
 
 import './index.less'
-import { useSelector } from 'react-redux'
-import { AppState } from 'app/model'
 
 const ListHistory = ({
   visible,

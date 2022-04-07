@@ -7,7 +7,6 @@ import { account, utils } from '@senswap/sen-js'
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import FileDetails from './fileDetails'
 import ModalMerge from 'app/components/commonModal'
-
 import IonIcon from 'shared/antd/ionicon'
 
 import iconUpload from 'app/static/images/icon-upload.svg'

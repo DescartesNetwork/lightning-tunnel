@@ -85,18 +85,16 @@ const Redeem = () => {
     const {
       index,
       amount,
-      claimant,
       distributorInfo: { distributor: distributorAddr },
     } = claimProof
 
     const distributor = await fetchDistributor(distributorAddr)
 
-    if (
-      claimant !== walletAddress ||
-      !account.isAddress(distributorAddr) ||
-      !distributor
-    )
-      return window.notify({ type: 'warning', description: 'Invalid proof' })
+    if (!account.isAddress(distributorAddr) || !distributor)
+      return window.notify({
+        type: 'error',
+        description: 'Distributor does not exist',
+      })
 
     try {
       const { isClaimed } = await distributor.getClaimStatus(new u64(index))
@@ -121,7 +119,11 @@ const Redeem = () => {
         response: { meta },
       } = await tx.confirm()
 
-      if (meta?.err) return notifyError('Something went wrong')
+      if (meta?.err)
+        return window.notify({
+          type: 'error',
+          description: 'Something went wrong',
+        })
 
       return notifySuccess('Claim', signature)
     } catch (err) {
@@ -135,14 +137,11 @@ const Redeem = () => {
     canRedeem()
   }, [canRedeem])
 
+  console.log(1, claimProof)
+
   return (
-    <Row
-      gutter={[24, 24]}
-      style={{ height: '100vh' }}
-      justify="center"
-      className="lightning-container"
-    >
-      <Col xs={24} md={16} lg={10}>
+    <Row gutter={[24, 24]} justify="center" className="lightning-container">
+      <Col xs={24} md={16} lg={12} xl={10}>
         <Card
           style={{ minHeight: 430 }}
           loading={loadingCard}

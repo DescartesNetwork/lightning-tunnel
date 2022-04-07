@@ -1,14 +1,15 @@
 import { ReactNode, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import moment from 'moment'
 import { useWallet } from '@senhub/providers'
 import { account, utils } from '@senswap/sen-js'
 import { NewFormat } from '@saberhq/merkle-distributor/dist/cjs/utils'
 import { u64 } from '@saberhq/token-utils'
 import { utils as MerkleUtils } from '@saberhq/merkle-distributor'
-import moment from 'moment'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
+import ModalShare from 'app/components/modalShare'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
@@ -22,7 +23,6 @@ import { encodeData } from 'app/helper'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import PDB from 'shared/pdb'
 import IPFS from 'shared/pdb/ipfs'
-import ModalShare from 'app/components/modalShare'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import { setCurrentHistory } from 'app/model/main.controller'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
@@ -50,6 +50,7 @@ const ConfirmTransfer = () => {
   const [redeemLink, setRedeemLink] = useState('')
   const {
     main: { mintSelected },
+    setting: { decimal: isDecimal },
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
   const {
@@ -69,11 +70,13 @@ const ConfirmTransfer = () => {
     Object.values(recipients).forEach(([address, amount]) => {
       balanceTree.push({
         address,
-        earnings: (Number(amount) * 10 ** mintDecimals).toString(),
+        earnings: isDecimal
+          ? (Number() * 10 ** mintDecimals).toString()
+          : amount,
       })
     })
     return MerkleUtils.parseBalanceMap(balanceTree)
-  }, [recipients, mintDecimals])
+  }, [recipients, mintDecimals, isDecimal])
 
   const onConfirm = async () => {
     if (!sdk || !account.isAddress(mintSelected) || !tree) return

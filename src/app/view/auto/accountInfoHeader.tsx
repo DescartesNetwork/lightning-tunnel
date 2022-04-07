@@ -1,6 +1,8 @@
-import { Checkbox, Col, Row, Space, Typography } from 'antd'
-import { AppState } from 'app/model'
 import { useSelector } from 'react-redux'
+
+import { Checkbox, Col, Row, Space, Typography } from 'antd'
+
+import { AppState } from 'app/model'
 
 type AccountInfoHeaderProps = {
   selected?: boolean

@@ -22,7 +22,7 @@ const Manual = () => {
     main: { mintSelected, isTyping },
   } = useSelector((state: AppState) => state)
   const { quantity } = useTotal()
-  const { isError } = useValidateAmount()
+  const { amountError } = useValidateAmount()
   const remainingBalance = useRemainingBalance(mintSelected)
 
   const onBack = useCallback(async () => {
@@ -31,7 +31,8 @@ const Manual = () => {
     dispatch(onSelectStep(Step.one))
   }, [dispatch])
 
-  const disabled = quantity <= 0 || isError || remainingBalance < 0 || isTyping
+  const disabled =
+    quantity <= 0 || amountError || remainingBalance < 0 || isTyping
 
   return (
     <Card className="card-lightning" bordered={false}>

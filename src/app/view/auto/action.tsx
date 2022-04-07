@@ -18,7 +18,7 @@ const Action = () => {
     recipients: { recipients, errorData },
     main: { isTyping, mintSelected },
   } = useSelector((state: AppState) => state)
-  const { isError } = useValidateAmount()
+  const { amountError } = useValidateAmount()
   const remainingBalance = useRemainingBalance(mintSelected)
 
   const existedValidData = useMemo(() => {
@@ -31,7 +31,7 @@ const Action = () => {
 
   const disabled =
     !recipients.length ||
-    isError ||
+    amountError ||
     existedValidData ||
     isTyping ||
     remainingBalance < 0

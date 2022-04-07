@@ -105,6 +105,7 @@ const InputInfoTransfer = ({
 
     if (!account.isAddress(walletAddress))
       return setWalletError('Wrong wallet address')
+    if (!amount) return setAmountError('Amount cannot be empty')
 
     for (const [address] of recipients) {
       if (walletAddress === address) return setVisible(true)
@@ -112,6 +113,7 @@ const InputInfoTransfer = ({
 
     const recipient: RecipientInfo = [walletAddress, amount]
     setWalletError('')
+    setAmountError('')
     await dispatch(addRecipient({ recipient }))
     return setRecipient(DEFAULT_RECIPIENT)
   }

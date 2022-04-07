@@ -12,7 +12,7 @@ import Redeem from './redeem'
 const LightningTunnelHome = () => {
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">
-      <Col xs={24} md={16} lg={10}>
+      <Col xs={24} md={16} lg={12} xl={10}>
         <Container />
       </Col>
     </Row>

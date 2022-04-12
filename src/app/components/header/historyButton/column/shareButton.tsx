@@ -3,15 +3,18 @@ import { Fragment, useState } from 'react'
 import { Button } from 'antd'
 import ModalShare from 'app/components/modalShare'
 
-import { useAppRouter } from 'app/hooks/useAppRoute'
+import configs from 'app/configs'
 
-const ShareButton = ({ cid }: { cid: string }) => {
-  const { appRoute, generateQuery } = useAppRouter()
+const {
+  manifest: { appId },
+} = configs
 
+export type ShareButtonProps = { cid: string }
+
+const ShareButton = ({ cid }: ShareButtonProps) => {
   const [visible, setVisible] = useState(false)
-  const redeemLink = `${
-    window.location.origin
-  }${appRoute}/redeem/${cid}?${generateQuery({ autoInstall: 'true' })}`
+  const redeemLink = `${window.location.origin}/app/${appId}/redeem/${cid}?autoInstall=true`
+
   return (
     <Fragment>
       <Button
@@ -23,7 +26,7 @@ const ShareButton = ({ cid }: { cid: string }) => {
       </Button>
       <ModalShare
         visible={visible}
-        setVisible={setVisible}
+        onClose={() => setVisible(false)}
         redeemLink={redeemLink}
       />
     </Fragment>

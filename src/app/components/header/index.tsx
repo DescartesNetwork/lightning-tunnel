@@ -1,17 +1,23 @@
-import { useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useWallet } from '@senhub/providers'
 
 import { Col, Radio, Row, Space, Typography } from 'antd'
-import Setting from './setting'
-import History from './history'
-import IonIcon from 'shared/antd/ionicon'
+import SettingButton from './settingButton'
+import HistoryButton from './historyButton'
 
 import { Step } from 'app/constants'
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
+import { getHistory } from 'app/model/history.controller'
 
-const Header = ({ label }: { label: string }) => {
-  const [visible, setVisible] = useState(false)
+export type HeaderProps = { label?: string }
+
+const Header = ({ label = '' }: HeaderProps) => {
   const { step } = useSelector((state: AppState) => state.steps)
+  const dispatch = useDispatch<AppDispatch>()
+  const {
+    wallet: { address: walettAddress },
+  } = useWallet()
 
   const stepOneValue = useMemo(() => {
     if (step === Step.two) return Step.two
@@ -23,6 +29,10 @@ const Header = ({ label }: { label: string }) => {
     if (step === Step.three) return Step.three
     return Step.two
   }, [step])
+
+  useEffect(() => {
+    dispatch(getHistory(walettAddress))
+  }, [dispatch, walettAddress])
 
   return (
     <Row>
@@ -39,16 +49,11 @@ const Header = ({ label }: { label: string }) => {
         </Space>
       </Col>
       <Col>
-        <Space size={16}>
-          <IonIcon
-            style={{ cursor: 'pointer', fontSize: 16 }}
-            name="document-text-outline"
-            onClick={() => setVisible(true)}
-          />
-          <Setting />
+        <Space>
+          <HistoryButton />
+          <SettingButton />
         </Space>
       </Col>
-      <History visible={visible} setVisible={setVisible} />
     </Row>
   )
 }

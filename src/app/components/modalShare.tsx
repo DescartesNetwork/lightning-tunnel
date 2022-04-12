@@ -17,15 +17,17 @@ import { asyncWait } from 'shared/util'
 
 import TWITTER from 'app/static/images/twitter.svg'
 
+export type ModalShareProps = {
+  visible: boolean
+  redeemLink: string
+  onClose?: () => void
+}
+
 const ModalShare = ({
   visible,
   redeemLink,
-  setVisible,
-}: {
-  visible: boolean
-  redeemLink: string
-  setVisible: (visible: boolean) => void
-}) => {
+  onClose = () => {},
+}: ModalShareProps) => {
   const [copied, setCopied] = useState(false)
 
   const onShare = () => {
@@ -56,7 +58,7 @@ const ModalShare = ({
     <Modal
       visible={visible}
       closeIcon={<IonIcon name="close-outline" />}
-      onCancel={() => setVisible(false)}
+      onCancel={onClose}
       footer={null}
       className="card-lightning"
       style={{ paddingBottom: 0 }}

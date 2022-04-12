@@ -8,23 +8,21 @@ import Manual from './manual'
 import SelectToken from 'app/components/selectTokens'
 import IonIcon from 'shared/antd/ionicon'
 import Header from 'app/components/header'
+import ConfirmTransfer from './confirmTransfer'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
-import ConfirmTransfer from './confirmTransfer'
 
-const CardOption = ({
-  label,
-  description,
-  active,
-}: {
+export type CardOptionProps = {
   label: string
   description: string
   active: boolean
-}) => {
+}
+
+const CardOption = ({ label, description, active }: CardOptionProps) => {
   return (
     <Fragment>
       {active ? (

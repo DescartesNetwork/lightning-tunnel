@@ -12,10 +12,3 @@ export enum Step {
 export enum CollapseAddNew {
   activeKey = 'collapse-upload-csv',
 }
-
-export type History = {
-  time: string
-  mint: string
-  total: string | number
-  cid: string
-}

@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { History } from 'app/constants'
 
 /**
  * Interface & Utility
@@ -8,7 +7,6 @@ export type MainState = {
   methodSelected?: number
   mintSelected: string
   visible: boolean
-  currentHistory?: History
   isTyping: boolean
 }
 
@@ -21,7 +19,6 @@ const initialState: MainState = {
   methodSelected: undefined,
   mintSelected: '',
   visible: false,
-  currentHistory: undefined,
   isTyping: false,
 }
 
@@ -47,13 +44,6 @@ export const setVisible = createAsyncThunk(
   `${NAME}/setVisible`,
   async (visible: boolean) => {
     return { visible }
-  },
-)
-
-export const setCurrentHistory = createAsyncThunk(
-  `${NAME}/setCurrentHistory`,
-  async (currentHistory: History) => {
-    return { currentHistory }
   },
 )
 
@@ -84,10 +74,6 @@ const slice = createSlice({
       )
       .addCase(
         setVisible.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
-      .addCase(
-        setCurrentHistory.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

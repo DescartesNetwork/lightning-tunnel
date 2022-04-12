@@ -12,6 +12,7 @@
     "@saberhq/merkle-distributor": "^0.3.0",
     "@saberhq/solana-contrib": "^1.12.55",
     "@saberhq/token-utils": "^1.12.55",
+    "@senswap/react-lazyload": "^3.2.2",
     "@senswap/sen-js": "^1.3.5",
     "@solana/spl-token-registry": "^0.2.3084",
     "antd": "^4.19.4",
@@ -99,6 +100,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "typescript": "^4.5.2",
+    "url": "^0.11.0",
     "util": "^0.12.4"
   }
 }

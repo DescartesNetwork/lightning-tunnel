@@ -6,7 +6,7 @@ import { AppDispatch, AppState } from 'app/model'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setDecimal } from 'app/model/setting.controller'
 
-const SwitchDecimal = () => {
+const DecimalsSwitch = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     main: { mintSelected },
@@ -29,4 +29,4 @@ const SwitchDecimal = () => {
   )
 }
 
-export default SwitchDecimal
+export default DecimalsSwitch

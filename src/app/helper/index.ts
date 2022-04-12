@@ -33,44 +33,6 @@ export const notifyError = (er: any) => {
   })
 }
 
-export const generateCsv = (data: Record<string, any>[]) => {
-  const titles: string[] = []
-  // generate title
-  for (const elm of data) {
-    for (const key in elm) {
-      if (!titles.includes(key)) titles.push(key)
-    }
-  }
-  // generate row data
-  const csvData = [titles]
-  for (const elm of data) {
-    const rowData = []
-    for (const title of titles) {
-      const val = String(elm[title]) || ''
-      rowData.push(val)
-    }
-    csvData.push(rowData)
-  }
-  return {
-    data: csvData,
-    download: () => {
-      let csvContent =
-        'data:text/csv;charset=utf-8,' +
-        csvData.map((e) => e.join(',')).join('\n')
-
-      var encodedUri = encodeURI(csvContent)
-      var link = document.createElement('a')
-      link.setAttribute('href', encodedUri)
-      link.setAttribute(
-        'download',
-        `sentre_cheques_${new Date().toString()}.csv`,
-      )
-      document.body.appendChild(link)
-      link.click()
-    },
-  }
-}
-
 export const encodeData = (
   tree: MerkleDistributorInfo,
   distributorInfo: DistributorInfo,

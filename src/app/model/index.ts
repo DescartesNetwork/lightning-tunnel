@@ -6,6 +6,7 @@ import steps from 'app/model/steps.controller'
 import setting from 'app/model/setting.controller'
 import recipients from 'app/model/recipients.controller'
 import file from 'app/model/file.controller'
+import history from 'app/model/history.controller'
 
 /**
  * Isolated store
@@ -20,6 +21,7 @@ const model = configureStore({
     setting,
     recipients,
     file,
+    history,
   },
 })
 

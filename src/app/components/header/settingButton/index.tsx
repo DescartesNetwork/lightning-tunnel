@@ -1,11 +1,11 @@
 import { useDispatch } from 'react-redux'
 
-import { Col, Popover, Row, Space, Switch } from 'antd'
+import { Button, Col, Popover, Row, Space, Switch, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
+import DecimalsSwitch from './decimalsSwitch'
 
 import { AppDispatch } from 'app/model'
 import { setEncryption } from 'app/model/setting.controller'
-import SwitchDecimal from './switch'
 
 const Content = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -14,8 +14,8 @@ const Content = () => {
     <Row gutter={[8, 8]}>
       <Col span={24}>
         <Space size={24}>
-          <SwitchDecimal />
-          Decimals
+          <DecimalsSwitch />
+          <Typography.Text>Decimals</Typography.Text>
         </Space>
       </Col>
       <Col span={24}>
@@ -24,29 +24,24 @@ const Content = () => {
             disabled
             onChange={(checked: boolean) => dispatch(setEncryption(checked))}
           />
-          Encrypt confidential information
+          <Typography.Text>Encrypt confidential information</Typography.Text>
         </Space>
       </Col>
     </Row>
   )
 }
 
-const Setting = () => {
+const SettingButton = () => {
   return (
-    <div className="setting">
-      <Popover
-        trigger="click"
-        placement="bottom"
-        title={null}
-        content={<Content />}
-      >
-        <IonIcon
-          style={{ cursor: 'pointer', fontSize: 16 }}
-          name="cog-outline"
-        />
-      </Popover>
-    </div>
+    <Popover
+      trigger="click"
+      placement="bottom"
+      title={null}
+      content={<Content />}
+    >
+      <Button type="text" icon={<IonIcon name="cog-outline" />} />
+    </Popover>
   )
 }
 
-export default Setting
+export default SettingButton

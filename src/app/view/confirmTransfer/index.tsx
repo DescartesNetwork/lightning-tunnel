@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 import { useWallet } from '@senhub/providers'
@@ -10,43 +10,30 @@ import { utils as MerkleUtils } from '@saberhq/merkle-distributor'
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
 import ModalShare from 'app/components/modalShare'
+import { MintSymbol } from 'shared/antd/mint'
+import Content from './content'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
-import { History, Step } from 'app/constants'
+import { Step } from 'app/constants'
 import { explorer, numeric } from 'shared/util'
-import { MintSymbol } from 'shared/antd/mint'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'app/hooks/useTotal'
 import useMerkleSDK from 'app/hooks/useMerkleSDK'
 import { encodeData } from 'app/helper'
-import { useAppRouter } from 'app/hooks/useAppRoute'
-import PDB from 'shared/pdb'
 import IPFS from 'shared/pdb/ipfs'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
-import { setCurrentHistory } from 'app/model/main.controller'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
+import History, { HistoryRecord } from 'app/helper/history'
+import configs from 'app/configs'
+import { getHistory } from 'app/model/history.controller'
 
-const Content = ({
-  label = '',
-  value = '',
-}: {
-  label?: string
-  value?: ReactNode
-}) => {
-  return (
-    <Row>
-      <Col flex="auto">
-        <Typography.Text type="secondary">{label} </Typography.Text>
-      </Col>
-      <Col>{value}</Col>
-    </Row>
-  )
-}
+const {
+  manifest: { appId },
+} = configs
 
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
-  const [visible, setVisible] = useState(false)
   const [redeemLink, setRedeemLink] = useState('')
   const {
     main: { mintSelected },
@@ -60,7 +47,6 @@ const ConfirmTransfer = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total, quantity } = useTotal()
   const sdk = useMerkleSDK()
-  const { appRoute, generateQuery } = useAppRouter()
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const remainingBalance = useRemainingBalance(mintSelected)
 
@@ -81,36 +67,53 @@ const ConfirmTransfer = () => {
   const onConfirm = async () => {
     if (!sdk || !account.isAddress(mintSelected) || !tree) return
 
-    const { merkleRoot } = tree
     setLoading(true)
     try {
       const { splt, wallet } = window.sentre
-      if (!wallet) throw Error('Please connect wallet')
+      if (!wallet) throw new Error('Please connect wallet')
 
+      const { merkleRoot } = tree
       const maxTotalClaim = utils.decimalize(total, mintDecimals).toString()
-      const accountAddress = account.fromAddress(mintSelected)
+      const mintPublicKey = account.fromAddress(mintSelected)
 
+      // Init a distributor
       const { tx, distributor, distributorATA } = await sdk.createDistributor({
-        tokenMint: accountAddress,
+        tokenMint: mintPublicKey,
         root: merkleRoot,
         maxNumNodes: new u64(quantity),
         maxTotalClaim: new u64(maxTotalClaim),
       })
       const pendingTx = await tx.send()
-      await pendingTx.wait()
+      try {
+        await pendingTx.wait()
+      } catch (er: any) {
+        return console.warn(er.message)
+      }
 
+      // Save data to local and IPFS
       const distributorInfo = {
         distributor: distributor.toBase58(),
         distributorATA: distributorATA.toBase58(),
       }
+      const dataEncoded = encodeData(tree, distributorInfo, mintSelected)
+      const ipfs = new IPFS()
+      const cid = await ipfs.set(dataEncoded)
+      const historyRecord: HistoryRecord = {
+        cid,
+        total,
+        time: new Date().toString(),
+        mint: mintSelected,
+      }
+      const history = new History('history', walletAddress)
+      await history.append(historyRecord)
+      await dispatch(getHistory(walletAddress)) // To realtime
 
-      // Transfer token to DistributorATA
+      // Transfer token to the distributor
       const srcAddress = await splt.deriveAssociatedAddress(
         walletAddress,
         mintSelected,
       )
-
-      const { txId: txIdTransfer } = await splt.transfer(
+      const { txId } = await splt.transfer(
         BigInt(maxTotalClaim),
         srcAddress,
         distributorInfo.distributorATA,
@@ -119,38 +122,17 @@ const ConfirmTransfer = () => {
       window.notify({
         type: 'success',
         description: 'Transfer successfully. Click to view details.',
-        onClick: () => window.open(explorer(txIdTransfer)),
+        onClick: () => window.open(explorer(txId), '_blank'),
       })
 
-      /**Save history */
-      const ipfs = new IPFS()
-      const db = new PDB(walletAddress).createInstance('lightning_tunnel')
-
-      const oldHistory: History[] = (await db.getItem('history')) || []
-      const newHistory = [...oldHistory]
-      const dataEncoded = encodeData(tree, distributorInfo, mintSelected)
-      const cid = await ipfs.set(dataEncoded)
-
-      const history: History = {
-        cid,
-        total,
-        time: new Date().toString(),
-        mint: mintSelected,
-      }
-      newHistory.unshift(history)
-      dispatch(setCurrentHistory(history))
-      db.setItem('history', newHistory)
-
-      const redeemAt = `${
-        window.location.origin
-      }${appRoute}/redeem/${cid}?${generateQuery({ autoInstall: 'true' })}`
-
-      setRedeemLink(redeemAt)
-      return setVisible(true)
-    } catch (err: any) {
-      window.notify({ type: 'error', description: err.message })
+      // Generate redemption link
+      return setRedeemLink(
+        `${window.location.origin}/app/${appId}/redeem/${cid}?autoInstall=true`,
+      )
+    } catch (er: any) {
+      return window.notify({ type: 'error', description: er.message })
     } finally {
-      setLoading(false)
+      return setLoading(false)
     }
   }
 
@@ -246,8 +228,8 @@ const ConfirmTransfer = () => {
         </Col>
       </Row>
       <ModalShare
-        visible={visible}
-        setVisible={setVisible}
+        visible={Boolean(redeemLink)}
+        onClose={() => setRedeemLink('')}
         redeemLink={redeemLink}
       />
     </Card>

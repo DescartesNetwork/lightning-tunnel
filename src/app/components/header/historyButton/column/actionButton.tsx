@@ -71,8 +71,10 @@ const ActionButton = ({ cid }: ActionButtonProps) => {
         walletAddress,
         mintSelected,
       )
+      console.log(maxTotalClaim)
+
       const { txId } = await splt.transfer(
-        BigInt(maxTotalClaim),
+        maxTotalClaim,
         srcAddress,
         distributor,
         wallet,

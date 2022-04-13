@@ -106,7 +106,7 @@ const ActionButton = ({ cid }: ActionButtonProps) => {
       loading={loading}
       onClick={retry}
       type="text"
-      style={{ color: '#42E6EB' }}
+      style={{ color: '#F9575E' }}
     >
       retry
     </Button>

@@ -5,8 +5,6 @@ import { Net } from 'shared/runtime'
  */
 type Conf = {
   node: string
-  spltAddress: string
-  splataAddress: string
 }
 
 const conf: Record<Net, Conf> = {
@@ -15,8 +13,6 @@ const conf: Record<Net, Conf> = {
    */
   devnet: {
     node: 'https://api.devnet.solana.com',
-    spltAddress: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-    splataAddress: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
   },
 
   /**
@@ -24,17 +20,13 @@ const conf: Record<Net, Conf> = {
    */
   testnet: {
     node: 'https://api.testnet.solana.com',
-    spltAddress: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-    splataAddress: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
   },
 
   /**
    * Production configurations
    */
   mainnet: {
-    node: 'https://api.mainnet-beta.solana.com',
-    spltAddress: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-    splataAddress: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+    node: 'https://sentre.genesysgo.net',
   },
 }
 

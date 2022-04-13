@@ -11,6 +11,7 @@ export type HistoryRecord = {
   mint: string
   total: string | number
   cid: string
+  state: string
 }
 
 class History {
@@ -33,6 +34,15 @@ class History {
 
   get = async (): Promise<HistoryRecord[]> => {
     return (await this.db.getItem(this.key)) || ([] as HistoryRecord[])
+  }
+
+  update = async (historyRecord: HistoryRecord) => {
+    const prevHistory = await this.get()
+    const index = prevHistory.findIndex(
+      (history) => history.cid === historyRecord.cid,
+    )
+    prevHistory[index] = historyRecord
+    return this.set(prevHistory)
   }
 
   append = async (history: HistoryRecord) => {

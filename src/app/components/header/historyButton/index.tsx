@@ -1,7 +1,7 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { Col, Modal, Row, Space, Typography, Table, Button } from 'antd'
+import { Col, Modal, Row, Space, Typography, Table, Button, Badge } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { HISTORY_COLUMN } from './column'
@@ -13,13 +13,24 @@ const HistoryButton = () => {
   const [visible, setVisible] = useState(false)
   const { history } = useSelector((state: AppState) => state)
 
+  const amountHistoryError = useMemo(() => {
+    let amount = 0
+    history.forEach((historyRecord) => {
+      if (historyRecord.state !== 'DONE') amount++
+    })
+    return amount
+  }, [history])
+
   return (
     <Fragment>
-      <Button
-        type="text"
-        icon={<IonIcon name="document-text-outline" />}
-        onClick={() => setVisible(true)}
-      />
+      <Badge count={amountHistoryError} size="small">
+        <Button
+          type="text"
+          icon={<IonIcon name="document-text-outline" />}
+          onClick={() => setVisible(true)}
+        />
+      </Badge>
+
       <Modal
         visible={visible}
         onCancel={() => setVisible(false)}

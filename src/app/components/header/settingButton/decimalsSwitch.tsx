@@ -20,6 +20,7 @@ const DecimalsSwitch = () => {
 
   return (
     <Switch
+      className="decimal-switch"
       onChange={onSwitch}
       checkedChildren={decimals}
       unCheckedChildren={decimals}

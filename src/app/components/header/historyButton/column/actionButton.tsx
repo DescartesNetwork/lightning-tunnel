@@ -71,8 +71,10 @@ const ActionButton = ({ cid }: ActionButtonProps) => {
         walletAddress,
         mintSelected,
       )
+      console.log(maxTotalClaim)
+
       const { txId } = await splt.transfer(
-        BigInt(maxTotalClaim),
+        maxTotalClaim,
         srcAddress,
         distributor,
         wallet,
@@ -104,7 +106,7 @@ const ActionButton = ({ cid }: ActionButtonProps) => {
       loading={loading}
       onClick={retry}
       type="text"
-      style={{ color: '#42E6EB' }}
+      style={{ color: '#F9575E' }}
     >
       retry
     </Button>

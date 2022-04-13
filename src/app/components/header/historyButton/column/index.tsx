@@ -1,7 +1,7 @@
 import moment from 'moment'
 
 import { Space, Typography } from 'antd'
-import ShareButton from './shareButton'
+import ActionButton from './actionButton'
 
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 import { numeric } from 'shared/util'
@@ -37,6 +37,6 @@ export const HISTORY_COLUMN = [
   {
     title: 'ACTION',
     dataIndex: 'cid',
-    render: (cid: string) => <ShareButton cid={cid} />,
+    render: (cid: string) => <ActionButton cid={cid} />,
   },
 ]

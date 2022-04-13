@@ -26,7 +26,7 @@ import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import History, { HistoryRecord } from 'app/helper/history'
 import configs from 'app/configs'
-import { getHistory } from 'app/model/history.controller'
+import { getHistory, setStateHistory } from 'app/model/history.controller'
 
 const {
   manifest: { appId },
@@ -103,6 +103,7 @@ const ConfirmTransfer = () => {
         total,
         time: new Date().toString(),
         mint: mintSelected,
+        state: 'IN_PROGRESS',
       }
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
@@ -124,6 +125,9 @@ const ConfirmTransfer = () => {
         description: 'Transfer successfully. Click to view details.',
         onClick: () => window.open(explorer(txId), '_blank'),
       })
+
+      //update state history
+      await dispatch(setStateHistory({ cid, state: 'DONE', walletAddress }))
 
       // Generate redemption link
       return setRedeemLink(

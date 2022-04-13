@@ -12,7 +12,7 @@ export type ClaimProof = {
   amount: string
   proof: any
   claimant: string
-  distributorInfo?: DistributorInfo
+  distributorInfo: DistributorInfo
   mintAddress: string
 }
 

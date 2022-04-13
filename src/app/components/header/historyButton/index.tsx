@@ -6,6 +6,7 @@ import IonIcon from 'shared/antd/ionicon'
 
 import { HISTORY_COLUMN } from './column'
 import { AppState } from 'app/model'
+
 import './index.less'
 
 const HistoryButton = () => {

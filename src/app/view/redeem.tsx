@@ -47,7 +47,7 @@ const Redeem = () => {
 
       return window.notify({
         type: 'warning',
-        description: 'You are not on the list.',
+        description: 'You are not in the list.',
       })
     } catch (err) {
       return window.notify({

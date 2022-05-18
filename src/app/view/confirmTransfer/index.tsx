@@ -57,7 +57,7 @@ const ConfirmTransfer = () => {
       balanceTree.push({
         address,
         earnings: isDecimal
-          ? (Number(amount) * 10 ** mintDecimals).toString()
+          ? utils.decimalize(amount, mintDecimals).toString()
           : amount,
       })
     })

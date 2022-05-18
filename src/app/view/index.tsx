@@ -4,10 +4,10 @@ import { useUI } from '@senhub/providers'
 
 import { Col, Row } from 'antd'
 import Container from './container'
+import Redeem from './redeem'
 
 import BG from 'app/static/images/background-LT.png'
 import { useAppRouter } from 'app/hooks/useAppRoute'
-import Redeem from './redeem'
 
 const LightningTunnelHome = () => {
   return (

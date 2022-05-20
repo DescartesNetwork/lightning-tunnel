@@ -1,22 +1,6 @@
-import { MerkleDistributorInfo } from '@saberhq/merkle-distributor/dist/cjs/utils'
+import { CID } from 'ipfs-core'
 
 import { explorer } from 'shared/util'
-
-export type DistributorInfo = {
-  distributor: string
-  distributorATA: string
-}
-
-export type ClaimProof = {
-  index: number
-  amount: string
-  proof: any
-  claimant: string
-  distributorInfo: DistributorInfo
-  mintAddress: string
-}
-
-export type EncodeData = Record<string, ClaimProof>
 
 export const notifySuccess = (content: string, txId: string) => {
   return window.notify({
@@ -33,26 +17,11 @@ export const notifyError = (er: any) => {
   })
 }
 
-export const encodeData = (
-  tree: MerkleDistributorInfo,
-  distributorInfo: DistributorInfo,
-  mintAddress: string,
-): EncodeData => {
-  if (!tree) return {}
-  const { claims } = tree
-  const data: EncodeData = {}
-  const listClaimant = Object.keys(claims)
-  listClaimant.forEach((claimant) => {
-    const { amount, index, proof } = claims[claimant]
-    const newClaim = {
-      index,
-      proof,
-      amount: amount.toString(),
-      claimant,
-      distributorInfo,
-      mintAddress,
-    }
-    data[claimant] = newClaim
-  })
-  return data
+export const getCID = (digest: number[]) => {
+  const v0Prefix = new Uint8Array([18, 32])
+  const v0Digest = new Uint8Array(v0Prefix.length + digest?.length)
+  v0Digest.set(v0Prefix) // multicodec + length
+  v0Digest.set(digest, v0Prefix.length)
+  const cid = CID.decode(v0Digest)
+  return cid.toString()
 }

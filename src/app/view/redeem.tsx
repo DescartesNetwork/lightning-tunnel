@@ -1,147 +1,153 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { account, utils } from '@senswap/sen-js'
-import { useWallet } from '@senhub/providers'
-import { PublicKey } from '@solana/web3.js'
-import { u64 } from '@saberhq/token-utils'
-import { MerkleDistributorWrapper } from '@saberhq/merkle-distributor'
+import { utils } from '@senswap/sen-js'
+import { useMint, useWallet } from '@senhub/providers'
+import {
+  DistributorData,
+  FeeOptions,
+  Leaf,
+  MerkleDistributor,
+} from '@sentre/utility'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import { ClaimProof } from 'app/helper'
-import { notifySuccess, notifyError } from 'app/helper'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { notifySuccess, notifyError, getCID } from 'app/helper'
 import { MintSymbol } from 'shared/antd/mint'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import IPFS from 'shared/pdb/ipfs'
-import useMerkleSDK from 'app/hooks/useMerkleSDK'
+import configs from 'app/configs'
 
-import REDEEM from 'app/static/images/redeem.svg'
+import REDEEM_IMG from 'app/static/images/redeem.svg'
+import { BN } from 'bn.js'
+import moment from 'moment'
+
+const {
+  sol: { utility, taxman, fee },
+} = configs
 
 const Redeem = () => {
   const [loading, setLoading] = useState(false)
   const [loadingCard, setLoadingCard] = useState(false)
-  const [claimProof, setClaimProof] = useState<ClaimProof>()
+  const [merkle, setMerkle] = useState<MerkleDistributor>()
+  const [decimals, setDecimals] = useState<number>(0)
+  const [distributor, setDistributor] = useState<DistributorData>()
+  const [disabled, setDisabled] = useState(false)
+
+  const { getDecimals } = useMint()
 
   const {
     wallet: { address: walletAddress },
   } = useWallet()
-  const sdk = useMerkleSDK()
   const { pushHistory } = useAppRouter()
-  const mintDecimals = useMintDecimals(claimProof?.mintAddress || '') || 0
-  const params: { cid: string } = useParams()
+  const params = useParams<{ distributorAddress: string }>()
 
-  const canRedeem = useCallback(async () => {
-    if (!params.cid) return
-    setLoadingCard(true)
+  const feeOptions: FeeOptions = {
+    fee: new BN(fee),
+    feeCollectorAddress: taxman,
+  }
 
+  const getMerkleDistributor = useCallback(async () => {
+    if (!params.distributorAddress) return
     const ipfs = new IPFS()
-
+    setLoadingCard(true)
     try {
-      const claimantData = await ipfs.get(params.cid)
-      for (const claimant of Object.keys(claimantData)) {
-        if (claimant === walletAddress)
-          return setClaimProof(claimantData[claimant])
-      }
+      const distributor = await utility.program.account.distributor.fetch(
+        params.distributorAddress,
+      )
+      setDistributor(distributor)
 
-      return window.notify({
-        type: 'warning',
-        description: 'You are not in the list.',
-      })
-    } catch (err) {
-      return window.notify({
-        type: 'error',
-        description: 'Redeem code not found',
-      })
+      const cid = await getCID(distributor.metadata)
+      const data = await ipfs.get(cid)
+      const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
+
+      return setMerkle(merkleDistributor)
+    } catch (error) {
+      notifyError(error)
     } finally {
-      return setLoadingCard(false)
+      setLoadingCard(false)
     }
-  }, [params.cid, walletAddress])
+  }, [params.distributorAddress])
 
-  const fetchDistributor = useCallback(
-    async (distributorAddr: string) => {
-      if (!sdk) return
-
-      const publicKey = account.fromAddress(distributorAddr)
-      const distributorW = await MerkleDistributorWrapper.load(sdk, publicKey)
-
-      return distributorW
-    },
-    [sdk],
-  )
-
-  const bufferProof: Buffer[] = useMemo(() => {
-    const buffProof: Buffer[] = []
-
-    if (!claimProof?.proof) return buffProof
-    const { proof } = claimProof
-
-    proof.forEach(({ data }: any) => {
-      buffProof.push(Buffer.from(data))
+  const recipientData = useMemo(() => {
+    if (!merkle) return
+    const recipients = merkle.receipients as Leaf[]
+    for (const recipient of recipients) {
+      if (walletAddress === recipient.authority.toBase58()) return recipient
+    }
+    window.notify({
+      type: 'warning',
+      description: 'You are not in the list.',
     })
 
-    return buffProof
-  }, [claimProof])
+    return setDisabled(true)
+  }, [merkle, walletAddress])
 
-  const onClaim = useCallback(async () => {
-    if (!claimProof || !claimProof.distributorInfo) return
-    setLoading(true)
-
-    const {
-      index,
-      amount,
-      distributorInfo: { distributor: distributorAddr },
-    } = claimProof
-
-    const distributor = await fetchDistributor(distributorAddr)
-
-    if (!account.isAddress(distributorAddr) || !distributor)
-      return window.notify({
+  const checkValid = useCallback(async () => {
+    if (!distributor || !recipientData || !merkle) return
+    try {
+      const { salt } = recipientData
+      const receiptAddress = await utility.deriveReceiptAddress(
+        salt,
+        params.distributorAddress,
+      )
+      const receiptData = await utility.getReceiptData(receiptAddress)
+      if (!receiptData) return
+      const claimedAt = receiptData.claimedAt.toNumber()
+      window.notify({
         type: 'error',
-        description: 'Distributor does not exist',
+        description: `You have claimed at ${moment(claimedAt * 1000).format(
+          'DD/MM/YYYY HH:mm',
+        )}`,
       })
+      return setDisabled(true)
+    } catch (error) {}
+  }, [distributor, merkle, params.distributorAddress, recipientData])
+
+  const onRedeem = async () => {
+    if (!recipientData || !merkle) return
+    const proof = merkle.deriveProof(recipientData)
+    const validProof = merkle.verifyProof(proof, recipientData)
+    if (!validProof) return
 
     try {
-      const { isClaimed } = await distributor.getClaimStatus(new u64(index))
-      if (isClaimed) {
-        setLoading(false)
-        return window.notify({
-          type: 'error',
-          description: 'Tokens has been redeemed',
-        })
-      }
-    } catch (err) {}
-
-    try {
-      const tx = await distributor.claim({
-        index: new u64(index),
-        amount: new u64(amount),
-        proof: bufferProof,
-        claimant: new PublicKey(walletAddress),
+      setLoading(true)
+      const { txId } = await utility.claim({
+        distributorAddress: params.distributorAddress,
+        proof,
+        data: recipientData,
+        feeOptions,
       })
-      const {
-        signature,
-        response: { meta },
-      } = await tx.confirm()
-
-      if (meta?.err)
-        return window.notify({
-          type: 'error',
-          description: 'Something went wrong',
-        })
-
-      return notifySuccess('Claim', signature)
-    } catch (err) {
-      notifyError(err)
+      notifySuccess('Redeem', txId)
+    } catch (error) {
+      notifyError(error)
     } finally {
       setLoading(false)
     }
-  }, [bufferProof, claimProof, fetchDistributor, walletAddress])
+  }
+
+  const fetchDecimals = useCallback(async () => {
+    if (!distributor) return
+    const mintAddress = distributor.mint.toBase58()
+    try {
+      const decimals = await getDecimals(mintAddress)
+      return setDecimals(decimals)
+    } catch (er: any) {
+      return setDecimals(0)
+    }
+  }, [distributor, getDecimals])
 
   useEffect(() => {
-    canRedeem()
-  }, [canRedeem])
+    fetchDecimals()
+  }, [fetchDecimals])
+
+  useEffect(() => {
+    getMerkleDistributor()
+  }, [getMerkleDistributor])
+
+  useEffect(() => {
+    checkValid()
+  }, [checkValid])
 
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">
@@ -164,7 +170,7 @@ const Redeem = () => {
               </Button>
             </Col>
             <Col span={24}>
-              <Image src={REDEEM} preview={false} />
+              <Image src={REDEEM_IMG} preview={false} />
             </Col>
             <Col span={24}>
               <Space direction="vertical" size={4}>
@@ -173,16 +179,23 @@ const Redeem = () => {
                   <Typography.Text type="secondary">Let's take</Typography.Text>{' '}
                   <Typography.Title level={5} style={{ color: '#42E6EB' }}>
                     {utils.undecimalize(
-                      BigInt(claimProof?.amount || 0),
-                      mintDecimals,
+                      BigInt(recipientData?.amount.toNumber() || 0),
+                      decimals,
                     )}{' '}
-                    <MintSymbol mintAddress={claimProof?.mintAddress || ''} />
+                    <MintSymbol
+                      mintAddress={distributor?.mint.toBase58() || ''}
+                    />
                   </Typography.Title>
                 </Space>
               </Space>
             </Col>
             <Col span={24}>
-              <Button type="primary" onClick={onClaim} loading={loading}>
+              <Button
+                disabled={disabled}
+                type="primary"
+                onClick={onRedeem}
+                loading={loading}
+              >
                 Redeem
               </Button>
             </Col>

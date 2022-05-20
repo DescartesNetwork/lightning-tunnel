@@ -10,8 +10,7 @@ export type HistoryRecord = {
   time: string
   mint: string
   total: string | number
-  cid: string
-  state: string
+  distributorAddress: string
 }
 
 class History {
@@ -39,7 +38,8 @@ class History {
   update = async (historyRecord: HistoryRecord) => {
     const prevHistory = await this.get()
     const index = prevHistory.findIndex(
-      (history) => history.cid === historyRecord.cid,
+      (history) =>
+        history.distributorAddress === historyRecord.distributorAddress,
     )
     prevHistory[index] = historyRecord
     return this.set(prevHistory)

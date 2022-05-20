@@ -30,7 +30,10 @@ const View = () => {
   return (
     <Switch>
       <Route exact path={appRoute} component={LightningTunnelHome} />
-      <Route path={`${appRoute}/redeem/:cid`} component={Redeem} />
+      <Route
+        path={`${appRoute}/redeem/:distributorAddress`}
+        component={Redeem}
+      />
     </Switch>
   )
 }

@@ -1,10 +1,11 @@
 import moment from 'moment'
 
 import { Space, Typography } from 'antd'
-import ActionButton from './actionButton'
+import ShareButton from './shareButton'
+import ColumnTotal from './columnTotal'
 
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
-import { numeric } from 'shared/util'
+import { HistoryRecord } from 'app/helper/history'
 
 export const HISTORY_COLUMN = [
   {
@@ -30,13 +31,15 @@ export const HISTORY_COLUMN = [
   {
     title: 'AMOUNT',
     dataIndex: 'total',
-    render: (total: string) => (
-      <Typography.Text>{numeric(total).format('0,0.[0000]')}</Typography.Text>
+    render: (total: string, { mint }: HistoryRecord) => (
+      <ColumnTotal total={total} mint={mint} />
     ),
   },
   {
     title: 'ACTION',
-    dataIndex: 'cid',
-    render: (cid: string) => <ActionButton cid={cid} />,
+    dataIndex: 'distributorAddress',
+    render: (distributorAddress: string) => (
+      <ShareButton distributorAddress={distributorAddress} />
+    ),
   },
 ]

@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
+import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { useWallet } from '@senhub/providers'
 import { account, utils } from '@senswap/sen-js'
-import { NewFormat } from '@saberhq/merkle-distributor/dist/cjs/utils'
-import { u64 } from '@saberhq/token-utils'
-import { utils as MerkleUtils } from '@saberhq/merkle-distributor'
+import { BN } from 'bn.js'
+import { CID } from 'ipfs-core'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
@@ -16,19 +16,19 @@ import Content from './content'
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
-import { explorer, numeric } from 'shared/util'
+import { numeric } from 'shared/util'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'app/hooks/useTotal'
-import useMerkleSDK from 'app/hooks/useMerkleSDK'
-import { encodeData } from 'app/helper'
-import IPFS from 'shared/pdb/ipfs'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
-import History, { HistoryRecord } from 'app/helper/history'
 import configs from 'app/configs'
-import { getHistory, setStateHistory } from 'app/model/history.controller'
+import IPFS from 'shared/pdb/ipfs'
+import History, { HistoryRecord } from 'app/helper/history'
+import { getHistory } from 'app/model/history.controller'
+import { notifySuccess } from 'app/helper'
 
 const {
+  sol: { utility, fee, taxman },
   manifest: { appId },
 } = configs
 
@@ -46,97 +46,78 @@ const ConfirmTransfer = () => {
   const dispatch = useDispatch<AppDispatch>()
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total, quantity } = useTotal()
-  const sdk = useMerkleSDK()
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const remainingBalance = useRemainingBalance(mintSelected)
 
-  const tree = useMemo(() => {
+  const treeData = useMemo(() => {
     if (!recipients.length || !mintDecimals) return
-    const balanceTree: NewFormat[] = []
-    Object.values(recipients).forEach(([address, amount]) => {
-      balanceTree.push({
-        address,
-        earnings: isDecimal
-          ? utils.decimalize(amount, mintDecimals).toString()
-          : amount,
-      })
+    const balanceTree: Leaf[] = recipients.map(([address, amount], index) => {
+      const actualAmount = isDecimal
+        ? utils.decimalize(amount, mintDecimals).toString()
+        : amount
+      return {
+        authority: account.fromAddress(address),
+        amount: new BN(actualAmount),
+        startedAt: new BN(0),
+        salt: MerkleDistributor.salt(index.toString()),
+      }
     })
-    return MerkleUtils.parseBalanceMap(balanceTree)
+    const merkleDistributor = new MerkleDistributor(balanceTree)
+    const dataBuffer = merkleDistributor.toBuffer()
+    return dataBuffer
   }, [recipients, mintDecimals, isDecimal])
 
-  const onConfirm = async () => {
-    if (!sdk || !account.isAddress(mintSelected) || !tree) return
+  const feeOptions: FeeOptions = {
+    fee: new BN(fee),
+    feeCollectorAddress: taxman,
+  }
 
+  const onConfirm = async () => {
+    if (!treeData) return
     setLoading(true)
     try {
-      const { splt, wallet } = window.sentre
-      if (!wallet) throw new Error('Please connect wallet')
-
-      const { merkleRoot } = tree
-      const maxTotalClaim = utils.decimalize(total, mintDecimals).toString()
-      const mintPublicKey = account.fromAddress(mintSelected)
-
-      // Init a distributor
-      const { tx, distributor, distributorATA } = await sdk.createDistributor({
-        tokenMint: mintPublicKey,
-        root: merkleRoot,
-        maxNumNodes: new u64(quantity),
-        maxTotalClaim: new u64(maxTotalClaim),
-      })
-      const pendingTx = await tx.send()
-      try {
-        await pendingTx.wait()
-      } catch (er: any) {
-        return console.warn(er.message)
-      }
-
-      // Save data to local and IPFS
-      const distributorInfo = {
-        distributor: distributor.toBase58(),
-        distributorATA: distributorATA.toBase58(),
-      }
-      const dataEncoded = encodeData(tree, distributorInfo, mintSelected)
+      const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
       const ipfs = new IPFS()
-      const cid = await ipfs.set(dataEncoded)
+
+      const cid = await ipfs.set(treeData.toJSON().data)
+      const {
+        multihash: { digest },
+      } = CID.parse(cid)
+
+      const metadata = Buffer.from(digest)
+
+      const { txId, distributorAddress } = await utility.initializeDistributor({
+        tokenAddress: mintSelected,
+        total: merkleDistributor.getTotal(),
+        merkleRoot: merkleDistributor.deriveMerkleRoot(),
+        metadata,
+        endedAt: 0,
+        feeOptions,
+      })
+
       const historyRecord: HistoryRecord = {
-        cid,
-        total,
+        total: merkleDistributor.getTotal().toNumber(),
         time: new Date().toString(),
         mint: mintSelected,
-        state: 'IN_PROGRESS',
+        distributorAddress,
       }
+
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
-      await dispatch(getHistory(walletAddress)) // To realtime
+      await dispatch(getHistory(walletAddress))
 
-      // Transfer token to the distributor
-      const srcAddress = await splt.deriveAssociatedAddress(
-        walletAddress,
-        mintSelected,
-      )
-      const { txId } = await splt.transfer(
-        BigInt(maxTotalClaim),
-        srcAddress,
-        distributorInfo.distributorATA,
-        wallet,
-      )
-      window.notify({
-        type: 'success',
-        description: 'Transfer successfully. Click to view details.',
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
+      notifySuccess('Airdrop', txId)
 
-      //update state history
-      await dispatch(setStateHistory({ cid, state: 'DONE', walletAddress }))
-
-      // Generate redemption link
       return setRedeemLink(
-        `${window.location.origin}/app/${appId}/redeem/${cid}?autoInstall=true`,
+        `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`,
       )
-    } catch (er: any) {
-      return window.notify({ type: 'error', description: er.message })
+    } catch (error: any) {
+      window.notify({
+        type: 'error',
+        description: error.message,
+      })
     } finally {
-      return setLoading(false)
+      setLoading(false)
     }
   }
 

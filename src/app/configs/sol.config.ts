@@ -1,4 +1,5 @@
 import { Utility } from '@sentre/utility'
+
 import { Net } from 'shared/runtime'
 import SafeWallet from 'app/helper/safeWallet'
 

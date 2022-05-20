@@ -9,9 +9,9 @@ const {
   manifest: { appId },
 } = configs
 
-export type ActionButtonProps = { distributorAddress: string }
+type ShareButtonProps = { distributorAddress: string }
 
-const ShareButton = ({ distributorAddress }: ActionButtonProps) => {
+const ShareButton = ({ distributorAddress }: ShareButtonProps) => {
   const [visible, setVisible] = useState(false)
   const redeemLink = `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`
 

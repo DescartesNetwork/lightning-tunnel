@@ -2,12 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { utils } from '@senswap/sen-js'
 import { useMint, useWallet } from '@senhub/providers'
-import {
-  DistributorData,
-  FeeOptions,
-  Leaf,
-  MerkleDistributor,
-} from '@sentre/utility'
+import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
+import { BN } from 'bn.js'
+import moment from 'moment'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -19,8 +16,6 @@ import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
 
 import REDEEM_IMG from 'app/static/images/redeem.svg'
-import { BN } from 'bn.js'
-import moment from 'moment'
 
 const {
   sol: { utility, taxman, fee },
@@ -41,6 +36,7 @@ const Redeem = () => {
   } = useWallet()
   const { pushHistory } = useAppRouter()
   const params = useParams<{ distributorAddress: string }>()
+  const distributorAddress = params.distributorAddress
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
@@ -48,12 +44,12 @@ const Redeem = () => {
   }
 
   const getMerkleDistributor = useCallback(async () => {
-    if (!params.distributorAddress) return
+    if (!distributorAddress) return
     const ipfs = new IPFS()
     setLoadingCard(true)
     try {
       const distributor = await utility.program.account.distributor.fetch(
-        params.distributorAddress,
+        distributorAddress,
       )
       setDistributor(distributor)
 
@@ -67,11 +63,11 @@ const Redeem = () => {
     } finally {
       setLoadingCard(false)
     }
-  }, [params.distributorAddress])
+  }, [distributorAddress])
 
   const recipientData = useMemo(() => {
     if (!merkle) return
-    const recipients = merkle.receipients as Leaf[]
+    const recipients = merkle.receipients
     for (const recipient of recipients) {
       if (walletAddress === recipient.authority.toBase58()) return recipient
     }
@@ -83,13 +79,13 @@ const Redeem = () => {
     return setDisabled(true)
   }, [merkle, walletAddress])
 
-  const checkValid = useCallback(async () => {
+  const fetchRecipientData = useCallback(async () => {
     if (!distributor || !recipientData || !merkle) return
     try {
       const { salt } = recipientData
       const receiptAddress = await utility.deriveReceiptAddress(
         salt,
-        params.distributorAddress,
+        distributorAddress,
       )
       const receiptData = await utility.getReceiptData(receiptAddress)
       if (!receiptData) return
@@ -102,7 +98,7 @@ const Redeem = () => {
       })
       return setDisabled(true)
     } catch (error) {}
-  }, [distributor, merkle, params.distributorAddress, recipientData])
+  }, [distributor, merkle, distributorAddress, recipientData])
 
   const onRedeem = async () => {
     if (!recipientData || !merkle) return
@@ -113,7 +109,7 @@ const Redeem = () => {
     try {
       setLoading(true)
       const { txId } = await utility.claim({
-        distributorAddress: params.distributorAddress,
+        distributorAddress,
         proof,
         data: recipientData,
         feeOptions,
@@ -146,8 +142,8 @@ const Redeem = () => {
   }, [getMerkleDistributor])
 
   useEffect(() => {
-    checkValid()
-  }, [checkValid])
+    fetchRecipientData()
+  }, [fetchRecipientData])
 
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">

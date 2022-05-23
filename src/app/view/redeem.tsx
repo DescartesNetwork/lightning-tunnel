@@ -16,6 +16,7 @@ import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
 
 import REDEEM_IMG from 'app/static/images/redeem.svg'
+import ButtonHome from 'app/components/buttonHome'
 
 const {
   sol: { utility, taxman, fee },
@@ -27,7 +28,7 @@ const Redeem = () => {
   const [merkle, setMerkle] = useState<MerkleDistributor>()
   const [decimals, setDecimals] = useState<number>(0)
   const [distributor, setDistributor] = useState<DistributorData>()
-  const [disabled, setDisabled] = useState(false)
+  const [isValid, setIsValid] = useState(true)
 
   const { getDecimals } = useMint()
 
@@ -76,7 +77,7 @@ const Redeem = () => {
       description: 'You are not in the list.',
     })
 
-    return setDisabled(true)
+    return setIsValid(false)
   }, [merkle, walletAddress])
 
   const fetchRecipientData = useCallback(async () => {
@@ -96,7 +97,7 @@ const Redeem = () => {
           'DD/MM/YYYY HH:mm',
         )}`,
       })
-      return setDisabled(true)
+      return setIsValid(false)
     } catch (error) {}
   }, [distributor, merkle, distributorAddress, recipientData])
 
@@ -115,6 +116,7 @@ const Redeem = () => {
         feeOptions,
       })
       notifySuccess('Redeem', txId)
+      return setIsValid(false)
     } catch (error) {
       notifyError(error)
     } finally {
@@ -186,14 +188,13 @@ const Redeem = () => {
               </Space>
             </Col>
             <Col span={24}>
-              <Button
-                disabled={disabled}
-                type="primary"
-                onClick={onRedeem}
-                loading={loading}
-              >
-                Redeem
-              </Button>
+              {!isValid ? (
+                <ButtonHome onBack={() => pushHistory('')} />
+              ) : (
+                <Button type="primary" onClick={onRedeem} loading={loading}>
+                  Redeem
+                </Button>
+              )}
             </Col>
           </Row>
         </Card>

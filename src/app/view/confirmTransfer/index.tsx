@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
@@ -26,6 +26,9 @@ import IPFS from 'shared/pdb/ipfs'
 import History, { HistoryRecord } from 'app/helper/history'
 import { getHistory } from 'app/model/history.controller'
 import { notifySuccess } from 'app/helper'
+import ButtonHome from 'app/components/buttonHome'
+import { onSelectMethod } from 'app/model/main.controller'
+import { removeRecipients } from 'app/model/recipients.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -35,6 +38,7 @@ const {
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
   const [redeemLink, setRedeemLink] = useState('')
+  const [isDone, setIsDone] = useState(false)
   const {
     main: { mintSelected },
     setting: { decimal: isDecimal },
@@ -101,13 +105,13 @@ const ConfirmTransfer = () => {
         mint: mintSelected,
         distributorAddress,
       }
-
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
       await dispatch(getHistory(walletAddress))
 
-      notifySuccess('Airdrop', txId)
+      setIsDone(true)
 
+      notifySuccess('Airdrop', txId)
       return setRedeemLink(
         `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`,
       )
@@ -120,6 +124,12 @@ const ConfirmTransfer = () => {
       setLoading(false)
     }
   }
+
+  const backToDashboard = useCallback(async () => {
+    await dispatch(onSelectMethod())
+    await dispatch(removeRecipients())
+    dispatch(onSelectStep(Step.one))
+  }, [dispatch])
 
   return (
     <Card bordered={false} className="card-lightning">
@@ -186,30 +196,34 @@ const ConfirmTransfer = () => {
           </Row>
         </Col>
         <Col span={24}>
-          <Row gutter={[8, 8]}>
-            <Col span={12}>
-              <Button
-                size="large"
-                onClick={() => dispatch(onSelectStep(Step.two))}
-                block
-                type="ghost"
-              >
-                BACK
-              </Button>
-            </Col>
-            <Col span={12}>
-              <Button
-                size="large"
-                onClick={onConfirm}
-                type="primary"
-                loading={loading}
-                disabled={remainingBalance < 0}
-                block
-              >
-                TRANSFER
-              </Button>
-            </Col>
-          </Row>
+          {isDone ? (
+            <ButtonHome onBack={backToDashboard} />
+          ) : (
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                <Button
+                  size="large"
+                  onClick={() => dispatch(onSelectStep(Step.two))}
+                  block
+                  type="ghost"
+                >
+                  BACK
+                </Button>
+              </Col>
+              <Col span={12}>
+                <Button
+                  size="large"
+                  onClick={onConfirm}
+                  type="primary"
+                  loading={loading}
+                  disabled={remainingBalance < 0}
+                  block
+                >
+                  TRANSFER
+                </Button>
+              </Col>
+            </Row>
+          )}
         </Col>
       </Row>
       <ModalShare

@@ -28,7 +28,7 @@ const Redeem = () => {
   const [merkle, setMerkle] = useState<MerkleDistributor>()
   const [decimals, setDecimals] = useState<number>(0)
   const [distributor, setDistributor] = useState<DistributorData>()
-  const [isRedeem, setIsRedeem] = useState(false)
+  const [isValid, setIsValid] = useState(true)
 
   const { getDecimals } = useMint()
 
@@ -77,7 +77,7 @@ const Redeem = () => {
       description: 'You are not in the list.',
     })
 
-    return setIsRedeem(true)
+    return setIsValid(false)
   }, [merkle, walletAddress])
 
   const fetchRecipientData = useCallback(async () => {
@@ -97,7 +97,7 @@ const Redeem = () => {
           'DD/MM/YYYY HH:mm',
         )}`,
       })
-      return setIsRedeem(true)
+      return setIsValid(false)
     } catch (error) {}
   }, [distributor, merkle, distributorAddress, recipientData])
 
@@ -116,7 +116,7 @@ const Redeem = () => {
         feeOptions,
       })
       notifySuccess('Redeem', txId)
-      return setIsRedeem(true)
+      return setIsValid(false)
     } catch (error) {
       notifyError(error)
     } finally {
@@ -188,7 +188,7 @@ const Redeem = () => {
               </Space>
             </Col>
             <Col span={24}>
-              {isRedeem ? (
+              {!isValid ? (
                 <ButtonHome onBack={() => pushHistory('')} />
               ) : (
                 <Button type="primary" onClick={onRedeem} loading={loading}>

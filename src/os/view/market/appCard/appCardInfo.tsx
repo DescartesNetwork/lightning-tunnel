@@ -18,18 +18,18 @@ import { openWallet } from 'os/store/wallet.reducer'
 import { updateVisited } from 'os/store/flags.reducer'
 import { setVisible } from 'os/store/search.reducer'
 
-type ActionButtonProps = {
+export type ActionButtonProps = {
   appIds: AppIds
   appId: string
-  onOpen: (e: MouseEvent<HTMLButtonElement>) => void
-  onInstall: (e: MouseEvent<HTMLButtonElement>) => void
+  onOpen?: (e: MouseEvent<HTMLButtonElement>) => void
+  onInstall?: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
-const ActionButton = ({
+export const ActionButton = ({
   appIds,
   appId,
   onOpen = () => {},
-  onInstall,
+  onInstall = () => {},
 }: ActionButtonProps) => {
   return appIds.includes(appId) ? (
     <Button ghost size="small" onClick={onOpen} id="open-action-button">
@@ -50,14 +50,15 @@ const ActionButton = ({
 const AppCardInfo = ({ appId }: { appId: string }) => {
   const history = useHistory()
   const dispatch = useRootDispatch<RootDispatch>()
-  const {
-    page: { register, appIds },
-    walkthrough: { run },
-    wallet: { address: walletAddress },
-    search: { visible },
-  } = useRootSelector((state: RootState) => state)
+  const register = useRootSelector((state: RootState) => state.page.register)
+  const appIds = useRootSelector((state: RootState) => state.page.appIds)
+  const run = useRootSelector((state: RootState) => state.walkthrough.run)
+  const walletAddress = useRootSelector(
+    (state: RootState) => state.wallet.address,
+  )
+  const visible = useRootSelector((state: RootState) => state.search.visible)
 
-  const manifest = register[appId]
+  const { name, verified, author } = register[appId] || {}
 
   const onInstall = useCallback(
     async (e: MouseEvent<HTMLButtonElement>) => {
@@ -107,12 +108,10 @@ const AppCardInfo = ({ appId }: { appId: string }) => {
           <Col flex="auto">
             <Space direction="vertical" size={0}>
               <Space align="center" style={{ lineHeight: 1 }}>
-                <Typography.Title level={5}>{manifest?.name}</Typography.Title>
-                <Verification verified={manifest?.verified} />
+                <Typography.Title level={5}>{name}</Typography.Title>
+                <Verification verified={verified} />
               </Space>
-              <Typography.Text type="secondary">
-                {manifest?.author.name}
-              </Typography.Text>
+              <Typography.Text type="secondary">{author?.name}</Typography.Text>
             </Space>
           </Col>
           <Col>

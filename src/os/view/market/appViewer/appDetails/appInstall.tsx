@@ -3,7 +3,7 @@ import { useHistory } from 'react-router'
 import { account } from '@senswap/sen-js'
 
 import { Button, Col, Row } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import {
   useRootDispatch,
@@ -23,10 +23,10 @@ const AppInstall = ({
   appId: string
 }) => {
   const dispatch = useRootDispatch<RootDispatch>()
-  const {
-    ui: { infix },
-    wallet: { address: walletAddress },
-  } = useRootSelector((state: RootState) => state)
+  const infix = useRootSelector((state: RootState) => state.ui.infix)
+  const walletAddress = useRootSelector(
+    (state: RootState) => state.wallet.address,
+  )
   const history = useHistory()
 
   const to = () => history.push(`/app/${appId}`)

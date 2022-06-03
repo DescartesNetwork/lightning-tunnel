@@ -12,7 +12,7 @@ import {
   Typography,
   Modal,
 } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { useRootSelector, RootState } from 'os/store'
 import { asyncWait } from 'shared/util'
@@ -31,9 +31,7 @@ const ShareModal = ({
   onClose: () => void
 }) => {
   const [copied, setCopied] = useState(false)
-  const {
-    page: { register },
-  } = useRootSelector((state: RootState) => state)
+  const register = useRootSelector((state: RootState) => state.page.register)
   const { name } = register[appId] || {}
 
   const onClick = (type?: string) => {

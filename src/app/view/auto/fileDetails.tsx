@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import InputInfoTransfer from 'app/components/inputInfoTransfer'
 import { WrapTotal } from 'app/components/cardTotal'
 import AccountInfoHeader from './accountInfoHeader'
-import IonIcon from 'shared/antd/ionicon'
 import AccountInfo from './accountInfo'
 import ModalDeleteFile from 'app/components/commonModal'
 

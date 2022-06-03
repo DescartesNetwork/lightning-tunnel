@@ -1,5 +1,5 @@
 import { Modal } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import WalletConnection from './walletConnection'
 
 import {
@@ -12,7 +12,7 @@ import { closeWallet } from 'os/store/wallet.reducer'
 import './index.os.less'
 
 const Login = () => {
-  const { visible } = useRootSelector((state: RootState) => state.wallet)
+  const visible = useRootSelector((state: RootState) => state.wallet.visible)
   const dispatch = useRootDispatch<RootDispatch>()
   return (
     <Modal

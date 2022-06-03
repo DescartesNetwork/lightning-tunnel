@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
 import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import Auto from './auto'
 import Manual from './manual'
 import SelectToken from 'app/components/selectTokens'
-import IonIcon from 'shared/antd/ionicon'
 import Header from 'app/components/header'
 import ConfirmTransfer from './confirmTransfer'
 

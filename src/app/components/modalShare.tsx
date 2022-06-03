@@ -1,5 +1,5 @@
-import CopyToClipboard from 'react-copy-to-clipboard'
 import { useState } from 'react'
+import CopyToClipboard from 'react-copy-to-clipboard'
 
 import {
   Modal,
@@ -11,7 +11,7 @@ import {
   Button,
   Tooltip,
 } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { asyncWait } from 'shared/util'
 

@@ -5,9 +5,9 @@ import fileDownload from 'js-file-download'
 import { account, utils } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import FileDetails from './fileDetails'
 import ModalMerge from 'app/components/commonModal'
-import IonIcon from 'shared/antd/ionicon'
 
 import iconUpload from 'app/static/images/icon-upload.svg'
 import { AppState } from 'app/model'

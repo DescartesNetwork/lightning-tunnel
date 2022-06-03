@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
 import { Modal, Row, Col, Space, Typography, Button } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { useRootSelector, RootState } from 'os/store'
 import PDB from 'shared/pdb'
@@ -15,11 +15,13 @@ const ConfirmRestore = ({
   cid: string
   visible: boolean
 }) => {
-  const { address } = useRootSelector((state: RootState) => state.wallet)
+  const walletAddress = useRootSelector(
+    (state: RootState) => state.wallet.address,
+  )
 
   const onRestore = useCallback(async () => {
     try {
-      const pdb = new PDB(address)
+      const pdb = new PDB(walletAddress)
       await pdb.restore(cid)
       return (window.location.href = '/welcome')
     } catch (er) {
@@ -28,7 +30,7 @@ const ConfirmRestore = ({
         description: (er as any).message,
       })
     }
-  }, [address, cid])
+  }, [walletAddress, cid])
 
   return (
     <Modal visible={visible} footer={null} centered>

@@ -1,5 +1,5 @@
 import { Transaction, PublicKey } from '@solana/web3.js'
-import { AnchorWallet } from '@interdao/core'
+import { AnchorWallet } from '@sentre/utility'
 import { WalletInterface } from '@senswap/sen-js'
 
 class SafeWallet implements AnchorWallet {

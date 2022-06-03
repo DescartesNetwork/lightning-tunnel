@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 import { Space, Avatar, Typography, Badge, AvatarProps } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import { StaticLoader } from 'os/components/staticLoader'
 
 import { useRootSelector, RootState } from 'os/store'
@@ -9,7 +9,7 @@ import configs from 'os/configs'
 import './index.os.less'
 
 const {
-  register: { defaultAppId },
+  register: { devAppId },
 } = configs
 
 type AppIconProps = {
@@ -28,7 +28,7 @@ const AppAvatar = ({
   appId: string
   avatarProps: AvatarProps
 }) => {
-  return appId === defaultAppId ? (
+  return appId === devAppId ? (
     <Badge.Ribbon className="sentre-ribbon-dev" text="dev" placement="start">
       <Avatar {...avatarProps}>
         <IonIcon name="image-outline" />

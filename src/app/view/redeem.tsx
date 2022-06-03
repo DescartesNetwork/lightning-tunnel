@@ -7,7 +7,8 @@ import { BN } from 'bn.js'
 import moment from 'moment'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
+import ButtonHome from 'app/components/buttonHome'
 
 import { notifySuccess, notifyError, getCID } from 'app/helper'
 import { MintSymbol } from 'shared/antd/mint'
@@ -16,7 +17,6 @@ import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
 
 import REDEEM_IMG from 'app/static/images/redeem.svg'
-import ButtonHome from 'app/components/buttonHome'
 
 const {
   sol: { utility, taxman, fee },

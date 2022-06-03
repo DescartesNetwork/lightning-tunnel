@@ -62,30 +62,12 @@ export const chainId: ChainId = getChainId()
 /**
  * RPC Node
  */
-const devnetRPCs = [
-  'https://api.devnet.solana.com',
-  'https://psytrbhymqlkfrhudd.dev.genesysgo.net:8899/',
-]
-const testnetRPCs = ['https://api.testnet.solana.com']
-const mainnetRPCs = [
-  'https://ssc-dao.genesysgo.net/',
-  'https://solana-api.projectserum.com',
-]
-const balancing = <T>(arr: T[]): T => {
-  const rpc = arr[Math.floor(Math.random() * arr.length)]
-  console.log('Debug OS RPC:', rpc)
-  return rpc
+const CLUSTERS: Record<Net, string> = {
+  devnet: 'https://api.devnet.solana.com',
+  testnet: 'https://api.testnet.solana.com',
+  mainnet:
+    env === 'development'
+      ? 'https://api.mainnet-beta.solana.com'
+      : 'https://solitary-autumn-water.solana-mainnet.quiknode.pro/dcbac9d444818a20ac583541dec35b44c6840888/',
 }
-const getRPC = () => {
-  switch (net) {
-    case 'devnet':
-      return balancing(devnetRPCs)
-    case 'testnet':
-      return balancing(testnetRPCs)
-    case 'mainnet':
-      return balancing(mainnetRPCs)
-    default:
-      return balancing(mainnetRPCs)
-  }
-}
-export const rpc: string = getRPC()
+export const rpc: string = CLUSTERS[net]

@@ -9,7 +9,7 @@ import {
 import { useLocation, useHistory } from 'react-router-dom'
 
 import { Row, Col, Input, Button, Modal, Divider } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import {
   useRootDispatch,
@@ -26,9 +26,10 @@ const Search = forwardRef((_, ref: any) => {
   const dispatch = useRootDispatch<RootDispatch>()
   const { pathname, search } = useLocation()
   const history = useHistory()
-  const {
-    search: { visible, value, loading, disabled },
-  } = useRootSelector((state: RootState) => state)
+  const visible = useRootSelector((state: RootState) => state.search.visible)
+  const value = useRootSelector((state: RootState) => state.search.value)
+  const loading = useRootSelector((state: RootState) => state.search.loading)
+  const disabled = useRootSelector((state: RootState) => state.search.disabled)
 
   const onChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {

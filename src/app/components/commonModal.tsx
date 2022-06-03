@@ -1,7 +1,7 @@
 import { Button, Col, Modal, Row, Space, Typography } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
-type ModalProps = {
+export type CommonModalProps = {
   visible: boolean
   setVisible: (visible: boolean) => void
   title: string
@@ -19,7 +19,7 @@ const CommonModal = ({
   onConfirm,
   onCancel,
   btnText,
-}: ModalProps) => {
+}: CommonModalProps) => {
   return (
     <Modal
       visible={visible}

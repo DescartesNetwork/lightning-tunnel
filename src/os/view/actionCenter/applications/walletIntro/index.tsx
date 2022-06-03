@@ -12,7 +12,7 @@ import { useRootSelector, RootState } from 'os/store'
 import './index.os.less'
 
 const WalletIntro = () => {
-  const { lamports } = useRootSelector((state: RootState) => state.wallet)
+  const lamports = useRootSelector((state: RootState) => state.wallet.lamports)
   const [hidden, setHidden] = useState(false)
 
   return (

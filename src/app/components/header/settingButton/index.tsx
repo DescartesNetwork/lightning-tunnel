@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux'
 
 import { Button, Col, Popover, Row, Space, Switch, Typography } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import DecimalsSwitch from './decimalsSwitch'
 
 import { AppDispatch } from 'app/model'

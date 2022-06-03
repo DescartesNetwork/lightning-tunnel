@@ -2,7 +2,7 @@ import { CSSProperties, Fragment, useEffect } from 'react'
 import { account } from '@senswap/sen-js'
 
 import { Button } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import Login from './login'
 
 import storage from 'shared/storage'
@@ -30,9 +30,9 @@ import {
 
 const Wallet = ({ style = {} }: { style?: CSSProperties }) => {
   const dispatch = useRootDispatch<RootDispatch>()
-  const {
-    wallet: { address: walletAddress },
-  } = useRootSelector((state: RootState) => state)
+  const walletAddress = useRootSelector(
+    (state: RootState) => state.wallet.address,
+  )
 
   const reconnect = () => {
     const walletType = storage.get('WalletType')

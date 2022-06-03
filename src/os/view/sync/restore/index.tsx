@@ -2,7 +2,7 @@ import { useState, ChangeEvent, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { Row, Col, Button, Input, Card } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import JsonViewer from 'os/components/jsonViewer'
 import ConfirmRestore from './confirm'
 
@@ -17,7 +17,9 @@ const Restore = () => {
   const { search } = useLocation()
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { address } = useRootSelector((state: RootState) => state.wallet)
+  const walletAddress = useRootSelector(
+    (state: RootState) => state.wallet.address,
+  )
 
   // Parse link
   useEffect(() => {
@@ -39,12 +41,12 @@ const Restore = () => {
     ;(async () => {
       if (!IPFS.isCID(cid)) return setData({})
       await setLoading(true)
-      const pdb = new PDB(address)
+      const pdb = new PDB(walletAddress)
       const data = await pdb.fetch(cid)
       await setData(data)
       return setLoading(false)
     })()
-  }, [address, cid])
+  }, [walletAddress, cid])
 
   return (
     <Row style={{ maxWidth: 520 }}>

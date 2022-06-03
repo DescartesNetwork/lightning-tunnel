@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { account, utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Input, Row, Space, Typography } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import ModalMerge from './commonModal'
 
 import { AppState } from 'app/model'

@@ -13,19 +13,19 @@ import './index.os.less'
 const Welcome = () => {
   const history = useHistory()
   const { search } = useLocation()
-  const {
-    wallet: { address: walletAddress },
-    ui: { width },
-    page: { appIds },
-    flags: { loading },
-  } = useRootSelector((state: RootState) => state)
+  const walletAddress = useRootSelector(
+    (state: RootState) => state.wallet.address,
+  )
+  const width = useRootSelector((state: RootState) => state.ui.width)
+  const appIds = useRootSelector((state: RootState) => state.page.appIds)
+  const loading = useRootSelector((state: RootState) => state.flags.loading)
 
   // Redirect callback
   useEffect(() => {
     const params = new URLSearchParams(search)
     const fallback = appIds.length ? `/app/${appIds[0]}` : '/store'
     const redirect = decodeURIComponent(params.get('redirect') || fallback)
-    if (account.isAddress(walletAddress) && !loading) history.push(redirect)
+    if (account.isAddress(walletAddress) && !loading) history.replace(redirect)
   }, [walletAddress, history, search, appIds, loading])
 
   return (

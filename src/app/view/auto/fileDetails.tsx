@@ -89,6 +89,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
     dispatch(addRecipients({ recipients: filterRecipient }))
     dispatch(removeSelectedFile())
     setLoading(false)
+    setSelected(false)
   }
 
   return (

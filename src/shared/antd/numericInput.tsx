@@ -66,7 +66,6 @@ const NumericInput = forwardRef(
       >
         <Input
           {...props}
-          className="numeric-input"
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             onChange(e)
             setCursor(e.target.selectionStart)

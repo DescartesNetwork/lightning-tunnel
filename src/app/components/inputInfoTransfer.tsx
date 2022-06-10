@@ -14,7 +14,7 @@ import {
   RecipientInfos,
   removeRecipient,
 } from 'app/model/recipients.controller'
-import NumericInput from 'shared/antd/numericInput'
+import NumericInput from '@sentre/antd-numeric-input'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { onSelectedFile } from 'app/model/file.controller'
 import { setIsTyping } from 'app/model/main.controller'
@@ -210,7 +210,7 @@ const InputInfoTransfer = ({
           value={amount ? amount : formInput.amount}
           name="amount"
           placeholder="Amount"
-          onValue={onAmount}
+          onChange={onAmount}
           className={amountError ? 'recipient-input-error' : 'recipient-input'}
           autoComplete="off"
         />

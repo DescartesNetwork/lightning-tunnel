@@ -4,6 +4,7 @@ import { account, utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
+import NumericInput from '@sentre/antd-numeric-input'
 import ModalMerge from './commonModal'
 
 import { AppState } from 'app/model'
@@ -14,7 +15,6 @@ import {
   RecipientInfos,
   removeRecipient,
 } from 'app/model/recipients.controller'
-import NumericInput from 'shared/antd/numericInput'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { onSelectedFile } from 'app/model/file.controller'
 import { setIsTyping } from 'app/model/main.controller'
@@ -210,7 +210,7 @@ const InputInfoTransfer = ({
           value={amount ? amount : formInput.amount}
           name="amount"
           placeholder="Amount"
-          onValue={onAmount}
+          onChange={onAmount}
           className={amountError ? 'recipient-input-error' : 'recipient-input'}
           autoComplete="off"
         />

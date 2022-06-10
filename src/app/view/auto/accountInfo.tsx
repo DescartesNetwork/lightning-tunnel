@@ -4,7 +4,7 @@ import { account } from '@senswap/sen-js'
 
 import { Button, Col, Row, Space, Typography, Tooltip, Checkbox } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import NumericInput from 'shared/antd/numericInput'
+import NumericInput from '@sentre/antd-numeric-input'
 
 import { shortenAddress } from 'shared/util'
 import { AppDispatch, AppState } from 'app/model'
@@ -161,7 +161,7 @@ const AccountInfo = forwardRef(
           <NumericInput
             value={amountValue}
             bordered={isEdited}
-            onValue={setNextAmount}
+            onChange={setNextAmount}
             disabled={!isEdited}
             style={{ padding: 0 }}
             className={

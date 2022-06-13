@@ -7,8 +7,12 @@
     "@project-serum/sol-wallet-adapter": "^0.2.6",
     "@reduxjs/toolkit": "^1.8.0",
     "@senswap/sen-js": "^1.4.0",
+<<<<<<< HEAD
     "@sentre/antd-ionicon": "^1.0.25",
     "@sentre/antd-numeric-input": "^1.0.25",
+=======
+    "@sentre/antd-ionicon": "^1.0.27",
+>>>>>>> e4b3d01ad4f8a6853f4c604ace2ee9e3eb29e2b7
     "@sentre/connector": "^0.0.30",
     "@sentre/react-dynamic-remote-component": "^0.0.6",
     "@sentre/react-lazyload": "^3.2.2",
@@ -63,7 +67,7 @@
   ],
   "devDependencies": {
     "@craco/craco": "^6.4.3",
-    "@sentre/craco-plugins": "^1.0.25",
+    "@sentre/craco-plugins": "^1.0.27",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.2.1",

@@ -104,6 +104,7 @@ const ConfirmTransfer = () => {
         time: new Date().toString(),
         mint: mintSelected,
         distributorAddress,
+        treeData,
       }
       const history = new History('history', walletAddress)
       await history.append(historyRecord)

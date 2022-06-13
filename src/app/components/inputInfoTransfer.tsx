@@ -193,7 +193,7 @@ const InputInfoTransfer = ({
           />
         </Col>
       )}
-      <Col span={16}>
+      <Col span={18}>
         <Input
           disabled={disabledInput}
           value={formInput.walletAddress}
@@ -204,7 +204,7 @@ const InputInfoTransfer = ({
           autoComplete="off"
         />
       </Col>
-      <Col span={6}>
+      <Col span={5}>
         <NumericInput
           disabled={disabledInput}
           value={amount ? amount : formInput.amount}
@@ -216,7 +216,7 @@ const InputInfoTransfer = ({
         />
       </Col>
       {!isSelect && (
-        <Col>
+        <Col span={1}>
           <ActionButton
             addNewRecipient={addNewRecipient}
             walletAddress={walletAddress}

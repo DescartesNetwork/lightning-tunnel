@@ -12,11 +12,11 @@ import useRemainingBalance from 'app/hooks/useRemainingBalance'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   return (
-    <Row>
-      <Col flex="auto">
+    <Row gutter={[4, 4]}>
+      <Col span={24}>
         <Typography.Text type="secondary">{label}</Typography.Text>
       </Col>
-      <Col>{value}</Col>
+      <Col span={24}>{value}</Col>
     </Row>
   )
 }
@@ -31,13 +31,13 @@ export const WrapTotal = () => {
 
   return (
     <Row gutter={[8, 8]}>
-      <Col span={24}>
+      <Col xs={12} md={4}>
         <Content
           label="Quantity"
           value={<Typography.Text>{quantity}</Typography.Text>}
         />
       </Col>
-      <Col span={24}>
+      <Col xs={12} md={4}>
         <Content
           label="Total"
           value={
@@ -50,7 +50,7 @@ export const WrapTotal = () => {
           }
         />
       </Col>
-      <Col span={24}>
+      <Col xs={12} md={4}>
         <Content
           label="Your balance"
           value={
@@ -65,7 +65,7 @@ export const WrapTotal = () => {
           }
         />
       </Col>
-      <Col span={24}>
+      <Col xs={12} md={4}>
         <Content
           label="Remaining"
           value={

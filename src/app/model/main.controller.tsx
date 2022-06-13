@@ -8,6 +8,8 @@ export type MainState = {
   mintSelected: string
   visible: boolean
   isTyping: boolean
+  startDate: number
+  endDate: number
 }
 
 /**
@@ -20,6 +22,8 @@ const initialState: MainState = {
   mintSelected: '',
   visible: false,
   isTyping: false,
+  startDate: 0,
+  endDate: 0,
 }
 
 /**
@@ -53,6 +57,19 @@ export const setIsTyping = createAsyncThunk(
     return { isTyping }
   },
 )
+export const setStartDate = createAsyncThunk(
+  `${NAME}/setStartDate`,
+  async (startDate: number) => {
+    return { startDate }
+  },
+)
+
+export const setEndDate = createAsyncThunk(
+  `${NAME}/setEndDate`,
+  async (endDate: boolean) => {
+    return { endDate }
+  },
+)
 
 /**
  * Usual procedure
@@ -78,6 +95,14 @@ const slice = createSlice({
       )
       .addCase(
         setIsTyping.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setStartDate.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setEndDate.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

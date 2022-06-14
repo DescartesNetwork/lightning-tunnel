@@ -1,10 +1,10 @@
 import { forwardRef, useCallback, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
-import NumericInput from '@sentre/antd-numeric-input'
 
 import { Button, Col, Row, Space, Typography, Tooltip, Checkbox } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
+import NumericInput from '@sentre/antd-numeric-input'
 
 import { shortenAddress } from 'shared/util'
 import { AppDispatch, AppState } from 'app/model'

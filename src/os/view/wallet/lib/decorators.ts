@@ -19,7 +19,7 @@ export const collectFee = (
       lamports: platformFee,
     })
     tx.add(ix)
-    return original.call(this, tx)
+    return original.call(target, tx)
   }
 }
 
@@ -29,7 +29,7 @@ export const collectFees = (
   descriptor: PropertyDescriptor,
 ) => {
   const original = descriptor.value
-  descriptor.value = async function (txs: Transaction[]) {
+  descriptor.value = async (txs: Transaction[]) => {
     for (const tx of txs) {
       const ix = SystemProgram.transfer({
         fromPubkey: tx.feePayer || (await target.getAddress()),
@@ -38,6 +38,6 @@ export const collectFees = (
       })
       tx.add(ix)
     }
-    return original.call(this, txs)
+    return original.call(target, txs)
   }
 }

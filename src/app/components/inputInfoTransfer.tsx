@@ -4,6 +4,7 @@ import { account, utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
+import NumericInput from '@sentre/antd-numeric-input'
 import ModalMerge from './commonModal'
 
 import { AppState } from 'app/model'
@@ -14,7 +15,6 @@ import {
   RecipientInfos,
   removeRecipient,
 } from 'app/model/recipients.controller'
-import NumericInput from '@sentre/antd-numeric-input'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { onSelectedFile } from 'app/model/file.controller'
 import { setIsTyping } from 'app/model/main.controller'

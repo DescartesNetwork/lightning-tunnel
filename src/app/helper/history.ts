@@ -11,6 +11,7 @@ export type HistoryRecord = {
   mint: string
   total: string | number
   distributorAddress: string
+  treeData: Buffer
 }
 
 class History {

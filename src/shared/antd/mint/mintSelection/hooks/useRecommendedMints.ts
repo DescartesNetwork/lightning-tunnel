@@ -1,17 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useAllMintAddresses } from './useAllMintAddresses'
 import { useSortMints } from 'shared/hooks/useSortMints'
 import { net } from 'shared/runtime'
 import localStorage from 'shared/storage'
+import { useAccount } from '@senhub/providers'
 
 const LIMIT_ITEM = 8
 const LOCAL_STORAGE_ID = `${net}:selected_mints`
 
 export const useRecommendedMints = () => {
   const [recommendedMints, setRecommendedMints] = useState<string[]>([])
-  const allMintAddresses = useAllMintAddresses()
-  const { sortedMints } = useSortMints(allMintAddresses)
+  const { accounts } = useAccount()
+
+  const mints = useMemo(() => {
+    return Object.values(accounts).map((account) => account.mint)
+  }, [accounts])
+  const { sortedMints } = useSortMints(mints)
 
   const getRecommendedMints = useCallback(async () => {
     let mints: string[] = localStorage.get(LOCAL_STORAGE_ID) || []

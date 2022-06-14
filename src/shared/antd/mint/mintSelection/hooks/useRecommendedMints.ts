@@ -19,7 +19,6 @@ export const useRecommendedMints = () => {
 
   const getRecommendedMints = useCallback(async () => {
     let mints: string[] = localStorage.get(LOCAL_STORAGE_ID) || []
-
     for (const mint of sortedMints) {
       if (mints.length >= LIMIT_ITEM) break
       if (mints.includes(mint)) continue
@@ -28,16 +27,14 @@ export const useRecommendedMints = () => {
     return setRecommendedMints(mints.slice(0, LIMIT_ITEM))
   }, [sortedMints])
 
-  const addRecommendMint = useCallback(
-    async (mintAddress: string) => {
-      const mints = recommendedMints.filter((mint) => mint !== mintAddress)
-      const newMints = [mintAddress, ...mints].slice(0, LIMIT_ITEM)
-      localStorage.set(LOCAL_STORAGE_ID, newMints)
+  const addRecommendMint = useCallback(async (mintAddress: string) => {
+    let mints: string[] = localStorage.get(LOCAL_STORAGE_ID) || []
+    mints = mints.filter((mint) => mint !== mintAddress)
+    const newMints = [mintAddress, ...mints].slice(0, LIMIT_ITEM)
+    localStorage.set(LOCAL_STORAGE_ID, newMints)
 
-      return setRecommendedMints(newMints)
-    },
-    [recommendedMints],
-  )
+    return setRecommendedMints(newMints)
+  }, [])
 
   useEffect(() => {
     getRecommendedMints()

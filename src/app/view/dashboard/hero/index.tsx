@@ -1,18 +1,13 @@
 import { Col, Row } from 'antd'
-import useTotalUSD from 'app/view/hooks/useBalance'
+// import useTotalUSD from 'app/hooks/useBalance'
 import HeroCard from './heroCard'
 
 const Hero = () => {
-  const { totalUSD, loading } = useTotalUSD()
+  // const { totalUSD, loading } = useTotalUSD()
   return (
     <Row gutter={[24, 24]}>
       <Col lg={8} md={12} xs={24}>
-        <HeroCard
-          loading={loading}
-          label="Total balance"
-          icon="wallet-outline"
-          value={totalUSD}
-        />
+        <HeroCard label="Total balance" icon="wallet-outline" value={200} />
       </Col>
       <Col lg={8} md={12} xs={24}>
         <HeroCard

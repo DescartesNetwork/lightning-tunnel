@@ -44,6 +44,7 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
+                <Col span={24}>Wallet address #{recipients.length + 1}</Col>
                 {recipients &&
                   recipients.map(([walletAddress, amount], index) => (
                     <Col span={24} key={walletAddress + index}>

@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import moment from 'moment'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { useWallet } from '@senhub/providers'
 import { account, utils } from '@senswap/sen-js'
@@ -11,15 +10,12 @@ import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'app/components/header'
 import ModalShare from 'app/components/modalShare'
 import { MintSymbol } from 'shared/antd/mint'
-import Content from './content'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { Step } from 'app/constants'
-import { numeric } from 'shared/util'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'app/hooks/useTotal'
-import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import configs from 'app/configs'
 import IPFS from 'shared/pdb/ipfs'
@@ -29,6 +25,7 @@ import { notifySuccess } from 'app/helper'
 import ButtonHome from 'app/components/buttonHome'
 import { onSelectMethod } from 'app/model/main.controller'
 import { removeRecipients } from 'app/model/recipients.controller'
+import { WrapTotal } from 'app/components/cardTotal'
 
 const {
   sol: { utility, fee, taxman },
@@ -40,7 +37,7 @@ const ConfirmTransfer = () => {
   const [redeemLink, setRedeemLink] = useState('')
   const [isDone, setIsDone] = useState(false)
   const {
-    main: { mintSelected },
+    main: { mintSelected, startDate, endDate },
     setting: { decimal: isDecimal },
     recipients: { recipients },
   } = useSelector((state: AppState) => state)
@@ -49,8 +46,7 @@ const ConfirmTransfer = () => {
   } = useWallet()
   const dispatch = useDispatch<AppDispatch>()
   const mintDecimals = useMintDecimals(mintSelected) || 0
-  const { total, quantity } = useTotal()
-  const { balance } = useAccountBalanceByMintAddress(mintSelected)
+  const { total } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
 
   const treeData = useMemo(() => {
@@ -62,14 +58,14 @@ const ConfirmTransfer = () => {
       return {
         authority: account.fromAddress(address),
         amount: new BN(actualAmount),
-        startedAt: new BN(0),
+        startedAt: new BN(startDate / 1000),
         salt: MerkleDistributor.salt(index.toString()),
       }
     })
     const merkleDistributor = new MerkleDistributor(balanceTree)
     const dataBuffer = merkleDistributor.toBuffer()
     return dataBuffer
-  }, [recipients, mintDecimals, isDecimal])
+  }, [recipients, mintDecimals, isDecimal, startDate])
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
@@ -95,7 +91,7 @@ const ConfirmTransfer = () => {
         total: merkleDistributor.getTotal(),
         merkleRoot: merkleDistributor.deriveMerkleRoot(),
         metadata,
-        endedAt: 0,
+        endedAt: endDate / 1000,
         feeOptions,
       })
 
@@ -158,39 +154,7 @@ const ConfirmTransfer = () => {
             </Col>
             <Col span={24}>
               <Card bordered={false} className="card-total">
-                <Row gutter={[8, 8]}>
-                  <Col span={24}>
-                    <Content
-                      label="Time"
-                      value={moment(new Date()).format('DD MMM, YYYY HH:MM')}
-                    />
-                  </Col>
-                  <Col span={24}>
-                    <Content label="Quantity" value={quantity} />
-                  </Col>
-                  <Col span={24}>
-                    <Content
-                      label="Your balance"
-                      value={
-                        <Typography.Text>
-                          {numeric(balance).format('0,0.00[0000]')}{' '}
-                          <MintSymbol mintAddress={mintSelected} />
-                        </Typography.Text>
-                      }
-                    />
-                  </Col>
-                  <Col span={24}>
-                    <Content
-                      label="Remaining"
-                      value={
-                        <Typography.Text>
-                          {numeric(remainingBalance).format('0,0.00[00]')}{' '}
-                          <MintSymbol mintAddress={mintSelected} />
-                        </Typography.Text>
-                      }
-                    />
-                  </Col>
-                </Row>
+                <WrapTotal isConfirm={true} />
               </Card>
             </Col>
           </Row>

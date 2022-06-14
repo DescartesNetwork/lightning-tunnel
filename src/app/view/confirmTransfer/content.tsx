@@ -10,10 +10,10 @@ export type ContentProps = {
 const Content = ({ label = '', value = '' }: ContentProps) => {
   return (
     <Row gutter={[8, 8]}>
-      <Col flex="auto">
+      <Col span={24}>
         <Typography.Text type="secondary">{label} </Typography.Text>
       </Col>
-      <Col>{value}</Col>
+      <Col span={24}>{value}</Col>
     </Row>
   )
 }

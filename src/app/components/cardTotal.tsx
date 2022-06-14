@@ -9,6 +9,7 @@ import useTotal from 'app/hooks/useTotal'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import { numeric } from 'shared/util'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
+import moment from 'moment'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   return (
@@ -21,36 +22,47 @@ const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   )
 }
 
-export const WrapTotal = () => {
+export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
   const {
-    main: { mintSelected },
+    main: { mintSelected, endDate, startDate },
   } = useSelector((sate: AppState) => sate)
   const { total, quantity } = useTotal()
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
   const remainingBalance = useRemainingBalance(mintSelected)
 
   return (
-    <Row gutter={[8, 8]}>
-      <Col xs={12} md={4}>
+    <Row justify={isConfirm ? 'space-between' : undefined} gutter={[8, 8]}>
+      <Col md={12} lg={4}>
         <Content
-          label="Quantity"
+          label="Recipients"
           value={<Typography.Text>{quantity}</Typography.Text>}
         />
       </Col>
-      <Col xs={12} md={4}>
+      <Col md={12} lg={4}>
         <Content
-          label="Total"
+          label="Unlock time"
           value={
-            <Space size={4}>
-              <Typography.Title level={5}>{total}</Typography.Title>
-              <Typography.Title level={5}>
-                <MintSymbol mintAddress={mintSelected} />
-              </Typography.Title>
-            </Space>
+            <Typography.Text>
+              {startDate
+                ? moment(startDate).format('DD-MM-YY HH:mm:ss')
+                : 'Immediately'}
+            </Typography.Text>
           }
         />
       </Col>
-      <Col xs={12} md={4}>
+      <Col md={12} lg={4}>
+        <Content
+          label="Expiration time"
+          value={
+            <Typography.Text>
+              {endDate
+                ? moment(endDate).format('DD-MM-YY HH:mm:ss')
+                : 'Unlimited'}
+            </Typography.Text>
+          }
+        />
+      </Col>
+      <Col md={12} lg={4}>
         <Content
           label="Your balance"
           value={
@@ -65,7 +77,22 @@ export const WrapTotal = () => {
           }
         />
       </Col>
-      <Col xs={12} md={4}>
+      {!isConfirm && (
+        <Col md={12} lg={4}>
+          <Content
+            label="Total"
+            value={
+              <Space size={4}>
+                <Typography.Title level={5}>{total}</Typography.Title>
+                <Typography.Title level={5}>
+                  <MintSymbol mintAddress={mintSelected} />
+                </Typography.Title>
+              </Space>
+            }
+          />
+        </Col>
+      )}
+      <Col md={12} lg={4}>
         <Content
           label="Remaining"
           value={

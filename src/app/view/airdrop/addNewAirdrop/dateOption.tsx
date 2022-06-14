@@ -1,5 +1,6 @@
 import IonIcon from '@sentre/antd-ionicon'
 import { Col, DatePicker, Row, Space, Typography, Switch } from 'antd'
+import moment from 'moment'
 import { useState } from 'react'
 
 type DateOptionProps = {
@@ -8,6 +9,7 @@ type DateOptionProps = {
   onChange: (value: number) => void
   onSwitch: (value: boolean) => void
   label: string
+  value: number
 }
 
 const DateOption = ({
@@ -16,9 +18,11 @@ const DateOption = ({
   onChange,
   onSwitch,
   label,
+  value,
 }: DateOptionProps) => {
   const [disabled, setDisabled] = useState(false)
   const onSwitchChange = (isDisable: boolean) => {
+    onChange(0) //clear time
     setDisabled(isDisable)
     onSwitch(isDisable)
   }
@@ -33,6 +37,8 @@ const DateOption = ({
           onChange={(date) => onChange(date?.valueOf() || 0)}
           disabled={disabled}
           clearIcon={null}
+          value={value ? moment(value) : null}
+          showTime
         />
       </Col>
       <Col span={24}>

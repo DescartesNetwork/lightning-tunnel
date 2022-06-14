@@ -66,7 +66,7 @@ export const setStartDate = createAsyncThunk(
 
 export const setEndDate = createAsyncThunk(
   `${NAME}/setEndDate`,
-  async (endDate: boolean) => {
+  async (endDate: number) => {
     return { endDate }
   },
 )

@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
@@ -9,13 +9,18 @@ import Header from 'app/components/header'
 import Auto from '../../auto'
 import Manual from '../../manual'
 import ConfirmTransfer from '../../confirmTransfer'
+import DateOption from './dateOption'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
-import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
+import {
+  onSelectedMint,
+  onSelectMethod,
+  setEndDate,
+  setStartDate,
+} from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
-import DateOption from './dateOption'
 
 export type CardOptionProps = {
   label: string
@@ -51,19 +56,30 @@ const CardOption = ({ label, description, active }: CardOptionProps) => {
 }
 
 const SelectInputMethod = () => {
+  const { endDate, startDate } = useSelector((state: AppState) => state.main)
   const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
-  const [unlockTime, setUnlockTime] = useState(0)
+  const [unlockTime, setUnlockTime] = useState(startDate)
+  const [expirationTime, setExpirationTime] = useState(endDate)
+  const [isSendNow, setIsSendNow] = useState(false)
+  const [isUnlimited, setIsUnlimited] = useState(false)
+
   const dispatch = useDispatch()
   const { accounts } = useAccount()
-
-  console.log(unlockTime)
 
   const myMints = useMemo(
     () => Object.values(accounts).map((acc) => acc.mint),
     [accounts],
   )
   const singleMints = useSingleMints(myMints)
+
+  const startTime = useMemo(() => {
+    return isSendNow ? 0 : unlockTime
+  }, [isSendNow, unlockTime])
+
+  const endTime = useMemo(() => {
+    return isUnlimited ? 0 : expirationTime
+  }, [expirationTime, isUnlimited])
 
   const onContinue = () => {
     dispatch(onSelectMethod(method))
@@ -75,10 +91,16 @@ const SelectInputMethod = () => {
     dispatch(onSelectedMint(mintAddress))
   }
 
-  const disabled = useMemo(() => {
-    if (activeMintAddress === 'Select' || !method) return true
-    return false
-  }, [activeMintAddress, method])
+  const disabled =
+    activeMintAddress === 'Select' ||
+    !method ||
+    (!unlockTime && !isSendNow) ||
+    (!expirationTime && !isUnlimited)
+
+  useEffect(() => {
+    dispatch(setStartDate(startTime))
+    dispatch(setEndDate(endTime))
+  }, [dispatch, endTime, startTime])
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -100,19 +122,21 @@ const SelectInputMethod = () => {
                 <Col span={12}>
                   <DateOption
                     label="Unlock time"
-                    onSwitch={() => {}}
+                    onSwitch={setIsSendNow}
                     switchText="Send immediately"
                     onChange={setUnlockTime}
                     placeholder="Select unlock time"
+                    value={unlockTime}
                   />
                 </Col>
                 <Col span={12}>
                   <DateOption
                     label="Expiration time"
-                    onSwitch={() => {}}
+                    onSwitch={setIsUnlimited}
                     switchText="Unlimited"
-                    onChange={setUnlockTime}
+                    onChange={setExpirationTime}
                     placeholder="Select time"
+                    value={expirationTime}
                   />
                 </Col>
               </Row>

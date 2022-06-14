@@ -9,7 +9,7 @@ import { AppState } from 'app/model'
 
 import './index.less'
 import IPFS from 'shared/pdb/ipfs'
-import useCountdown, { DEFAULT_FIVE_MINUTE } from 'app/hooks/useCountdown'
+import useCountdown, { DEFAULT_TEN_MINUTE } from 'app/hooks/useCountdown'
 
 const HistoryButton = () => {
   const [visible, setVisible] = useState(false)
@@ -17,7 +17,7 @@ const HistoryButton = () => {
   const { timeRemaining } = useCountdown()
 
   const syncData = useCallback(async () => {
-    if (timeRemaining !== DEFAULT_FIVE_MINUTE) return
+    if (timeRemaining !== DEFAULT_TEN_MINUTE) return
     const ipfs = new IPFS()
     try {
       for (const { treeData } of history) {

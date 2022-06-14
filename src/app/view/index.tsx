@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
-import { useUI } from '@senhub/providers'
+import { useDispatch } from 'react-redux'
+import { useUI, useWallet } from '@senhub/providers'
 
 import { Drawer, Layout } from 'antd'
 import Redeem from './redeem'
@@ -12,6 +13,8 @@ import AddNewAirdrop from './airdrop/addNewAirdrop'
 
 import BG from 'app/static/images/background-LT.png'
 import { useAppRouter } from 'app/hooks/useAppRoute'
+import { AppDispatch } from 'app/model'
+import { getHistory } from 'app/model/history.controller'
 
 import './index.less'
 
@@ -20,10 +23,18 @@ const { Content } = Layout
 const View = () => {
   const { appRoute } = useAppRouter()
   const { setBackground } = useUI()
+  const dispatch = useDispatch<AppDispatch>()
+  const {
+    wallet: { address: walettAddress },
+  } = useWallet()
 
   useEffect(() => {
     setBackground({ light: BG, dark: BG })
   }, [setBackground])
+
+  useEffect(() => {
+    dispatch(getHistory(walettAddress))
+  }, [dispatch, walettAddress])
 
   return (
     <Layout className="main-layout">

@@ -4,7 +4,6 @@ import { useWallet } from '@senhub/providers'
 
 import { Col, Radio, Row, Space, Typography } from 'antd'
 import SettingButton from './settingButton'
-import HistoryButton from './historyButton'
 
 import { Step } from 'app/constants'
 import { AppDispatch, AppState } from 'app/model'
@@ -49,10 +48,7 @@ const Header = ({ label = '' }: HeaderProps) => {
         </Space>
       </Col>
       <Col>
-        <Space>
-          <HistoryButton />
-          <SettingButton />
-        </Space>
+        <SettingButton />
       </Col>
     </Row>
   )

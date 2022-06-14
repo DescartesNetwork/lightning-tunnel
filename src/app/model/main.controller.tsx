@@ -10,6 +10,7 @@ export type MainState = {
   isTyping: boolean
   startDate: number
   endDate: number
+  typeDistribute: string
 }
 
 /**
@@ -24,6 +25,7 @@ const initialState: MainState = {
   isTyping: false,
   startDate: 0,
   endDate: 0,
+  typeDistribute: '',
 }
 
 /**
@@ -71,6 +73,13 @@ export const setEndDate = createAsyncThunk(
   },
 )
 
+export const setTypeDistribute = createAsyncThunk(
+  `${NAME}/setTypeDistribute`,
+  async (type: string) => {
+    return { typeDistribute: type }
+  },
+)
+
 /**
  * Usual procedure
  */
@@ -103,6 +112,10 @@ const slice = createSlice({
       )
       .addCase(
         setEndDate.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setTypeDistribute.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

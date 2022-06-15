@@ -13,6 +13,7 @@ import { useSortMints } from 'shared/hooks/useSortMints'
 
 const LIMIT = 30
 const AMOUNT_BEFORE_LOAD_MORE = 5
+let timeOut: NodeJS.Timeout
 
 export type SearchMintsProps = {
   value?: string
@@ -100,7 +101,12 @@ const SearchMints = ({
                   <MintCard mintAddress={mintAddress} onClick={onSelect} />
                 </LazyLoad>
                 {index === offset - AMOUNT_BEFORE_LOAD_MORE && (
-                  <LoadMore callback={() => setOffset(offset + LIMIT)} />
+                  <LoadMore
+                    callback={() => {
+                      if (timeOut) clearTimeout(timeOut)
+                      timeOut = setTimeout(() => setOffset(offset + LIMIT), 300)
+                    }}
+                  />
                 )}
               </Col>
             ))

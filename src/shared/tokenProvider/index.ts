@@ -43,6 +43,7 @@ class TokenProvider {
       // Build search engine
       this.engine = lunr(function () {
         this.ref('address')
+        this.field('address')
         this.field('symbol')
         this.field('name')
         tokenList.forEach((doc) => this.add(doc))
@@ -70,7 +71,7 @@ class TokenProvider {
     const [tokenMap, engine] = await this._init()
     let tokens: TokenInfo[] = []
     if (!keyword) return []
-    const fuzzy = keyword + '~1'
+    const fuzzy = `${keyword}^10 ${keyword}~1`
     engine.search(fuzzy).forEach(({ ref }) => {
       if (tokens.findIndex(({ address }) => address === ref) < 0) {
         const token = tokenMap.get(ref)

@@ -20,3 +20,5 @@ export enum State {
   expired = 'Expired',
   unknown = 'Unknown',
 }
+
+export const CURRENT_TIME = new Date().getTime()

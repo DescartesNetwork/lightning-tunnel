@@ -1,14 +1,31 @@
-import configs from 'app/configs'
-import { State } from 'app/constants'
-import { AppState } from 'app/model'
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import BN from 'bn.js'
+
+import configs from 'app/configs'
+import { CURRENT_TIME, State } from 'app/constants'
+import { AppState } from 'app/model'
 
 const {
   sol: { utility },
 } = configs
 
-const CURRENT_TIME = new Date().getTime()
+export const getStatus = async (
+  receiptAddress: string,
+  startedAt: number,
+  endedAt: BN,
+) => {
+  if (endedAt.toNumber() * 1000 < CURRENT_TIME && endedAt.toNumber())
+    return State.expired
+
+  try {
+    const receiptData = await utility.getReceiptData(receiptAddress)
+    if (receiptData) return State.claimed
+  } catch (error) {}
+  if (startedAt * 1000 > CURRENT_TIME && startedAt) return State.waiting
+
+  return State.ready
+}
 
 const useStatusAirdrop = ({
   receiptAddress,
@@ -25,17 +42,8 @@ const useStatusAirdrop = ({
   )
 
   const fetchAirdropStatus = useCallback(async () => {
-    if (endedAt.toNumber() * 1000 < CURRENT_TIME && endedAt.toNumber())
-      return setStatus(State.expired)
-
-    try {
-      const receiptData = await utility.getReceiptData(receiptAddress)
-      if (receiptData) return setStatus(State.claimed)
-    } catch (error) {}
-    if (startedAt * 1000 > CURRENT_TIME && startedAt)
-      return setStatus(State.waiting)
-
-    return setStatus(State.ready)
+    const status = await getStatus(receiptAddress, startedAt, endedAt)
+    return setStatus(status)
   }, [endedAt, receiptAddress, startedAt])
 
   useEffect(() => {

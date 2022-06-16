@@ -10,11 +10,14 @@ import Dashboard from './dashboard'
 import Vesting from './vesting'
 import Airdrop from './airdrop'
 import AddNewAirdrop from './airdrop/addNewAirdrop'
+import DistributorWatcher from 'app/watcher/distributor.watcher'
 
-import BG from 'app/static/images/background-LT.png'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import { AppDispatch } from 'app/model'
 import { getHistory } from 'app/model/history.controller'
+
+
+import BG from 'app/static/images/background-LT.png'
 
 import './index.less'
 
@@ -59,6 +62,7 @@ const View = () => {
             <Redirect from={appRoute} to={`${appRoute}/dashboard`} />
           </Switch>
         </Content>
+        <DistributorWatcher />
       </Layout>
     </Layout>
   )

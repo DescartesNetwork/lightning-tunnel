@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import BN from 'bn.js'
 import { FeeOptions } from '@sentre/utility'
 
@@ -7,6 +7,7 @@ import ModalShare from 'app/components/modalShare'
 
 import configs from 'app/configs'
 import { notifyError, notifySuccess } from 'app/helper'
+import useCanRevoke from 'app/hooks/useCanRevoke'
 
 const {
   manifest: { appId },
@@ -15,43 +16,15 @@ const {
 
 type ActionButtonProps = { distributorAddress: string }
 
-const CURRENT_TIME = new Date().getTime()
-
 const ActionButton = ({ distributorAddress }: ActionButtonProps) => {
   const [visible, setVisible] = useState(false)
-  const [isRevoke, setIsRevoke] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [disabled, setSetDisabled] = useState(false)
+  const { disabled, isRevoke } = useCanRevoke({ distributorAddress })
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
     feeCollectorAddress: taxman,
   }
-
-  const checkCanRevoke = useCallback(async () => {
-    const { splt } = window.sentre
-    const distributor = await utility.getDistributorData(distributorAddress)
-    const { endedAt, mint } = distributor
-    const endTime = endedAt.toNumber() * 1000
-
-    const treasurerAddress = await utility.deriveTreasurerAddress(
-      distributorAddress,
-    )
-    const associatedAddress = await splt.deriveAssociatedAddress(
-      treasurerAddress,
-      mint.toBase58(),
-    )
-    const { amount } = await splt.getAccountData(associatedAddress)
-
-    if (Number(amount) === 0) setSetDisabled(true)
-    if (!endTime) return setIsRevoke(false)
-    if (endTime < CURRENT_TIME) return setIsRevoke(true)
-    return setIsRevoke(false)
-  }, [distributorAddress])
-
-  useEffect(() => {
-    checkCanRevoke()
-  }, [checkCanRevoke])
 
   const onRevoke = async () => {
     if (!isRevoke) return

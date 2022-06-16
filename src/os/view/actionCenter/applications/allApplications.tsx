@@ -22,6 +22,9 @@ const AllApplications = () => {
   const appIds = useRootSelector((state: RootState) => state.page.appIds)
   const register = useRootSelector((state: RootState) => state.page.register)
 
+  const onUninstall = useUninstallApp(appId)
+  const onGotoStore = useGoToStore()
+
   const onChange = useCallback(
     (appIds: AppIds) => dispatch(updatePage(appIds)),
     [dispatch],
@@ -30,12 +33,16 @@ const AllApplications = () => {
     await setAppId('')
     return setVisible(false)
   }
+
   const onConfirm = async (appId: string) => {
     await setAppId(appId)
     return setVisible(true)
   }
-  const onUninstall = useUninstallApp(appId)
-  const onGotoStore = useGoToStore()
+
+  const onUninstallApp = async () => {
+    await onUninstall()
+    return setVisible(false)
+  }
 
   return (
     <Row gutter={[16, 16]}>
@@ -88,7 +95,7 @@ const AllApplications = () => {
           <Col>
             <Space>
               <Button onClick={onClose}>Cancel</Button>
-              <Button type="primary" onClick={onUninstall}>
+              <Button type="primary" onClick={onUninstallApp}>
                 Uninstall
               </Button>
             </Space>

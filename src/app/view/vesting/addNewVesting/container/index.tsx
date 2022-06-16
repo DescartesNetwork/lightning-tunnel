@@ -4,17 +4,22 @@ import { useAccount } from '@senhub/providers'
 
 import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import Auto from './auto'
-import Manual from './manual'
 import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
-import ConfirmTransfer from './confirmTransfer'
+import Auto from '../../../airdrop/addNewAirdrop/container/auto'
+import Manual from './manual'
+import ConfirmTransfer from '../../../confirmTransfer'
+import UnlockTime from '../components/unlockTime'
+import Frequency from '../components/frequency'
+import DistributeIn from '../components/distributeIn'
+import DateOption from 'app/components/dateOption'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
+import { setExpiration } from 'app/model/vesting.controller'
 
 export type CardOptionProps = {
   label: string
@@ -52,6 +57,8 @@ const CardOption = ({ label, description, active }: CardOptionProps) => {
 const SelectInputMethod = () => {
   const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
+  const [isUnlimited, setIsUnlimited] = useState(false)
+  const expiration = useSelector((state: AppState) => state.vesting.expiration)
   const dispatch = useDispatch()
   const { accounts } = useAccount()
 
@@ -61,20 +68,22 @@ const SelectInputMethod = () => {
   )
   const singleMints = useSingleMints(myMints)
 
-  const onContinue = () => {
-    dispatch(onSelectMethod(method))
-    dispatch(onSelectStep(Step.two))
-  }
-
   const onSelectMint = (mintAddress: string) => {
     setActiveMintAddress(mintAddress)
     dispatch(onSelectedMint(mintAddress))
   }
 
-  const disabled = useMemo(() => {
-    if (activeMintAddress === 'Select' || !method) return true
-    return false
-  }, [activeMintAddress, method])
+  const onContinue = () => {
+    dispatch(onSelectMethod(method))
+    dispatch(onSelectStep(Step.two))
+  }
+
+  const onExpirationChange = (value: number) => {
+    const endTime = isUnlimited ? 0 : value
+    return dispatch(setExpiration(endTime))
+  }
+
+  const disabled = activeMintAddress === 'Select' || !method
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -124,9 +133,31 @@ const SelectInputMethod = () => {
                 </Radio.Group>
               </Space>
             </Col>
+            <Col span={24}>
+              <Row gutter={[16, 16]}>
+                <Col xs={12} md={6}>
+                  <UnlockTime />
+                </Col>
+                <Col xs={12} md={6}>
+                  <Frequency />
+                </Col>
+                <Col xs={12} md={6}>
+                  <DistributeIn />
+                </Col>
+                <Col xs={12} md={6}>
+                  <DateOption
+                    label="Expiration time"
+                    onSwitch={setIsUnlimited}
+                    switchText="Unlimited"
+                    onChange={onExpirationChange}
+                    placeholder="Select time"
+                    value={expiration}
+                  />
+                </Col>
+              </Row>
+            </Col>
           </Row>
         </Col>
-
         <Col span={24}>
           <Button
             size="large"

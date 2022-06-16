@@ -6,10 +6,10 @@ import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
-import Auto from '../../auto'
-import Manual from '../../manual'
-import ConfirmTransfer from '../../confirmTransfer'
-import DateOption from './dateOption'
+import Auto from './auto'
+import Manual from './manual'
+import ConfirmTransfer from '../../../confirmTransfer'
+import DateOption from '../../../../components/dateOption'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
@@ -111,35 +111,11 @@ const SelectInputMethod = () => {
         <Col span={24}>
           <Row gutter={[24, 24]}>
             <Col span={24}>
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <SelectToken
-                    activeMintAddress={activeMintAddress}
-                    tokens={singleMints}
-                    onSelect={onSelectMint}
-                  />
-                </Col>
-                <Col span={12}>
-                  <DateOption
-                    label="Unlock time"
-                    onSwitch={setIsSendNow}
-                    switchText="Send immediately"
-                    onChange={setUnlockTime}
-                    placeholder="Select unlock time"
-                    value={unlockTime}
-                  />
-                </Col>
-                <Col span={12}>
-                  <DateOption
-                    label="Expiration time"
-                    onSwitch={setIsUnlimited}
-                    switchText="Unlimited"
-                    onChange={setExpirationTime}
-                    placeholder="Select time"
-                    value={expirationTime}
-                  />
-                </Col>
-              </Row>
+              <SelectToken
+                activeMintAddress={activeMintAddress}
+                tokens={singleMints}
+                onSelect={onSelectMint}
+              />
             </Col>
             <Col span={24}>
               <Space size={12} direction="vertical" style={{ width: '100%' }}>
@@ -173,6 +149,30 @@ const SelectInputMethod = () => {
                   </Row>
                 </Radio.Group>
               </Space>
+            </Col>
+            <Col span={24}>
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <DateOption
+                    label="Unlock time"
+                    onSwitch={setIsSendNow}
+                    switchText="Send immediately"
+                    onChange={setUnlockTime}
+                    placeholder="Select unlock time"
+                    value={unlockTime}
+                  />
+                </Col>
+                <Col span={12}>
+                  <DateOption
+                    label="Expiration time"
+                    onSwitch={setIsUnlimited}
+                    switchText="Unlimited"
+                    onChange={setExpirationTime}
+                    placeholder="Select time"
+                    value={expirationTime}
+                  />
+                </Col>
+              </Row>
             </Col>
           </Row>
         </Col>

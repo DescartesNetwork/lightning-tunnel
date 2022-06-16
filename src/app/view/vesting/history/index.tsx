@@ -32,10 +32,9 @@ const History = () => {
     const nextHistory: HistoryRecord[] = []
     try {
       setLoading(true)
-      const airdropSalt = MerkleDistributor.salt(`${appId}/airdrop/${0}`)
+      const airdropSalt = MerkleDistributor.salt(`${appId}/vesting/${0}`)
       for (const historyItem of history) {
         const { treeData, distributorAddress } = historyItem
-
         if (!treeData) continue
         const parseData = JSON.parse(JSON.stringify(treeData)).data
         const merkleDistributor = MerkleDistributor.fromBuffer(
@@ -43,8 +42,8 @@ const History = () => {
         )
         const salt = merkleDistributor.receipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)
-        if (x !== 0) continue
 
+        if (x !== 0) continue
         const endedAt = distributors[distributorAddress].endedAt
         const endTime = endedAt.toNumber() * 1000
         const balance = await getBalanceTreasury(distributorAddress)

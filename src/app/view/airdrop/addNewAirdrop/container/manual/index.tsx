@@ -2,8 +2,8 @@ import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
-import Header from '../../components/header'
-import InputInfoTransfer from '../../components/inputInfoTransfer'
+import Header from '../../../../../components/header'
+import InputInfoTransfer from '../../../../../components/inputInfoTransfer'
 import CardTotal from 'app/components/cardTotal'
 
 import { AppDispatch, AppState } from 'app/model'

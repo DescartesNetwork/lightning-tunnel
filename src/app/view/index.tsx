@@ -11,11 +11,11 @@ import Vesting from './vesting'
 import Airdrop from './airdrop'
 import AddNewAirdrop from './airdrop/addNewAirdrop'
 import DistributorWatcher from 'app/watcher/distributor.watcher'
+import AddNewVesting from './vesting/addNewVesting'
 
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import { AppDispatch } from 'app/model'
 import { getHistory } from 'app/model/history.controller'
-
 
 import BG from 'app/static/images/background-LT.png'
 
@@ -49,6 +49,11 @@ const View = () => {
           <Switch>
             <Route exact path={`${appRoute}/dashboard`} component={Dashboard} />
             <Route exact path={`${appRoute}/vesting`} component={Vesting} />
+            <Route
+              exact
+              path={`${appRoute}/vesting/add-new`}
+              component={AddNewVesting}
+            />
             <Route
               exact
               path={`${appRoute}/airdrop/add-new`}

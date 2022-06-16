@@ -38,11 +38,12 @@ const useCanRevoke = ({
   )
 
   const checkCanRevoke = useCallback(async () => {
-    const balance = await getBalanceTreasury(distributorAddress)
     const endTime = endedAt.toNumber() * 1000
-
-    if (balance === 0) setSetDisabled(true)
     if (!endTime) return setIsRevoke(false)
+
+    const balance = await getBalanceTreasury(distributorAddress)
+    if (balance === 0) setSetDisabled(true)
+
     if (endTime < CURRENT_TIME) return setIsRevoke(true)
     return setIsRevoke(false)
   }, [distributorAddress, endedAt])

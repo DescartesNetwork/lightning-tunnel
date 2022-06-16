@@ -35,6 +35,10 @@ const {
   manifest: { appId },
 } = configs
 
+const CURRENT_TIME = new Date().getTime()
+const ONE_DAY = 24 * 60 * 60 * 1000
+const ONE_MONTH = ONE_DAY * 30
+
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
   const [redeemLink, setRedeemLink] = useState('')
@@ -95,7 +99,7 @@ const ConfirmTransfer = () => {
         total: merkleDistributor.getTotal(),
         merkleRoot: merkleDistributor.deriveMerkleRoot(),
         metadata,
-        endedAt: 0,
+        endedAt: (CURRENT_TIME + ONE_MONTH) / 1000,
         feeOptions,
       })
 
@@ -163,7 +167,7 @@ const ConfirmTransfer = () => {
                   <Col span={24}>
                     <Content
                       label="Time"
-                      value={moment(new Date()).format('DD MMM, YYYY HH:MM')}
+                      value={moment(new Date()).format('DD MMM, YYYY HH:mm')}
                     />
                   </Col>
                   <Col span={24}>

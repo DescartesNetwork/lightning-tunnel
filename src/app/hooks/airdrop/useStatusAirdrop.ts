@@ -24,20 +24,23 @@ const useStatusAirdrop = ({
     (state: AppState) => state.distributors[distributorAddress].endedAt,
   )
 
-  const fetchReceiptStatus = useCallback(async () => {
+  const fetchAirdropStatus = useCallback(async () => {
+    if (endedAt.toNumber() * 1000 < CURRENT_TIME && endedAt.toNumber())
+      return setStatus(State.expired)
+
     try {
       const receiptData = await utility.getReceiptData(receiptAddress)
       if (receiptData) return setStatus(State.claimed)
     } catch (error) {}
-    if (endedAt.toNumber() * 1000 < new Date().getTime())
-      return setStatus(State.expired)
-    if (!startedAt) return setStatus(State.ready)
-    if (startedAt * 1000 < CURRENT_TIME) return setStatus(State.waiting)
+    if (startedAt * 1000 > CURRENT_TIME && startedAt)
+      return setStatus(State.waiting)
+
+    return setStatus(State.ready)
   }, [endedAt, receiptAddress, startedAt])
 
   useEffect(() => {
-    fetchReceiptStatus()
-  }, [fetchReceiptStatus])
+    fetchAirdropStatus()
+  }, [fetchAirdropStatus])
 
   return { status }
 }

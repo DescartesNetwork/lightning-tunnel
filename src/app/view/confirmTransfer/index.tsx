@@ -67,7 +67,7 @@ const ConfirmTransfer = () => {
         authority: account.fromAddress(address),
         amount: new BN(actualAmount),
         startedAt: new BN(0),
-        salt: MerkleDistributor.salt(index.toString()),
+        salt: MerkleDistributor.salt(`${appId}/airdrop/${index.toString()}`),
       }
     })
     const merkleDistributor = new MerkleDistributor(balanceTree)

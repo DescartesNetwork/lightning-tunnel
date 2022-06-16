@@ -62,6 +62,11 @@ class TokenProvider {
     return Array.from(tokenMap.values())
   }
 
+  getTokenMap = async (): Promise<Map<string, TokenInfo>> => {
+    await this._init()
+    return this.tokenMap
+  }
+
   findByAddress = async (addr: string): Promise<TokenInfo | undefined> => {
     const [tokenMap] = await this._init()
     return tokenMap.get(addr)

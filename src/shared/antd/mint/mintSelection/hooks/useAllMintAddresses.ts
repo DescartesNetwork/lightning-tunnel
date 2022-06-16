@@ -1,23 +1,18 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useMint } from '@senhub/providers'
 
-export const useAllMintAddresses = () => {
-  const [allMintAddresses, setAllMintAddresses] = useState<string[]>([])
+export const useAllMints = () => {
+  const [mints, setMints] = useState<string[]>([])
   const { tokenProvider } = useMint()
 
-  const getRecommendedMintAddresses = useCallback(async () => {
-    const allMintAddresses = (await tokenProvider.all()).map(
-      ({ address }) => address,
-    )
-    const addresses = allMintAddresses.filter((mintAddress) =>
-      allMintAddresses.includes(mintAddress),
-    )
-    return setAllMintAddresses(addresses)
+  const getAllMintAddress = useCallback(async () => {
+    const tokens = await tokenProvider.getTokenMap()
+    return setMints(Array.from(tokens.keys()))
   }, [tokenProvider])
 
   useEffect(() => {
-    getRecommendedMintAddresses()
-  }, [getRecommendedMintAddresses])
+    getAllMintAddress()
+  }, [getAllMintAddress])
 
-  return allMintAddresses
+  return mints
 }

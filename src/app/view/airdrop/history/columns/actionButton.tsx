@@ -84,7 +84,7 @@ const ActionButton = ({ distributorAddress }: ActionButtonProps) => {
           loading={loading}
           disabled={disabled}
         >
-          redeem
+          revoke
         </Button>
       )}
       <ModalShare

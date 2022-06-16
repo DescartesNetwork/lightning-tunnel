@@ -12,3 +12,11 @@ export enum Step {
 export enum CollapseAddNew {
   activeKey = 'collapse-upload-csv',
 }
+
+export enum State {
+  waiting = 'Waiting',
+  ready = 'Ready',
+  claimed = 'Claimed',
+  expired = 'Expired',
+  unknown = 'Unknown',
+}

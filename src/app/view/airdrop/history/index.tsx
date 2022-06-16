@@ -7,7 +7,7 @@ import IonIcon from '@sentre/antd-ionicon'
 
 import { AppState } from 'app/model'
 import useCountdown, { DEFAULT_TEN_MINUTE } from 'app/hooks/useCountdown'
-import { COLUMNS_AIRDROP, DEFAULT_DATA } from '../columns'
+import { COLUMNS_AIRDROP } from './columns'
 import IPFS from 'shared/pdb/ipfs'
 import { HistoryRecord } from 'app/helper/history'
 import configs from 'app/configs'
@@ -84,7 +84,7 @@ const History = () => {
             onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountAirdrop >= DEFAULT_DATA.length}
+            disabled={amountAirdrop >= filterHistory.length}
           >
             VIEW MORE
           </Button>

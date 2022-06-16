@@ -1,32 +1,49 @@
+import { Leaf } from '@sentre/utility'
 import moment from 'moment'
 
-import { Button, Space, Typography } from 'antd'
-import { explorer, numeric, shortenAddress } from 'shared/util'
+import { Space, Typography } from 'antd'
+import ColumnAmount from './columnTotal'
+import ColumnStatus from './columnStatus'
+import ColumAction from './columAction'
+import ColumnExpiration from './columnExpiration'
+
+import { explorer, shortenAddress } from 'shared/util'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { Airdrop } from 'app/hooks/airdrop/useListAirdrop'
 
 export const COLUMNS_AIRDROP = [
   {
     title: 'UNLOCK DATE',
-    dataIndex: 'date',
-    render: (time: string) => (
+    dataIndex: 'recipientData',
+    render: ({ startedAt }: Leaf) => (
       <Typography.Text>
-        {moment(time).format('MMM DD, YYYY HH:mm')}
+        {startedAt.toNumber()
+          ? moment(startedAt.toNumber() * 1000).format('MMM DD, YYYY HH:mm')
+          : 'Immediately'}
       </Typography.Text>
     ),
   },
   {
-    title: 'SENDER',
-    dataIndex: 'distributorATA',
+    title: 'EXPIRATION TIME',
+    dataIndex: 'distributorAddress',
     render: (distributorAddress: string) => (
+      <ColumnExpiration distributorAddress={distributorAddress} />
+    ),
+  },
+  {
+    title: 'SENDER',
+    dataIndex: 'sender',
+    render: (sender: string) => (
       <Typography.Text
         style={{ cursor: 'pointer' }}
         underline
-        onClick={() => window.open(explorer(distributorAddress), '_blank')}
+        onClick={() => window.open(explorer(sender), '_blank')}
       >
-        {shortenAddress(distributorAddress)}
+        {shortenAddress(sender)}
       </Typography.Text>
     ),
   },
+
   {
     title: 'TOKEN',
     dataIndex: 'mintAddress',
@@ -40,83 +57,38 @@ export const COLUMNS_AIRDROP = [
 
   {
     title: 'AMOUNT',
-    dataIndex: 'amount',
-    render: (amount: string) => (
-      <Typography.Text>{numeric(amount).format('0,0.[000]')}</Typography.Text>
+    dataIndex: 'recipientData',
+    render: ({ amount }: Leaf, { mintAddress }: Airdrop) => (
+      <ColumnAmount amount={amount} mintAddress={mintAddress} />
     ),
   },
 
   {
     title: 'STATUS',
-    dataIndex: 'status',
-    render: (state: string) => (
-      <Typography.Text style={{ cursor: 'pointer' }}>
-        status {state}
-      </Typography.Text>
+    dataIndex: 'recipientData',
+    render: (
+      { startedAt }: Leaf,
+      { receiptAddress, distributorAddress }: Airdrop,
+    ) => (
+      <ColumnStatus
+        startedAt={startedAt.toNumber()}
+        receiptAddress={receiptAddress}
+        distributorAddress={distributorAddress}
+      />
     ),
   },
   {
     title: 'ACTION',
-    dataIndex: 'status',
-    render: (time: string) => <Button type="text">Claim</Button>,
-  },
-]
-
-export const DEFAULT_DATA = [
-  {
-    key: 1,
-    time: new Date(),
-    distributorATA: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
-    mintAddress: '11111111111111111111111111111111',
-    amount: 100.12,
-    status: 1,
-  },
-  {
-    key: 2,
-    time: new Date(),
-    distributorATA: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
-    mintAddress: '11111111111111111111111111111111',
-    amount: 100.12,
-    status: 1,
-  },
-  {
-    key: 3,
-    time: new Date(),
-    distributorATA: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
-    mintAddress: '11111111111111111111111111111111',
-    amount: 100.12,
-    status: 1,
-  },
-  {
-    key: 4,
-    time: new Date(),
-    distributorATA: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
-    mintAddress: '11111111111111111111111111111111',
-    amount: 100.12,
-    status: 1,
-  },
-  {
-    key: 5,
-    time: new Date(),
-    distributorATA: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
-    mintAddress: '11111111111111111111111111111111',
-    amount: 100.12,
-    status: 1,
-  },
-  {
-    key: 6,
-    time: new Date(),
-    distributorATA: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
-    mintAddress: '11111111111111111111111111111111',
-    amount: 100.12,
-    status: 1,
-  },
-  {
-    key: 7,
-    time: new Date(),
-    distributorATA: '2vAEiACep3J1N2J6YY9gt4gAbbFEvuVdWgyu8KUkgzgn',
-    mintAddress: '11111111111111111111111111111111',
-    amount: 100.12,
-    status: 1,
+    dataIndex: 'distributorAddress',
+    render: (
+      distributorAddress: string,
+      { receiptAddress, recipientData }: Airdrop,
+    ) => (
+      <ColumAction
+        distributorAddress={distributorAddress}
+        recipientData={recipientData}
+        receiptAddress={receiptAddress}
+      />
+    ),
   },
 ]

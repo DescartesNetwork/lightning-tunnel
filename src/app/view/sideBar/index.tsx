@@ -48,7 +48,7 @@ const SideBar = () => {
   return (
     <Menu
       selectedKeys={[sideBarKey]}
-      onSelect={onSelect}
+      onClick={onSelect}
       className="sidebar-content"
       items={LIST_MENU_ITEM}
     />

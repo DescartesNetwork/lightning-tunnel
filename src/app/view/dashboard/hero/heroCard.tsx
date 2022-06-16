@@ -1,5 +1,5 @@
 import IonIcon from '@sentre/antd-ionicon'
-import { Card, Col, Row, Skeleton, Spin, Typography } from 'antd'
+import { Card, Col, Row, Spin, Typography } from 'antd'
 import { numeric } from 'shared/util'
 
 type HeroCardProps = {
@@ -20,7 +20,6 @@ const HeroCard = ({ label, icon, value, loading = false }: HeroCardProps) => (
           <IonIcon className="card-hero-icon" name={icon} />
         </Col>
         <Col span={24}>
-          <Skeleton />
           <Typography.Title level={5}>
             ${numeric(value).format('0,0.[000]')}
           </Typography.Title>

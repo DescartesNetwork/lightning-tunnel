@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Table, Typography } from 'antd'
-import { COLUMNS_AIRDROP, DEFAULT_DATA } from '../airdropReceive/columns'
+import { COLUMNS_AIRDROP } from '../airdropReceive/columns'
 
 const DEFAULT_AMOUNT = 4
 
@@ -21,10 +21,9 @@ const VestingReceive = () => {
         </Col>
         <Col span={24}>
           <Table
-            dataSource={DEFAULT_DATA.slice(0, amountAirdrop)}
+            dataSource={[].slice(0, amountAirdrop)}
             pagination={false}
             columns={COLUMNS_AIRDROP}
-            rowKey={(record) => record.key}
           />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
@@ -32,7 +31,6 @@ const VestingReceive = () => {
             onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountAirdrop >= DEFAULT_DATA.length}
           >
             VIEW MORE
           </Button>

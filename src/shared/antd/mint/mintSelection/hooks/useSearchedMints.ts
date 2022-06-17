@@ -7,13 +7,13 @@ import { useJupiterTokens } from './useJupiterTokens'
 
 let searching: NodeJS.Timeout
 
-export const useSearchedMints = (keyword: string = '', limit: number) => {
+export const useSearchedMints = (keyword: string = '') => {
   const [loading, setLoading] = useState(false)
   const [searchedMints, setSearchedMints] = useState<string[]>([])
   const { tokenProvider } = useMint()
+  const { verify } = useJupiterTokens()
   const myMints = useMyMints()
   const { sortedMints } = useSortMints(myMints)
-  const { verify } = useJupiterTokens()
 
   const buildDefaultTokens = useCallback(async () => {
     let filteredMints = new Set<string>()
@@ -35,13 +35,13 @@ export const useSearchedMints = (keyword: string = '', limit: number) => {
           const defaultMints = await buildDefaultTokens()
           return setSearchedMints(defaultMints)
         }
-        const tokens = await tokenProvider.find(keyword, limit)
+        const tokens = await tokenProvider.find(keyword, 0)
         const verifiedTokens: string[] = []
         const unverifiedTokens: string[] = []
         for (const mint of tokens) {
           const verified = verify(mint.address)
           if (verified) verifiedTokens.push(mint.address)
-          if (!verified) unverifiedTokens.push(mint.address)
+          else unverifiedTokens.push(mint.address)
         }
         let mints = verifiedTokens.concat(unverifiedTokens)
         // In some cases, mint that the user wants to select is not included in the token provider
@@ -53,7 +53,7 @@ export const useSearchedMints = (keyword: string = '', limit: number) => {
         setLoading(false)
       }
     }, 500)
-  }, [buildDefaultTokens, keyword, limit, myMints, tokenProvider, verify])
+  }, [buildDefaultTokens, keyword, myMints, tokenProvider, verify])
 
   useEffect(() => {
     search()

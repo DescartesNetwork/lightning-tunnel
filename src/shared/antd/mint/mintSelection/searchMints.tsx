@@ -12,7 +12,7 @@ import { useSearchedMints } from './hooks/useSearchedMints'
 
 const LIMIT = 30
 const AMOUNT_BEFORE_LOAD_MORE = 5
-let timeOut: NodeJS.Timeout
+let timeOutLoadMore: NodeJS.Timeout
 
 export type SearchMintsProps = {
   value?: string
@@ -29,7 +29,7 @@ const SearchMints = ({
   const [keyword, setKeyword] = useState('')
   const [offset, setOffset] = useState(LIMIT)
   const { recommendedMints, addRecommendMint } = useRecommendedMints()
-  const { searchedMints, loading } = useSearchedMints(keyword, 0)
+  const { searchedMints, loading } = useSearchedMints(keyword)
 
   const onSelect = useCallback(
     (mintAddress: string) => {
@@ -84,7 +84,6 @@ const SearchMints = ({
         <Spin
           spinning={loading}
           tip={!keyword.length ? 'Loading...' : 'Searching...'}
-          style={{}}
         >
           <Row
             gutter={[8, 8]}
@@ -102,10 +101,10 @@ const SearchMints = ({
                   {index === offset - AMOUNT_BEFORE_LOAD_MORE && (
                     <LoadMore
                       callback={() => {
-                        if (timeOut) clearTimeout(timeOut)
-                        timeOut = setTimeout(
+                        if (timeOutLoadMore) clearTimeout(timeOutLoadMore)
+                        timeOutLoadMore = setTimeout(
                           () => setOffset(offset + LIMIT),
-                          300,
+                          250,
                         )
                       }}
                     />

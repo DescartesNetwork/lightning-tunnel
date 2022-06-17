@@ -81,10 +81,14 @@ const SearchMints = ({
         </Col>
       )}
       <Col span={24}>
-        <Spin spinning={loading}>
+        <Spin
+          spinning={loading}
+          tip={!keyword.length ? 'Loading...' : 'Searching...'}
+          style={{}}
+        >
           <Row
             gutter={[8, 8]}
-            style={{ maxHeight: 360, paddingRight: 32 }}
+            style={{ maxHeight: 360, paddingRight: 32, minHeight: 100 }}
             className="scrollbar"
             id="sentre-token-selection-list"
             justify="center"

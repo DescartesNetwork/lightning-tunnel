@@ -3,6 +3,7 @@ import { useMint } from '@senhub/providers'
 
 import { useMyMints } from './useMyMints'
 import { useSortMints } from 'shared/hooks/useSortMints'
+import { useJupiterTokens } from './useJupiterTokens'
 
 let searching: NodeJS.Timeout
 
@@ -12,6 +13,7 @@ export const useSearchedMints = (keyword: string = '', limit: number) => {
   const { tokenProvider } = useMint()
   const myMints = useMyMints()
   const { sortedMints } = useSortMints(myMints)
+  const { verify } = useJupiterTokens()
 
   const buildDefaultTokens = useCallback(async () => {
     let filteredMints = new Set<string>()
@@ -30,11 +32,18 @@ export const useSearchedMints = (keyword: string = '', limit: number) => {
     searching = setTimeout(async () => {
       try {
         if (!keyword) {
-          const mints = await buildDefaultTokens()
-          return setSearchedMints(mints)
+          const defaultMints = await buildDefaultTokens()
+          return setSearchedMints(defaultMints)
         }
         const tokens = await tokenProvider.find(keyword, limit)
-        let mints = tokens.map((token) => token.address)
+        const verifiedTokens: string[] = []
+        const unverifiedTokens: string[] = []
+        for (const mint of tokens) {
+          const verified = verify(mint.address)
+          if (verified) verifiedTokens.push(mint.address)
+          if (!verified) unverifiedTokens.push(mint.address)
+        }
+        let mints = verifiedTokens.concat(unverifiedTokens)
         // In some cases, mint that the user wants to select is not included in the token provider
         // This allows the user to choose any mint that the user wants
         if (!mints.length) mints = myMints.filter((mint) => mint === keyword)
@@ -44,7 +53,7 @@ export const useSearchedMints = (keyword: string = '', limit: number) => {
         setLoading(false)
       }
     }, 500)
-  }, [buildDefaultTokens, keyword, limit, myMints, tokenProvider])
+  }, [buildDefaultTokens, keyword, limit, myMints, tokenProvider, verify])
 
   useEffect(() => {
     search()

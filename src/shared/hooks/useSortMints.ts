@@ -17,8 +17,8 @@ export const useSortMints = (mints: string[]) => {
     async (mintAddresses: string[]) => {
       if (!mapMintAmounts.size) return setSortedMints([])
       const sortedMints = mintAddresses.sort((a, b) => {
-        let amountA = mapMintAmounts.get(a) || 0
-        let amountB = mapMintAmounts.get(b) || 0
+        let amountA = mapMintAmounts.get(a) || -1
+        let amountB = mapMintAmounts.get(b) || -1
         return amountB - amountA
       })
       return setSortedMints(sortedMints)

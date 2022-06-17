@@ -87,7 +87,7 @@ const SearchMints = ({
         >
           <Row
             gutter={[8, 8]}
-            style={{ maxHeight: 360, paddingRight: 32, minHeight: 100 }}
+            style={{ maxHeight: 360, paddingRight: 32, minHeight: 50 }}
             className="scrollbar"
             id="sentre-token-selection-list"
             justify="center"

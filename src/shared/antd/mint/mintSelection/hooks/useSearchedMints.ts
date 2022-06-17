@@ -29,6 +29,7 @@ export const useSearchedMints = (keyword: string = '') => {
   const search = useCallback(async () => {
     setLoading(true)
     if (searching) clearTimeout(searching)
+    const time = !keyword ? 300 : 500
     searching = setTimeout(async () => {
       try {
         if (!keyword) {
@@ -52,7 +53,7 @@ export const useSearchedMints = (keyword: string = '') => {
       } finally {
         setLoading(false)
       }
-    }, 500)
+    }, time)
   }, [buildDefaultTokens, keyword, myMints, tokenProvider, verify])
 
   useEffect(() => {

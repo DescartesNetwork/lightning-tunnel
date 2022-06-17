@@ -45,10 +45,6 @@ const SearchMints = ({
     if (list) list.scrollTop = 0
   }, [keyword, visible])
 
-  useEffect(() => {
-    if (!visible) setKeyword('')
-  }, [visible])
-
   return (
     <Row gutter={[32, 32]}>
       <Col span={24}>
@@ -93,7 +89,7 @@ const SearchMints = ({
             id="sentre-token-selection-list"
             justify="center"
           >
-            {searchedMints.length ? (
+            {searchedMints.length || loading ? (
               searchedMints.slice(0, offset).map((mintAddress, index) => (
                 <Col span={24} key={mintAddress + index}>
                   <LazyLoad height={60} overflow throttle={300}>

@@ -13,18 +13,25 @@ export const useSearchedMints = (keyword: string = '', limit: number) => {
   const myMints = useMyMints()
   const { sortedMints } = useSortMints(myMints)
 
+  const buildDefaultTokens = useCallback(async () => {
+    let filteredMints = new Set<string>()
+    for (const mint of sortedMints) {
+      const valid = await tokenProvider.findByAddress(mint)
+      if (valid) filteredMints.add(mint)
+    }
+    const allMints = await tokenProvider.all()
+    for (const mint of allMints) filteredMints.add(mint.address)
+    return Array.from(filteredMints)
+  }, [sortedMints, tokenProvider])
+
   const search = useCallback(async () => {
     setLoading(true)
     if (searching) clearTimeout(searching)
     searching = setTimeout(async () => {
       try {
         if (!keyword) {
-          let filteredMyMints: string[] = []
-          for (const mint of sortedMints) {
-            const valid = await tokenProvider.findByAddress(mint)
-            if (valid) filteredMyMints.push(mint)
-          }
-          return setSearchedMints(filteredMyMints)
+          const mints = await buildDefaultTokens()
+          return setSearchedMints(mints)
         }
         const tokens = await tokenProvider.find(keyword, limit)
         let mints = tokens.map((token) => token.address)
@@ -37,7 +44,7 @@ export const useSearchedMints = (keyword: string = '', limit: number) => {
         setLoading(false)
       }
     }, 500)
-  }, [keyword, limit, myMints, sortedMints, tokenProvider])
+  }, [buildDefaultTokens, keyword, limit, myMints, tokenProvider])
 
   useEffect(() => {
     search()

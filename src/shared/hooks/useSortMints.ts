@@ -15,6 +15,7 @@ export const useSortMints = (mints: string[]) => {
 
   const sortMints = useCallback(
     async (mintAddresses: string[]) => {
+      if (!mapMintAmounts.size) return setSortedMints([])
       const sortedMints = mintAddresses.sort((a, b) => {
         let amountA = mapMintAmounts.get(a) || 0
         let amountB = mapMintAmounts.get(b) || 0

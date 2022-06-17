@@ -104,7 +104,7 @@ const ConfirmTransfer = () => {
       })
 
       const historyRecord: HistoryRecord = {
-        total: merkleDistributor.getTotal().toNumber(),
+        total: merkleDistributor.getTotal().toString(),
         time: new Date().toString(),
         mint: mintSelected,
         distributorAddress,

@@ -9,7 +9,7 @@ const {
 export type HistoryRecord = {
   time: string
   mint: string
-  total: string | number
+  total: string
   distributorAddress: string
   treeData: Buffer
 }

@@ -22,13 +22,13 @@ import useTotal from 'app/hooks/useTotal'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import configs from 'app/configs'
-import IPFS from 'shared/pdb/ipfs'
 import History, { HistoryRecord } from 'app/helper/history'
 import { getHistory } from 'app/model/history.controller'
 import { notifySuccess } from 'app/helper'
 import ButtonHome from 'app/components/buttonHome'
 import { onSelectMethod } from 'app/model/main.controller'
 import { removeRecipients } from 'app/model/recipients.controller'
+import IPFS from 'app/helper/ipfs'
 
 const {
   sol: { utility, fee, taxman },

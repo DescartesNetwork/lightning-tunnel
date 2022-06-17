@@ -13,8 +13,8 @@ import ButtonHome from 'app/components/buttonHome'
 import { notifySuccess, notifyError, getCID } from 'app/helper'
 import { MintSymbol } from 'shared/antd/mint'
 import { useAppRouter } from 'app/hooks/useAppRoute'
-import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
+import IPFS from 'app/helper/ipfs'
 
 import REDEEM_IMG from 'app/static/images/redeem.svg'
 
@@ -55,7 +55,7 @@ const Redeem = () => {
       setDistributor(distributor)
 
       const cid = await getCID(distributor.metadata)
-      const data = await ipfs.get(cid)
+      const data: number[] = await ipfs.get(cid)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)

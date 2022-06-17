@@ -35,7 +35,6 @@ const {
   manifest: { appId },
 } = configs
 
-const CURRENT_TIME = new Date().getTime()
 const ONE_DAY = 24 * 60 * 60 * 1000
 const ONE_MONTH = ONE_DAY * 30
 
@@ -93,13 +92,14 @@ const ConfirmTransfer = () => {
       } = CID.parse(cid)
 
       const metadata = Buffer.from(digest)
+      const CURRENT_TIME = Date.now()
 
       const { txId, distributorAddress } = await utility.initializeDistributor({
         tokenAddress: mintSelected,
         total: merkleDistributor.getTotal(),
         merkleRoot: merkleDistributor.deriveMerkleRoot(),
         metadata,
-        endedAt: (CURRENT_TIME + ONE_MONTH) / 1000,
+        endedAt: Math.round((CURRENT_TIME + ONE_MONTH) / 1000),
         feeOptions,
       })
 

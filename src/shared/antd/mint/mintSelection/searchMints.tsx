@@ -65,7 +65,7 @@ const SearchMints = ({
           onChange={(e) => setKeyword(e.target.value || '')}
         />
       </Col>
-      {(!keyword.length || loading) && (
+      {!keyword.length && (
         <Col span={24}>
           <Row gutter={[8, 8]}>
             {recommendedMints.map((mintAddress) => (

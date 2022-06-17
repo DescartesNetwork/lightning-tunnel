@@ -25,7 +25,7 @@ const Verification = () => {
 }
 
 const MintCard = ({ mintAddress, onClick = () => {} }: MintSelectionProps) => {
-  const { verify } = useJupiterTokens()
+  const jptTokens = useJupiterTokens()
   return (
     <Card
       bodyStyle={{ padding: 8 }}
@@ -43,7 +43,7 @@ const MintCard = ({ mintAddress, onClick = () => {} }: MintSelectionProps) => {
               <Typography.Text>
                 <MintSymbol mintAddress={mintAddress} />
               </Typography.Text>
-              {verify(mintAddress) && <Verification />}
+              {jptTokens?.verify(mintAddress) && <Verification />}
             </Space>
 
             <Typography.Text type="secondary" className="caption">

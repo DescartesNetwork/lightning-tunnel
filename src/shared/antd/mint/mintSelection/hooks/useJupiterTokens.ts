@@ -8,7 +8,7 @@ export const JUP_TOKEN_LIST_URL: Record<Net, string> = {
   mainnet: 'https://cache.jup.ag/tokens',
 }
 
-const fetchJptTokens = async () => {
+const loadJptTokens = async () => {
   const tokens = await fetch(JUP_TOKEN_LIST_URL[net]).then((data) =>
     data.json(),
   )
@@ -22,9 +22,6 @@ const fetchJptTokens = async () => {
 }
 
 export const useJupiterTokens = () => {
-  const { data = { verify: () => false } } = useSWRImmutable(
-    'fetchJptTokens',
-    fetchJptTokens,
-  )
+  const { data } = useSWRImmutable('fetchJptTokens', loadJptTokens)
   return data
 }

@@ -11,7 +11,7 @@ export const useSearchedMints = (keyword: string = '') => {
   const [loading, setLoading] = useState(false)
   const [searchedMints, setSearchedMints] = useState<string[]>([])
   const { tokenProvider } = useMint()
-  const { verify } = useJupiterTokens()
+  const jptTokens = useJupiterTokens()
   const myMints = useMyMints()
   const { sortedMints } = useSortMints(myMints)
 
@@ -29,7 +29,7 @@ export const useSearchedMints = (keyword: string = '') => {
   const search = useCallback(async () => {
     setLoading(true)
     if (searching) clearTimeout(searching)
-    const time = !keyword ? 300 : 500
+    const time = !keyword ? 0 : 500
     searching = setTimeout(async () => {
       try {
         if (!keyword) {
@@ -40,7 +40,7 @@ export const useSearchedMints = (keyword: string = '') => {
         const verifiedTokens: string[] = []
         const unverifiedTokens: string[] = []
         for (const mint of tokens) {
-          const verified = verify(mint.address)
+          const verified = jptTokens?.verify(mint.address)
           if (verified) verifiedTokens.push(mint.address)
           else unverifiedTokens.push(mint.address)
         }
@@ -54,7 +54,7 @@ export const useSearchedMints = (keyword: string = '') => {
         setLoading(false)
       }
     }, time)
-  }, [buildDefaultTokens, keyword, myMints, tokenProvider, verify])
+  }, [buildDefaultTokens, jptTokens, keyword, myMints, tokenProvider])
 
   useEffect(() => {
     search()

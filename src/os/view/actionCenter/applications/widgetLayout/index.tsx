@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import {
   DndContext,
   DragEndEvent,
@@ -19,9 +20,10 @@ import AppIcon from 'os/components/appIcon'
 import DroppablePage from './droppablePage'
 import DraggableIcon from './draggableIcon'
 
+import { useRootDispatch, RootDispatch } from 'os/store'
+import { setVisibleActionCenter } from 'os/store/ui.reducer'
 import DraggableAction from './draggableAction'
 import IonIcon from '@sentre/antd-ionicon'
-import { useGoToAppCallback } from 'os/hooks/useGotoApp'
 
 // Mixed Strategy
 const mixedStrategy = (
@@ -31,7 +33,7 @@ const mixedStrategy = (
   return intersecting ? intersecting : closestCorners(...args)
 }
 
-export type WidgetLayoutProps = {
+type Props = {
   placeholder?: string
   disabled?: boolean
   appIds: AppIds
@@ -42,25 +44,33 @@ export type WidgetLayoutProps = {
   addLabel?: string
 }
 
-const WidgetLayout = ({
-  placeholder,
-  disabled = true,
-  appIds,
-  onChange,
-  onRemove,
-  removeLabel,
-  onAdd,
-  addLabel,
-}: WidgetLayoutProps) => {
+const WidgetLayout = (props: Props) => {
+  const {
+    placeholder,
+    disabled = true,
+    appIds,
+    onChange,
+    onRemove,
+    removeLabel,
+    onAdd,
+    addLabel,
+  } = props
+  const history = useHistory()
+  const dispatch = useRootDispatch<RootDispatch>()
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor))
+
   const [internalAppIds, setInternalPages] = useState<AppIds>([])
   const [activeId, setActiveId] = useState<string>('')
   const [action, setAction] = useState('')
-  const onOpen = useGoToAppCallback()
 
   useEffect(() => {
     setInternalPages(appIds)
   }, [appIds])
+
+  const open = async (appId: string) => {
+    await dispatch(setVisibleActionCenter(false))
+    return history.push(`/app/${appId}`)
+  }
 
   const onDragStart = ({ active }: DragStartEvent) => setActiveId(active.id)
   const onDragOver = useCallback(
@@ -125,7 +135,7 @@ const WidgetLayout = ({
                   appId={appId}
                   disabled={disabled}
                   size={64}
-                  onClick={() => onOpen({ appId })}
+                  onClick={() => open(appId)}
                 />
               ))
             )}

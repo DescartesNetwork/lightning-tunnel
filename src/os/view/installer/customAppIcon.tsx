@@ -1,25 +1,34 @@
-import { useMemo } from 'react'
+import { useCallback } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import { Button, Space, Typography } from 'antd'
 import AppIcon from 'os/components/appIcon'
 
-import { RootState, useRootSelector } from 'os/store'
-import { useGoToApp } from 'os/hooks/useGotoApp'
-import { useInstallApp } from 'os/hooks/useInstallApp'
+import { RootState, useRootDispatch, useRootSelector } from 'os/store'
+import { installApp } from 'os/store/page.reducer'
 
-export type CustomAppIconProps = { appId: string }
+export type CustomAppIconProps = { appId: string; onCallback?: () => void }
 
-const CustomAppIcon = ({ appId }: CustomAppIconProps) => {
+const CustomAppIcon = ({
+  appId,
+  onCallback = () => {},
+}: CustomAppIconProps) => {
   const register = useRootSelector((state: RootState) => state.page.register)
   const appIds = useRootSelector((state: RootState) => state.page.appIds)
-  const onOpen = useGoToApp({ appId })
-  const onInstall = useInstallApp(appId)
+  const dispatch = useRootDispatch()
+  const history = useHistory()
 
-  const { name: appName } = useMemo(
-    () => register[appId] || { name: 'Unknown' },
-    [register, appId],
-  )
-  const installed = useMemo(() => appIds.includes(appId), [appIds, appId])
+  const { name: appName } = register[appId] || { name: 'Unknown' }
+  const installed = appIds.includes(appId)
+
+  const onInstall = useCallback(async () => {
+    return dispatch(installApp(appId))
+  }, [dispatch, appId])
+
+  const onOpen = useCallback(async () => {
+    history.push(`/app/${appId}`)
+    return onCallback()
+  }, [history, appId, onCallback])
 
   return (
     <Space size={16}>

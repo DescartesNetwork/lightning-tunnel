@@ -8,8 +8,8 @@ import { HISTORY_COLUMN } from './column'
 import { AppState } from 'app/model'
 
 import './index.less'
+import IPFS from 'shared/pdb/ipfs'
 import useCountdown, { DEFAULT_TEN_MINUTE } from 'app/hooks/useCountdown'
-import IPFS from 'app/helper/ipfs'
 
 const HistoryButton = () => {
   const [visible, setVisible] = useState(false)

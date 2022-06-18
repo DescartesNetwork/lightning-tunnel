@@ -1,11 +1,11 @@
 import { account } from '@senswap/sen-js'
 
 import { Row, Col } from 'antd'
-import AppList from './appList'
+import Navigation from './navigation'
 
 import { useRootSelector, RootState } from 'os/store'
 
-const Navigation = () => {
+const ContextMenu = () => {
   const walletAddress = useRootSelector(
     (state: RootState) => state.wallet.address,
   )
@@ -19,10 +19,10 @@ const Navigation = () => {
         className="scrollbar"
         flex="auto"
       >
-        <AppList />
+        <Navigation />
       </Col>
     </Row>
   )
 }
 
-export default Navigation
+export default ContextMenu

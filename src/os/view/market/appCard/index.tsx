@@ -1,21 +1,39 @@
-import { CSSProperties, useEffect, useRef, useState } from 'react'
+import { CSSProperties, useCallback, useEffect, useRef, useState } from 'react'
+import { useHistory } from 'react-router'
 
 import { Card, Col, Row } from 'antd'
 import AppCardInfo from './appCardInfo'
 
 import { MultiStaticLoader } from 'os/components/staticLoader'
 import imgError from 'os/static/images/error-image.svg'
-import { useGoToStore } from 'os/hooks/useGotoStore'
+import {
+  RootDispatch,
+  RootState,
+  useRootDispatch,
+  useRootSelector,
+} from 'os/store'
+import { setVisible } from 'os/store/search.reducer'
 
-export type AppCardProps = {
+const AppCard = ({
+  appId,
+  style = {},
+}: {
   appId: string
   style?: CSSProperties
-}
-
-const AppCard = ({ appId, style = {} }: AppCardProps) => {
+}) => {
+  const history = useHistory()
   const [cardHeight, setCardHeight] = useState(0)
+  const dispatch = useRootDispatch<RootDispatch>()
+  const visible = useRootSelector((state: RootState) => state.search.visible)
   const ref = useRef(null)
-  const onOpen = useGoToStore({ appId })
+
+  const to = useCallback(
+    async (appId: string) => {
+      if (visible) await dispatch(setVisible(false))
+      return history.push(`/store/${appId}`)
+    },
+    [dispatch, history, visible],
+  )
 
   useEffect(() => {
     setCardHeight((ref?.current as any)?.offsetWidth * 0.75)
@@ -42,7 +60,7 @@ const AppCard = ({ appId, style = {} }: AppCardProps) => {
               }}
               bodyStyle={{ padding: 0 }}
               key={appId}
-              onClick={onOpen}
+              onClick={() => to(appId)}
             >
               <Row align="bottom" style={{ height: cardHeight }}>
                 <AppCardInfo appId={appId} />

@@ -6,15 +6,15 @@ import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
 import { BN } from 'bn.js'
 import moment from 'moment'
 
-import { Image, Space, Typography, Row, Col, Button, Card, Spin } from 'antd'
+import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import ButtonHome from 'app/components/buttonHome'
 
 import { notifySuccess, notifyError, getCID } from 'app/helper'
 import { MintSymbol } from 'shared/antd/mint'
 import { useAppRouter } from 'app/hooks/useAppRoute'
+import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
-import IPFS from 'app/helper/ipfs'
 
 import REDEEM_IMG from 'app/static/images/redeem.svg'
 
@@ -55,7 +55,7 @@ const Redeem = () => {
       setDistributor(distributor)
 
       const cid = await getCID(distributor.metadata)
-      const data: number[] = await ipfs.get(cid)
+      const data = await ipfs.get(cid)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)
@@ -150,57 +150,54 @@ const Redeem = () => {
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">
       <Col xs={24} md={16} lg={12} xl={10}>
-        <Spin spinning={loadingCard}>
-          <Card
-            style={{ minHeight: 430 }}
-            className="card-lightning"
-            bordered={false}
-          >
-            <Row gutter={[32, 32]} style={{ textAlign: 'center' }}>
-              <Col span={24} style={{ textAlign: 'left' }}>
-                <Button
-                  type="text"
-                  icon={<IonIcon name="arrow-back-outline" />}
-                  onClick={() => pushHistory('')}
-                  style={{ margin: -12 }}
-                >
-                  Back
-                </Button>
-              </Col>
-              <Col span={24}>
-                <Image src={REDEEM_IMG} preview={false} />
-              </Col>
-              <Col span={24}>
-                <Space direction="vertical" size={4}>
-                  <Typography.Title level={3}>Redemption!</Typography.Title>
-                  <Space size={4}>
-                    <Typography.Text type="secondary">
-                      Let's take
-                    </Typography.Text>{' '}
-                    <Typography.Title level={5} style={{ color: '#42E6EB' }}>
-                      {utils.undecimalize(
-                        BigInt(recipientData?.amount.toNumber() || 0),
-                        decimals,
-                      )}{' '}
-                      <MintSymbol
-                        mintAddress={distributor?.mint.toBase58() || ''}
-                      />
-                    </Typography.Title>
-                  </Space>
+        <Card
+          style={{ minHeight: 430 }}
+          loading={loadingCard}
+          className="card-lightning"
+          bordered={false}
+        >
+          <Row gutter={[32, 32]} style={{ textAlign: 'center' }}>
+            <Col span={24} style={{ textAlign: 'left' }}>
+              <Button
+                type="text"
+                icon={<IonIcon name="arrow-back-outline" />}
+                onClick={() => pushHistory('')}
+                style={{ margin: -12 }}
+              >
+                Back
+              </Button>
+            </Col>
+            <Col span={24}>
+              <Image src={REDEEM_IMG} preview={false} />
+            </Col>
+            <Col span={24}>
+              <Space direction="vertical" size={4}>
+                <Typography.Title level={3}>Redemption!</Typography.Title>
+                <Space size={4}>
+                  <Typography.Text type="secondary">Let's take</Typography.Text>{' '}
+                  <Typography.Title level={5} style={{ color: '#42E6EB' }}>
+                    {utils.undecimalize(
+                      BigInt(recipientData?.amount.toNumber() || 0),
+                      decimals,
+                    )}{' '}
+                    <MintSymbol
+                      mintAddress={distributor?.mint.toBase58() || ''}
+                    />
+                  </Typography.Title>
                 </Space>
-              </Col>
-              <Col span={24}>
-                {!isValid ? (
-                  <ButtonHome onBack={() => pushHistory('')} />
-                ) : (
-                  <Button type="primary" onClick={onRedeem} loading={loading}>
-                    Redeem
-                  </Button>
-                )}
-              </Col>
-            </Row>
-          </Card>
-        </Spin>
+              </Space>
+            </Col>
+            <Col span={24}>
+              {!isValid ? (
+                <ButtonHome onBack={() => pushHistory('')} />
+              ) : (
+                <Button type="primary" onClick={onRedeem} loading={loading}>
+                  Redeem
+                </Button>
+              )}
+            </Col>
+          </Row>
+        </Card>
       </Col>
     </Row>
   )

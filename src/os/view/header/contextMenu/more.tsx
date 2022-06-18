@@ -1,13 +1,12 @@
+import { useHistory } from 'react-router-dom'
+
 import { Avatar } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
-import { useGoToStore } from 'os/hooks/useGotoStore'
-
 const More = () => {
-  const onGoToStore = useGoToStore()
-
+  const history = useHistory()
   return (
-    <span style={{ cursor: 'pointer' }} onClick={onGoToStore}>
+    <span style={{ cursor: 'pointer' }} onClick={() => history.push('/store')}>
       <Avatar shape="square">
         <IonIcon name="add-outline" />
       </Avatar>

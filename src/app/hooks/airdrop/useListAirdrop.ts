@@ -41,7 +41,7 @@ const useListAirdrop = () => {
     try {
       await Promise.all(
         listDistributor.map(
-          async ({ metadata, mint, authority, address }, index) => {
+          async ({ metadata, mint, authority, address, total }, index) => {
             try {
               const cid = await getCID(metadata)
               const data = await ipfs.get(cid)
@@ -51,18 +51,21 @@ const useListAirdrop = () => {
               const recipients = merkleDistributor.receipients
               const mintAddress = mint.toBase58()
               const sender = authority.toBase58()
+              //filter airdrop-type distributes
+
+              const airdropSalt = MerkleDistributor.salt(
+                `${appId}/airdrop/${0}`,
+              )
+              if (Buffer.compare(airdropSalt, recipients[0].salt) !== 0) return
+
               for (const recipient of recipients) {
                 const { authority, salt } = recipient
-                const airdropSalt = MerkleDistributor.salt(
-                  `${appId}/airdrop/${0}`,
-                )
-                //filter airdrop-type distributes
-                if (Buffer.compare(airdropSalt, salt) !== 0) return
-                const receiptAddress = await utility.deriveReceiptAddress(
-                  salt,
-                  address,
-                )
+
                 if (walletAddress === authority.toBase58()) {
+                  const receiptAddress = await utility.deriveReceiptAddress(
+                    salt,
+                    address,
+                  )
                   const airdropItem: Airdrop = {
                     mintAddress,
                     sender,

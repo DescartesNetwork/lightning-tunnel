@@ -25,3 +25,11 @@ export const getCID = (digest: number[]) => {
   const cid = CID.decode(v0Digest)
   return cid.toString()
 }
+
+export const shortenTailText = (
+  address: string,
+  num = 4,
+  delimiter = '...',
+) => {
+  return address.length > num ? address.substring(0, num) + delimiter : address
+}

@@ -1,9 +1,13 @@
+import { useDispatch } from 'react-redux'
+
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Col, Row, Typography } from 'antd'
+import AirdropAllocation from './airdropAllocation'
+import History from './history'
+import TotalAirdrop from './totalAirdrop'
+
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import { setTypeDistribute } from 'app/model/main.controller'
-import { useDispatch } from 'react-redux'
-import History from './history'
 
 const Airdrop = () => {
   const { pushHistory } = useAppRouter()
@@ -34,7 +38,14 @@ const Airdrop = () => {
         </Row>
       </Col>
       <Col span={24}>
-        <Typography.Title level={2}>Chart</Typography.Title>
+        <Row gutter={[24, 24]}>
+          <Col span={24} lg={12}>
+            <TotalAirdrop />
+          </Col>
+          <Col span={24} lg={12}>
+            <AirdropAllocation />
+          </Col>
+        </Row>
       </Col>
       <Col span={24}>
         <History />

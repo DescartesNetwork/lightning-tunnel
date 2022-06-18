@@ -20,17 +20,20 @@ import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'app/hooks/useTotal'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import configs from 'app/configs'
-import IPFS from 'shared/pdb/ipfs'
 import History, { HistoryRecord } from 'app/helper/history'
 import { getHistory } from 'app/model/history.controller'
 import { notifySuccess } from 'app/helper'
 import { onSelectMethod } from 'app/model/main.controller'
 import { removeRecipients } from 'app/model/recipients.controller'
+import IPFS from 'app/helper/ipfs'
 
 const {
   sol: { utility, fee, taxman },
   manifest: { appId },
 } = configs
+
+const ONE_DAY = 24 * 60 * 60 * 1000
+const ONE_MONTH = ONE_DAY * 30
 
 const ConfirmTransfer = () => {
   const [loading, setLoading] = useState(false)
@@ -58,10 +61,8 @@ const ConfirmTransfer = () => {
       return {
         authority: account.fromAddress(address),
         amount: new BN(actualAmount),
-        startedAt: new BN(startDate / 1000),
-        salt: MerkleDistributor.salt(
-          `${appId}/${typeDistribute}/${index.toString()}`,
-        ),
+        startedAt: new BN(0),
+        salt: MerkleDistributor.salt(`${appId}/airdrop/${index.toString()}`),
       }
     })
     const merkleDistributor = new MerkleDistributor(balanceTree)
@@ -87,18 +88,19 @@ const ConfirmTransfer = () => {
       } = CID.parse(cid)
 
       const metadata = Buffer.from(digest)
+      const CURRENT_TIME = Date.now()
 
       const { txId, distributorAddress } = await utility.initializeDistributor({
         tokenAddress: mintSelected,
         total: merkleDistributor.getTotal(),
         merkleRoot: merkleDistributor.deriveMerkleRoot(),
         metadata,
-        endedAt: endDate / 1000,
+        endedAt: Math.round((CURRENT_TIME + ONE_MONTH) / 1000),
         feeOptions,
       })
 
       const historyRecord: HistoryRecord = {
-        total: merkleDistributor.getTotal().toNumber(),
+        total: merkleDistributor.getTotal().toString(),
         time: new Date().toString(),
         mint: mintSelected,
         distributorAddress,
@@ -157,7 +159,39 @@ const ConfirmTransfer = () => {
             </Col>
             <Col span={24}>
               <Card bordered={false} className="card-total">
-                <WrapTotal isConfirm={true} />
+                <Row gutter={[8, 8]}>
+                  <Col span={24}>
+                    <Content
+                      label="Time"
+                      value={moment(new Date()).format('DD MMM, YYYY HH:mm')}
+                    />
+                  </Col>
+                  <Col span={24}>
+                    <Content label="Quantity" value={quantity} />
+                  </Col>
+                  <Col span={24}>
+                    <Content
+                      label="Your balance"
+                      value={
+                        <Typography.Text>
+                          {numeric(balance).format('0,0.00[0000]')}{' '}
+                          <MintSymbol mintAddress={mintSelected} />
+                        </Typography.Text>
+                      }
+                    />
+                  </Col>
+                  <Col span={24}>
+                    <Content
+                      label="Remaining"
+                      value={
+                        <Typography.Text>
+                          {numeric(remainingBalance).format('0,0.00[00]')}{' '}
+                          <MintSymbol mintAddress={mintSelected} />
+                        </Typography.Text>
+                      }
+                    />
+                  </Col>
+                </Row>
               </Card>
             </Col>
           </Row>

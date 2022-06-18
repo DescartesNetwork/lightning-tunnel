@@ -1,6 +1,6 @@
 {
   "name": "senhub",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "dependencies": {
     "@dnd-kit/core": "^4.0.1",
     "@dnd-kit/sortable": "^5.0.0",
@@ -14,7 +14,7 @@
     "@sentre/react-lazyload": "^3.2.2",
     "@sentre/utility": "^1.0.2",
     "@solana/spl-token-registry": "^0.2.3771",
-    "antd": "^4.20.2",
+    "antd": "^4.21.1",
     "bn.js": "^5.2.0",
     "bs58": "^4.0.1",
     "echarts-for-react": "^3.0.2",
@@ -37,7 +37,8 @@
     "remarkable": "^2.0.1",
     "swiper": "^7.2.0",
     "tweetnacl": "^1.0.3",
-    "web-vitals": "^2.1.1"
+    "web-vitals": "^2.1.1",
+    "web3.storage": "^4.2.0"
   },
   "scripts": {
     "start": "craco start",

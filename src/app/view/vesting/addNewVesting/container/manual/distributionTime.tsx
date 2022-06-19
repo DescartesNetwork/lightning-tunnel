@@ -20,23 +20,28 @@ const Content = ({ label, value }: { label: string; value: string }) => (
 )
 
 const DistributionTime = () => {
-  const { distributeIn, frequency, unlockTime } = useSelector(
-    (state: AppState) => state.vesting,
+  const { globalConfigs, globalUnlockTime } = useSelector(
+    (state: AppState) => state.recipients2,
   )
   return (
     <Row gutter={[32, 32]}>
       <Col>
         <Content
           label="Unlock time"
-          value={moment(unlockTime).format('DD-MM-YYYY HH:mm')}
+          value={moment(globalUnlockTime).format('DD-MM-YYYY HH:mm')}
         />
       </Col>
-
       <Col>
-        <Content label="Distribution frequency" value={`${frequency} days`} />
+        <Content
+          label="Distribution frequency"
+          value={`${globalConfigs.frequency} days`}
+        />
       </Col>
       <Col>
-        <Content label="Distribute in" value={`${distributeIn} months`} />
+        <Content
+          label="Distribute in"
+          value={`${globalConfigs.distributeIn} months`}
+        />
       </Col>
       <Col>
         <Button type="text" icon={<IonIcon name="create-outline" />} />

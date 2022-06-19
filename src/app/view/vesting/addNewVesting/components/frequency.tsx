@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row, Select, Typography } from 'antd'
 
 import { AppDispatch, AppState } from 'app/model'
-import { setFrequency } from 'app/model/vesting.controller'
+import { setGlobalConfigs } from 'app/model/recipientsV2.controller'
 
 export enum FREQUENCY {
   seven = 7,
@@ -22,7 +22,9 @@ const DISTRIBUTION_FREQUENCY = [
 ]
 
 const Frequency = () => {
-  const frequency = useSelector((state: AppState) => state.vesting.frequency)
+  const frequency = useSelector(
+    (state: AppState) => state.recipients2.globalConfigs.frequency,
+  )
   const dispatch = useDispatch<AppDispatch>()
 
   return (
@@ -36,7 +38,9 @@ const Frequency = () => {
         <Select
           className="select-vesting-data"
           value={frequency}
-          onChange={(value) => dispatch(setFrequency(value))}
+          onChange={(value) =>
+            dispatch(setGlobalConfigs({ configs: { frequency: value } }))
+          }
           placement="bottomRight"
         >
           {DISTRIBUTION_FREQUENCY.map(({ label, value }) => (

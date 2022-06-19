@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row, Select, Typography } from 'antd'
 
 import { AppDispatch, AppState } from 'app/model'
-import { setDistributeIn } from 'app/model/vesting.controller'
+import { setGlobalConfigs } from 'app/model/recipientsV2.controller'
 
 export enum DISTRIBUTE_IN_TIME {
   three = 3,
@@ -23,7 +23,7 @@ const DISTRIBUTE_IN = [
 
 const DistributeIn = () => {
   const distributeIn = useSelector(
-    (state: AppState) => state.vesting.distributeIn,
+    (state: AppState) => state.recipients2.globalConfigs.distributeIn,
   )
   const dispatch = useDispatch<AppDispatch>()
 
@@ -36,7 +36,9 @@ const DistributeIn = () => {
         <Select
           className="select-vesting-data"
           value={distributeIn}
-          onChange={(value) => dispatch(setDistributeIn(value))}
+          onChange={(value) =>
+            dispatch(setGlobalConfigs({ configs: { distributeIn: value } }))
+          }
           placement="bottomRight"
         >
           {DISTRIBUTE_IN.map(({ label, value }) => (

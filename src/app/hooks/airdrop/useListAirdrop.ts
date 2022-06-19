@@ -23,16 +23,27 @@ export type Airdrop = {
 
 const useListAirdrop = () => {
   const [airdrops, setAirdrops] = useState<Airdrop[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const distributors = useSelector((state: AppState) => state.distributors)
   const {
     wallet: { address: walletAddress },
   } = useWallet()
 
+  console.log(distributors['E1WXUW7NdvFp8FiAB7svQXMBQpmGigrkXu1JGyUSdeKJ'])
+
   const fetchListAirdrop = useCallback(async () => {
-    setLoading(true)
     const ipfs = new IPFS()
+    const cid = await getCID([
+      152, 139, 103, 103, 152, 87, 163, 225, 226, 106, 165, 189, 27, 99, 166,
+      251, 235, 228, 99, 208, 41, 188, 180, 93, 68, 154, 182, 143, 120, 171, 56,
+      250,
+    ])
+
+    const data = await ipfs.get(cid)
+    console.log(data, '23')
+    const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
+    console.log(merkleDistributor)
     const listAirdrop: Airdrop[] = []
     const listDistributor = Object.keys(distributors).map((address) => ({
       address,
@@ -83,8 +94,9 @@ const useListAirdrop = () => {
       )
     } catch (error) {
     } finally {
-      setLoading(false)
-      return setAirdrops(listAirdrop)
+      setAirdrops(listAirdrop)
+
+      return setLoading(false)
     }
   }, [distributors, walletAddress])
 

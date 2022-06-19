@@ -8,7 +8,7 @@ import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
 import Auto from '../../../airdrop/addNewAirdrop/container/auto'
 import Manual from './manual'
-import ConfirmTransfer from '../../../confirmTransfer'
+import ConfirmTransfer from './confirmTransfer'
 import UnlockTime from '../components/unlockTime'
 import Frequency from '../components/frequency'
 import DistributeIn from '../components/distributeIn'
@@ -19,7 +19,7 @@ import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
-import { setExpiration } from 'app/model/vesting.controller'
+import { setExpiration } from 'app/model/recipientsV2.controller'
 
 export type CardOptionProps = {
   label: string

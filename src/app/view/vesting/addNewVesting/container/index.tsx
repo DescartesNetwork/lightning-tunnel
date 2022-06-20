@@ -20,6 +20,7 @@ import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
 import {
+  Configs,
   setExpiration,
   setGlobalConfigs,
   setGlobalUnlockTime,
@@ -98,6 +99,10 @@ const SelectInputMethod = () => {
     return dispatch(setExpiration(endTime))
   }
 
+  const onConfigChange = (configs: Partial<Configs>) => {
+    return dispatch(setGlobalConfigs({ configs }))
+  }
+
   const disabled = activeMintAddress === 'Select' || !method
 
   return (
@@ -159,20 +164,14 @@ const SelectInputMethod = () => {
                 <Col xs={12} md={6}>
                   <Frequency
                     frequency={frequency}
-                    onChange={(value) =>
-                      dispatch(
-                        setGlobalConfigs({ configs: { frequency: value } }),
-                      )
-                    }
+                    onChange={(value) => onConfigChange({ frequency: value })}
                   />
                 </Col>
                 <Col xs={12} md={6}>
                   <DistributeIn
                     distributeIn={distributeIn}
                     onChange={(value) =>
-                      dispatch(
-                        setGlobalConfigs({ configs: { distributeIn: value } }),
-                      )
+                      onConfigChange({ distributeIn: value })
                     }
                   />
                 </Col>

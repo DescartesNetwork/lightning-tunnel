@@ -21,11 +21,15 @@ const Content = ({ label, value }: { label: string; value: string }) => (
   </Row>
 )
 
-type DistributionTimeProps = {
+type DistributionConfigDetailProps = {
   walletAddress?: string
+  setIsEdit: (value: boolean) => void
 }
 
-const DistributionTime = ({ walletAddress = '' }: DistributionTimeProps) => {
+const DistributionConfigDetail = ({
+  walletAddress = '',
+  setIsEdit,
+}: DistributionConfigDetailProps) => {
   const globalConfigs = useSelector(
     (state: AppState) => state.recipients2.globalConfigs,
   )
@@ -43,10 +47,13 @@ const DistributionTime = ({ walletAddress = '' }: DistributionTimeProps) => {
 
   const configs = useMemo(() => {
     if (!account.isAddress(walletAddress)) return globalConfigs
+    console.log(recipients[walletAddress][0].configs, '123')
     const itemConfig = recipients[walletAddress][0].configs
     if (!itemConfig) return globalConfigs
     return itemConfig
   }, [globalConfigs, recipients, walletAddress])
+
+  const isVisible = account.isAddress(walletAddress)
 
   return (
     <Row gutter={[32, 32]}>
@@ -68,11 +75,17 @@ const DistributionTime = ({ walletAddress = '' }: DistributionTimeProps) => {
           value={`${configs.distributeIn} months`}
         />
       </Col>
-      <Col>
-        <Button type="text" icon={<IonIcon name="create-outline" />} />
-      </Col>
+      {isVisible && (
+        <Col>
+          <Button
+            onClick={() => setIsEdit(true)}
+            type="text"
+            icon={<IonIcon name="create-outline" />}
+          />
+        </Col>
+      )}
     </Row>
   )
 }
 
-export default DistributionTime
+export default DistributionConfigDetail

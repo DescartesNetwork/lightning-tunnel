@@ -5,6 +5,7 @@ import { FREQUENCY } from 'app/view/vesting/addNewVesting/components/frequency'
 /**
  * Interface & Utility
  */
+const ONE_DAY = 24 * 60 * 60 * 1000
 
 export type Configs = {
   frequency: number
@@ -97,6 +98,39 @@ export const removeRecipient = createAsyncThunk(
   },
 )
 
+export const editRecipient = createAsyncThunk<
+  Partial<TreeRecipientState>,
+  { walletAddress: string; configs: Configs; unlockTime: number },
+  { state: any }
+>(
+  `${NAME}/editRecipient`,
+  async ({ walletAddress, configs, unlockTime }, { getState }) => {
+    const { recipients2 } = getState()
+    const { distributeIn, frequency } = configs
+    let nextRecipients = { ...recipients2.recipients }
+    const listRecipient = nextRecipients[walletAddress]
+    const newRecipient: RecipientInfo[] = []
+    const oldAmount = Number(listRecipient[0].amount) * listRecipient.length
+    const distributionAmount = Math.floor((distributeIn * 30) / frequency)
+    const actualAmount = Number(oldAmount) / distributionAmount
+    for (let i = 0; i < distributionAmount; i++) {
+      let nextUnlockTime = 0
+      if (i === 0) nextUnlockTime = unlockTime
+      if (i !== 0) nextUnlockTime = 7 * ONE_DAY + newRecipient[i - 1].unlockTime
+      const recipient: RecipientInfo = {
+        address: walletAddress,
+        amount: actualAmount.toString(),
+        unlockTime: nextUnlockTime,
+        configs,
+      }
+      newRecipient[i] = recipient
+    }
+
+    nextRecipients[walletAddress] = newRecipient
+    return { recipients: nextRecipients }
+  },
+)
+
 export const removeRecipients = createAsyncThunk(
   `${NAME}/removeRecipients`,
   async () => {
@@ -137,6 +171,10 @@ const slice = createSlice({
       .addCase(
         removeRecipient.fulfilled,
         (state, { payload }) => void delete state.recipients[payload],
+      )
+      .addCase(
+        editRecipient.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
       ),
 })
 

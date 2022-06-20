@@ -1,9 +1,4 @@
-import { useDispatch } from 'react-redux'
-
 import { Col, Row, Select, Typography } from 'antd'
-
-import { AppDispatch } from 'app/model'
-import { setGlobalConfigs } from 'app/model/recipientsV2.controller'
 
 export enum DISTRIBUTE_IN_TIME {
   three = 3,
@@ -25,8 +20,6 @@ type DistributeInProps = {
   onChange: (value: number) => void
 }
 const DistributeIn = ({ distributeIn, onChange }: DistributeInProps) => {
-  const dispatch = useDispatch<AppDispatch>()
-
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
@@ -36,9 +29,7 @@ const DistributeIn = ({ distributeIn, onChange }: DistributeInProps) => {
         <Select
           className="select-vesting-data"
           value={distributeIn}
-          onChange={(value) =>
-            dispatch(setGlobalConfigs({ configs: { distributeIn: value } }))
-          }
+          onChange={onChange}
           placement="bottomRight"
         >
           {DISTRIBUTE_IN.map(({ label, value }) => (

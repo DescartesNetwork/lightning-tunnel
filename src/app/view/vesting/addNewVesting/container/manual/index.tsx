@@ -6,7 +6,7 @@ import { Button, Card, Col, Row, Space } from 'antd'
 import Header from '../../../../../components/header'
 import InputInfoTransfer from '../../../../../components/inputInfoTransfer2'
 import CardTotal from 'app/components/cardTotal'
-import DistributionTime from './distributionTime'
+import DistributionTime from './distributionConfig/distributionConfigDetail'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
@@ -19,6 +19,8 @@ import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import { RecipientInfo } from 'app/model/recipientsV2.controller'
 import { utils } from '@senswap/sen-js'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import DistributionConfig from './distributionConfig'
+import DistributionConfigDetail from './distributionConfig/distributionConfigDetail'
 
 const Manual = () => {
   const {
@@ -68,7 +70,7 @@ const Manual = () => {
             <Col span={24}>
               <Space direction="vertical" style={{ width: '100%' }}>
                 <InputInfoTransfer />
-                <DistributionTime />
+                <DistributionConfig />
               </Space>
             </Col>
             {listRecipient &&
@@ -80,7 +82,7 @@ const Manual = () => {
                       walletAddress={address}
                       index={index}
                     />
-                    <DistributionTime walletAddress={address} />
+                    <DistributionConfig walletAddress={address} />
                   </Space>
                 </Col>
               ))}

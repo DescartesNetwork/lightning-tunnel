@@ -2,7 +2,16 @@ import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
-import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
+import {
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  Radio,
+  Row,
+  Space,
+  Typography,
+} from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import Auto from './auto'
 import Manual from './manual'
@@ -50,6 +59,7 @@ const CardOption = ({ label, description, active }: CardOptionProps) => {
 }
 
 const SelectInputMethod = () => {
+  const [confirmed, setConfirmed] = useState(false)
   const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
   const dispatch = useDispatch()
@@ -124,6 +134,19 @@ const SelectInputMethod = () => {
                 </Radio.Group>
               </Space>
             </Col>
+            <Col span={24}>
+              <Space align="start">
+                <Checkbox
+                  checked={confirmed}
+                  onChange={(e) => setConfirmed(e.target.checked)}
+                />
+                <Typography.Text>
+                  I understand this function is to create an airdrop,
+                  distribution, or retroactive, but not to receive distributed
+                  tokens.
+                </Typography.Text>
+              </Space>
+            </Col>
           </Row>
         </Col>
 
@@ -133,7 +156,7 @@ const SelectInputMethod = () => {
             onClick={onContinue}
             block
             type="primary"
-            disabled={disabled}
+            disabled={disabled || !confirmed}
           >
             Continue
           </Button>

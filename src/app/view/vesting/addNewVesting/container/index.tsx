@@ -19,7 +19,11 @@ import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
-import { setExpiration } from 'app/model/recipientsV2.controller'
+import {
+  setExpiration,
+  setGlobalConfigs,
+  setGlobalUnlockTime,
+} from 'app/model/recipientsV2.controller'
 
 export type CardOptionProps = {
   label: string
@@ -58,7 +62,18 @@ const SelectInputMethod = () => {
   const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
   const [isUnlimited, setIsUnlimited] = useState(false)
-  const expiration = useSelector((state: AppState) => state.vesting.expiration)
+  const expiration = useSelector(
+    (state: AppState) => state.recipients2.expirationTime,
+  )
+  const unlockTime = useSelector(
+    (state: AppState) => state.recipients2.globalUnlockTime,
+  )
+  const frequency = useSelector(
+    (state: AppState) => state.recipients2.globalConfigs.frequency,
+  )
+  const distributeIn = useSelector(
+    (state: AppState) => state.recipients2.globalConfigs.distributeIn,
+  )
   const dispatch = useDispatch()
   const { accounts } = useAccount()
 
@@ -136,13 +151,30 @@ const SelectInputMethod = () => {
             <Col span={24}>
               <Row gutter={[16, 16]}>
                 <Col xs={12} md={6}>
-                  <UnlockTime />
+                  <UnlockTime
+                    unlockTime={unlockTime}
+                    onChange={(value) => dispatch(setGlobalUnlockTime(value))}
+                  />
                 </Col>
                 <Col xs={12} md={6}>
-                  <Frequency />
+                  <Frequency
+                    frequency={frequency}
+                    onChange={(value) =>
+                      dispatch(
+                        setGlobalConfigs({ configs: { frequency: value } }),
+                      )
+                    }
+                  />
                 </Col>
                 <Col xs={12} md={6}>
-                  <DistributeIn />
+                  <DistributeIn
+                    distributeIn={distributeIn}
+                    onChange={(value) =>
+                      dispatch(
+                        setGlobalConfigs({ configs: { distributeIn: value } }),
+                      )
+                    }
+                  />
                 </Col>
                 <Col xs={12} md={6}>
                   <DateOption

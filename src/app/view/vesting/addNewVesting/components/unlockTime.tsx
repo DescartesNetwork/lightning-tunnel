@@ -1,17 +1,14 @@
 import moment from 'moment'
-import { useDispatch, useSelector } from 'react-redux'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Col, DatePicker, Row, Typography } from 'antd'
 
-import { AppDispatch, AppState } from 'app/model'
-import { setGlobalUnlockTime } from 'app/model/recipientsV2.controller'
+type UnlockTimeProps = {
+  unlockTime: number
+  onChange: (value: number) => void
+}
 
-const UnlockTime = () => {
-  const unlockTime = useSelector(
-    (state: AppState) => state.recipients2.globalUnlockTime,
-  )
-  const dispatch = useDispatch<AppDispatch>()
+const UnlockTime = ({ unlockTime, onChange }: UnlockTimeProps) => {
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
@@ -22,9 +19,7 @@ const UnlockTime = () => {
           placeholder="Select time"
           suffixIcon={<IonIcon name="time-outline" />}
           className="date-option"
-          onChange={(date) =>
-            dispatch(setGlobalUnlockTime(date?.valueOf() || 0))
-          }
+          onChange={(date) => onChange(date?.valueOf() || 0)}
           clearIcon={null}
           value={unlockTime ? moment(unlockTime) : null}
           showTime

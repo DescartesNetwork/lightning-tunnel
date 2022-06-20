@@ -80,7 +80,7 @@ const Manual = () => {
                       walletAddress={address}
                       index={index}
                     />
-                    <DistributionTime />
+                    <DistributionTime walletAddress={address} />
                   </Space>
                 </Col>
               ))}

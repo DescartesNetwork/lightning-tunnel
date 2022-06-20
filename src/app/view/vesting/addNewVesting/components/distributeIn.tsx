@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import { Col, Row, Select, Typography } from 'antd'
 
-import { AppDispatch, AppState } from 'app/model'
+import { AppDispatch } from 'app/model'
 import { setGlobalConfigs } from 'app/model/recipientsV2.controller'
 
 export enum DISTRIBUTE_IN_TIME {
@@ -20,11 +20,11 @@ const DISTRIBUTE_IN = [
   { label: '18 months', value: DISTRIBUTE_IN_TIME.eighteen },
   { label: '24 months', value: DISTRIBUTE_IN_TIME.twentyFour },
 ]
-
-const DistributeIn = () => {
-  const distributeIn = useSelector(
-    (state: AppState) => state.recipients2.globalConfigs.distributeIn,
-  )
+type DistributeInProps = {
+  distributeIn: DISTRIBUTE_IN_TIME
+  onChange: (value: number) => void
+}
+const DistributeIn = ({ distributeIn, onChange }: DistributeInProps) => {
   const dispatch = useDispatch<AppDispatch>()
 
   return (

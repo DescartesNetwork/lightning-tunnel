@@ -5,6 +5,8 @@ import IonIcon from '@sentre/antd-ionicon'
 import { Button, Col, Row, Typography } from 'antd'
 
 import { AppState } from 'app/model'
+import { useMemo } from 'react'
+import { account } from '@senswap/sen-js'
 
 const Content = ({ label, value }: { label: string; value: string }) => (
   <Row gutter={[8, 8]}>
@@ -19,28 +21,51 @@ const Content = ({ label, value }: { label: string; value: string }) => (
   </Row>
 )
 
-const DistributionTime = () => {
-  const { globalConfigs, globalUnlockTime } = useSelector(
-    (state: AppState) => state.recipients2,
+type DistributionTimeProps = {
+  walletAddress?: string
+}
+
+const DistributionTime = ({ walletAddress = '' }: DistributionTimeProps) => {
+  const globalConfigs = useSelector(
+    (state: AppState) => state.recipients2.globalConfigs,
   )
+  const globalUnlockTime = useSelector(
+    (state: AppState) => state.recipients2.globalUnlockTime,
+  )
+  const recipients = useSelector(
+    (state: AppState) => state.recipients2.recipients,
+  )
+
+  const unlockTime = useMemo(() => {
+    if (!account.isAddress(walletAddress)) return globalUnlockTime
+    return recipients[walletAddress][0].unlockTime
+  }, [globalUnlockTime, recipients, walletAddress])
+
+  const configs = useMemo(() => {
+    if (!account.isAddress(walletAddress)) return globalConfigs
+    const itemConfig = recipients[walletAddress][0].configs
+    if (!itemConfig) return globalConfigs
+    return itemConfig
+  }, [globalConfigs, recipients, walletAddress])
+
   return (
     <Row gutter={[32, 32]}>
       <Col>
         <Content
           label="Unlock time"
-          value={moment(globalUnlockTime).format('DD-MM-YYYY HH:mm')}
+          value={moment(unlockTime).format('DD-MM-YYYY HH:mm')}
         />
       </Col>
       <Col>
         <Content
           label="Distribution frequency"
-          value={`${globalConfigs.frequency} days`}
+          value={`${configs.frequency} days`}
         />
       </Col>
       <Col>
         <Content
           label="Distribute in"
-          value={`${globalConfigs.distributeIn} months`}
+          value={`${configs.distributeIn} months`}
         />
       </Col>
       <Col>

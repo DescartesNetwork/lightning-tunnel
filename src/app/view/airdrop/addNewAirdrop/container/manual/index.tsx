@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
@@ -14,16 +14,26 @@ import { removeRecipients } from 'app/model/recipients.controller'
 import useTotal from 'app/hooks/useTotal'
 import useValidateAmount from 'app/hooks/useValidateAmount'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
+import { RecipientInfo } from 'app/model/recipientsV2.controller'
 
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    recipients: { recipients },
+    recipients: { recipientInfos },
     main: { mintSelected, isTyping },
   } = useSelector((state: AppState) => state)
   const { quantity } = useTotal()
-  const { amountError } = useValidateAmount()
   const remainingBalance = useRemainingBalance(mintSelected)
+
+  const listRecipient = useMemo(() => {
+    const nextRecipient: RecipientInfo[] = []
+    for (const address in recipientInfos) {
+      nextRecipient.push(recipientInfos[address][0])
+    }
+    return nextRecipient
+  }, [recipientInfos])
+
+  const { amountError } = useValidateAmount(listRecipient)
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
@@ -44,13 +54,13 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
-                <Col span={24}>Wallet address #{recipients.length + 1}</Col>
-                {recipients &&
-                  recipients.map(([walletAddress, amount], index) => (
-                    <Col span={24} key={walletAddress + index}>
+                <Col span={24}>Wallet address #{listRecipient.length + 1}</Col>
+                {listRecipient &&
+                  listRecipient.map(({ address, amount }, index) => (
+                    <Col span={24} key={address + index}>
                       <InputInfoTransfer
                         amount={amount}
-                        walletAddress={walletAddress}
+                        walletAddress={address}
                         index={index}
                       />
                     </Col>
@@ -78,7 +88,7 @@ const Manual = () => {
                 type="primary"
                 onClick={() => dispatch(onSelectStep(Step.three))}
                 block
-                disabled={disabled}
+                // disabled={disabled}
               >
                 Continue
               </Button>

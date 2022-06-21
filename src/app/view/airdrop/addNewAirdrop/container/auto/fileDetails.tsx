@@ -64,9 +64,10 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     file: { fileName, selectedFile },
-    recipients: { recipients, errorData },
+    recipients2: { recipients, errorData },
   } = useSelector((state: AppState) => state)
-  const { amountError } = useValidateAmount()
+  // const { amountError } = useValidateAmount()
+  const amountError = false
 
   const onSelected = (checked: boolean, index: number) =>
     dispatch(onSelectedFile({ checked, index }))

@@ -3,20 +3,20 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 import { AppState } from 'app/model'
+import { RecipientInfo } from 'app/model/recipientsV2.controller'
 
-const useValidateAmount = () => {
+const useValidateAmount = (listRecipient: RecipientInfo[]) => {
   const {
-    recipients: { recipients },
     setting: { decimal },
   } = useSelector((state: AppState) => state)
 
   const amountError = useMemo(() => {
-    for (const [address, amount] of recipients) {
+    for (const { address, amount } of listRecipient) {
       if (!account.isAddress(address)) return true
       if (!decimal && Number(amount) % 1 !== 0) return true
     }
     return false
-  }, [decimal, recipients])
+  }, [decimal, listRecipient])
 
   return { amountError }
 }

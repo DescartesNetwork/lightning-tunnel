@@ -23,7 +23,7 @@ export type RecipientInfos = Record<string, Array<RecipientInfo>>
 
 export type TreeRecipientState = {
   globalConfigs: Configs
-  recipients: RecipientInfos
+  recipientInfos: RecipientInfos
   expirationTime: number
   globalUnlockTime: number
 }
@@ -34,7 +34,7 @@ export type TreeRecipientState = {
 
 const NAME = 'recipients'
 const initialState: TreeRecipientState = {
-  recipients: {},
+  recipientInfos: {},
   expirationTime: 0,
   globalUnlockTime: 0,
   globalConfigs: {
@@ -67,7 +67,7 @@ export const setGlobalConfigs = createAsyncThunk<
   { state: any }
 >(`${NAME}/setGlobalConfigs`, async ({ configs }, { getState }) => {
   const {
-    recipients2: { globalConfigs },
+    recipients: { globalConfigs },
   } = getState()
 
   const nextConfigs = { ...globalConfigs, ...configs }
@@ -82,12 +82,12 @@ export const addRecipient = createAsyncThunk<
   `${NAME}/addRecipient`,
   async ({ walletAddress, nextRecipients }, { getState }) => {
     const {
-      recipients2: { recipients },
+      recipients: { recipients },
     } = getState()
     const newRecipients = { ...recipients }
     newRecipients[walletAddress] = nextRecipients
 
-    return { recipients: newRecipients }
+    return { recipientInfos: newRecipients }
   },
 )
 
@@ -105,9 +105,9 @@ export const editRecipient = createAsyncThunk<
 >(
   `${NAME}/editRecipient`,
   async ({ walletAddress, configs, unlockTime }, { getState }) => {
-    const { recipients2 } = getState()
+    const { recipients } = getState()
     const { distributeIn, frequency } = configs
-    let nextRecipients = { ...recipients2.recipients }
+    let nextRecipients = { ...recipients.recipients }
     const listRecipient = nextRecipients[walletAddress]
     const newRecipient: RecipientInfo[] = []
     const oldAmount = Number(listRecipient[0].amount) * listRecipient.length
@@ -127,7 +127,7 @@ export const editRecipient = createAsyncThunk<
     }
 
     nextRecipients[walletAddress] = newRecipient
-    return { recipients: nextRecipients }
+    return { recipientInfos: nextRecipients }
   },
 )
 
@@ -170,7 +170,7 @@ const slice = createSlice({
       )
       .addCase(
         removeRecipient.fulfilled,
-        (state, { payload }) => void delete state.recipients[payload],
+        (state, { payload }) => void delete state.recipientInfos[payload],
       )
       .addCase(
         editRecipient.fulfilled,

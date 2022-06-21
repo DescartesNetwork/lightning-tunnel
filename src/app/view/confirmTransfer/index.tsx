@@ -26,6 +26,7 @@ import { getHistory } from 'app/model/history.controller'
 import { notifySuccess } from 'app/helper'
 import { onSelectMethod } from 'app/model/main.controller'
 import { removeRecipients } from 'app/model/recipients.controller'
+import { RecipientInfo } from 'app/model/recipientsV2.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -37,9 +38,9 @@ const ConfirmTransfer = () => {
   const [redeemLink, setRedeemLink] = useState('')
   const [isDone, setIsDone] = useState(false)
   const {
-    main: { mintSelected, startDate, endDate, typeDistribute },
+    main: { mintSelected, typeDistribute },
     setting: { decimal: isDecimal },
-    recipients: { recipients },
+    recipients: { recipientInfos, globalUnlockTime, expirationTime },
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -50,24 +51,36 @@ const ConfirmTransfer = () => {
   const remainingBalance = useRemainingBalance(mintSelected)
 
   const treeData = useMemo(() => {
-    if (!recipients.length || !mintDecimals) return
-    const balanceTree: Leaf[] = recipients.map(([address, amount], index) => {
-      const actualAmount = isDecimal
-        ? utils.decimalize(amount, mintDecimals).toString()
-        : amount
-      return {
-        authority: account.fromAddress(address),
-        amount: new BN(actualAmount),
-        startedAt: new BN(startDate / 1000),
-        salt: MerkleDistributor.salt(
-          `${appId}/${typeDistribute}/${index.toString()}`,
-        ),
-      }
-    })
+    if (!recipientInfos || !mintDecimals) return
+    let listRecipient: RecipientInfo[] = []
+    for (const walletAddress in recipientInfos) {
+      listRecipient = listRecipient.concat(recipientInfos[walletAddress])
+    }
+    const balanceTree: Leaf[] = listRecipient.map(
+      ({ amount, address }, index) => {
+        const actualAmount = isDecimal
+          ? utils.decimalize(amount, mintDecimals).toString()
+          : amount
+        return {
+          authority: account.fromAddress(address),
+          amount: new BN(actualAmount),
+          startedAt: new BN(globalUnlockTime / 1000),
+          salt: MerkleDistributor.salt(
+            `${appId}/${typeDistribute}/${index.toString()}`,
+          ),
+        }
+      },
+    )
     const merkleDistributor = new MerkleDistributor(balanceTree)
     const dataBuffer = merkleDistributor.toBuffer()
     return dataBuffer
-  }, [recipients, mintDecimals, isDecimal, startDate, typeDistribute])
+  }, [
+    recipientInfos,
+    mintDecimals,
+    isDecimal,
+    globalUnlockTime,
+    typeDistribute,
+  ])
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
@@ -93,7 +106,7 @@ const ConfirmTransfer = () => {
         total: merkleDistributor.getTotal(),
         merkleRoot: merkleDistributor.deriveMerkleRoot(),
         metadata,
-        endedAt: endDate / 1000,
+        endedAt: expirationTime / 1000,
         feeOptions,
       })
 

@@ -14,7 +14,7 @@ const AccountInfoHeader = ({
   onChecked = () => {},
 }: AccountInfoHeaderProps) => {
   const {
-    recipients: { errorData },
+    recipients2: { errorData },
   } = useSelector((state: AppState) => state)
 
   return (

@@ -15,10 +15,10 @@ import useRemainingBalance from 'app/hooks/useRemainingBalance'
 const Action = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    recipients: { recipients, errorData },
+    recipients2: { recipients, errorData },
     main: { isTyping, mintSelected },
   } = useSelector((state: AppState) => state)
-  const { amountError } = useValidateAmount()
+  // const { amountError } = useValidateAmount()
   const remainingBalance = useRemainingBalance(mintSelected)
 
   const existedValidData = useMemo(() => {
@@ -31,7 +31,7 @@ const Action = () => {
 
   const disabled =
     !recipients.length ||
-    amountError ||
+    // amountError ||
     existedValidData ||
     isTyping ||
     remainingBalance < 0

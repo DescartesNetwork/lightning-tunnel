@@ -12,7 +12,7 @@ const AMOUNT_INDEX = 1
 const useTotal = () => {
   const {
     main: { mintSelected },
-    recipients: { recipients, errorData },
+    recipients2: { recipients, errorData },
     setting: { decimal: isDecimal },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0

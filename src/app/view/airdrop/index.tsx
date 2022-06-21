@@ -1,9 +1,11 @@
-import IonIcon from '@sentre/antd-ionicon'
+import { useDispatch } from 'react-redux'
+
 import { Button, Col, Row, Typography } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
+import History from './history'
+
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import { setTypeDistribute } from 'app/model/main.controller'
-import { useDispatch } from 'react-redux'
-import History from './history'
 
 const Airdrop = () => {
   const { pushHistory } = useAppRouter()

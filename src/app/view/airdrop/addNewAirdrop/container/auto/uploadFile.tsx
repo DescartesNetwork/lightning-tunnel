@@ -26,7 +26,10 @@ const parse = (file: any): Promise<RecipientInfos> => {
   return new Promise((resolve, reject) => {
     return Papa.parse(file, {
       skipEmptyLines: true,
-      complete: ({ data }) => resolve(data as RecipientInfos),
+      complete: ({ data }) => {
+        console.log(data, 'data')
+        resolve(data as RecipientInfos)
+      },
     })
   })
 }
@@ -39,7 +42,7 @@ const UploadFile = () => {
     Record<string, RecipientInfo>
   >({})
   const {
-    recipients: { recipients },
+    recipients2: { recipients },
     main: { mintSelected },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0

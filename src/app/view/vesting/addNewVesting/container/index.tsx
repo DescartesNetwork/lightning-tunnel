@@ -64,16 +64,16 @@ const SelectInputMethod = () => {
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
   const [isUnlimited, setIsUnlimited] = useState(false)
   const expiration = useSelector(
-    (state: AppState) => state.recipients2.expirationTime,
+    (state: AppState) => state.recipients.expirationTime,
   )
   const unlockTime = useSelector(
-    (state: AppState) => state.recipients2.globalUnlockTime,
+    (state: AppState) => state.recipients.globalUnlockTime,
   )
   const frequency = useSelector(
-    (state: AppState) => state.recipients2.globalConfigs.frequency,
+    (state: AppState) => state.recipients.globalConfigs.frequency,
   )
   const distributeIn = useSelector(
-    (state: AppState) => state.recipients2.globalConfigs.distributeIn,
+    (state: AppState) => state.recipients.globalConfigs.distributeIn,
   )
   const dispatch = useDispatch()
   const { accounts } = useAccount()

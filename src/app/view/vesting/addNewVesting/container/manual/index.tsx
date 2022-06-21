@@ -1,12 +1,11 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import BN from 'bn.js'
 
 import { Button, Card, Col, Row, Space } from 'antd'
 import Header from '../../../../../components/header'
-import InputInfoTransfer from '../../../../../components/inputInfoTransfer2'
+import InputInfoTransfer from '../../../../../components/inputInfoTransfer'
 import CardTotal from 'app/components/cardTotal'
-import DistributionTime from './distributionConfig/distributionConfigDetail'
+import DistributionConfig from './distributionConfig'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
@@ -17,27 +16,21 @@ import useTotal from 'app/hooks/useTotal'
 import useValidateAmount from 'app/hooks/useValidateAmount'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import { RecipientInfo } from 'app/model/recipientsV2.controller'
-import { utils } from '@senswap/sen-js'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
-import DistributionConfig from './distributionConfig'
-import DistributionConfigDetail from './distributionConfig/distributionConfigDetail'
 
 const Manual = () => {
   const {
-    recipients2: { recipients },
+    recipients: { recipientInfos },
     main: { mintSelected, isTyping },
   } = useSelector((state: AppState) => state)
   const { quantity } = useTotal()
-  // const { amountError } = useValidateAmount()
   const remainingBalance = useRemainingBalance(mintSelected)
-  const mintDecimals = useMintDecimals(mintSelected) || 0
   const dispatch = useDispatch<AppDispatch>()
 
   const listRecipient = useMemo(() => {
     const nextRecipient: RecipientInfo[] = []
-    for (const address in recipients) {
-      const amountRecipient = recipients[address].length
-      const amount = Number(recipients[address][0].amount) * amountRecipient
+    for (const address in recipientInfos) {
+      const amountRecipient = recipientInfos[address].length
+      const amount = Number(recipientInfos[address][0].amount) * amountRecipient
 
       const recipient: RecipientInfo = {
         address,
@@ -47,7 +40,7 @@ const Manual = () => {
       nextRecipient.push(recipient)
     }
     return nextRecipient
-  }, [recipients])
+  }, [recipientInfos])
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
@@ -55,8 +48,10 @@ const Manual = () => {
     dispatch(onSelectStep(Step.one))
   }, [dispatch])
 
-  // const disabled =
-  //   quantity <= 0 || amountError || remainingBalance < 0 || isTyping
+  const { amountError } = useValidateAmount(listRecipient)
+
+  const disabled =
+    quantity <= 0 || amountError || remainingBalance < 0 || isTyping
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -104,7 +99,7 @@ const Manual = () => {
                 type="primary"
                 onClick={() => dispatch(onSelectStep(Step.three))}
                 block
-                // disabled={disabled}
+                disabled={disabled}
               >
                 Continue
               </Button>

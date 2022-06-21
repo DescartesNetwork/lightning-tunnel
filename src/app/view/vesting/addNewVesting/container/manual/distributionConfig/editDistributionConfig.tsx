@@ -19,28 +19,28 @@ const EditDistributionConfig = ({
   walletAddress,
   setIsEdit,
 }: EditDistributionConfigProps) => {
-  const recipients = useSelector(
-    (state: AppState) => state.recipients2.recipients,
+  const recipientInfos = useSelector(
+    (state: AppState) => state.recipients.recipientInfos,
   )
   const globalConfigs = useSelector(
-    (state: AppState) => state.recipients2.globalConfigs,
+    (state: AppState) => state.recipients.globalConfigs,
   )
   const globalUnlockTime = useSelector(
-    (state: AppState) => state.recipients2.globalUnlockTime,
+    (state: AppState) => state.recipients.globalUnlockTime,
   )
   const dispatch = useDispatch<AppDispatch>()
 
   const unlockTime = useMemo(() => {
     if (!account.isAddress(walletAddress)) return globalUnlockTime
-    return recipients[walletAddress][0].unlockTime
-  }, [globalUnlockTime, recipients, walletAddress])
+    return recipientInfos[walletAddress][0].unlockTime
+  }, [globalUnlockTime, recipientInfos, walletAddress])
 
   const configs = useMemo(() => {
     if (!account.isAddress(walletAddress)) return globalConfigs
-    const itemConfig = recipients[walletAddress][0].configs
+    const itemConfig = recipientInfos[walletAddress][0].configs
     if (!itemConfig) return globalConfigs
     return itemConfig
-  }, [globalConfigs, recipients, walletAddress])
+  }, [globalConfigs, recipientInfos, walletAddress])
 
   const [nextFrequency, setNextFrequency] = useState(configs.frequency)
   const [nextDistributeIn, setNextDistributeIn] = useState(configs.distributeIn)

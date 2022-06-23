@@ -6,8 +6,8 @@ export const useAllMints = () => {
   const { tokenProvider } = useMint()
 
   const getAllMintAddress = useCallback(async () => {
-    const tokens = await tokenProvider.getTokenMap()
-    return setMints(Array.from(tokens.keys()))
+    const tokens = await tokenProvider.all()
+    return setMints(tokens.map((token) => token.address))
   }, [tokenProvider])
 
   useEffect(() => {

@@ -39,10 +39,10 @@ const Airdrop = () => {
       </Col>
       <Col span={24}>
         <Row gutter={[24, 24]}>
-          <Col span={24} lg={12}>
+          <Col span={24} lg={8}>
             <TotalAirdrop />
           </Col>
-          <Col span={24} lg={12}>
+          <Col span={24} lg={16}>
             <AirdropAllocation />
           </Col>
         </Row>

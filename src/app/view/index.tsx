@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { useUI, useWallet } from '@senhub/providers'
+import { useUI } from '@senhub/providers'
 
 import { Drawer, Layout } from 'antd'
 import Redeem from './redeem'
@@ -10,12 +9,11 @@ import Dashboard from './dashboard'
 import Vesting from './vesting'
 import Airdrop from './airdrop'
 import AddNewAirdrop from './airdrop/addNewAirdrop'
-import DistributorWatcher from 'app/watcher/distributor.watcher'
 import AddNewVesting from './vesting/addNewVesting'
+import HistoryWatcher from 'app/watcher/history.watcher'
+import DistributorWatcher from 'app/watcher/distributor.watcher'
 
 import { useAppRouter } from 'app/hooks/useAppRoute'
-import { AppDispatch } from 'app/model'
-import { getHistory } from 'app/model/history.controller'
 
 import BG from 'app/static/images/background-LT.png'
 
@@ -26,18 +24,10 @@ const { Content } = Layout
 const View = () => {
   const { appRoute } = useAppRouter()
   const { setBackground } = useUI()
-  const dispatch = useDispatch<AppDispatch>()
-  const {
-    wallet: { address: walettAddress },
-  } = useWallet()
 
   useEffect(() => {
     setBackground({ light: BG, dark: BG })
   }, [setBackground])
-
-  useEffect(() => {
-    dispatch(getHistory(walettAddress))
-  }, [dispatch, walettAddress])
 
   return (
     <Layout className="main-layout">
@@ -68,6 +58,7 @@ const View = () => {
           </Switch>
         </Content>
         <DistributorWatcher />
+        <HistoryWatcher />
       </Layout>
     </Layout>
   )

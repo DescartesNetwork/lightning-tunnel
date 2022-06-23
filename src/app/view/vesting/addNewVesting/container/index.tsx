@@ -8,13 +8,13 @@ import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
 import Auto from '../../../airdrop/addNewAirdrop/container/auto'
 import Manual from './manual'
-import ConfirmTransfer from './confirmTransfer'
+import ConfirmTransfer from 'app/view/confirmTransfer'
 import UnlockTime from '../components/unlockTime'
 import Frequency from '../components/frequency'
 import DistributeIn from '../components/distributeIn'
 import DateOption from 'app/components/dateOption'
 
-import { SelectMethod, Step } from 'app/constants'
+import { ONE_DAY, SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
@@ -24,7 +24,7 @@ import {
   setExpiration,
   setGlobalConfigs,
   setGlobalUnlockTime,
-} from 'app/model/recipientsV2.controller'
+} from 'app/model/recipients.controller'
 
 export type CardOptionProps = {
   label: string
@@ -91,7 +91,7 @@ const SelectInputMethod = () => {
 
   const onContinue = () => {
     dispatch(onSelectMethod(method))
-    dispatch(onSelectStep(Step.two))
+    dispatch(onSelectStep(Step.AddRecipient))
   }
 
   const onExpirationChange = (value: number) => {
@@ -103,7 +103,12 @@ const SelectInputMethod = () => {
     return dispatch(setGlobalConfigs({ configs }))
   }
 
-  const disabled = activeMintAddress === 'Select' || !method
+  const disabled =
+    activeMintAddress === 'Select' ||
+    !method ||
+    !unlockTime ||
+    (expiration < unlockTime && !isUnlimited) ||
+    (expiration - unlockTime < distributeIn * 30 * ONE_DAY && !isUnlimited)
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -212,7 +217,7 @@ const Container = () => {
   } = useSelector((state: AppState) => state)
 
   if (!methodSelected) return <SelectInputMethod />
-  if (step === Step.two)
+  if (step === Step.AddRecipient)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />
 }

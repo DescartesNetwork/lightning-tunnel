@@ -10,11 +10,10 @@ import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
-import { removeRecipients } from 'app/model/recipients.controller'
 import useTotal from 'app/hooks/useTotal'
 import useValidateAmount from 'app/hooks/useValidateAmount'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
-import { RecipientInfo } from 'app/model/recipientsV2.controller'
+import { RecipientInfo } from 'app/model/recipients.controller'
 
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -37,8 +36,7 @@ const Manual = () => {
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectMethod())
-    await dispatch(removeRecipients())
-    dispatch(onSelectStep(Step.one))
+    dispatch(onSelectStep(Step.SelectMethod))
   }, [dispatch])
 
   const disabled =
@@ -86,9 +84,9 @@ const Manual = () => {
               <Button
                 size="large"
                 type="primary"
-                onClick={() => dispatch(onSelectStep(Step.three))}
+                onClick={() => dispatch(onSelectStep(Step.ConfirmTransfer))}
                 block
-                // disabled={disabled}
+                disabled={disabled}
               >
                 Continue
               </Button>

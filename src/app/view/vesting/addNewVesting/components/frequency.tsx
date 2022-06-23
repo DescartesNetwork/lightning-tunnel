@@ -4,16 +4,12 @@ export enum FREQUENCY {
   seven = 7,
   fourteen = 14,
   thirty = 30,
-  sixty = 60,
-  ninety = 90,
 }
 
 const DISTRIBUTION_FREQUENCY = [
   { label: '7 days', value: FREQUENCY.seven },
   { label: '14 days', value: FREQUENCY.fourteen },
   { label: '30 days', value: FREQUENCY.thirty },
-  { label: '60 days', value: FREQUENCY.sixty },
-  { label: '90 days', value: FREQUENCY.ninety },
 ]
 
 type FrequencyProps = {

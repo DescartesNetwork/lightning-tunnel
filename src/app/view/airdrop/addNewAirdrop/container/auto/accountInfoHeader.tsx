@@ -1,8 +1,4 @@
-import { useSelector } from 'react-redux'
-
 import { Checkbox, Col, Row, Space, Typography } from 'antd'
-
-import { AppState } from 'app/model'
 
 type AccountInfoHeaderProps = {
   selected?: boolean
@@ -13,10 +9,6 @@ const AccountInfoHeader = ({
   selected = false,
   onChecked = () => {},
 }: AccountInfoHeaderProps) => {
-  const {
-    recipients2: { errorData },
-  } = useSelector((state: AppState) => state)
-
   return (
     <Row gutter={[16, 8]} align="middle" wrap={false} justify="space-between">
       <Col span={3}>
@@ -36,7 +28,6 @@ const AccountInfoHeader = ({
       <Col span={6}>
         <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
-      {!!errorData.length && <Col span={3} />}
     </Row>
   )
 }

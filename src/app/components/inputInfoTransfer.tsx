@@ -12,8 +12,8 @@ import {
   addRecipient,
   RecipientInfo,
   removeRecipient,
-} from 'app/model/recipientsV2.controller'
-import { onSelectedFile } from 'app/model/file.controller'
+} from 'app/model/recipients.controller'
+import { selectRecipient } from 'app/model/file.controller'
 import { setIsTyping } from 'app/model/main.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 
@@ -89,8 +89,8 @@ const InputInfoTransfer = ({
 
   const onAmount = (val: string) => setRecipient({ ...formInput, amount: val })
 
-  const onSelected = (checked: boolean, index?: number) =>
-    dispatch(onSelectedFile({ checked, index }))
+  const onSelected = (checked: boolean, walletAddress: string) =>
+    dispatch(selectRecipient({ checked, walletAddress }))
 
   const recipientInfo = useCallback(async () => {
     if (account.isAddress(walletAddress) && amount) {
@@ -126,7 +126,8 @@ const InputInfoTransfer = ({
       for (let i = 0; i < distributionAmount; i++) {
         let unlockTime = 0
         if (i === 0) unlockTime = globalUnlockTime
-        if (i !== 0) unlockTime = 7 * ONE_DAY + nextRecipients[i - 1].unlockTime
+        if (i !== 0)
+          unlockTime = frequency * ONE_DAY + nextRecipients[i - 1].unlockTime
 
         const recipient: RecipientInfo = {
           address: walletAddress,
@@ -216,8 +217,8 @@ const InputInfoTransfer = ({
       {isSelect && (
         <Col>
           <Checkbox
-            checked={selectedFile?.includes(index as number)}
-            onChange={(e) => onSelected(e.target.checked, index)}
+            checked={selectedFile?.includes(walletAddress || '')}
+            onChange={(e) => onSelected(e.target.checked, walletAddress || '')}
           />
         </Col>
       )}

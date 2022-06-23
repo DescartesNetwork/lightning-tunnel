@@ -25,8 +25,7 @@ import History, { HistoryRecord } from 'app/helper/history'
 import { getHistory } from 'app/model/history.controller'
 import { notifySuccess } from 'app/helper'
 import { onSelectMethod } from 'app/model/main.controller'
-import { removeRecipients } from 'app/model/recipients.controller'
-import { RecipientInfo } from 'app/model/recipientsV2.controller'
+import { RecipientInfo } from 'app/model/recipients.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -40,7 +39,7 @@ const ConfirmTransfer = () => {
   const {
     main: { mintSelected, typeDistribute },
     setting: { decimal: isDecimal },
-    recipients: { recipientInfos, globalUnlockTime, expirationTime },
+    recipients: { recipientInfos, expirationTime },
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -57,14 +56,14 @@ const ConfirmTransfer = () => {
       listRecipient = listRecipient.concat(recipientInfos[walletAddress])
     }
     const balanceTree: Leaf[] = listRecipient.map(
-      ({ amount, address }, index) => {
+      ({ amount, address, unlockTime }, index) => {
         const actualAmount = isDecimal
           ? utils.decimalize(amount, mintDecimals).toString()
           : amount
         return {
           authority: account.fromAddress(address),
           amount: new BN(actualAmount),
-          startedAt: new BN(globalUnlockTime / 1000),
+          startedAt: new BN(unlockTime / 1000),
           salt: MerkleDistributor.salt(
             `${appId}/${typeDistribute}/${index.toString()}`,
           ),
@@ -74,13 +73,7 @@ const ConfirmTransfer = () => {
     const merkleDistributor = new MerkleDistributor(balanceTree)
     const dataBuffer = merkleDistributor.toBuffer()
     return dataBuffer
-  }, [
-    recipientInfos,
-    mintDecimals,
-    isDecimal,
-    globalUnlockTime,
-    typeDistribute,
-  ])
+  }, [recipientInfos, mintDecimals, isDecimal, typeDistribute])
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
@@ -111,7 +104,7 @@ const ConfirmTransfer = () => {
       })
 
       const historyRecord: HistoryRecord = {
-        total: merkleDistributor.getTotal().toNumber(),
+        total: merkleDistributor.getTotal().toString(),
         time: new Date().toString(),
         mint: mintSelected,
         distributorAddress,
@@ -119,7 +112,7 @@ const ConfirmTransfer = () => {
       }
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
-      await dispatch(getHistory(walletAddress))
+      await dispatch(getHistory({ walletAddress }))
 
       setIsDone(true)
 
@@ -139,8 +132,8 @@ const ConfirmTransfer = () => {
 
   const backToDashboard = useCallback(async () => {
     await dispatch(onSelectMethod())
-    await dispatch(removeRecipients())
-    dispatch(onSelectStep(Step.one))
+    // await dispatch(removeRecipients())
+    dispatch(onSelectStep(Step.SelectMethod))
   }, [dispatch])
 
   return (
@@ -183,7 +176,7 @@ const ConfirmTransfer = () => {
               <Col span={12}>
                 <Button
                   size="large"
-                  onClick={() => dispatch(onSelectStep(Step.two))}
+                  onClick={() => dispatch(onSelectStep(Step.AddRecipient))}
                   block
                   type="ghost"
                 >

@@ -13,14 +13,13 @@ import DateOption from '../../../../components/dateOption'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
-import {
-  onSelectedMint,
-  onSelectMethod,
-  setEndDate,
-  setStartDate,
-} from 'app/model/main.controller'
+import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
+import {
+  setExpiration,
+  setGlobalUnlockTime,
+} from 'app/model/recipients.controller'
 
 export type CardOptionProps = {
   label: string
@@ -56,10 +55,12 @@ const CardOption = ({ label, description, active }: CardOptionProps) => {
 }
 
 const SelectInputMethod = () => {
-  const { endDate, startDate } = useSelector((state: AppState) => state.main)
+  const { expirationTime: endDate, globalUnlockTime } = useSelector(
+    (state: AppState) => state.recipients,
+  )
   const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
-  const [unlockTime, setUnlockTime] = useState(startDate)
+  const [unlockTime, setUnlockTime] = useState(globalUnlockTime)
   const [expirationTime, setExpirationTime] = useState(endDate)
   const [isSendNow, setIsSendNow] = useState(false)
   const [isUnlimited, setIsUnlimited] = useState(false)
@@ -83,7 +84,7 @@ const SelectInputMethod = () => {
 
   const onContinue = () => {
     dispatch(onSelectMethod(method))
-    dispatch(onSelectStep(Step.two))
+    dispatch(onSelectStep(Step.AddRecipient))
   }
 
   const onSelectMint = (mintAddress: string) => {
@@ -95,11 +96,12 @@ const SelectInputMethod = () => {
     activeMintAddress === 'Select' ||
     !method ||
     (!unlockTime && !isSendNow) ||
-    (!expirationTime && !isUnlimited)
+    (!expirationTime && !isUnlimited) ||
+    expirationTime < globalUnlockTime
 
   useEffect(() => {
-    dispatch(setStartDate(startTime))
-    dispatch(setEndDate(endTime))
+    dispatch(setGlobalUnlockTime(startTime))
+    dispatch(setExpiration(endTime))
   }, [dispatch, endTime, startTime])
 
   return (
@@ -200,7 +202,7 @@ const Container = () => {
   } = useSelector((state: AppState) => state)
 
   if (!methodSelected) return <SelectInputMethod />
-  if (step === Step.two)
+  if (step === Step.AddRecipient)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />
 }

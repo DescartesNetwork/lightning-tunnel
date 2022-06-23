@@ -4,9 +4,9 @@ export enum SelectMethod {
 }
 
 export enum Step {
-  one = 1,
-  two = 2,
-  three = 3,
+  SelectMethod = 1,
+  AddRecipient = 2,
+  ConfirmTransfer = 3,
 }
 
 export enum CollapseAddNew {
@@ -18,7 +18,8 @@ export enum State {
   ready = 'Ready',
   claimed = 'Claimed',
   expired = 'Expired',
-  unknown = 'Unknown',
+  loading = 'Loading',
 }
 
 export const CURRENT_TIME = new Date().getTime()
+export const ONE_DAY = 24 * 60 * 60 * 1000

@@ -27,7 +27,7 @@ export const getStatus = async (
   return State.ready
 }
 
-const useStatusAirdrop = ({
+const useStatus = ({
   receiptAddress,
   startedAt,
   distributorAddress,
@@ -53,4 +53,4 @@ const useStatusAirdrop = ({
   return { status }
 }
 
-export default useStatusAirdrop
+export default useStatus

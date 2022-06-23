@@ -1,84 +1,17 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { MerkleDistributor } from '@sentre/utility'
+import { useState } from 'react'
 
 import { Button, Card, Col, Row, Spin, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
-import { AppState } from 'app/model'
-import useCountdown, { DEFAULT_TEN_MINUTE } from 'app/hooks/useCountdown'
 import { COLUMNS_AIRDROP } from './columns'
-import IPFS from 'shared/pdb/ipfs'
-import { HistoryRecord } from 'app/helper/history'
-import configs from 'app/configs'
-import { CURRENT_TIME } from 'app/constants'
-import { getBalanceTreasury } from 'app/hooks/useCanRevoke'
-
-const {
-  manifest: { appId },
-} = configs
+import useSentList from 'app/hooks/useSentList'
+import { TypeDistribute } from 'app/model/main.controller'
 
 const DEFAULT_AMOUNT = 4
 
 const History = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-  const [listHistory, setListHistory] = useState<HistoryRecord[]>([])
-  const [loading, setLoading] = useState(false)
-  const { history } = useSelector((state: AppState) => state)
-  const { timeRemaining } = useCountdown()
-  const distributors = useSelector((state: AppState) => state.distributors)
-
-  const fetchHistory = useCallback(async () => {
-    const nextHistory: HistoryRecord[] = []
-    try {
-      setLoading(true)
-      const airdropSalt = MerkleDistributor.salt(`${appId}/vesting/${0}`)
-      for (const historyItem of history) {
-        const { treeData, distributorAddress } = historyItem
-        if (!treeData) continue
-        const parseData = JSON.parse(JSON.stringify(treeData)).data
-        const merkleDistributor = MerkleDistributor.fromBuffer(
-          Buffer.from(parseData),
-        )
-        const salt = merkleDistributor.receipients[0].salt
-        const x = Buffer.compare(airdropSalt, salt)
-
-        if (x !== 0) continue
-        const endedAt = distributors[distributorAddress].endedAt
-        const endTime = endedAt.toNumber() * 1000
-        const balance = await getBalanceTreasury(distributorAddress)
-        if (endTime < CURRENT_TIME && endTime && balance) {
-          nextHistory.unshift(historyItem)
-          continue
-        }
-        nextHistory.push(historyItem)
-      }
-    } catch (error) {
-    } finally {
-      setLoading(false)
-      return setListHistory(nextHistory)
-    }
-  }, [distributors, history])
-
-  const syncData = useCallback(async () => {
-    if (timeRemaining !== DEFAULT_TEN_MINUTE) return
-    const ipfs = new IPFS()
-    try {
-      for (const { treeData } of history) {
-        if (!treeData) continue
-        const parseData = JSON.parse(JSON.stringify(treeData)).data
-        await ipfs.set(parseData)
-      }
-    } catch (error) {}
-  }, [history, timeRemaining])
-
-  useEffect(() => {
-    syncData()
-  }, [syncData])
-
-  useEffect(() => {
-    fetchHistory()
-  }, [fetchHistory])
+  const { loading, listHistory } = useSentList({ type: TypeDistribute.Vesting })
 
   return (
     <Spin spinning={loading}>

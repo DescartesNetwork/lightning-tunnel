@@ -8,12 +8,12 @@ const STATUS_COLOR: Record<State, string> = {
   Ready: '#03A326',
   Claimed: '#40A9FF',
   Expired: '#F9575E',
-  Unknown: '#F4F5F5',
+  Loading: '#F4F5F5',
 }
 
 const StatusTag = ({ state }: { state?: State }) => {
   const tagColor = useMemo(() => {
-    const color = !state ? STATUS_COLOR[State.unknown] : STATUS_COLOR[state]
+    const color = !state ? STATUS_COLOR[State.loading] : STATUS_COLOR[state]
     return color
   }, [state])
 
@@ -28,7 +28,7 @@ const StatusTag = ({ state }: { state?: State }) => {
         color: tagColor,
       }}
     >
-      {!state ? State.unknown : state}
+      {!state ? State.loading : state}
     </Tag>
   )
 }

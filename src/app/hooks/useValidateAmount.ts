@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 import { AppState } from 'app/model'
-import { RecipientInfo } from 'app/model/recipientsV2.controller'
+import { RecipientInfo } from 'app/model/recipients.controller'
 
 const useValidateAmount = (listRecipient: RecipientInfo[]) => {
   const {

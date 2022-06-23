@@ -8,7 +8,7 @@ import Frequency from '../../../components/frequency'
 import UnlockTime from '../../../components/unlockTime'
 
 import { AppDispatch, AppState } from 'app/model'
-import { editRecipient } from 'app/model/recipientsV2.controller'
+import { editRecipient } from 'app/model/recipients.controller'
 
 type EditDistributionConfigProps = {
   walletAddress: string

@@ -4,12 +4,10 @@ import { devTools, bigintSerializationMiddleware } from 'app/model/devTools'
 import main from 'app/model/main.controller'
 import steps from 'app/model/steps.controller'
 import setting from 'app/model/setting.controller'
-import recipients from 'app/model/recipientsV2.controller'
-import recipients2 from 'app/model/recipients.controller'
+import recipients from 'app/model/recipients.controller'
 import file from 'app/model/file.controller'
 import history from 'app/model/history.controller'
 import distributors from 'app/model/distributor.controller'
-import vesting from 'app/model/vesting.controller'
 
 /**
  * Isolated store
@@ -25,9 +23,7 @@ const model = configureStore({
     file,
     history,
     distributors,
-    vesting,
     recipients,
-    recipients2,
   },
 })
 

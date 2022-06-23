@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
@@ -11,9 +11,15 @@ import ModalDeleteFile from 'app/components/commonModal'
 
 import { AppDispatch, AppState } from 'app/model'
 import { CollapseAddNew } from 'app/constants'
-import { addRecipients, setErrorData } from 'app/model/recipients.controller'
-import { onSelectedFile, removeSelectedFile } from 'app/model/file.controller'
+import { addRecipients } from 'app/model/recipients.controller'
+import {
+  selectRecipient,
+  removeSelectedFile,
+  selectAllRecipient,
+} from 'app/model/file.controller'
 import useValidateAmount from 'app/hooks/useValidateAmount'
+import useValidRecipient from 'app/hooks/airdrop/useValidAirdropRecipient'
+import useInvalidAirdropRecipient from 'app/hooks/airdrop/useInvalidAirdropRecipient'
 
 const ActionButton = ({
   activeKey = '',
@@ -64,33 +70,35 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     file: { fileName, selectedFile },
-    recipients: { recipients, errorData },
+    recipients: { recipientInfos },
   } = useSelector((state: AppState) => state)
-  const { amountError } = useValidateAmount()
+  const listRecipient = useValidRecipient()
+  const listInvalidRecipient = useInvalidAirdropRecipient()
 
-  const onSelected = (checked: boolean, index: number) =>
-    dispatch(onSelectedFile({ checked, index }))
+  const onSelected = (checked: boolean, walletAddress: string) =>
+    dispatch(selectRecipient({ checked, walletAddress }))
 
-  const onDelete = () => {
+  const onDelete = useCallback(() => {
     if (!selectedFile?.length) return
     setLoading(true)
-    const nextRecipients = [...recipients]
-    const nextErrorData = [...(errorData || [])]
-
-    const filterRecipient = nextRecipients.filter(
-      (_, idx) => !selectedFile.includes(idx),
-    )
-    // Index of error data in listWalletPos begin from recipients.length
-    const filterErrorData = nextErrorData.filter(
-      (_, idx) => !selectedFile.includes(recipients.length + idx),
-    )
-
-    dispatch(setErrorData({ errorData: filterErrorData }))
-    dispatch(addRecipients({ recipients: filterRecipient }))
+    const nextRecipients = { ...recipientInfos }
+    for (const address of selectedFile) {
+      delete nextRecipients[address]
+    }
+    dispatch(addRecipients({ recipientInfos: nextRecipients }))
     dispatch(removeSelectedFile())
     setLoading(false)
     setSelected(false)
+  }, [dispatch, recipientInfos, selectedFile])
+
+  const onSelectAll = (checked: boolean) => {
+    if (checked) {
+      const listAddress = listRecipient.map(({ address }) => address)
+      dispatch(selectAllRecipient(listAddress))
+    } else dispatch(removeSelectedFile())
   }
+
+  const { amountError } = useValidateAmount(listRecipient)
 
   return (
     <Row gutter={[16, 16]}>
@@ -160,17 +168,15 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
                   <Col span={24}>
                     <AccountInfoHeader
                       selected={selected}
-                      onChecked={(checked) =>
-                        dispatch(onSelectedFile({ checked }))
-                      }
+                      onChecked={onSelectAll}
                     />
                   </Col>
-                  {errorData.map(([address, amount], idx) => (
+                  {listInvalidRecipient.map(({ address, amount }, idx) => (
                     <Col
                       span={24}
                       key={address + idx}
                       className={
-                        idx + 1 === errorData.length
+                        idx + 1 === listInvalidRecipient.length
                           ? 'last-item-error-data'
                           : ''
                       }
@@ -180,11 +186,11 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
-                        index={recipients.length + idx}
+                        index={listRecipient.length + idx}
                       />
                     </Col>
                   ))}
-                  {recipients.map(([address, amount], idx) => (
+                  {listRecipient.map(({ address, amount }, idx) => (
                     <Col span={24} key={address + idx}>
                       <AccountInfo
                         accountAddress={address}

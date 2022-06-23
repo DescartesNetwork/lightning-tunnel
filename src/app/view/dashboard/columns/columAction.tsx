@@ -9,7 +9,7 @@ import { getCID, notifyError, notifySuccess } from 'app/helper'
 import { AppState } from 'app/model'
 import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
-import useStatusAirdrop from 'app/hooks/airdrop/useStatusAirdrop'
+import useStatus from 'app/hooks/useStatus'
 import { State } from 'app/constants'
 
 type ColumActionProps = {
@@ -31,7 +31,7 @@ const ColumAction = ({
   const { metadata } = distributors[distributorAddress]
   const [loading, setLoading] = useState(false)
   const startedAt = recipientData.startedAt.toNumber()
-  const { status } = useStatusAirdrop({
+  const { status } = useStatus({
     receiptAddress,
     startedAt,
     distributorAddress,

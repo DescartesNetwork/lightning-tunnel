@@ -1,27 +1,30 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Spin, Table, Typography } from 'antd'
 
-import { COLUMNS_AIRDROP } from './columns'
-import useListAirdrop, { Airdrop } from 'app/hooks/airdrop/useListAirdrop'
-import { useSelector } from 'react-redux'
+import { COLUMNS_AIRDROP } from '../columns'
+import useReceiveList, { ReceiveItem } from 'app/hooks/useReceiveList'
 import { AppState } from 'app/model'
-import { getStatus } from 'app/hooks/airdrop/useStatusAirdrop'
+import { getStatus } from 'app/hooks/useStatus'
 import { State } from 'app/constants'
+import { TypeDistribute } from 'app/model/main.controller'
 
 const DEFAULT_AMOUNT = 4
 
 const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-  const { airdrops, loading } = useListAirdrop()
-  const [listAirdrop, setListAirdrop] = useState<Airdrop[]>([])
+  const { receiveList, loading } = useReceiveList({
+    type: TypeDistribute.Airdrop,
+  })
+  const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
   const distributors = useSelector((state: AppState) => state.distributors)
 
   const filterAirdrops = useCallback(async () => {
-    if (!airdrops.length) return
-    const nextAirdrops: Airdrop[] = []
-    for (const airdrop of airdrops) {
+    if (!receiveList.length) return
+    const nextAirdrops: ReceiveItem[] = []
+    for (const airdrop of receiveList) {
       const { receiptAddress, distributorAddress, recipientData } = airdrop
       const { startedAt } = recipientData
       const endedAt = distributors[distributorAddress].endedAt
@@ -37,7 +40,7 @@ const AirdropReceive = () => {
       nextAirdrops.push(airdrop)
     }
     return setListAirdrop(nextAirdrops)
-  }, [airdrops, distributors])
+  }, [receiveList, distributors])
 
   useEffect(() => {
     filterAirdrops()

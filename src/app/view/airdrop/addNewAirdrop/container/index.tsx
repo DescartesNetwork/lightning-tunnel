@@ -1,20 +1,25 @@
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
 import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import Auto from './auto'
-import Manual from './manual'
 import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
-import ConfirmTransfer from './confirmTransfer'
+import Auto from './auto'
+import Manual from './manual'
+import ConfirmTransfer from '../../../confirmTransfer'
+import DateOption from '../../../../components/dateOption'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
+import {
+  setExpiration,
+  setGlobalUnlockTime,
+} from 'app/model/recipients.controller'
 
 export type CardOptionProps = {
   label: string
@@ -50,8 +55,16 @@ const CardOption = ({ label, description, active }: CardOptionProps) => {
 }
 
 const SelectInputMethod = () => {
+  const { expirationTime: endDate, globalUnlockTime } = useSelector(
+    (state: AppState) => state.recipients,
+  )
   const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
+  const [unlockTime, setUnlockTime] = useState(globalUnlockTime)
+  const [expirationTime, setExpirationTime] = useState(endDate)
+  const [isSendNow, setIsSendNow] = useState(false)
+  const [isUnlimited, setIsUnlimited] = useState(false)
+
   const dispatch = useDispatch()
   const { accounts } = useAccount()
 
@@ -61,9 +74,17 @@ const SelectInputMethod = () => {
   )
   const singleMints = useSingleMints(myMints)
 
+  const startTime = useMemo(() => {
+    return isSendNow ? 0 : unlockTime
+  }, [isSendNow, unlockTime])
+
+  const endTime = useMemo(() => {
+    return isUnlimited ? 0 : expirationTime
+  }, [expirationTime, isUnlimited])
+
   const onContinue = () => {
     dispatch(onSelectMethod(method))
-    dispatch(onSelectStep(Step.two))
+    dispatch(onSelectStep(Step.AddRecipient))
   }
 
   const onSelectMint = (mintAddress: string) => {
@@ -71,10 +92,17 @@ const SelectInputMethod = () => {
     dispatch(onSelectedMint(mintAddress))
   }
 
-  const disabled = useMemo(() => {
-    if (activeMintAddress === 'Select' || !method) return true
-    return false
-  }, [activeMintAddress, method])
+  const disabled =
+    activeMintAddress === 'Select' ||
+    !method ||
+    (!unlockTime && !isSendNow) ||
+    (!expirationTime && !isUnlimited) ||
+    expirationTime < globalUnlockTime
+
+  useEffect(() => {
+    dispatch(setGlobalUnlockTime(startTime))
+    dispatch(setExpiration(endTime))
+  }, [dispatch, endTime, startTime])
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -124,6 +152,30 @@ const SelectInputMethod = () => {
                 </Radio.Group>
               </Space>
             </Col>
+            <Col span={24}>
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <DateOption
+                    label="Unlock time"
+                    onSwitch={setIsSendNow}
+                    switchText="Send immediately"
+                    onChange={setUnlockTime}
+                    placeholder="Select unlock time"
+                    value={unlockTime}
+                  />
+                </Col>
+                <Col span={12}>
+                  <DateOption
+                    label="Expiration time"
+                    onSwitch={setIsUnlimited}
+                    switchText="Unlimited"
+                    onChange={setExpirationTime}
+                    placeholder="Select time"
+                    value={expirationTime}
+                  />
+                </Col>
+              </Row>
+            </Col>
           </Row>
         </Col>
 
@@ -150,7 +202,7 @@ const Container = () => {
   } = useSelector((state: AppState) => state)
 
   if (!methodSelected) return <SelectInputMethod />
-  if (step === Step.two)
+  if (step === Step.AddRecipient)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />
 }

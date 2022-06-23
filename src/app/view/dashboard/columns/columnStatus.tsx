@@ -1,5 +1,5 @@
 import StatusTag from 'app/components/statusTag'
-import useStatusAirdrop from 'app/hooks/airdrop/useStatusAirdrop'
+import useStatus from 'app/hooks/useStatus'
 
 type ColumnStatusProps = {
   receiptAddress: string
@@ -11,7 +11,7 @@ const ColumnStatus = ({
   startedAt,
   distributorAddress,
 }: ColumnStatusProps) => {
-  const { status } = useStatusAirdrop({
+  const { status } = useStatus({
     receiptAddress,
     startedAt,
     distributorAddress,

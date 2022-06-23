@@ -7,23 +7,25 @@ import { AppState } from 'app/model'
 import { getCID } from 'app/helper'
 import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
+import { TypeDistribute } from '../model/main.controller'
 
 const {
   manifest: { appId },
   sol: { utility },
 } = configs
 
-export type Airdrop = {
+export type ReceiveItem = {
   sender: string
   mintAddress: string
   distributorAddress: string
   receiptAddress: string
   recipientData: Leaf
+  children?: ReceiveItem[]
 }
 
-const useListAirdrop = () => {
-  const [airdrops, setAirdrops] = useState<Airdrop[]>([])
-  const [loading, setLoading] = useState(false)
+const useReceiveList = ({ type }: { type: TypeDistribute }) => {
+  const [receiveList, setReceiveList] = useState<ReceiveItem[]>([])
+  const [loading, setLoading] = useState(true)
 
   const distributors = useSelector((state: AppState) => state.distributors)
   const {
@@ -31,9 +33,8 @@ const useListAirdrop = () => {
   } = useWallet()
 
   const fetchListAirdrop = useCallback(async () => {
-    setLoading(true)
+    const listAirdrop: ReceiveItem[] = []
     const ipfs = new IPFS()
-    const listAirdrop: Airdrop[] = []
     const listDistributor = Object.keys(distributors).map((address) => ({
       address,
       ...distributors[address],
@@ -41,8 +42,9 @@ const useListAirdrop = () => {
     try {
       await Promise.all(
         listDistributor.map(
-          async ({ metadata, mint, authority, address, total }, index) => {
+          async ({ metadata, mint, authority, address }, index) => {
             try {
+              setLoading(true)
               const cid = await getCID(metadata)
               const data = await ipfs.get(cid)
               const merkleDistributor = MerkleDistributor.fromBuffer(
@@ -54,19 +56,17 @@ const useListAirdrop = () => {
               //filter airdrop-type distributes
 
               const airdropSalt = MerkleDistributor.salt(
-                `${appId}/airdrop/${0}`,
+                `${appId}/${type}/${0}`,
               )
               if (Buffer.compare(airdropSalt, recipients[0].salt) !== 0) return
-
               for (const recipient of recipients) {
                 const { authority, salt } = recipient
-
                 if (walletAddress === authority.toBase58()) {
                   const receiptAddress = await utility.deriveReceiptAddress(
                     salt,
                     address,
                   )
-                  const airdropItem: Airdrop = {
+                  const airdropItem: ReceiveItem = {
                     mintAddress,
                     sender,
                     distributorAddress: address,
@@ -83,16 +83,16 @@ const useListAirdrop = () => {
       )
     } catch (error) {
     } finally {
-      setLoading(false)
-      return setAirdrops(listAirdrop)
+      setReceiveList(listAirdrop)
+      return setLoading(false)
     }
-  }, [distributors, walletAddress])
+  }, [distributors, type, walletAddress])
 
   useEffect(() => {
     fetchListAirdrop()
   }, [fetchListAirdrop])
 
-  return { airdrops, loading }
+  return { receiveList, loading }
 }
 
-export default useListAirdrop
+export default useReceiveList

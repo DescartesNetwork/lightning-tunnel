@@ -24,7 +24,8 @@ const Content = ({ label, value }: { label: string; value: ReactNode }) => {
 
 export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
   const {
-    main: { mintSelected, endDate, startDate },
+    main: { mintSelected },
+    recipients: { expirationTime, globalUnlockTime },
   } = useSelector((sate: AppState) => sate)
   const { total, quantity } = useTotal()
   const { balance } = useAccountBalanceByMintAddress(mintSelected)
@@ -43,8 +44,8 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
           label="Unlock time"
           value={
             <Typography.Text>
-              {startDate
-                ? moment(startDate).format('DD-MM-YY HH:mm:ss')
+              {globalUnlockTime
+                ? moment(globalUnlockTime).format('DD-MM-YY HH:mm:ss')
                 : 'Immediately'}
             </Typography.Text>
           }
@@ -55,8 +56,8 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
           label="Expiration time"
           value={
             <Typography.Text>
-              {endDate
-                ? moment(endDate).format('DD-MM-YY HH:mm:ss')
+              {expirationTime
+                ? moment(expirationTime).format('DD-MM-YY HH:mm:ss')
                 : 'Unlimited'}
             </Typography.Text>
           }

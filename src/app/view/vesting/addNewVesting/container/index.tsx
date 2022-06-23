@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
@@ -6,21 +6,25 @@ import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
-import Auto from '../../auto'
-import Manual from '../../manual'
-import ConfirmTransfer from '../../confirmTransfer'
-import DateOption from './dateOption'
+import Auto from '../../../airdrop/addNewAirdrop/container/auto'
+import Manual from './manual'
+import ConfirmTransfer from 'app/view/confirmTransfer'
+import UnlockTime from '../components/unlockTime'
+import Frequency from '../components/frequency'
+import DistributeIn from '../components/distributeIn'
+import DateOption from 'app/components/dateOption'
 
-import { SelectMethod, Step } from 'app/constants'
+import { ONE_DAY, SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
-import {
-  onSelectedMint,
-  onSelectMethod,
-  setEndDate,
-  setStartDate,
-} from 'app/model/main.controller'
+import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
 import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
+import {
+  Configs,
+  setExpiration,
+  setGlobalConfigs,
+  setGlobalUnlockTime,
+} from 'app/model/recipients.controller'
 
 export type CardOptionProps = {
   label: string
@@ -56,14 +60,21 @@ const CardOption = ({ label, description, active }: CardOptionProps) => {
 }
 
 const SelectInputMethod = () => {
-  const { endDate, startDate } = useSelector((state: AppState) => state.main)
   const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
-  const [unlockTime, setUnlockTime] = useState(startDate)
-  const [expirationTime, setExpirationTime] = useState(endDate)
-  const [isSendNow, setIsSendNow] = useState(false)
   const [isUnlimited, setIsUnlimited] = useState(false)
-
+  const expiration = useSelector(
+    (state: AppState) => state.recipients.expirationTime,
+  )
+  const unlockTime = useSelector(
+    (state: AppState) => state.recipients.globalUnlockTime,
+  )
+  const frequency = useSelector(
+    (state: AppState) => state.recipients.globalConfigs.frequency,
+  )
+  const distributeIn = useSelector(
+    (state: AppState) => state.recipients.globalConfigs.distributeIn,
+  )
   const dispatch = useDispatch()
   const { accounts } = useAccount()
 
@@ -73,34 +84,31 @@ const SelectInputMethod = () => {
   )
   const singleMints = useSingleMints(myMints)
 
-  const startTime = useMemo(() => {
-    return isSendNow ? 0 : unlockTime
-  }, [isSendNow, unlockTime])
-
-  const endTime = useMemo(() => {
-    return isUnlimited ? 0 : expirationTime
-  }, [expirationTime, isUnlimited])
-
-  const onContinue = () => {
-    dispatch(onSelectMethod(method))
-    dispatch(onSelectStep(Step.two))
-  }
-
   const onSelectMint = (mintAddress: string) => {
     setActiveMintAddress(mintAddress)
     dispatch(onSelectedMint(mintAddress))
   }
 
+  const onContinue = () => {
+    dispatch(onSelectMethod(method))
+    dispatch(onSelectStep(Step.AddRecipient))
+  }
+
+  const onExpirationChange = (value: number) => {
+    const endTime = isUnlimited ? 0 : value
+    return dispatch(setExpiration(endTime))
+  }
+
+  const onConfigChange = (configs: Partial<Configs>) => {
+    return dispatch(setGlobalConfigs({ configs }))
+  }
+
   const disabled =
     activeMintAddress === 'Select' ||
     !method ||
-    (!unlockTime && !isSendNow) ||
-    (!expirationTime && !isUnlimited)
-
-  useEffect(() => {
-    dispatch(setStartDate(startTime))
-    dispatch(setEndDate(endTime))
-  }, [dispatch, endTime, startTime])
+    !unlockTime ||
+    (expiration < unlockTime && !isUnlimited) ||
+    (expiration - unlockTime < distributeIn * 30 * ONE_DAY && !isUnlimited)
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -111,35 +119,11 @@ const SelectInputMethod = () => {
         <Col span={24}>
           <Row gutter={[24, 24]}>
             <Col span={24}>
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <SelectToken
-                    activeMintAddress={activeMintAddress}
-                    tokens={singleMints}
-                    onSelect={onSelectMint}
-                  />
-                </Col>
-                <Col span={12}>
-                  <DateOption
-                    label="Unlock time"
-                    onSwitch={setIsSendNow}
-                    switchText="Send immediately"
-                    onChange={setUnlockTime}
-                    placeholder="Select unlock time"
-                    value={unlockTime}
-                  />
-                </Col>
-                <Col span={12}>
-                  <DateOption
-                    label="Expiration time"
-                    onSwitch={setIsUnlimited}
-                    switchText="Unlimited"
-                    onChange={setExpirationTime}
-                    placeholder="Select time"
-                    value={expirationTime}
-                  />
-                </Col>
-              </Row>
+              <SelectToken
+                activeMintAddress={activeMintAddress}
+                tokens={singleMints}
+                onSelect={onSelectMint}
+              />
             </Col>
             <Col span={24}>
               <Space size={12} direction="vertical" style={{ width: '100%' }}>
@@ -174,9 +158,42 @@ const SelectInputMethod = () => {
                 </Radio.Group>
               </Space>
             </Col>
+            <Col span={24}>
+              <Row gutter={[16, 16]}>
+                <Col xs={12} md={6}>
+                  <UnlockTime
+                    unlockTime={unlockTime}
+                    onChange={(value) => dispatch(setGlobalUnlockTime(value))}
+                  />
+                </Col>
+                <Col xs={12} md={6}>
+                  <Frequency
+                    frequency={frequency}
+                    onChange={(value) => onConfigChange({ frequency: value })}
+                  />
+                </Col>
+                <Col xs={12} md={6}>
+                  <DistributeIn
+                    distributeIn={distributeIn}
+                    onChange={(value) =>
+                      onConfigChange({ distributeIn: value })
+                    }
+                  />
+                </Col>
+                <Col xs={12} md={6}>
+                  <DateOption
+                    label="Expiration time"
+                    onSwitch={setIsUnlimited}
+                    switchText="Unlimited"
+                    onChange={onExpirationChange}
+                    placeholder="Select time"
+                    value={expiration}
+                  />
+                </Col>
+              </Row>
+            </Col>
           </Row>
         </Col>
-
         <Col span={24}>
           <Button
             size="large"
@@ -200,7 +217,7 @@ const Container = () => {
   } = useSelector((state: AppState) => state)
 
   if (!methodSelected) return <SelectInputMethod />
-  if (step === Step.two)
+  if (step === Step.AddRecipient)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />
 }

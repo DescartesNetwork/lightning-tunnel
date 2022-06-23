@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
-import { account, utils } from '@senswap/sen-js'
+import { utils } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -14,19 +14,19 @@ import { AppState } from 'app/model'
 import exampleCSV from 'app/static/base/example.csv'
 import {
   addRecipients,
-  RecipientInfo,
-  RecipientInfos,
   removeRecipients,
-  setErrorData,
+  RecipientInfos,
 } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'app/model/file.controller'
 
-const parse = (file: any): Promise<RecipientInfos> => {
+const parse = (file: any): Promise<Array<[string, string]>> => {
   return new Promise((resolve, reject) => {
     return Papa.parse(file, {
       skipEmptyLines: true,
-      complete: ({ data }) => resolve(data as RecipientInfos),
+      complete: ({ data }) => {
+        resolve(data as Array<[string, string]>)
+      },
     })
   })
 }
@@ -35,55 +35,48 @@ const UploadFile = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
-  const [listDuplicate, setListDuplicate] = useState<
-    Record<string, RecipientInfo>
-  >({})
+  const [listDuplicate, setListDuplicate] = useState<RecipientInfos>({})
   const {
-    recipients: { recipients },
+    recipients: { recipientInfos, globalUnlockTime },
     main: { mintSelected },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
-  const detectErrorData = useCallback((data: RecipientInfos) => {
-    const errorData = data.filter(
-      (recipient) => recipient.includes('') || !account.isAddress(recipient[0]),
-    )
-
-    const successData = data.filter(
-      (recipient) => !recipient.includes('') && account.isAddress(recipient[0]),
-    )
-    return { errorData, successData }
-  }, [])
-
   const upload = useCallback(
     async (file: any) => {
       setLoading(true)
-
-      const data = await parse(file)
-      const { errorData, successData: recipients } = await detectErrorData(data)
-      if (errorData) dispatch(setErrorData({ errorData }))
+      const recipients = await parse(file)
       if (!mintDecimals) return
 
-      const recipient: Record<string, RecipientInfo> = {}
+      const recipientInfos: RecipientInfos = {}
       let isDuplicate = false
+
       for (const [address, amount] of recipients) {
-        if (recipient[address]) {
+        if (recipientInfos[address]) {
           isDuplicate = true
-          const [walletAddress, oldAmount] = recipient[address]
+          const listRecipient = [...recipientInfos[address]]
+          const oldAmount = utils.decimalize(
+            listRecipient[0].amount,
+            mintDecimals,
+          )
+          const newAmount = oldAmount + utils.decimalize(amount, mintDecimals)
 
-          const newAmount =
-            utils.decimalize(oldAmount, mintDecimals) +
-            utils.decimalize(amount, mintDecimals)
-
-          recipient[address] = [
-            walletAddress,
-            utils.undecimalize(newAmount, mintDecimals),
+          recipientInfos[address] = [
+            {
+              address,
+              amount: utils.undecimalize(newAmount, mintDecimals),
+              unlockTime: globalUnlockTime,
+            },
           ]
-        } else recipient[address] = [address, amount]
+          continue
+        }
+        recipientInfos[address] = [
+          { address, amount, unlockTime: globalUnlockTime },
+        ]
       }
 
       if (isDuplicate) {
-        setListDuplicate(recipient)
+        setListDuplicate(recipientInfos)
         setLoading(false)
         setVisible(true)
         dispatch(setFileName(file.name))
@@ -91,12 +84,13 @@ const UploadFile = () => {
       }
 
       dispatch(setFileName(file.name))
-      dispatch(addRecipients({ recipients }))
+      dispatch(addRecipients({ recipientInfos }))
       setLoading(false)
       setVisible(false)
+      setLoading(false)
       return false
     },
-    [detectErrorData, dispatch, mintDecimals],
+    [dispatch, globalUnlockTime, mintDecimals],
   )
 
   const remove = async () => {
@@ -106,8 +100,7 @@ const UploadFile = () => {
   }
 
   const onMerge = () => {
-    const recipients = Object.values(listDuplicate)
-    dispatch(addRecipients({ recipients }))
+    dispatch(addRecipients({ recipientInfos: listDuplicate }))
     return setVisible(false)
   }
 
@@ -133,7 +126,7 @@ const UploadFile = () => {
     fileDownload(file, 'example.csv')
   }
 
-  if (!recipients.length)
+  if (!Object.values(recipientInfos).length)
     return (
       <Row gutter={[8, 8]} justify="end">
         <Col span={24}>

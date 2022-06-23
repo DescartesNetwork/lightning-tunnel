@@ -9,7 +9,7 @@ import ColumnExpiration from './columnExpiration'
 
 import { explorer, shortenAddress } from 'shared/util'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
-import { Airdrop } from 'app/hooks/airdrop/useListAirdrop'
+import { ReceiveItem } from 'app/hooks/useReceiveList'
 
 export const COLUMNS_AIRDROP = [
   {
@@ -58,7 +58,7 @@ export const COLUMNS_AIRDROP = [
   {
     title: 'AMOUNT',
     dataIndex: 'recipientData',
-    render: ({ amount }: Leaf, { mintAddress }: Airdrop) => (
+    render: ({ amount }: Leaf, { mintAddress }: ReceiveItem) => (
       <ColumnAmount amount={amount} mintAddress={mintAddress} />
     ),
   },
@@ -68,7 +68,7 @@ export const COLUMNS_AIRDROP = [
     dataIndex: 'recipientData',
     render: (
       { startedAt }: Leaf,
-      { receiptAddress, distributorAddress }: Airdrop,
+      { receiptAddress, distributorAddress }: ReceiveItem,
     ) => (
       <ColumnStatus
         startedAt={startedAt.toNumber()}
@@ -82,7 +82,7 @@ export const COLUMNS_AIRDROP = [
     dataIndex: 'distributorAddress',
     render: (
       distributorAddress: string,
-      { receiptAddress, recipientData }: Airdrop,
+      { receiptAddress, recipientData }: ReceiveItem,
     ) => (
       <ColumAction
         distributorAddress={distributorAddress}

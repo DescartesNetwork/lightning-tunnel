@@ -28,7 +28,19 @@ const DateOption = ({
   }
   return (
     <Row gutter={[8, 8]}>
-      <Col span={24}>{label}</Col>
+      <Col span={24}>
+        <Row>
+          <Col flex="auto">
+            <Typography.Text className="caption">{label}</Typography.Text>
+          </Col>
+          <Col>
+            <Space>
+              <Switch onChange={onSwitchChange} />
+              <Typography.Text>{switchText}</Typography.Text>
+            </Space>
+          </Col>
+        </Row>
+      </Col>
       <Col span={24}>
         <DatePicker
           placeholder={placeholder}
@@ -39,13 +51,8 @@ const DateOption = ({
           clearIcon={null}
           value={value ? moment(value) : null}
           showTime
+          placement="bottomRight"
         />
-      </Col>
-      <Col span={24}>
-        <Space>
-          <Switch onChange={onSwitchChange} />
-          <Typography.Text>{switchText}</Typography.Text>
-        </Space>
       </Col>
     </Row>
   )

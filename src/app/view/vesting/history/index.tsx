@@ -11,7 +11,7 @@ const DEFAULT_AMOUNT = 4
 
 const History = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-  const { loading, listHistory } = useSentList({ type: TypeDistribute.Airdrop })
+  const { loading, listHistory } = useSentList({ type: TypeDistribute.Vesting })
 
   return (
     <Spin spinning={loading}>

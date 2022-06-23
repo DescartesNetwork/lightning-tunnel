@@ -25,7 +25,7 @@ import History, { HistoryRecord } from 'app/helper/history'
 import { getHistory } from 'app/model/history.controller'
 import { notifySuccess } from 'app/helper'
 import { onSelectMethod } from 'app/model/main.controller'
-import { removeRecipients } from 'app/model/recipients.controller'
+import { RecipientInfo } from 'app/model/recipients.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -37,9 +37,9 @@ const ConfirmTransfer = () => {
   const [redeemLink, setRedeemLink] = useState('')
   const [isDone, setIsDone] = useState(false)
   const {
-    main: { mintSelected, startDate, endDate, typeDistribute },
+    main: { mintSelected, typeDistribute },
     setting: { decimal: isDecimal },
-    recipients: { recipients },
+    recipients: { recipientInfos, expirationTime },
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -50,24 +50,30 @@ const ConfirmTransfer = () => {
   const remainingBalance = useRemainingBalance(mintSelected)
 
   const treeData = useMemo(() => {
-    if (!recipients.length || !mintDecimals) return
-    const balanceTree: Leaf[] = recipients.map(([address, amount], index) => {
-      const actualAmount = isDecimal
-        ? utils.decimalize(amount, mintDecimals).toString()
-        : amount
-      return {
-        authority: account.fromAddress(address),
-        amount: new BN(actualAmount),
-        startedAt: new BN(startDate / 1000),
-        salt: MerkleDistributor.salt(
-          `${appId}/${typeDistribute}/${index.toString()}`,
-        ),
-      }
-    })
+    if (!recipientInfos || !mintDecimals) return
+    let listRecipient: RecipientInfo[] = []
+    for (const walletAddress in recipientInfos) {
+      listRecipient = listRecipient.concat(recipientInfos[walletAddress])
+    }
+    const balanceTree: Leaf[] = listRecipient.map(
+      ({ amount, address, unlockTime }, index) => {
+        const actualAmount = isDecimal
+          ? utils.decimalize(amount, mintDecimals).toString()
+          : amount
+        return {
+          authority: account.fromAddress(address),
+          amount: new BN(actualAmount),
+          startedAt: new BN(unlockTime / 1000),
+          salt: MerkleDistributor.salt(
+            `${appId}/${typeDistribute}/${index.toString()}`,
+          ),
+        }
+      },
+    )
     const merkleDistributor = new MerkleDistributor(balanceTree)
     const dataBuffer = merkleDistributor.toBuffer()
     return dataBuffer
-  }, [recipients, mintDecimals, isDecimal, startDate, typeDistribute])
+  }, [recipientInfos, mintDecimals, isDecimal, typeDistribute])
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
@@ -93,12 +99,12 @@ const ConfirmTransfer = () => {
         total: merkleDistributor.getTotal(),
         merkleRoot: merkleDistributor.deriveMerkleRoot(),
         metadata,
-        endedAt: endDate / 1000,
+        endedAt: expirationTime / 1000,
         feeOptions,
       })
 
       const historyRecord: HistoryRecord = {
-        total: merkleDistributor.getTotal().toNumber(),
+        total: merkleDistributor.getTotal().toString(),
         time: new Date().toString(),
         mint: mintSelected,
         distributorAddress,
@@ -106,7 +112,7 @@ const ConfirmTransfer = () => {
       }
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
-      await dispatch(getHistory(walletAddress))
+      await dispatch(getHistory({ walletAddress }))
 
       setIsDone(true)
 
@@ -126,8 +132,8 @@ const ConfirmTransfer = () => {
 
   const backToDashboard = useCallback(async () => {
     await dispatch(onSelectMethod())
-    await dispatch(removeRecipients())
-    dispatch(onSelectStep(Step.one))
+    // await dispatch(removeRecipients())
+    dispatch(onSelectStep(Step.SelectMethod))
   }, [dispatch])
 
   return (
@@ -170,7 +176,7 @@ const ConfirmTransfer = () => {
               <Col span={12}>
                 <Button
                   size="large"
-                  onClick={() => dispatch(onSelectStep(Step.two))}
+                  onClick={() => dispatch(onSelectStep(Step.AddRecipient))}
                   block
                   type="ghost"
                 >

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { useUI } from '@senhub/providers'
 
-import { Drawer, Layout } from 'antd'
+import { Col, Drawer, Layout, Row } from 'antd'
 import Redeem from './redeem'
 import SideBar from './sideBar'
 import Dashboard from './dashboard'
@@ -36,26 +36,34 @@ const View = () => {
       </Drawer>
       <Layout>
         <Content>
-          <Switch>
-            <Route exact path={`${appRoute}/dashboard`} component={Dashboard} />
-            <Route exact path={`${appRoute}/vesting`} component={Vesting} />
-            <Route
-              exact
-              path={`${appRoute}/vesting/add-new`}
-              component={AddNewVesting}
-            />
-            <Route
-              exact
-              path={`${appRoute}/airdrop/add-new`}
-              component={AddNewAirdrop}
-            />
-            <Route exact path={`${appRoute}/airdrop`} component={Airdrop} />
-            <Route
-              path={`${appRoute}/redeem/:distributorAddress`}
-              component={Redeem}
-            />
-            <Redirect from={appRoute} to={`${appRoute}/dashboard`} />
-          </Switch>
+          <Row justify="center">
+            <Col span={24} xxl={16}>
+              <Switch>
+                <Route
+                  exact
+                  path={`${appRoute}/dashboard`}
+                  component={Dashboard}
+                />
+                <Route exact path={`${appRoute}/vesting`} component={Vesting} />
+                <Route
+                  exact
+                  path={`${appRoute}/vesting/add-new`}
+                  component={AddNewVesting}
+                />
+                <Route
+                  exact
+                  path={`${appRoute}/airdrop/add-new`}
+                  component={AddNewAirdrop}
+                />
+                <Route exact path={`${appRoute}/airdrop`} component={Airdrop} />
+                <Route
+                  path={`${appRoute}/redeem/:distributorAddress`}
+                  component={Redeem}
+                />
+                <Redirect from={appRoute} to={`${appRoute}/dashboard`} />
+              </Switch>
+            </Col>
+          </Row>
         </Content>
         <DistributorWatcher />
         <HistoryWatcher />

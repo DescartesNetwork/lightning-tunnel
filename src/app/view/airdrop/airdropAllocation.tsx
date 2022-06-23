@@ -3,8 +3,12 @@ import DoughnutChart from 'app/components/charts/doughnutChart'
 
 const AirdropAllocation = () => {
   return (
-    <Card className="card-lightning" style={{ height: '100%' }}>
-      <Row gutter={[24, 24]}>
+    <Card
+      className="card-lightning"
+      style={{ height: '100%' }}
+      bodyStyle={{ paddingBottom: 0 }}
+    >
+      <Row gutter={[0, 24]}>
         <Col span={24}>
           <Row>
             <Col flex="auto">

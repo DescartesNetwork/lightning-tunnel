@@ -1,25 +1,34 @@
-import { Card, Col, Row, Typography } from 'antd'
-import LineChart from 'app/components/charts/lineChart'
+import { Col, Row } from 'antd'
+import HeroCard from '../dashboard/hero/heroCard'
 
 const TotalAirdrop = () => {
   return (
-    <Card className="card-lightning" style={{ height: '100%' }}>
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Row>
-            <Col flex="auto">
-              <Typography.Title level={5}>Total airdrop</Typography.Title>
-            </Col>
-            <Col>
-              <Typography.Title level={3}>$989</Typography.Title>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <LineChart />
-        </Col>
-      </Row>
-    </Card>
+    <Row gutter={[24, 24]} style={{ height: '100%' }}>
+      <Col span={24}>
+        <HeroCard
+          label="Total airdrop"
+          icon="wallet-outline"
+          value={100}
+          cardStyles={{ padding: '8px 24px' }}
+        />
+      </Col>
+      <Col span={24}>
+        <HeroCard
+          label="Total campaigns"
+          icon="paper-plane-outline"
+          value={100}
+          cardStyles={{ padding: '8px 24px' }}
+        />
+      </Col>
+      <Col span={24}>
+        <HeroCard
+          label="Total recipients"
+          icon="people-outline"
+          value={100}
+          cardStyles={{ padding: '8px 24px' }}
+        />
+      </Col>
+    </Row>
   )
 }
 

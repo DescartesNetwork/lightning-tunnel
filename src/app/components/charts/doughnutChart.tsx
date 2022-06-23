@@ -47,7 +47,7 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
       },
       icon: 'rect',
       textStyle: {
-        width: 150,
+        width: 500,
         rich: {
           a: {
             color: '#A7ADAD',
@@ -66,7 +66,7 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
     series: [
       {
         left: 0,
-        center: [120, '50%'],
+        center: [100, '50%'],
         name: 'Access From',
         type: 'pie',
         radius: ['40%', '70%'],
@@ -108,6 +108,54 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
     media: [
       {
         query: {
+          maxWidth: 768,
+        },
+        option: {
+          legend: {
+            textStyle: {
+              width: 400,
+            },
+          },
+        },
+      },
+      {
+        query: {
+          maxWidth: 630,
+        },
+        option: {
+          legend: {
+            textStyle: {
+              width: 350,
+            },
+          },
+        },
+      },
+      {
+        query: {
+          maxWidth: 576,
+        },
+        option: {
+          legend: {
+            textStyle: {
+              width: 270,
+            },
+          },
+        },
+      },
+      {
+        query: {
+          maxWidth: 485,
+        },
+        option: {
+          legend: {
+            textStyle: {
+              width: 180,
+            },
+          },
+        },
+      },
+      {
+        query: {
           maxWidth: 400,
         },
         option: {
@@ -127,7 +175,7 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
           },
           series: [
             {
-              center: [80, '50%'],
+              center: [75, '50%'],
               radius: ['30%', '50%'],
             },
           ],
@@ -140,6 +188,7 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
 const DoughnutChart = () => {
   return (
     <ReactEChartsCore
+      style={{ height: 255 }}
       echarts={echarts}
       option={buildOptions({})}
       notMerge={true}

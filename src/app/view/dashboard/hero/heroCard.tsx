@@ -1,5 +1,8 @@
+import { CSSProperties } from 'react'
+
 import IonIcon from '@sentre/antd-ionicon'
 import { Card, Col, Row, Spin, Typography } from 'antd'
+
 import { numeric } from 'shared/util'
 
 type HeroCardProps = {
@@ -7,11 +10,23 @@ type HeroCardProps = {
   icon: string
   value: string | number
   loading?: boolean
+  cardStyles?: CSSProperties
 }
 
-const HeroCard = ({ label, icon, value, loading = false }: HeroCardProps) => (
-  <Spin spinning={loading}>
-    <Card bordered={false} className="card-lightning">
+const HeroCard = ({
+  label,
+  icon,
+  value,
+  loading = false,
+  cardStyles = {},
+}: HeroCardProps) => (
+  <Spin spinning={loading} style={{ height: '100%' }}>
+    <Card
+      bordered={false}
+      className="card-lightning"
+      bodyStyle={cardStyles}
+      style={{ height: '100%' }}
+    >
       <Row gutter={[12, 12]} align="middle">
         <Col flex="auto">
           <Typography.Text type="secondary">{label}</Typography.Text>

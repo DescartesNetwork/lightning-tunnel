@@ -1,13 +1,11 @@
 import { Suspense, forwardRef, cloneElement, useCallback, useMemo } from 'react'
 import { RemoteModule } from '@sentre/react-dynamic-remote-component'
-import { useQuery } from 'react-query'
+import useSWR from 'swr'
 
 import { Spin } from 'antd'
 import ErrorBoundary from 'os/components/errorBoundary'
 
 import { useRootSelector, RootState } from 'os/store'
-
-const ONE_HOUR = 60 * 60 * 1000
 
 /**
  * Remote Static
@@ -31,10 +29,7 @@ const useRemoteStatic = ({ url, scope }: RemoteModule): any => {
     Object.keys(data).forEach((key) => (data[key] = prefix(data[key])))
     return data
   }, [url, scope])
-  const { data } = useQuery(scope, fetchAsset, {
-    cacheTime: ONE_HOUR,
-    staleTime: ONE_HOUR,
-  })
+  const { data } = useSWR(scope, fetchAsset)
   return data || {}
 }
 

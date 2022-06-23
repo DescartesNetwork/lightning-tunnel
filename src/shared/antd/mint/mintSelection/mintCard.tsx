@@ -10,7 +10,7 @@ export type MintSelectionProps = {
 
 const Verification = () => {
   return (
-    <Tooltip title={'Verified by Sentre'}>
+    <Tooltip title={'Safe to Go'}>
       <IonIcon
         name="checkmark-circle"
         style={{

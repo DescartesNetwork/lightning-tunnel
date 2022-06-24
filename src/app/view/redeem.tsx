@@ -68,7 +68,7 @@ const Redeem = () => {
 
   const recipientData = useMemo(() => {
     if (!merkle) return
-    const recipients = merkle.receipients
+    const recipients = merkle.recipients
     for (const recipient of recipients) {
       if (walletAddress === recipient.authority.toBase58()) return recipient
     }

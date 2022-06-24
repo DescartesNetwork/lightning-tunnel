@@ -50,7 +50,7 @@ const useReceiveList = ({ type }: { type: TypeDistribute }) => {
               const merkleDistributor = MerkleDistributor.fromBuffer(
                 Buffer.from(data),
               )
-              const recipients = merkleDistributor.receipients
+              const recipients = merkleDistributor.recipients
               const mintAddress = mint.toBase58()
               const sender = authority.toBase58()
               //filter airdrop-type distributes

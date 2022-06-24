@@ -31,7 +31,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         const merkleDistributor = MerkleDistributor.fromBuffer(
           Buffer.from(parseData),
         )
-        const salt = merkleDistributor.receipients[0].salt
+        const salt = merkleDistributor.recipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)
 
         if (x !== 0) continue

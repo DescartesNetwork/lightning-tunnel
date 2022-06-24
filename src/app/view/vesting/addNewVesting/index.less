@@ -1,0 +1,59 @@
+.date-option {
+  width: 100% !important;
+  padding: 9px 12px !important;
+  background-color: #233333 !important;
+  border: none !important;
+}
+.lightning_tunnel-picker-panel-container {
+  background: #233333 !important;
+  .lightning_tunnel-picker-cell-inner:hover {
+    background: #42e6eb !important;
+  }
+  .lightning_tunnel-picker-time-panel-cell-inner {
+    &:hover {
+      background: #42e6eb !important;
+    }
+  }
+  .lightning_tunnel-picker-time-panel-column
+    > li.lightning_tunnel-picker-time-panel-cell-selected
+    .lightning_tunnel-picker-time-panel-cell-inner {
+    background: #42e6eb !important;
+  }
+}
+.select-vesting-data {
+  width: 100% !important;
+  .lightning_tunnel-select-selector {
+    height: 40px !important;
+    background-color: #233333 !important;
+    border: unset !important;
+  }
+  .lightning_tunnel-select-selection-item {
+    padding: 0 !important;
+    top: 12%;
+    &-option {
+      background-color: #233333 !important;
+    }
+  }
+}
+
+.vesting {
+  &-item {
+    transition: all 0.2s;
+    padding: 6px !important;
+    &:hover {
+      background-color: #233333 !important;
+      cursor: pointer;
+      .vesting-action {
+        opacity: 1 !important;
+      }
+    }
+  }
+  &-action {
+    opacity: 0 !important;
+    text-align: right;
+  }
+  &-config {
+    border: solid 1px #4f5b5c !important;
+    padding: 8px !important;
+  }
+}

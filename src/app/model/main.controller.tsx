@@ -3,14 +3,18 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 /**
  * Interface & Utility
  */
+
+export enum TypeDistribute {
+  Vesting = 'vesting',
+  Airdrop = 'airdrop',
+}
+
 export type MainState = {
   methodSelected?: number
   mintSelected: string
   visible: boolean
   isTyping: boolean
-  startDate: number
-  endDate: number
-  typeDistribute: string
+  typeDistribute: TypeDistribute
 }
 
 /**
@@ -23,9 +27,7 @@ const initialState: MainState = {
   mintSelected: '',
   visible: false,
   isTyping: false,
-  startDate: 0,
-  endDate: 0,
-  typeDistribute: '',
+  typeDistribute: TypeDistribute.Airdrop,
 }
 
 /**
@@ -57,19 +59,6 @@ export const setIsTyping = createAsyncThunk(
   `${NAME}/setIsTyping`,
   async (isTyping: boolean) => {
     return { isTyping }
-  },
-)
-export const setStartDate = createAsyncThunk(
-  `${NAME}/setStartDate`,
-  async (startDate: number) => {
-    return { startDate }
-  },
-)
-
-export const setEndDate = createAsyncThunk(
-  `${NAME}/setEndDate`,
-  async (endDate: number) => {
-    return { endDate }
   },
 )
 
@@ -104,14 +93,6 @@ const slice = createSlice({
       )
       .addCase(
         setIsTyping.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
-      .addCase(
-        setStartDate.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
-      .addCase(
-        setEndDate.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

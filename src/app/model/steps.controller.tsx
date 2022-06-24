@@ -15,7 +15,7 @@ export type StepState = {
 
 const NAME = 'steps'
 const initialState: StepState = {
-  step: Step.one,
+  step: Step.SelectMethod,
 }
 
 /**

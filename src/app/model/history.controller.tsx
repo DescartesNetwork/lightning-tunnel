@@ -19,16 +19,17 @@ const initialState: HistoryRecord[] = []
  * Actions
  */
 
-export const getHistory = createAsyncThunk(
-  `${NAME}/getHistory`,
-  async (walletAddress: string) => {
-    if (!account.isAddress(walletAddress))
-      throw new Error('Wallet is not connected')
-    const history = new History('history', walletAddress)
-    const data = await history.get()
-    return data
-  },
-)
+export const getHistory = createAsyncThunk<
+  HistoryState,
+  { walletAddress: string },
+  { state: any }
+>(`${NAME}/getHistory`, async ({ walletAddress }, { getState }) => {
+  if (!account.isAddress(walletAddress))
+    throw new Error('Wallet is not connected')
+  const history = new History('history', walletAddress)
+  const data = await history.get()
+  return data
+})
 export const setStateHistory = createAsyncThunk<
   HistoryState,
   { cid: string; state: string; walletAddress: string },

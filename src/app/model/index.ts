@@ -20,10 +20,10 @@ const model = configureStore({
     main,
     steps,
     setting,
-    recipients,
     file,
     history,
     distributors,
+    recipients,
   },
 })
 

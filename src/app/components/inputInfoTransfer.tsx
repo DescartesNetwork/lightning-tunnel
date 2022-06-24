@@ -10,14 +10,12 @@ import ModalMerge from './commonModal'
 import { AppState } from 'app/model'
 import {
   addRecipient,
-  addRecipients,
   RecipientInfo,
-  RecipientInfos,
   removeRecipient,
 } from 'app/model/recipients.controller'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
-import { onSelectedFile } from 'app/model/file.controller'
+import { selectRecipient } from 'app/model/file.controller'
 import { setIsTyping } from 'app/model/main.controller'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -30,6 +28,8 @@ const DEFAULT_RECIPIENT = {
   walletAddress: '',
   amount: '',
 }
+
+const ONE_DAY = 24 * 60 * 60 * 1000
 
 const ActionButton = ({
   walletAddress,
@@ -74,10 +74,9 @@ const InputInfoTransfer = ({
   const [amountError, setAmountError] = useState('')
   const [walletError, setWalletError] = useState('')
   const [visible, setVisible] = useState(false)
-
   const {
-    main: { mintSelected },
-    recipients: { recipients },
+    main: { mintSelected, typeDistribute },
+    recipients,
     setting: { decimal },
     file: { selectedFile },
   } = useSelector((state: AppState) => state)
@@ -90,8 +89,8 @@ const InputInfoTransfer = ({
 
   const onAmount = (val: string) => setRecipient({ ...formInput, amount: val })
 
-  const onSelected = (checked: boolean, index?: number) =>
-    dispatch(onSelectedFile({ checked, index }))
+  const onSelected = (checked: boolean, walletAddress: string) =>
+    dispatch(selectRecipient({ checked, walletAddress }))
 
   const recipientInfo = useCallback(async () => {
     if (account.isAddress(walletAddress) && amount) {
@@ -102,38 +101,70 @@ const InputInfoTransfer = ({
 
   const addNewRecipient = async () => {
     const { walletAddress, amount } = formInput
-
     if (!account.isAddress(walletAddress))
       return setWalletError('Wrong wallet address')
     if (!amount) return setAmountError('Amount cannot be empty')
+    const nextRecipients: RecipientInfo[] = []
 
-    for (const [address] of recipients) {
-      if (walletAddress === address) return setVisible(true)
+    const { recipientInfos, globalConfigs, globalUnlockTime } = recipients
+    if (recipientInfos[walletAddress]) return setVisible(true)
+
+    if (typeDistribute === 'airdrop') {
+      const recipient: RecipientInfo = {
+        address: walletAddress,
+        amount: amount,
+        unlockTime: globalUnlockTime,
+      }
+      nextRecipients.push(recipient)
     }
 
-    const recipient: RecipientInfo = [walletAddress, amount]
+    if (typeDistribute === 'vesting') {
+      const { distributeIn, frequency } = globalConfigs
+      const distributionAmount = Math.floor((distributeIn * 30) / frequency)
+      const actualAmount = Number(amount) / distributionAmount
+
+      for (let i = 0; i < distributionAmount; i++) {
+        let unlockTime = 0
+        if (i === 0) unlockTime = globalUnlockTime
+        if (i !== 0)
+          unlockTime = frequency * ONE_DAY + nextRecipients[i - 1].unlockTime
+
+        const recipient: RecipientInfo = {
+          address: walletAddress,
+          amount: actualAmount.toString(),
+          unlockTime: unlockTime,
+          configs: globalConfigs,
+        }
+        nextRecipients.push(recipient)
+      }
+    }
+
     setWalletError('')
     setAmountError('')
-    await dispatch(addRecipient({ recipient }))
+    await dispatch(addRecipient({ walletAddress, nextRecipients }))
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
   const onMerge = async () => {
     const { walletAddress, amount } = formInput
-    const recipient = recipients.find(([address]) => address === walletAddress)
-    if (!recipient || !mintDecimals) return
-
-    const newAmount =
-      utils.decimalize(recipient[1], mintDecimals) +
+    const { recipientInfos } = recipients
+    const amountRecipient = recipientInfos[walletAddress].length
+    const oldAmount =
+      amountRecipient * Number(recipientInfos[walletAddress][0].amount)
+    const decimalAmount =
+      utils.decimalize(oldAmount, mintDecimals) +
       utils.decimalize(amount, mintDecimals)
 
-    const nextRecipient: RecipientInfo = [
-      walletAddress,
-      utils.undecimalize(newAmount, mintDecimals),
-    ]
+    const actualAmount = utils.undecimalize(decimalAmount, mintDecimals)
 
-    await dispatch(removeRecipient({ recipient }))
-    await dispatch(addRecipient({ recipient: nextRecipient }))
+    const nextRecipients = recipientInfos[walletAddress].map((recipient) => {
+      return {
+        ...recipient,
+        amount: (Number(actualAmount) / amountRecipient).toString(),
+      }
+    })
+
+    await dispatch(addRecipient({ walletAddress, nextRecipients }))
     await setVisible(false)
     if (amountError || walletError) {
       setAmountError('')
@@ -142,11 +173,9 @@ const InputInfoTransfer = ({
     return setRecipient(DEFAULT_RECIPIENT)
   }
 
-  const remove = () => {
-    if (index === undefined) return
-    const nextData: RecipientInfos = [...recipients]
-    nextData.splice(index, 1)
-    return dispatch(addRecipients({ recipients: nextData }))
+  const onRemove = () => {
+    if (!account.isAddress(walletAddress)) return
+    return dispatch(removeRecipient(walletAddress))
   }
 
   const checkIsTyping = useCallback(() => {
@@ -188,8 +217,8 @@ const InputInfoTransfer = ({
       {isSelect && (
         <Col>
           <Checkbox
-            checked={selectedFile?.includes(index as number)}
-            onChange={(e) => onSelected(e.target.checked, index)}
+            checked={selectedFile?.includes(walletAddress || '')}
+            onChange={(e) => onSelected(e.target.checked, walletAddress || '')}
           />
         </Col>
       )}
@@ -220,7 +249,7 @@ const InputInfoTransfer = ({
           <ActionButton
             addNewRecipient={addNewRecipient}
             walletAddress={walletAddress}
-            remove={remove}
+            remove={onRemove}
           />
         </Col>
       )}

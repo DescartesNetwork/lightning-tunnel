@@ -177,7 +177,7 @@ const Redeem = () => {
                   <Typography.Text type="secondary">Let's take</Typography.Text>{' '}
                   <Typography.Title level={5} style={{ color: '#42E6EB' }}>
                     {utils.undecimalize(
-                      BigInt(recipientData?.amount.toNumber() || 0),
+                      BigInt(recipientData?.amount.toString() || 0),
                       decimals,
                     )}{' '}
                     <MintSymbol

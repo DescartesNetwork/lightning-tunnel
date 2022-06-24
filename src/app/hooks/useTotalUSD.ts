@@ -48,29 +48,43 @@ const useTotalUSD = () => {
     [],
   )
 
-  const clcTotalUSD = useCallback(async () => {
-    try {
-      let totalUSD = 0
-      for (const account of Object.values(accounts)) {
-        const { mint, amount } = account
-        const decimals = await getMintDecimal(mint)
-        const cgkData = await fetchCgkData(tokenProvider, mint)
-        const tokenBalance = Number(utils.undecimalize(amount, decimals))
-        const usdBalance = tokenBalance * cgkData.price
-        totalUSD += usdBalance
+  // const clcTotalUSD = useCallback(async () => {
+  //   try {
+  //     let totalUSD = 0
+  //     for (const account of Object.values(accounts)) {
+  //       const { mint, amount } = account
+  //       const decimals = await getMintDecimal(mint)
+  //       const cgkData = await fetchCgkData(tokenProvider, mint)
+  //       const tokenBalance = Number(utils.undecimalize(amount, decimals))
+  //       const usdBalance = tokenBalance * cgkData.price
+  //       totalUSD += usdBalance
+  //     }
+  //     return setTotalUSD(totalUSD)
+  //   } catch (error) {
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }, [accounts, fetchCgkData, getMintDecimal, tokenProvider])
+
+  const calcUsdValue = useCallback(
+    async (address: string, amount: number) => {
+      try {
+        const cgkData = await fetchCgkData(tokenProvider, address)
+
+        return amount * cgkData.price
+      } catch (error) {
+      } finally {
+        setLoading(false)
       }
-      return setTotalUSD(totalUSD)
-    } catch (error) {
-    } finally {
-      setLoading(false)
-    }
-  }, [accounts, fetchCgkData, getMintDecimal, tokenProvider])
+    },
+    [fetchCgkData, tokenProvider],
+  )
 
-  useEffect(() => {
-    clcTotalUSD()
-  }, [clcTotalUSD])
+  // useEffect(() => {
+  //   clcTotalUSD()
+  // }, [clcTotalUSD])
 
-  return { loading, totalUSD }
+  return { loading, totalUSD, calcUsdValue }
 }
 
 export default useTotalUSD

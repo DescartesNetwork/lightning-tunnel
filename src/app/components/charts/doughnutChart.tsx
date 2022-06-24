@@ -12,6 +12,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 import { numeric } from 'shared/util'
 import { shortenTailText } from 'app/helper'
+import { AirdropAllocationType } from 'app/hooks/airdrop/useAirdropAllocation'
 
 echarts.use([
   TitleComponent,
@@ -22,14 +23,21 @@ echarts.use([
   TooltipComponent,
 ])
 
-const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
+const buildOptions = ({
+  data,
+  bgTooltip = '#233333',
+}: {
+  data: Map<string, AirdropAllocationType>
+  bgTooltip?: string
+}) => {
+  const formattedData = Array.from(data.values())
   return {
     tooltip: {
       trigger: 'item',
       backgroundColor: bgTooltip,
       extraCssText: 'border-radius: 0px',
       formatter: function (params: any) {
-        return `<div style="width: 200px; font-weight: 400"><span style="display: flex; justify-content: space-between"><span style="font-size: 14px, font-weight: 400">Value</span> <span style="font-size: 16px; font-weight: 700">${params.data.value}%</span></span> <span style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 400">Token amount</span> <span style="font-size: 16px; font-weight: 700">${params.data.tokenAmount}</span></span></div>`
+        return `<div style="width: 200px; font-weight: 400"><span style="display: flex; justify-content: space-between"><span style="font-size: 14px, font-weight: 400">Value</span> <span style="font-size: 16px; font-weight: 700">${params.data.value}</span></span> <span style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 400">Token amount</span> <span style="font-size: 16px; font-weight: 700">${params.data.tokenAmount}</span></span></div>`
       },
       textStyle: {
         color: '#F4F5F5',
@@ -42,7 +50,7 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
       formatter: function (name: string) {
         const splitedString = name.split('_')
         return `{a| ${shortenTailText(splitedString[0], 7)}}{b| ${numeric(
-          splitedString[1],
+          Number(splitedString[1]) * 100,
         ).format('0,0.[00]')}%}`
       },
       icon: 'rect',
@@ -92,17 +100,14 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
         labelLine: {
           show: false,
         },
-        data: [
-          {
-            value: 1048,
-            name: 'Search Engine_1048',
-            tokenAmount: 10,
-          },
-          { value: 735, name: 'Direct_735', tokenAmount: 10 },
-          { value: 580, name: 'Email_580', tokenAmount: 10 },
-          { value: 484, name: 'Union Ads_484', tokenAmount: 10 },
-          { value: 300, name: 'Video Ads_300', tokenAmount: 10 },
-        ],
+        data: formattedData.map((val) => {
+          return {
+            value: val.usdValue,
+            name: `${val.name}_${val.percentInTotal}`,
+            tokenAmount: val.amountToken,
+            percentRatio: val.percentInTotal,
+          }
+        }),
       },
     ],
     media: [
@@ -185,12 +190,16 @@ const buildOptions = ({ bgTooltip = '#233333' }: { bgTooltip?: string }) => {
   }
 }
 
-const DoughnutChart = () => {
+const DoughnutChart = ({
+  data,
+}: {
+  data: Map<string, AirdropAllocationType>
+}) => {
   return (
     <ReactEChartsCore
       style={{ height: 255 }}
       echarts={echarts}
-      option={buildOptions({})}
+      option={buildOptions({ data, bgTooltip: '#123432' })}
       notMerge={true}
       lazyUpdate={true}
     />

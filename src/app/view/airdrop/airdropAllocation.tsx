@@ -1,7 +1,12 @@
 import { Card, Col, Row, Typography } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
+import { AirdropAllocationType } from 'app/hooks/airdrop/useAirdropAllocation'
 
-const AirdropAllocation = () => {
+type AirdropAllocationProps = {
+  airdropAllocation: Map<string, AirdropAllocationType>
+}
+
+const AirdropAllocation = ({ airdropAllocation }: AirdropAllocationProps) => {
   return (
     <Card
       className="card-lightning"
@@ -17,7 +22,7 @@ const AirdropAllocation = () => {
           </Row>
         </Col>
         <Col span={24}>
-          <DoughnutChart />
+          <DoughnutChart data={airdropAllocation} />
         </Col>
       </Row>
     </Card>

@@ -1,15 +1,16 @@
 import { forwardRef, useMemo } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 
 import { Col, Row, Space, Typography, Tooltip, Checkbox, Button } from 'antd'
-import NumericInput from '@sentre/antd-numeric-input'
 
 import { shortenAddress } from 'shared/util'
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 import { ValidVestingRecipient } from 'app/hooks/vesting/useValidVestingRecipient'
 import moment from 'moment'
 import IonIcon from '@sentre/antd-ionicon'
+import { removeRecipient } from 'app/model/recipients.controller'
+import AddAmount from './action/addAmount'
 
 type AccountInfoProps = {
   vestingItem: ValidVestingRecipient
@@ -25,11 +26,11 @@ const AccountInfo = forwardRef(
     onChecked = () => {},
     index,
   }: AccountInfoProps) => {
-    const {
-      file: { selectedFile },
-      setting: { decimal },
-    } = useSelector((state: AppState) => state)
-
+    const selectedFile = useSelector(
+      (state: AppState) => state.file.selectedFile,
+    )
+    const decimal = useSelector((state: AppState) => state.setting.decimal)
+    const dispatch = useDispatch<AppDispatch>()
     const isValidAddress = !account.isAddress(vestingItem.address)
 
     const validateAmount = useMemo(() => {
@@ -61,15 +62,15 @@ const AccountInfo = forwardRef(
           </Space>
         </Col>
         <Col span={5}>
-          <Typography.Text style={{ color: isValidAddress ? '#F9575E' : '' }}>
-            {shortenAddress(vestingItem.address)}
-          </Typography.Text>
+          <Tooltip title={vestingItem.address}>
+            <Typography.Text style={{ color: isValidAddress ? '#F9575E' : '' }}>
+              {shortenAddress(vestingItem.address)}
+            </Typography.Text>
+          </Tooltip>
         </Col>
         <Col
           span={12}
-          className={
-            validateAmount ? 'recipient-input-error' : 'recipient-input-auto'
-          }
+          className={validateAmount ? 'recipient-input-error' : ''}
         >
           <Space>
             {vestingItem.config.map(({ amount, unlockTime }) => (
@@ -84,8 +85,12 @@ const AccountInfo = forwardRef(
         </Col>
         <Col span={5} className="vesting-action">
           <Space>
-            <Button icon={<IonIcon name="trash-outline" />} type="text" />
-            <Button icon={<IonIcon name="create-outline" />} type="text" />
+            <Button
+              onClick={() => dispatch(removeRecipient(vestingItem.address))}
+              icon={<IonIcon name="trash-outline" />}
+              type="text"
+            />
+            <AddAmount walletAddress={vestingItem.address} />
             <Button icon={<IonIcon name="add-outline" />} type="text" />
           </Space>
         </Col>

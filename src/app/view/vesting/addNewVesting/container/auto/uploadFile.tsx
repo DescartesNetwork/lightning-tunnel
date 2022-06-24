@@ -7,7 +7,6 @@ import { utils } from '@senswap/sen-js'
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import FileDetails from './fileDetails'
-import ModalMerge from 'app/components/commonModal'
 
 import iconUpload from 'app/static/images/icon-upload.svg'
 import { AppState } from 'app/model'
@@ -20,7 +19,6 @@ import {
 } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'app/model/file.controller'
-import { notifyError } from 'app/helper'
 
 const INDEX_ADDRESS = 0
 const INDEX_AMOUNT = 1
@@ -41,10 +39,8 @@ const parse = (file: any): Promise<Array<string>> => {
 const UploadFile = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
-  const [visible, setVisible] = useState(false)
-  const [listDuplicate, setListDuplicate] = useState<RecipientInfos>({})
   const {
-    recipients: { recipientInfos, globalUnlockTime },
+    recipients: { recipientInfos },
     main: { mintSelected },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
@@ -53,9 +49,7 @@ const UploadFile = () => {
     async (file: any) => {
       setLoading(true)
       const recipients = await parse(file)
-
       const recipientInfos: RecipientInfos = {}
-      let isDuplicate = false
 
       for (const recipientData of recipients) {
         const address = recipientData[INDEX_ADDRESS]
@@ -64,24 +58,6 @@ const UploadFile = () => {
           mintDecimals,
         )
 
-        if (recipientInfos[address]) {
-          isDuplicate = true
-          const listRecipient = [...recipientInfos[address]]
-          const oldAmount = utils.decimalize(
-            listRecipient[0].amount,
-            mintDecimals,
-          )
-          const newAmount = oldAmount + amount
-
-          recipientInfos[address] = [
-            {
-              address,
-              amount: utils.undecimalize(newAmount, mintDecimals),
-              unlockTime: globalUnlockTime,
-            },
-          ]
-          continue
-        }
         const recipientInfo: RecipientInfo[] = []
         const amountVesting = recipientData.length - INDEX_FIRST_UNLOCK_TIME
         const newAmount = amount / BigInt(amountVesting)
@@ -94,39 +70,18 @@ const UploadFile = () => {
         }
         recipientInfos[address] = recipientInfo
       }
-      console.log('recipientInfos: ', recipientInfos)
-      if (isDuplicate) {
-        setListDuplicate(recipientInfos)
-        setLoading(false)
-        setVisible(true)
-        dispatch(setFileName(file.name))
-        return true
-      }
 
       dispatch(setFileName(file.name))
       dispatch(addRecipients({ recipientInfos }))
       setLoading(false)
-      setVisible(false)
       return false
     },
-    [dispatch, globalUnlockTime, mintDecimals],
+    [dispatch, mintDecimals],
   )
 
   const remove = async () => {
     dispatch(removeRecipients())
-    setListDuplicate({})
     return true
-  }
-
-  const onMerge = () => {
-    dispatch(addRecipients({ recipientInfos: listDuplicate }))
-    return setVisible(false)
-  }
-
-  const onCancel = () => {
-    setVisible(false)
-    dispatch(setFileName(''))
-    setListDuplicate({})
   }
 
   const getFileCSV = async (fileCSV: string) => {
@@ -185,15 +140,6 @@ const UploadFile = () => {
             Download sample
           </Button>
         </Col>
-        <ModalMerge
-          title="Do you want to merge wallet addresses?"
-          description="There are some wallet addresses that are the same."
-          visible={visible}
-          setVisible={setVisible}
-          onConfirm={onMerge}
-          onCancel={onCancel}
-          btnText="merge"
-        />
       </Row>
     )
   return <FileDetails remove={remove} />

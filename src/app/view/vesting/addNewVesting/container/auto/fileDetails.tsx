@@ -17,7 +17,6 @@ import {
   removeSelectedFile,
   selectAllRecipient,
 } from 'app/model/file.controller'
-import useInvalidAirdropRecipient from 'app/hooks/airdrop/useInvalidAirdropRecipient'
 import useValidVestingRecipient from 'app/hooks/vesting/useValidVestingRecipient'
 
 const ActionButton = ({
@@ -72,7 +71,6 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
     recipients: { recipientInfos },
   } = useSelector((state: AppState) => state)
   const listRecipient = useValidVestingRecipient()
-  const listInvalidRecipient = useInvalidAirdropRecipient()
 
   const onSelected = (checked: boolean, walletAddress: string) =>
     dispatch(selectRecipient({ checked, walletAddress }))
@@ -99,7 +97,6 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
 
   // const { amountError } = useValidateAmount(listRecipient)
 
-  console.log('listRecipient: ', listRecipient)
   return (
     <Row gutter={[16, 16]}>
       <Col span={24}>

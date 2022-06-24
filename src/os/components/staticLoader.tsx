@@ -7,6 +7,8 @@ import ErrorBoundary from 'os/components/errorBoundary'
 
 import { useRootSelector, RootState } from 'os/store'
 
+const ONE_HOUR = 60 * 60 * 1000
+
 /**
  * Remote Static
  */
@@ -17,19 +19,26 @@ type MultiStaticType = 'panels'
  * Load asset json
  */
 const useRemoteStatic = ({ url, scope }: RemoteModule): any => {
-  const fetchAsset = useCallback(async () => {
-    const root = url.replace('index.js', '')
-    const prefix = (asset: string | string[]) => {
-      if (typeof asset === 'string') return root + asset
-      if (Array.isArray(asset)) return asset.map((value) => root + value)
-      throw new Error('Invalid static asset')
-    }
-    const res = await fetch(root + `${scope}-asset-senhub.json`)
-    let data = await res.json()
-    Object.keys(data).forEach((key) => (data[key] = prefix(data[key])))
-    return data
-  }, [url, scope])
-  const { data } = useSWR(scope, fetchAsset)
+  const fetchAsset = useCallback(
+    async (appId) => {
+      const root = url.replace('index.js', '')
+      const prefix = (asset: string | string[]) => {
+        if (typeof asset === 'string') return root + asset
+        if (Array.isArray(asset)) return asset.map((value) => root + value)
+        throw new Error('Invalid static asset')
+      }
+      const res = await fetch(root + `${appId}-asset-senhub.json`)
+      let data = await res.json()
+      Object.keys(data).forEach((key) => (data[key] = prefix(data[key])))
+      return data
+    },
+    [url],
+  )
+  const { data } = useSWR(scope, fetchAsset, {
+    shouldRetryOnError: false,
+    revalidateOnFocus: false,
+    dedupingInterval: ONE_HOUR,
+  })
   return data || {}
 }
 

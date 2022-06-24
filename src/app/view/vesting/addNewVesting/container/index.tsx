@@ -6,7 +6,7 @@ import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
-import Auto from '../../../airdrop/addNewAirdrop/container/auto'
+import Auto from './auto'
 import Manual from './manual'
 import ConfirmTransfer from 'app/view/confirmTransfer'
 import UnlockTime from '../components/unlockTime'
@@ -75,6 +75,7 @@ const SelectInputMethod = () => {
   const distributeIn = useSelector(
     (state: AppState) => state.recipients.globalConfigs.distributeIn,
   )
+
   const dispatch = useDispatch()
   const { accounts } = useAccount()
 
@@ -103,12 +104,26 @@ const SelectInputMethod = () => {
     return dispatch(setGlobalConfigs({ configs }))
   }
 
-  const disabled =
-    activeMintAddress === 'Select' ||
-    !method ||
-    !unlockTime ||
-    (expiration < unlockTime && !isUnlimited) ||
-    (expiration - unlockTime < distributeIn * 30 * ONE_DAY && !isUnlimited)
+  const disabled = useMemo(() => {
+    if (method === SelectMethod.manual)
+      return (
+        activeMintAddress === 'Select' ||
+        !method ||
+        !unlockTime ||
+        (expiration < unlockTime && !isUnlimited) ||
+        (expiration - unlockTime < distributeIn * 30 * ONE_DAY && !isUnlimited)
+      )
+    return (
+      activeMintAddress === 'Select' || !method || (!expiration && !isUnlimited)
+    )
+  }, [
+    activeMintAddress,
+    distributeIn,
+    expiration,
+    isUnlimited,
+    method,
+    unlockTime,
+  ])
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -160,26 +175,34 @@ const SelectInputMethod = () => {
             </Col>
             <Col span={24}>
               <Row gutter={[16, 16]}>
-                <Col xs={12} md={6}>
-                  <UnlockTime
-                    unlockTime={unlockTime}
-                    onChange={(value) => dispatch(setGlobalUnlockTime(value))}
-                  />
-                </Col>
-                <Col xs={12} md={6}>
-                  <Frequency
-                    frequency={frequency}
-                    onChange={(value) => onConfigChange({ frequency: value })}
-                  />
-                </Col>
-                <Col xs={12} md={6}>
-                  <DistributeIn
-                    distributeIn={distributeIn}
-                    onChange={(value) =>
-                      onConfigChange({ distributeIn: value })
-                    }
-                  />
-                </Col>
+                {method === SelectMethod.manual && (
+                  <Fragment>
+                    <Col xs={12} md={6}>
+                      <UnlockTime
+                        unlockTime={unlockTime}
+                        onChange={(value) =>
+                          dispatch(setGlobalUnlockTime(value))
+                        }
+                      />
+                    </Col>
+                    <Col xs={12} md={6}>
+                      <Frequency
+                        frequency={frequency}
+                        onChange={(value) =>
+                          onConfigChange({ frequency: value })
+                        }
+                      />
+                    </Col>
+                    <Col xs={12} md={6}>
+                      <DistributeIn
+                        distributeIn={distributeIn}
+                        onChange={(value) =>
+                          onConfigChange({ distributeIn: value })
+                        }
+                      />
+                    </Col>
+                  </Fragment>
+                )}
                 <Col xs={12} md={6}>
                   <DateOption
                     label="Expiration time"

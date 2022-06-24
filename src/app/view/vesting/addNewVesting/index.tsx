@@ -9,7 +9,7 @@ const AddNewVesting = () => {
       <Col span={24}>
         <Typography.Title level={2}>Add new Vesting</Typography.Title>
       </Col>
-      <Col>
+      <Col span={24}>
         <Container />
       </Col>
     </Row>

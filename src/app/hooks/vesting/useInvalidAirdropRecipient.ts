@@ -1,19 +1,19 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { account } from '@senswap/sen-js'
 
 import { AppState } from 'app/model'
 import { RecipientInfo } from 'app/model/recipients.controller'
+import { account } from '@senswap/sen-js'
 
-const useValidRecipient = () => {
+const useInvalidAirdropRecipient = () => {
   const recipientInfos = useSelector(
     (state: AppState) => state.recipients.recipientInfos,
   )
   const listRecipient = useMemo(() => {
-    let nextRecipient: RecipientInfo[] = []
+    const nextRecipient: RecipientInfo[] = []
     for (const address in recipientInfos) {
-      if (!account.isAddress(address)) continue
-      nextRecipient = nextRecipient.concat(recipientInfos[address])
+      if (account.isAddress(address)) continue
+      nextRecipient.push(recipientInfos[address][0])
     }
     return nextRecipient
   }, [recipientInfos])
@@ -21,4 +21,4 @@ const useValidRecipient = () => {
   return listRecipient
 }
 
-export default useValidRecipient
+export default useInvalidAirdropRecipient

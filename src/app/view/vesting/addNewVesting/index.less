@@ -35,3 +35,25 @@
     }
   }
 }
+
+.vesting {
+  &-item {
+    transition: all 0.2s;
+    padding: 6px !important;
+    &:hover {
+      background-color: #233333 !important;
+      cursor: pointer;
+      .vesting-action {
+        opacity: 1 !important;
+      }
+    }
+  }
+  &-action {
+    opacity: 0 !important;
+    text-align: right;
+  }
+  &-config {
+    border: solid 1px #4f5b5c !important;
+    padding: 8px !important;
+  }
+}

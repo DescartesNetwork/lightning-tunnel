@@ -16,16 +16,23 @@ import {
   addRecipients,
   removeRecipients,
   RecipientInfos,
+  RecipientInfo,
 } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'app/model/file.controller'
+import { notifyError } from 'app/helper'
 
-const parse = (file: any): Promise<Array<[string, string]>> => {
+const INDEX_ADDRESS = 0
+const INDEX_AMOUNT = 1
+const INDEX_FIRST_UNLOCK_TIME = 2
+
+const parse = (file: any): Promise<Array<string>> => {
   return new Promise((resolve, reject) => {
     return Papa.parse(file, {
       skipEmptyLines: true,
       complete: ({ data }) => {
-        resolve(data as Array<[string, string]>)
+        console.log(data, ' data')
+        resolve(data as Array<string>)
       },
     })
   })
@@ -46,12 +53,17 @@ const UploadFile = () => {
     async (file: any) => {
       setLoading(true)
       const recipients = await parse(file)
-      if (!mintDecimals) return
 
       const recipientInfos: RecipientInfos = {}
       let isDuplicate = false
 
-      for (const [address, amount] of recipients) {
+      for (const recipientData of recipients) {
+        const address = recipientData[INDEX_ADDRESS]
+        const amount = utils.decimalize(
+          recipientData[INDEX_AMOUNT],
+          mintDecimals,
+        )
+
         if (recipientInfos[address]) {
           isDuplicate = true
           const listRecipient = [...recipientInfos[address]]
@@ -59,7 +71,7 @@ const UploadFile = () => {
             listRecipient[0].amount,
             mintDecimals,
           )
-          const newAmount = oldAmount + utils.decimalize(amount, mintDecimals)
+          const newAmount = oldAmount + amount
 
           recipientInfos[address] = [
             {
@@ -70,11 +82,19 @@ const UploadFile = () => {
           ]
           continue
         }
-        recipientInfos[address] = [
-          { address, amount, unlockTime: globalUnlockTime },
-        ]
+        const recipientInfo: RecipientInfo[] = []
+        const amountVesting = recipientData.length - INDEX_FIRST_UNLOCK_TIME
+        const newAmount = amount / BigInt(amountVesting)
+        for (let i = INDEX_FIRST_UNLOCK_TIME; i < recipientData.length; i++) {
+          recipientInfo.push({
+            address,
+            amount: utils.undecimalize(newAmount, mintDecimals),
+            unlockTime: new Date(recipientData[i]).getTime(),
+          })
+        }
+        recipientInfos[address] = recipientInfo
       }
-
+      console.log('recipientInfos: ', recipientInfos)
       if (isDuplicate) {
         setListDuplicate(recipientInfos)
         setLoading(false)

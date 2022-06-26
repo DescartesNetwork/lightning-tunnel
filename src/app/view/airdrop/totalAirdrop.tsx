@@ -4,13 +4,13 @@ import HeroCard from '../dashboard/hero/heroCard'
 type TotalAirdropProps = {
   valueInUSD: number
   numberOfCampaign: number
-  recipient?: number
+  recipientList: number
 }
 
 const TotalAirdrop = ({
   valueInUSD,
   numberOfCampaign,
-  recipient,
+  recipientList,
 }: TotalAirdropProps) => {
   return (
     <Row gutter={[24, 24]} style={{ height: '100%' }}>
@@ -32,9 +32,10 @@ const TotalAirdrop = ({
       </Col>
       <Col span={24}>
         <HeroCard
+          loading={!recipientList}
           label="Total recipients"
           icon="people-outline"
-          value={recipient || 0}
+          value={recipientList}
           cardStyles={{ padding: '8px 24px' }}
         />
       </Col>

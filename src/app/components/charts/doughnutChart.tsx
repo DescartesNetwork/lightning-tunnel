@@ -12,7 +12,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 import { numeric } from 'shared/util'
 import { shortenTailText } from 'app/helper'
-import { AirdropAllocationType } from 'app/hooks/airdrop/useAirdropAllocation'
+import { AirdropAllocationType } from 'app/constants'
 
 echarts.use([
   TitleComponent,

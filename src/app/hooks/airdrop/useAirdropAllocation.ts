@@ -1,47 +1,38 @@
 import { useMint } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
 import { MerkleDistributor } from '@sentre/utility'
+import { AirdropAllocationType } from 'app/constants'
 import { HistoryRecord } from 'app/helper/history'
 import { TypeDistribute } from 'app/model/main.controller'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSentList from '../useSentList'
 import useTotalUSD from '../useTotalUSD'
-import useListAirdropCampaign from './useListAirdropCampaign'
-
-export type AirdropAllocationType = {
-  mint: string
-  name: string
-  amountToken: number
-  usdValue: number
-  percentInTotal: number
-}
 
 const useAirdropAllocation = () => {
   const [airdropAllocation, setAirdropAllocation] = useState<
     Map<string, AirdropAllocationType>
   >(new Map<string, AirdropAllocationType>())
   const [totalUSDAirdrop, setTotalUSDAirdrop] = useState(0)
-  // const [totalReceipient, setTotalRecei] = useState()
+  const [loadingAirdropAllocation, setLoadingAirdropAllocation] = useState(true)
   const { getDecimals, tokenProvider } = useMint()
   const { listHistory } = useSentList({ type: TypeDistribute.Airdrop })
   const { calcUsdValue } = useTotalUSD()
-  // const numberOfCampaigns = useMemo(() => {
-  //   return listHistory.length
-  // }, [listHistory.length])
-  // const totalRecipients = useMemo(() => {
-  //   let totalRecipient = 0
-  //   for (const airdrop of listHistory) {
-  //     const parseData = JSON.parse(JSON.stringify(airdrop.treeData)).data
-  //     const merkleDistributor = MerkleDistributor.fromBuffer(
-  //       Buffer.from(parseData),
-  //     )
-  //     console.log('merkleDistributor:', merkleDistributor)
-  //     if (merkleDistributor) {
-  //       totalRecipient += merkleDistributor.recipients.length
-  //     }
-  //   }
-  //   return totalRecipient
-  // }, [listHistory])
+  const numberOfCampaigns = useMemo(() => {
+    return listHistory.length
+  }, [listHistory.length])
+  const totalRecipients = useMemo(() => {
+    let totalRecipient = 0
+    for (const airdrop of listHistory) {
+      const parseData = JSON.parse(JSON.stringify(airdrop.treeData)).data
+      const merkleDistributor = MerkleDistributor.fromBuffer(
+        Buffer.from(parseData),
+      )
+      if (merkleDistributor) {
+        totalRecipient += merkleDistributor.receipients.length
+      }
+    }
+    return totalRecipient
+  }, [listHistory])
 
   const calTotalTokenByMint = useCallback(
     async (listHistory: HistoryRecord[]) => {
@@ -75,8 +66,6 @@ const useAirdropAllocation = () => {
     [getDecimals, tokenProvider],
   )
 
-  console.log('List history: ', listHistory)
-
   const calcUsdValueAirdrop = useCallback(
     async (airdropAllocationList: Map<string, AirdropAllocationType>) => {
       let totalUSDAirdrop = 0
@@ -103,7 +92,7 @@ const useAirdropAllocation = () => {
     ) => {
       airdropAllocationList.forEach(async (value, key) => {
         const ratio = value.usdValue / totalUSDAirdrop
-        console.log(ratio, totalUSDAirdrop)
+
         airdropAllocationList.set(key, {
           ...value,
           percentInTotal: ratio,
@@ -115,6 +104,9 @@ const useAirdropAllocation = () => {
   )
 
   const calcAllocationAirdrop = useCallback(async () => {
+    console.log('chay qua bao nhieu lan:', listHistory)
+    // if (listHistory.length === 0) return
+    setLoadingAirdropAllocation(true)
     const tokenAmountHandledAirdrop = await calTotalTokenByMint(listHistory)
     const { airdropAllocationList, totalUSDAirdrop } =
       await calcUsdValueAirdrop(tokenAmountHandledAirdrop)
@@ -124,6 +116,8 @@ const useAirdropAllocation = () => {
       totalUSDAirdrop,
     )
     setAirdropAllocation(ratioCalcedAirdrop)
+
+    setLoadingAirdropAllocation(false)
   }, [calTotalTokenByMint, calcRatioAirdrop, calcUsdValueAirdrop, listHistory])
 
   useEffect(() => {
@@ -133,8 +127,9 @@ const useAirdropAllocation = () => {
   return {
     airdropAllocation,
     totalUSDAirdrop,
-    // numberOfCampaigns,
-    // totalRecipients,
+    numberOfCampaigns,
+    totalRecipients,
+    loadingAirdropAllocation,
   }
 }
 

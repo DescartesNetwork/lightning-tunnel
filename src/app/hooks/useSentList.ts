@@ -18,9 +18,9 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   const [listHistory, setListHistory] = useState<HistoryRecord[]>([])
   const history = useSelector((state: AppState) => state.history)
   const distributors = useSelector((state: AppState) => state.distributors)
-  console.log('history: ', history)
 
   const fetchHistory = useCallback(async () => {
+    console.log('chay di , chay lai nhieu lan')
     const nextHistory: HistoryRecord[] = []
     try {
       setLoading(true)
@@ -32,8 +32,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         const merkleDistributor = MerkleDistributor.fromBuffer(
           Buffer.from(parseData),
         )
-        console.log('chay xuong day', merkleDistributor)
-        const salt = merkleDistributor.recipients[0].salt
+        const salt = merkleDistributor.receipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)
         if (x !== 0) continue
         const endedAt = distributors[distributorAddress].endedAt
@@ -55,8 +54,6 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   useEffect(() => {
     fetchHistory()
   }, [fetchHistory])
-
-  console.log('listHistory: ', listHistory)
 
   return { listHistory, loading }
 }

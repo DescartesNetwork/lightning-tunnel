@@ -86,13 +86,17 @@ const ConfirmTransfer = () => {
     try {
       const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
       const ipfs = new IPFS()
+      console.log('khoi tao ipfs tanh cong:', ipfs, treeData)
 
       const cid = await ipfs.set(treeData.toJSON().data)
+      console.log('lay cid thanh cong:', cid)
       const {
         multihash: { digest },
       } = CID.parse(cid)
+      console.log('parse cid thanh cong:', cid)
 
       const metadata = Buffer.from(digest)
+      console.log('get metadat thanh cong:', cid)
 
       const { txId, distributorAddress } = await utility.initializeDistributor({
         tokenAddress: mintSelected,
@@ -103,6 +107,8 @@ const ConfirmTransfer = () => {
         feeOptions,
       })
 
+      console.log('khoi tao distributor thanh cong:', cid)
+
       const historyRecord: HistoryRecord = {
         total: merkleDistributor.getTotal().toString(),
         time: new Date().toString(),
@@ -110,9 +116,12 @@ const ConfirmTransfer = () => {
         distributorAddress,
         treeData,
       }
+      console.log('khoi tao history thanh cong:', historyRecord)
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
+      console.log('luu history thanh cong:', historyRecord)
       await dispatch(getHistory({ walletAddress }))
+      console.log('get history thanh cong: ')
 
       setIsDone(true)
 

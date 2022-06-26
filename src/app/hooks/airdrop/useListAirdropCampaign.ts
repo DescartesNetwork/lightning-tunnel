@@ -18,8 +18,6 @@ const useListAirdropCampaign = () => {
   const [listHistory, setListHistory] = useState<HistoryRecord[]>([])
   const { history } = useSelector((state: AppState) => state)
 
-  console.log(history, 'history')
-
   const fetchHistory = useCallback(async () => {
     const nextHistory: HistoryRecord[] = []
     try {
@@ -36,19 +34,17 @@ const useListAirdropCampaign = () => {
         const merkleDistributor = MerkleDistributor.fromBuffer(
           Buffer.from(parseData),
         )
-        console.log('Merkle Distributor:', merkleDistributor)
-        const salt = merkleDistributor.recipients[0].salt
+        const salt = merkleDistributor.receipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)
 
         if (x !== 0) continue
-        console.log('check')
+
         if (endTime < CURRENT_TIME && endTime && balance) {
           nextHistory.unshift(historyItem)
           continue
         }
         nextHistory.push(historyItem)
       }
-      console.log(nextHistory, '123')
     } catch (error) {
     } finally {
       setLoading(false)

@@ -13,7 +13,13 @@ import useAirdropAllocation from 'app/hooks/airdrop/useAirdropAllocation'
 const Airdrop = () => {
   const { pushHistory } = useAppRouter()
   const dispatch = useDispatch()
-  const { airdropAllocation, totalUSDAirdrop } = useAirdropAllocation()
+  const {
+    airdropAllocation,
+    totalUSDAirdrop,
+    numberOfCampaigns,
+    totalRecipients,
+    loadingAirdropAllocation,
+  } = useAirdropAllocation()
 
   const addNewAirdrop = () => {
     pushHistory('/airdrop/add-new')
@@ -42,10 +48,17 @@ const Airdrop = () => {
       <Col span={24}>
         <Row gutter={[24, 24]}>
           <Col span={24} lg={8}>
-            <TotalAirdrop valueInUSD={totalUSDAirdrop} numberOfCampaign={1} />
+            <TotalAirdrop
+              valueInUSD={totalUSDAirdrop}
+              numberOfCampaign={numberOfCampaigns}
+              recipientList={totalRecipients}
+            />
           </Col>
           <Col span={24} lg={16}>
-            <AirdropAllocation airdropAllocation={airdropAllocation} />
+            <AirdropAllocation
+              airdropAllocation={airdropAllocation}
+              loading={loadingAirdropAllocation}
+            />
           </Col>
         </Row>
       </Col>

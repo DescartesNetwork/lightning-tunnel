@@ -11,7 +11,7 @@ const UnlockDateColumn = ({ treeData }: { treeData?: Buffer }) => {
     const merkleDistributor = MerkleDistributor.fromBuffer(
       Buffer.from(parseData),
     )
-    return merkleDistributor.recipients[0].startedAt.toNumber()
+    return merkleDistributor.receipients[0].startedAt.toNumber()
   }, [treeData])
   return (
     <Typography.Text>

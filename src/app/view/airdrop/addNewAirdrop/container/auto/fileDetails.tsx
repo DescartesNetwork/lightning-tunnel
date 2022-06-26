@@ -10,7 +10,7 @@ import AccountInfo from './accountInfo'
 import ModalDeleteFile from 'app/components/commonModal'
 
 import { AppDispatch, AppState } from 'app/model'
-import { CollapseAddNew } from 'app/constants'
+import { CollapseAddNew, RecipientFileType } from 'app/constants'
 import { addRecipients } from 'app/model/recipients.controller'
 import {
   selectRecipient,
@@ -18,8 +18,7 @@ import {
   selectAllRecipient,
 } from 'app/model/file.controller'
 import useValidateAmount from 'app/hooks/useValidateAmount'
-import useValidRecipient from 'app/hooks/airdrop/useValidAirdropRecipient'
-import useInvalidAirdropRecipient from 'app/hooks/airdrop/useInvalidAirdropRecipient'
+import useFilteredAirdropRecipient from 'app/hooks/airdrop/useFilteredAirdropRecipient'
 
 const ActionButton = ({
   activeKey = '',
@@ -72,8 +71,12 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
     file: { fileName, selectedFile },
     recipients: { recipientInfos },
   } = useSelector((state: AppState) => state)
-  const listRecipient = useValidRecipient()
-  const listInvalidRecipient = useInvalidAirdropRecipient()
+  const invalidRecipient = useFilteredAirdropRecipient({
+    type: RecipientFileType.invalid,
+  })
+  const validRecipient = useFilteredAirdropRecipient({
+    type: RecipientFileType.valid,
+  })
 
   const onSelected = (checked: boolean, walletAddress: string) =>
     dispatch(selectRecipient({ checked, walletAddress }))
@@ -93,12 +96,12 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
 
   const onSelectAll = (checked: boolean) => {
     if (checked) {
-      const listAddress = listRecipient.map(({ address }) => address)
+      const listAddress = validRecipient.map(({ address }) => address)
       dispatch(selectAllRecipient(listAddress))
     } else dispatch(removeSelectedFile())
   }
 
-  const { amountError } = useValidateAmount(listRecipient)
+  const { amountError } = useValidateAmount(validRecipient)
 
   return (
     <Row gutter={[16, 16]}>
@@ -171,12 +174,12 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
                       onChecked={onSelectAll}
                     />
                   </Col>
-                  {listInvalidRecipient.map(({ address, amount }, idx) => (
+                  {invalidRecipient.map(({ address, amount }, idx) => (
                     <Col
                       span={24}
                       key={address + idx}
                       className={
-                        idx + 1 === listInvalidRecipient.length
+                        idx + 1 === invalidRecipient.length
                           ? 'last-item-error-data'
                           : ''
                       }
@@ -186,11 +189,11 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
                         amount={amount}
                         selected={selected}
                         onChecked={onSelected}
-                        index={listRecipient.length + idx}
+                        index={validRecipient.length + idx}
                       />
                     </Col>
                   ))}
-                  {listRecipient.map(({ address, amount }, idx) => (
+                  {validRecipient.map(({ address, amount }, idx) => (
                     <Col span={24} key={address + idx}>
                       <AccountInfo
                         accountAddress={address}

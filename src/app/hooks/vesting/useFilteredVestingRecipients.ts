@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { account } from '@senswap/sen-js'
 
 import { AppState } from 'app/model'
 import { RecipientInfo } from 'app/model/recipients.controller'
+import { account } from '@senswap/sen-js'
+import { RecipientFileType } from 'app/constants'
 
-export type ValidVestingRecipient = {
+export type VestingItem = {
   address: string
   config: Array<{
     unlockTime: number
@@ -13,15 +14,18 @@ export type ValidVestingRecipient = {
   }>
 }
 
-const useValidVestingRecipient = () => {
+const useFilteredVestingRecipient = ({ type }: { type: RecipientFileType }) => {
   const recipientInfos = useSelector(
     (state: AppState) => state.recipients.recipientInfos,
   )
   const listRecipient = useMemo(() => {
     let nextRecipient: RecipientInfo[] = []
-    const vestingList: ValidVestingRecipient[] = []
+    const vestingList: VestingItem[] = []
     for (const address in recipientInfos) {
-      if (!account.isAddress(address)) continue
+      if (account.isAddress(address) && type === RecipientFileType.invalid)
+        continue
+      if (!account.isAddress(address) && type === RecipientFileType.valid)
+        continue
       nextRecipient = nextRecipient.concat(recipientInfos[address])
     }
     for (const { address, amount, unlockTime } of nextRecipient) {
@@ -37,9 +41,9 @@ const useValidVestingRecipient = () => {
       vestingList.push({ address, config: [{ unlockTime, amount }] })
     }
     return vestingList
-  }, [recipientInfos])
+  }, [recipientInfos, type])
 
   return listRecipient
 }
 
-export default useValidVestingRecipient
+export default useFilteredVestingRecipient

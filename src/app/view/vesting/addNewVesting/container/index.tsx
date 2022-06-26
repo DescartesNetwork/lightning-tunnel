@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
 import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
-import IonIcon from '@sentre/antd-ionicon'
 import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
 import Auto from './auto'
@@ -13,6 +12,7 @@ import UnlockTime from '../components/unlockTime'
 import Frequency from '../components/frequency'
 import DistributeIn from '../components/distributeIn'
 import DateOption from 'app/components/dateOption'
+import CardOption from 'app/components/cardOption'
 
 import { ONE_DAY, SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
@@ -25,39 +25,6 @@ import {
   setGlobalConfigs,
   setGlobalUnlockTime,
 } from 'app/model/recipients.controller'
-
-export type CardOptionProps = {
-  label: string
-  description: string
-  active: boolean
-}
-
-const CardOption = ({ label, description, active }: CardOptionProps) => {
-  return (
-    <Fragment>
-      {active ? (
-        <IonIcon
-          name="checkbox-sharp"
-          style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            color: '#42E6EB',
-            fontSize: 20,
-          }}
-        />
-      ) : null}
-      <Row gutter={[12, 12]}>
-        <Col span={24}>
-          <Typography.Title level={5}>{label}</Typography.Title>
-        </Col>
-        <Col span={24}>
-          <Typography.Text type="secondary">{description}</Typography.Text>
-        </Col>
-      </Row>
-    </Fragment>
-  )
-}
 
 const SelectInputMethod = () => {
   const [method, setMethod] = useState<number>(SelectMethod.manual)
@@ -177,7 +144,7 @@ const SelectInputMethod = () => {
               <Row gutter={[16, 16]}>
                 {method === SelectMethod.manual && (
                   <Fragment>
-                    <Col xs={12} md={6}>
+                    <Col xs={24} md={12} xl={6}>
                       <UnlockTime
                         unlockTime={unlockTime}
                         onChange={(value) =>
@@ -185,7 +152,7 @@ const SelectInputMethod = () => {
                         }
                       />
                     </Col>
-                    <Col xs={12} md={6}>
+                    <Col xs={24} md={12} xl={6}>
                       <Frequency
                         frequency={frequency}
                         onChange={(value) =>
@@ -193,7 +160,7 @@ const SelectInputMethod = () => {
                         }
                       />
                     </Col>
-                    <Col xs={12} md={6}>
+                    <Col xs={24} md={12} xl={6}>
                       <DistributeIn
                         distributeIn={distributeIn}
                         onChange={(value) =>
@@ -203,7 +170,7 @@ const SelectInputMethod = () => {
                     </Col>
                   </Fragment>
                 )}
-                <Col xs={12} md={6}>
+                <Col xs={24} md={12} xl={6}>
                   <DateOption
                     label="Expiration time"
                     onSwitch={setIsUnlimited}

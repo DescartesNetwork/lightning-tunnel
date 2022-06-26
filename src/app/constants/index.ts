@@ -21,5 +21,9 @@ export enum State {
   loading = 'Loading',
 }
 
-export const CURRENT_TIME = new Date().getTime()
+export enum RecipientFileType {
+  valid = 'valid',
+  invalid = 'invalid',
+}
+
 export const ONE_DAY = 24 * 60 * 60 * 1000

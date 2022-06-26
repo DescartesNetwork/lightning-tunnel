@@ -10,7 +10,9 @@ const RowSpaceBetween = ({ label = '', value = '' }: RowSpaceBetweenProps) => {
   return (
     <Row align="middle" gutter={[24, 24]}>
       <Col flex="auto">
-        <Typography.Text type="secondary">{label}</Typography.Text>
+        <Typography.Text className="caption" type="secondary">
+          {label}
+        </Typography.Text>
       </Col>
       <Col>{value}</Col>
     </Row>

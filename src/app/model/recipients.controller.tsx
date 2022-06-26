@@ -12,6 +12,11 @@ export type Configs = {
   distributeIn: number
 }
 
+export type Time = {
+  frequency: number
+  distributeIn: number
+}
+
 export type RecipientInfo = {
   address: string
   amount: string
@@ -146,6 +151,24 @@ export const removeRecipients = createAsyncThunk(
   },
 )
 
+export const addAmountAndTime = createAsyncThunk<
+  Partial<TreeRecipientState>,
+  { walletAddress: string; nextRecipientInfos: RecipientInfo[] },
+  { state: any }
+>(
+  `${NAME}/addAmountAndTime`,
+  async ({ walletAddress, nextRecipientInfos }, { getState }) => {
+    const {
+      recipients: { recipientInfos },
+    } = getState()
+    const newRecipients = { ...recipientInfos }
+    const oldValue = newRecipients[walletAddress]
+    const newValue = oldValue.concat(nextRecipientInfos)
+    newRecipients[walletAddress] = newValue
+    return { recipientInfos: newRecipients }
+  },
+)
+
 /**
  * Usual procedure
  */
@@ -186,6 +209,10 @@ const slice = createSlice({
       )
       .addCase(
         addRecipients.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        addAmountAndTime.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

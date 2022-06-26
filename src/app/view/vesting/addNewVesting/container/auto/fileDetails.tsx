@@ -3,21 +3,21 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import InputInfoTransfer from 'app/components/inputInfoTransfer'
-import { WrapTotal } from 'app/components/cardTotal'
 import AccountInfoHeader from './accountInfoHeader'
 import AccountInfo from './accountInfo'
+import AddMoreRecipient from './action/addMoreRecipient'
 import ModalDeleteFile from 'app/components/commonModal'
+import { WrapTotal } from 'app/components/cardTotal'
 
 import { AppDispatch, AppState } from 'app/model'
-import { CollapseAddNew } from 'app/constants'
+import { CollapseAddNew, RecipientFileType } from 'app/constants'
 import { addRecipients } from 'app/model/recipients.controller'
 import {
   selectRecipient,
   removeSelectedFile,
   selectAllRecipient,
 } from 'app/model/file.controller'
-import useValidVestingRecipient from 'app/hooks/vesting/useValidVestingRecipient'
+import useFilteredVestingRecipient from 'app/hooks/vesting/useFilteredVestingRecipients'
 
 const ActionButton = ({
   activeKey = '',
@@ -70,7 +70,12 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
     file: { fileName, selectedFile },
     recipients: { recipientInfos },
   } = useSelector((state: AppState) => state)
-  const listRecipient = useValidVestingRecipient()
+  const validRecipients = useFilteredVestingRecipient({
+    type: RecipientFileType.valid,
+  })
+  const invalidRecipients = useFilteredVestingRecipient({
+    type: RecipientFileType.invalid,
+  })
 
   const onSelected = (checked: boolean, walletAddress: string) =>
     dispatch(selectRecipient({ checked, walletAddress }))
@@ -90,7 +95,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
 
   const onSelectAll = (checked: boolean) => {
     if (checked) {
-      const listAddress = listRecipient.map(({ address }) => address)
+      const listAddress = validRecipients.map(({ address }) => address)
       dispatch(selectAllRecipient(listAddress))
     } else dispatch(removeSelectedFile())
   }
@@ -154,7 +159,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
               className="auto-add-new"
             >
               <Collapse.Panel header={undefined} key={CollapseAddNew.activeKey}>
-                <InputInfoTransfer />
+                <AddMoreRecipient />
               </Collapse.Panel>
             </Collapse>
           </Col>
@@ -168,25 +173,25 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
                       onChecked={onSelectAll}
                     />
                   </Col>
-                  {/* {listInvalidRecipient.map(({ address, amount }, idx) => (
+                  {invalidRecipients.map((vestingItem, idx) => (
                     <Col
                       span={24}
-                      key={address + idx}
+                      key={vestingItem.address + idx}
                       className={
-                        idx + 1 === listInvalidRecipient.length
+                        idx + 1 === invalidRecipients.length
                           ? 'last-item-error-data'
                           : ''
                       }
                     >
                       <AccountInfo
-                        vestingItem={}
+                        vestingItem={vestingItem}
                         selected={selected}
                         onChecked={onSelected}
-                        index={listRecipient.length + idx}
+                        index={validRecipients.length + idx}
                       />
                     </Col>
-                  ))} */}
-                  {listRecipient.map((vestingItem, idx) => (
+                  ))}
+                  {validRecipients.map((vestingItem, idx) => (
                     <Col span={24} key={vestingItem.address + idx}>
                       <AccountInfo
                         vestingItem={vestingItem}

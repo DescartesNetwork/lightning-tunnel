@@ -7,12 +7,12 @@ import RowSpaceBetween from 'app/components/rowSpaceBetween'
 import { AppState } from 'app/model'
 import { shortenAddress } from 'shared/util'
 
-const OverViewRecipient = ({ walletAddress }: { walletAddress: string }) => {
+const OverviewRecipient = ({ walletAddress }: { walletAddress: string }) => {
   const expirationTime = useSelector(
     (state: AppState) => state.recipients.expirationTime,
   )
   return (
-    <Card>
+    <Card className="card-overview" bodyStyle={{ padding: '13px 16px' }}>
       <Row gutter={[10, 10]}>
         <Col span={24}>
           <RowSpaceBetween
@@ -22,8 +22,12 @@ const OverViewRecipient = ({ walletAddress }: { walletAddress: string }) => {
         </Col>
         <Col span={24}>
           <RowSpaceBetween
-            label={walletAddress}
-            value={moment(expirationTime).format('DD/MM/YY HH:mm')}
+            label="Expiration Time"
+            value={
+              expirationTime
+                ? moment(expirationTime).format('DD/MM/YYYY HH:mm')
+                : 'Unlimited'
+            }
           />
         </Col>
       </Row>
@@ -31,4 +35,4 @@ const OverViewRecipient = ({ walletAddress }: { walletAddress: string }) => {
   )
 }
 
-export default OverViewRecipient
+export default OverviewRecipient

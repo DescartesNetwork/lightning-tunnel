@@ -50,7 +50,7 @@ const DateOption = ({
           disabled={disabled}
           clearIcon={null}
           value={value ? moment(value) : null}
-          showTime
+          showTime={{ showSecond: false }}
           placement="bottomRight"
         />
       </Col>

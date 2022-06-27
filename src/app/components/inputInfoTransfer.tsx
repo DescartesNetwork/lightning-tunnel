@@ -70,7 +70,7 @@ const InputInfoTransfer = ({
   index,
   isSelect = false,
 }: InputInfoTransferProps) => {
-  const [formInput, setRecipient] = useState(DEFAULT_RECIPIENT)
+  const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [amountError, setAmountError] = useState('')
   const [walletError, setWalletError] = useState('')
   const [visible, setVisible] = useState(false)
@@ -84,19 +84,19 @@ const InputInfoTransfer = ({
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setRecipient({ ...formInput, [e.target.name]: e.target.value })
+    setFormInput({ ...formInput, [e.target.name]: e.target.value })
   }
 
-  const onAmount = (val: string) => setRecipient({ ...formInput, amount: val })
+  const onAmount = (val: string) => setFormInput({ ...formInput, amount: val })
 
   const onSelected = (checked: boolean, walletAddress: string) =>
     dispatch(selectRecipient({ checked, walletAddress }))
 
   const recipientInfo = useCallback(async () => {
     if (account.isAddress(walletAddress) && amount) {
-      return setRecipient({ walletAddress, amount })
+      return setFormInput({ walletAddress, amount })
     }
-    return setRecipient(DEFAULT_RECIPIENT)
+    return setFormInput(DEFAULT_RECIPIENT)
   }, [walletAddress, amount])
 
   const addNewRecipient = async () => {
@@ -142,7 +142,7 @@ const InputInfoTransfer = ({
     setWalletError('')
     setAmountError('')
     await dispatch(addRecipient({ walletAddress, nextRecipients }))
-    return setRecipient(DEFAULT_RECIPIENT)
+    return setFormInput(DEFAULT_RECIPIENT)
   }
 
   const onMerge = async () => {
@@ -170,7 +170,7 @@ const InputInfoTransfer = ({
       setAmountError('')
       setWalletError('')
     }
-    return setRecipient(DEFAULT_RECIPIENT)
+    return setFormInput(DEFAULT_RECIPIENT)
   }
 
   const onRemove = () => {

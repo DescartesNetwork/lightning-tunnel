@@ -1,24 +1,15 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
-import {
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  Radio,
-  Row,
-  Space,
-  Typography,
-} from 'antd'
-import IonIcon from '@sentre/antd-ionicon'
+import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
 import SelectToken from 'app/components/selectTokens'
 import Header from 'app/components/header'
 import Auto from './auto'
 import Manual from './manual'
 import ConfirmTransfer from '../../../confirmTransfer'
 import DateOption from '../../../../components/dateOption'
+import CardOption from 'app/components/cardOption'
 
 import { SelectMethod, Step } from 'app/constants'
 import { AppState } from 'app/model'
@@ -29,39 +20,6 @@ import {
   setExpiration,
   setGlobalUnlockTime,
 } from 'app/model/recipients.controller'
-
-export type CardOptionProps = {
-  label: string
-  description: string
-  active: boolean
-}
-
-const CardOption = ({ label, description, active }: CardOptionProps) => {
-  return (
-    <Fragment>
-      {active ? (
-        <IonIcon
-          name="checkbox-sharp"
-          style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            color: '#42E6EB',
-            fontSize: 20,
-          }}
-        />
-      ) : null}
-      <Row gutter={[12, 12]}>
-        <Col span={24}>
-          <Typography.Title level={5}>{label}</Typography.Title>
-        </Col>
-        <Col span={24}>
-          <Typography.Text type="secondary">{description}</Typography.Text>
-        </Col>
-      </Row>
-    </Fragment>
-  )
-}
 
 const SelectInputMethod = () => {
   const { expirationTime: endDate, globalUnlockTime } = useSelector(

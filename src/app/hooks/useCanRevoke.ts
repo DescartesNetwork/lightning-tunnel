@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux'
 
 import configs from 'app/configs'
 import { AppState } from 'app/model'
-import { CURRENT_TIME } from 'app/constants'
 
 const {
   sol: { utility },
 } = configs
+
+const CURRENT_TIME = Date.now()
 
 export const getBalanceTreasury = async (distributorAddress: string) => {
   const { splt } = window.sentre

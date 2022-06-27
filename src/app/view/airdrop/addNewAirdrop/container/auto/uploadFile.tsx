@@ -19,6 +19,7 @@ import {
 } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'app/model/file.controller'
+import { getFileCSV } from 'app/helper'
 
 const parse = (file: any): Promise<Array<[string, string]>> => {
   return new Promise((resolve, reject) => {
@@ -60,7 +61,6 @@ const UploadFile = () => {
             mintDecimals,
           )
           const newAmount = oldAmount + utils.decimalize(amount, mintDecimals)
-
           recipientInfos[address] = [
             {
               address,
@@ -107,16 +107,6 @@ const UploadFile = () => {
     setVisible(false)
     dispatch(setFileName(''))
     setListDuplicate({})
-  }
-
-  const getFileCSV = async (fileCSV: string) => {
-    return fetch(fileCSV).then(function (response) {
-      let reader = response.body?.getReader()
-      let decoder = new TextDecoder('utf-8')
-      return reader?.read().then(function (result) {
-        return decoder.decode(result.value)
-      })
-    })
   }
 
   const onDownload = async () => {

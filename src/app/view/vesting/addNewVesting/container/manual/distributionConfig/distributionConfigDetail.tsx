@@ -55,7 +55,7 @@ const DistributionConfigDetail = ({
   const isVisible = account.isAddress(walletAddress)
 
   return (
-    <Row gutter={[32, 32]}>
+    <Row gutter={[32, 32]} align="middle">
       <Col>
         <Content
           label="Unlock time"

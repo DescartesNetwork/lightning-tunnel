@@ -22,7 +22,7 @@ const UnlockTime = ({ unlockTime, onChange }: UnlockTimeProps) => {
           onChange={(date) => onChange(date?.valueOf() || 0)}
           clearIcon={null}
           value={unlockTime ? moment(unlockTime) : null}
-          showTime
+          showTime={{ showSecond: false }}
           placement="bottomRight"
         />
       </Col>

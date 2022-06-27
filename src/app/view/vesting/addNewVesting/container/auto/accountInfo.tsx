@@ -1,19 +1,19 @@
 import { forwardRef, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
+import moment from 'moment'
 
 import { Col, Row, Space, Typography, Tooltip, Checkbox, Button } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
+import EditTimeAndAmount from './action/editTimeAndAmount'
 
 import { shortenAddress } from 'shared/util'
 import { AppDispatch, AppState } from 'app/model'
-import { ValidVestingRecipient } from 'app/hooks/vesting/useValidVestingRecipient'
-import moment from 'moment'
-import IonIcon from '@sentre/antd-ionicon'
 import { removeRecipient } from 'app/model/recipients.controller'
-import AddAmount from './action/addAmount'
+import { VestingItem } from 'app/hooks/vesting/useFilteredVestingRecipients'
 
 type AccountInfoProps = {
-  vestingItem: ValidVestingRecipient
+  vestingItem: VestingItem
   selected?: boolean
   index: number
   onChecked?: (checked: boolean, walletAddress: string) => void
@@ -72,16 +72,15 @@ const AccountInfo = forwardRef(
           span={12}
           className={validateAmount ? 'recipient-input-error' : ''}
         >
-          <Space>
-            {vestingItem.config.map(({ amount, unlockTime }) => (
-              <Typography.Text
-                className="caption vesting-config"
-                key={unlockTime}
-              >
-                {amount} / {moment(unlockTime).format('DD-MM-YYYY HH:mm')}
-              </Typography.Text>
+          <Row gutter={[16, 8]}>
+            {vestingItem.config.map(({ amount, unlockTime }, index) => (
+              <Col key={index} className="vesting-config">
+                <Typography.Text className="caption">
+                  {amount} / {moment(unlockTime).format('MM-DD-YYYY HH:mm')}
+                </Typography.Text>
+              </Col>
             ))}
-          </Space>
+          </Row>
         </Col>
         <Col span={5} className="vesting-action">
           <Space>
@@ -90,8 +89,7 @@ const AccountInfo = forwardRef(
               icon={<IonIcon name="trash-outline" />}
               type="text"
             />
-            <AddAmount walletAddress={vestingItem.address} />
-            <Button icon={<IonIcon name="add-outline" />} type="text" />
+            <EditTimeAndAmount walletAddress={vestingItem.address} />
           </Space>
         </Col>
       </Row>

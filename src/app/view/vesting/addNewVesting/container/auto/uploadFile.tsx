@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
@@ -10,7 +10,7 @@ import FileDetails from './fileDetails'
 
 import iconUpload from 'app/static/images/icon-upload.svg'
 import { AppState } from 'app/model'
-import exampleCSV from 'app/static/base/example.csv'
+import exampleCSV from 'app/static/base/example-vesting.csv'
 import {
   addRecipients,
   removeRecipients,
@@ -19,17 +19,19 @@ import {
 } from 'app/model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'app/model/file.controller'
+import ModalErrorDuplicate from './action/modalError'
+import { getFileCSV } from 'app/helper'
 
 const INDEX_ADDRESS = 0
 const INDEX_AMOUNT = 1
 const INDEX_FIRST_UNLOCK_TIME = 2
+const MIN_FILE_LENGTH = 2
 
 const parse = (file: any): Promise<Array<string>> => {
   return new Promise((resolve, reject) => {
     return Papa.parse(file, {
       skipEmptyLines: true,
       complete: ({ data }) => {
-        console.log(data, ' data')
         resolve(data as Array<string>)
       },
     })
@@ -39,6 +41,10 @@ const parse = (file: any): Promise<Array<string>> => {
 const UploadFile = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
+  const [listDuplicate, setListDuplicate] = useState<string[]>([])
+  const [isWrongFormat, setIsWrongFormat] = useState(false)
+  const [visible, setVisible] = useState(false)
+
   const {
     recipients: { recipientInfos },
     main: { mintSelected },
@@ -50,25 +56,55 @@ const UploadFile = () => {
       setLoading(true)
       const recipients = await parse(file)
       const recipientInfos: RecipientInfos = {}
+      const duplicates: string[] = []
+      let isDuplicate = false
 
       for (const recipientData of recipients) {
+        //Check format file
+        if (recipientData.length <= MIN_FILE_LENGTH) {
+          setLoading(false)
+          return setVisible(true)
+        }
+
         const address = recipientData[INDEX_ADDRESS]
         const amount = utils.decimalize(
           recipientData[INDEX_AMOUNT],
           mintDecimals,
         )
 
+        //Check duplicate Data
+        if (recipientInfos[address]) {
+          duplicates.push(address)
+          isDuplicate = true
+          continue
+        }
+
         const recipientInfo: RecipientInfo[] = []
         const amountVesting = recipientData.length - INDEX_FIRST_UNLOCK_TIME
         const newAmount = amount / BigInt(amountVesting)
         for (let i = INDEX_FIRST_UNLOCK_TIME; i < recipientData.length; i++) {
+          const unlockTime = new Date(recipientData[i]).getTime()
+
+          //Check format date
+          if (!unlockTime) {
+            setIsWrongFormat(true)
+            setLoading(false)
+            return setVisible(true)
+          }
+
           recipientInfo.push({
             address,
             amount: utils.undecimalize(newAmount, mintDecimals),
-            unlockTime: new Date(recipientData[i]).getTime(),
+            unlockTime,
           })
         }
         recipientInfos[address] = recipientInfo
+      }
+
+      if (isDuplicate) {
+        setListDuplicate(duplicates)
+        setLoading(false)
+        return setVisible(true)
       }
 
       dispatch(setFileName(file.name))
@@ -84,20 +120,33 @@ const UploadFile = () => {
     return true
   }
 
-  const getFileCSV = async (fileCSV: string) => {
-    return fetch(fileCSV).then(function (response) {
-      let reader = response.body?.getReader()
-      let decoder = new TextDecoder('utf-8')
-      return reader?.read().then(function (result) {
-        return decoder.decode(result.value)
-      })
-    })
-  }
-
   const onDownload = async () => {
     if (!exampleCSV) return
     const file = (await getFileCSV(exampleCSV)) || ''
     fileDownload(file, 'example.csv')
+  }
+
+  const describeError = useMemo(() => {
+    if (isWrongFormat)
+      return (
+        <Typography.Text>
+          Wrong date format. It’s should be{' '}
+          <span style={{ color: '#42E6EB' }}>MM-DD-YYYY HH:mm.</span>
+        </Typography.Text>
+      )
+    if (listDuplicate.length)
+      return (
+        <Typography.Text>
+          There are some wrong wallet addresses:
+        </Typography.Text>
+      )
+    return <Typography.Text>Wrong format file</Typography.Text>
+  }, [isWrongFormat, listDuplicate])
+
+  const closeModalError = () => {
+    setListDuplicate([])
+    setIsWrongFormat(false)
+    return setVisible(false)
   }
 
   if (!Object.values(recipientInfos).length)
@@ -140,6 +189,12 @@ const UploadFile = () => {
             Download sample
           </Button>
         </Col>
+        <ModalErrorDuplicate
+          visible={visible}
+          onClose={closeModalError}
+          addresses={listDuplicate}
+          description={describeError}
+        />
       </Row>
     )
   return <FileDetails remove={remove} />

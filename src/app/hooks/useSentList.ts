@@ -5,13 +5,14 @@ import { MerkleDistributor } from '@sentre/utility'
 import { HistoryRecord } from 'app/helper/history'
 import configs from 'app/configs'
 import { AppState } from 'app/model'
-import { CURRENT_TIME } from 'app/constants'
 import { getBalanceTreasury } from './useCanRevoke'
 import { TypeDistribute } from 'app/model/main.controller'
 
 const {
   manifest: { appId },
 } = configs
+
+const CURRENT_TIME = Date.now()
 
 const useSentList = ({ type }: { type: TypeDistribute }) => {
   const [loading, setLoading] = useState(false)

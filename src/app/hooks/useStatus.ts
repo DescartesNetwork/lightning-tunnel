@@ -3,12 +3,14 @@ import { useSelector } from 'react-redux'
 import BN from 'bn.js'
 
 import configs from 'app/configs'
-import { CURRENT_TIME, State } from 'app/constants'
+import { State } from 'app/constants'
 import { AppState } from 'app/model'
 
 const {
   sol: { utility },
 } = configs
+
+const CURRENT_TIME = Date.now()
 
 export const getStatus = async (
   receiptAddress: string,

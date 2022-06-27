@@ -6,7 +6,6 @@ import { Button, Col, Row } from 'antd'
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
 import { RecipientFileType, Step } from 'app/constants'
-import { onSelectMethod } from 'app/model/main.controller'
 // import useValidateAmount from 'app/hooks/useValidateAmount'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import useFilteredVestingRecipient from 'app/hooks/vesting/useFilteredVestingRecipients'
@@ -25,7 +24,6 @@ const Action = () => {
   const disabled = !!invalidRecipient.length || isTyping || remainingBalance < 0
 
   const onBack = useCallback(async () => {
-    await dispatch(onSelectMethod())
     dispatch(onSelectStep(Step.SelectMethod))
   }, [dispatch])
 

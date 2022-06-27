@@ -5,7 +5,7 @@ import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import AccountInfoHeader from './accountInfoHeader'
 import AccountInfo from './accountInfo'
-import AddMoreRecipient from './action/addMoreRecipient'
+import AddMoreRecipient from '../../components/addMoreRecipient'
 import ModalDeleteFile from 'app/components/commonModal'
 import { WrapTotal } from 'app/components/cardTotal'
 
@@ -95,7 +95,8 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
 
   const onSelectAll = (checked: boolean) => {
     if (checked) {
-      const listAddress = validRecipients.map(({ address }) => address)
+      const allRecipients = invalidRecipients.concat(validRecipients)
+      const listAddress = allRecipients.map(({ address }) => address)
       dispatch(selectAllRecipient(listAddress))
     } else dispatch(removeSelectedFile())
   }

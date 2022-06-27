@@ -5,10 +5,13 @@ import { useDispatch } from 'react-redux'
 import { Menu, MenuProps } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
-import { SIDE_BAR_ITEMS } from '../constants'
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import { AppDispatch } from 'app/model'
-import { setTypeDistribute } from 'app/model/main.controller'
+import { onSelectMethod, setTypeDistribute } from 'app/model/main.controller'
+import { onSelectStep } from 'app/model/steps.controller'
+import { removeRecipients } from 'app/model/recipients.controller'
+import { SelectMethod, Step } from 'app/constants'
+import { SIDE_BAR_ITEMS } from '../constants'
 
 const LIST_MENU_ITEM = [
   {
@@ -34,8 +37,11 @@ const SideBar = () => {
   const { appRoute, pushHistory } = useAppRouter()
   const dispatch = useDispatch<AppDispatch>()
 
-  const onSelect: MenuProps['onClick'] = (e) => {
-    pushHistory(`/${e.key}`)
+  const onSelect: MenuProps['onClick'] = async (e) => {
+    await dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(onSelectMethod(SelectMethod.manual))
+    await dispatch(removeRecipients())
+    return pushHistory(`/${e.key}`)
   }
 
   const getDefaultSideBarItem = useCallback(() => {

@@ -8,12 +8,15 @@ import CardTotal from 'app/components/cardTotal'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
-import { onSelectMethod } from 'app/model/main.controller'
-import { Step } from 'app/constants'
+import { SelectMethod, Step } from 'app/constants'
 import useTotal from 'app/hooks/useTotal'
 import useValidateAmount from 'app/hooks/useValidateAmount'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
-import { RecipientInfo } from 'app/model/recipients.controller'
+import {
+  RecipientInfo,
+  removeRecipients,
+} from 'app/model/recipients.controller'
+import { onSelectMethod } from 'app/model/main.controller'
 
 const Manual = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -35,8 +38,9 @@ const Manual = () => {
   const { amountError } = useValidateAmount(listRecipient)
 
   const onBack = useCallback(async () => {
-    await dispatch(onSelectMethod())
-    dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(onSelectMethod(SelectMethod.manual))
+    await dispatch(removeRecipients())
   }, [dispatch])
 
   const disabled =

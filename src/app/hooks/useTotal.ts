@@ -1,11 +1,10 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { utils } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
 
 import { AppState } from 'app/model'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
-
-const FIRST_RECIPIENT = 0
+import { RecipientInfo } from 'app/model/recipients.controller'
 
 const useTotal = () => {
   const {
@@ -15,21 +14,22 @@ const useTotal = () => {
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
-  const calcTotalLamports = useCallback(() => {
+  const recipientTotal = useMemo(() => {
     if (!recipientInfos || !mintDecimals) return BigInt(0)
     let lamports = BigInt(0)
-    const listRecipient = Object.values(recipientInfos)
-    for (const recipient of listRecipient) {
-      const amount =
-        Number(recipient[FIRST_RECIPIENT].amount) * recipient.length
+    let listRecipient: RecipientInfo[] = []
+    for (const address in recipientInfos) {
+      if (!account.isAddress(address)) continue
+      listRecipient = listRecipient.concat(recipientInfos[address])
+    }
+
+    for (const { amount } of listRecipient) {
       if (isDecimal) lamports += utils.decimalize(amount, mintDecimals)
       else if (Number(amount) % 1 === 0) lamports += BigInt(amount)
     }
 
     return lamports
   }, [isDecimal, mintDecimals, recipientInfos])
-
-  const recipientTotal = calcTotalLamports()
 
   const quantity = useMemo(
     () => Object.keys(recipientInfos).length,

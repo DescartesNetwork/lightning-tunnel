@@ -24,8 +24,10 @@ import IPFS from 'shared/pdb/ipfs'
 import History, { HistoryRecord } from 'app/helper/history'
 import { getHistory } from 'app/model/history.controller'
 import { notifySuccess } from 'app/helper'
-import { onSelectMethod } from 'app/model/main.controller'
-import { RecipientInfo } from 'app/model/recipients.controller'
+import {
+  RecipientInfo,
+  removeRecipients,
+} from 'app/model/recipients.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -131,8 +133,8 @@ const ConfirmTransfer = () => {
   }
 
   const backToDashboard = useCallback(async () => {
-    await dispatch(onSelectMethod())
-    // await dispatch(removeRecipients())
+    await dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(removeRecipients())
     dispatch(onSelectStep(Step.SelectMethod))
   }, [dispatch])
 

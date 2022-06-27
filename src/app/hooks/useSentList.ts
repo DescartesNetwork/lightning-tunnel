@@ -21,7 +21,6 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   const distributors = useSelector((state: AppState) => state.distributors)
 
   const fetchHistory = useCallback(async () => {
-    console.log('chay di , chay lai nhieu lan')
     const nextHistory: HistoryRecord[] = []
     try {
       setLoading(true)
@@ -35,6 +34,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         )
         const salt = merkleDistributor.receipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)
+
         if (x !== 0) continue
         const endedAt = distributors[distributorAddress].endedAt
         const endTime = endedAt.toNumber() * 1000

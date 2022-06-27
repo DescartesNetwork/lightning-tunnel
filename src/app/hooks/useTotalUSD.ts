@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import { utils } from '@senswap/sen-js'
-import { useAccount, useMint } from '@senhub/providers'
+import { useCallback, useState } from 'react'
+import { useMint } from '@senhub/providers'
 
 import { fetchCGK } from 'shared/util'
 import TokenProvider from 'shared/tokenProvider'
@@ -17,22 +16,21 @@ const DEFAULT_DATA = {
 }
 
 const useTotalUSD = () => {
-  const { tokenProvider, getDecimals } = useMint()
+  const { tokenProvider } = useMint()
   const [totalUSD, setTotalUSD] = useState(0)
   const [loading, setLoading] = useState(true)
-  const { accounts } = useAccount()
 
-  const getMintDecimal = useCallback(
-    async (mintAddress: string) => {
-      try {
-        const decimals = await getDecimals(mintAddress)
-        return decimals
-      } catch (error) {
-        return 0
-      }
-    },
-    [getDecimals],
-  )
+  // const getMintDecimal = useCallback(
+  //   async (mintAddress: string) => {
+  //     try {
+  //       const decimals = await getDecimals(mintAddress)
+  //       return decimals
+  //     } catch (error) {
+  //       return 0
+  //     }
+  //   },
+  //   [getDecimals],
+  // )
 
   const fetchCgkData = useCallback(
     async (tokenProvider: TokenProvider, mintAddress: string) => {

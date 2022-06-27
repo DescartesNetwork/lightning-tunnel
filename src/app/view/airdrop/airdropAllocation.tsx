@@ -1,4 +1,4 @@
-import { Card, Col, Empty, Row, Spin, Typography } from 'antd'
+import { Card, Col, Empty, Row, Typography } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
 import { AirdropAllocationType } from 'app/constants'
 import { Suspense } from 'react'
@@ -12,7 +12,6 @@ const AirdropAllocation = ({
   airdropAllocation,
   loading,
 }: AirdropAllocationProps) => {
-  console.log('loading:', loading)
   return (
     <Suspense fallback={<>...Loading</>}>
       <Card

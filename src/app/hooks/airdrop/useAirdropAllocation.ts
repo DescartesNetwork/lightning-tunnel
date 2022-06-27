@@ -1,10 +1,11 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMint } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
 import { MerkleDistributor } from '@sentre/utility'
+
 import { AirdropAllocationType } from 'app/constants'
 import { HistoryRecord } from 'app/helper/history'
 import { TypeDistribute } from 'app/model/main.controller'
-import { useCallback, useEffect, useMemo, useState } from 'react'
 import useSentList from '../useSentList'
 import useTotalUSD from '../useTotalUSD'
 
@@ -104,8 +105,6 @@ const useAirdropAllocation = () => {
   )
 
   const calcAllocationAirdrop = useCallback(async () => {
-    console.log('chay qua bao nhieu lan:', listHistory)
-    // if (listHistory.length === 0) return
     setLoadingAirdropAllocation(true)
     const tokenAmountHandledAirdrop = await calTotalTokenByMint(listHistory)
     const { airdropAllocationList, totalUSDAirdrop } =

@@ -13,10 +13,10 @@ import {
   Typography,
 } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import OverviewRecipient from './overviewRecipient'
 
 import { addAmountAndTime } from 'app/model/recipients.controller'
 import { AppDispatch, AppState } from 'app/model'
+import OverviewRecipient from './overViewRecipient'
 
 const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
   const recipientInfo = useSelector(

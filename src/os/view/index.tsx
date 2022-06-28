@@ -11,6 +11,7 @@ import Market from 'os/view/market'
 import AppViewer from 'os/view/market/appViewer'
 import Sync from 'os/view/sync'
 import Loading from 'os/view/loading'
+import Maintenace from 'os/view/maintenance'
 
 import Watcher from 'os/view/watcher'
 import Walkthrough from 'os/view/walkthrough'
@@ -91,6 +92,7 @@ const View = () => {
               <Route exact path="/store" component={Market} />
               <Route exact path="/store/:appId" component={AppViewer} />
               <PrivateRoute exact path="/sync" component={Sync} />
+              <Route exact path="/maintenance" component={Maintenace} />
               <Redirect from="*" to="/welcome" />
             </Switch>
           </Col>

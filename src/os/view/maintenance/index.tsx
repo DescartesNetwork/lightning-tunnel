@@ -1,19 +1,15 @@
+import IonIcon from '@sentre/antd-ionicon'
 import { Button, Col, Image, Row, Space, Typography } from 'antd'
 import Brand from 'os/components/brand'
 
 import bgMaintenance from 'os/static/images/maintenance/bg.png'
-import icoDiscord from 'os/static/images/maintenance/discord.svg'
-import icoTele from 'os/static/images/maintenance/tele.svg'
-import icoMedium from 'os/static/images/maintenance/medium.svg'
-import icoTwitter from 'os/static/images/maintenance/twitter.svg'
-import icoWeb from 'os/static/images/maintenance/web.svg'
 
 const SOCIALS = [
-  { icon: icoWeb, url: 'https://sentre.io' },
-  { icon: icoTwitter, url: 'https://twitter.com/SentreProtocol' },
-  { icon: icoMedium, url: 'https://sentre.medium.com' },
-  { icon: icoTele, url: 'https://t.me/Sentre' },
-  { icon: icoDiscord, url: 'https://discord.com/invite/EXFntyCRzJ' },
+  { icon: 'globe', url: 'https://sentre.io' },
+  { icon: 'logo-twitter', url: 'https://twitter.com/SentreProtocol' },
+  { icon: 'logo-medium', url: 'https://sentre.medium.com' },
+  { icon: 'logo-telegram', url: 'https://t.me/Sentre' },
+  { icon: 'logo-discord', url: 'https://discord.com/invite/EXFntyCRzJ' },
 ]
 
 const Maintenace = () => {
@@ -65,7 +61,8 @@ const Maintenace = () => {
                 {SOCIALS.map((social, idx) => (
                   <Button
                     type="text"
-                    icon={<Image src={social.icon} preview={false} />}
+                    style={{ color: '#7A7B85' }}
+                    icon={<IonIcon name={social.icon} />}
                     onClick={() => window.open(social.url, '_blank')}
                     key={idx}
                   />

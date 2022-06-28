@@ -2,7 +2,7 @@ import { ChangeEvent, Fragment, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account, utils } from '@senswap/sen-js'
 
-import { Button, Checkbox, Col, Input, Row, Space, Typography } from 'antd'
+import { Button, Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import NumericInput from '@sentre/antd-numeric-input'
 import ModalMerge from './commonModal'
@@ -13,7 +13,6 @@ import {
   RecipientInfo,
   removeRecipient,
 } from 'app/model/recipients.controller'
-import { selectRecipient } from 'app/model/file.controller'
 import { setIsTyping } from 'app/model/main.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 
@@ -43,13 +42,21 @@ const ActionButton = ({
   return (
     <Fragment>
       {walletAddress ? (
-        <Button
-          type="text"
-          size="small"
-          style={{ padding: 0 }}
-          onClick={remove}
-          icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
-        />
+        <Space>
+          <Button
+            type="text"
+            size="small"
+            style={{ padding: 0 }}
+            onClick={remove}
+            icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
+          />
+          <Button
+            type="text"
+            size="small"
+            style={{ padding: 0 }}
+            icon={<IonIcon style={{ fonSize: 20 }} name="create-outline" />}
+          />
+        </Space>
       ) : (
         <Button
           type="text"
@@ -67,8 +74,6 @@ const ActionButton = ({
 const InputInfoTransfer = ({
   walletAddress,
   amount,
-  index,
-  isSelect = false,
 }: InputInfoTransferProps) => {
   const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [amountError, setAmountError] = useState('')
@@ -78,7 +83,6 @@ const InputInfoTransfer = ({
     main: { mintSelected, typeDistribute },
     recipients,
     setting: { decimal },
-    file: { selectedFile },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch()
   const mintDecimals = useMintDecimals(mintSelected) || 0
@@ -88,9 +92,6 @@ const InputInfoTransfer = ({
   }
 
   const onAmount = (val: string) => setFormInput({ ...formInput, amount: val })
-
-  const onSelected = (checked: boolean, walletAddress: string) =>
-    dispatch(selectRecipient({ checked, walletAddress }))
 
   const recipientInfo = useCallback(async () => {
     if (account.isAddress(walletAddress) && amount) {
@@ -112,7 +113,7 @@ const InputInfoTransfer = ({
     if (typeDistribute === 'airdrop') {
       const recipient: RecipientInfo = {
         address: walletAddress,
-        amount: amount,
+        amount,
         unlockTime: globalUnlockTime,
       }
       nextRecipients.push(recipient)
@@ -121,17 +122,29 @@ const InputInfoTransfer = ({
     if (typeDistribute === 'vesting') {
       const { distributeIn, frequency } = globalConfigs
       const distributionAmount = Math.floor((distributeIn * 30) / frequency)
-      const actualAmount = Number(amount) / distributionAmount
+      const decimalAmount = utils.decimalize(amount, mintDecimals)
+      const singleAmount = decimalAmount / BigInt(distributionAmount)
 
       for (let i = 0; i < distributionAmount; i++) {
         let unlockTime = 0
+        let actualAmount = singleAmount
         if (i === 0) unlockTime = globalUnlockTime
         if (i !== 0)
           unlockTime = frequency * ONE_DAY + nextRecipients[i - 1].unlockTime
 
+        if (i === distributionAmount - 1) {
+          let restAmount = 0
+          for (const { amount } of nextRecipients) restAmount += Number(amount)
+
+          actualAmount = utils.decimalize(
+            Number(amount) - restAmount,
+            mintDecimals,
+          )
+        }
+
         const recipient: RecipientInfo = {
           address: walletAddress,
-          amount: actualAmount.toString(),
+          amount: utils.undecimalize(actualAmount, mintDecimals),
           unlockTime: unlockTime,
           configs: globalConfigs,
         }
@@ -214,14 +227,6 @@ const InputInfoTransfer = ({
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between">
-      {isSelect && (
-        <Col>
-          <Checkbox
-            checked={selectedFile?.includes(walletAddress || '')}
-            onChange={(e) => onSelected(e.target.checked, walletAddress || '')}
-          />
-        </Col>
-      )}
       <Col span={18}>
         <Input
           disabled={disabledInput}
@@ -244,15 +249,13 @@ const InputInfoTransfer = ({
           autoComplete="off"
         />
       </Col>
-      {!isSelect && (
-        <Col span={1}>
-          <ActionButton
-            addNewRecipient={addNewRecipient}
-            walletAddress={walletAddress}
-            remove={onRemove}
-          />
-        </Col>
-      )}
+      <Col span={1}>
+        <ActionButton
+          addNewRecipient={addNewRecipient}
+          walletAddress={walletAddress}
+          remove={onRemove}
+        />
+      </Col>
       {(walletError || amountError) && (
         <Col span={24}>
           <Space>

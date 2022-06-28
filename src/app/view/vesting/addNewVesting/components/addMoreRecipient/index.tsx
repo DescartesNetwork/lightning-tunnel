@@ -21,14 +21,9 @@ const DEFAULT_RECIPIENT = {
 type AddMoreRecipientProps = {
   walletAddress?: string
   amount?: string
-  index?: number
 }
 
-const AddMoreRecipient = ({
-  walletAddress,
-  amount,
-  index,
-}: AddMoreRecipientProps) => {
+const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
   const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [isEdit, setIsEdit] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -79,13 +74,25 @@ const AddMoreRecipient = ({
     const { walletAddress: address, amount } = formInput
 
     const nextRecipients: RecipientInfo[] = []
-    const newAmount =
-      utils.decimalize(amount, mintDecimals) / BigInt(nextUnlockTime.length)
+    const decimalAmount = utils.decimalize(amount, mintDecimals)
+    const newAmount = decimalAmount / BigInt(nextUnlockTime.length)
 
-    for (const unlockTime of nextUnlockTime) {
+    for (let i = 0; i < nextUnlockTime.length; i++) {
+      const unlockTime = nextUnlockTime[i]
+      let actualAmount = newAmount
+
+      if (i === nextUnlockTime.length - 1) {
+        let restAmount = BigInt(0)
+        for (const { amount } of nextRecipients) {
+          const decimalAmount = utils.decimalize(amount, mintDecimals)
+          restAmount += decimalAmount
+        }
+        actualAmount = decimalAmount - restAmount
+      }
+
       nextRecipients.push({
         address,
-        amount: utils.undecimalize(newAmount, mintDecimals),
+        amount: utils.undecimalize(actualAmount, mintDecimals),
         unlockTime,
       })
     }

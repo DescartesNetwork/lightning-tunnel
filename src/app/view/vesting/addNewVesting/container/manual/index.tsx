@@ -35,12 +35,13 @@ const Manual = () => {
   const listRecipient = useMemo(() => {
     const nextRecipient: RecipientInfo[] = []
     for (const address in recipientInfos) {
-      const amountRecipient = recipientInfos[address].length
-      const amount = Number(recipientInfos[address][0].amount) * amountRecipient
+      const recipientInfoData = recipientInfos[address]
+      let newAmount = 0
+      for (const { amount } of recipientInfoData) newAmount += Number(amount)
 
       const recipient: RecipientInfo = {
         address,
-        amount: amount.toString(),
+        amount: newAmount.toString(),
         unlockTime: 0,
       }
       nextRecipient.push(recipient)

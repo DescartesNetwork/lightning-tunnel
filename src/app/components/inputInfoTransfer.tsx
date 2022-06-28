@@ -9,7 +9,7 @@ import ModalMerge from './commonModal'
 
 import { AppState } from 'app/model'
 import {
-  addRecipient,
+  setRecipient,
   RecipientInfo,
   removeRecipient,
 } from 'app/model/recipients.controller'
@@ -141,7 +141,7 @@ const InputInfoTransfer = ({
 
     setWalletError('')
     setAmountError('')
-    await dispatch(addRecipient({ walletAddress, nextRecipients }))
+    await dispatch(setRecipient({ walletAddress, nextRecipients }))
     return setFormInput(DEFAULT_RECIPIENT)
   }
 
@@ -164,7 +164,7 @@ const InputInfoTransfer = ({
       }
     })
 
-    await dispatch(addRecipient({ walletAddress, nextRecipients }))
+    await dispatch(setRecipient({ walletAddress, nextRecipients }))
     await setVisible(false)
     if (amountError || walletError) {
       setAmountError('')

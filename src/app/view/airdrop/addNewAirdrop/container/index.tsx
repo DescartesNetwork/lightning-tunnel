@@ -168,7 +168,7 @@ const Container = () => {
     steps: { step },
   } = useSelector((state: AppState) => state)
 
-  if (!methodSelected) return <SelectInputMethod />
+  if (step === Step.SelectMethod) return <SelectInputMethod />
   if (step === Step.AddRecipient)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />

@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { SelectMethod } from 'app/constants'
 
 /**
  * Interface & Utility
@@ -10,7 +11,7 @@ export enum TypeDistribute {
 }
 
 export type MainState = {
-  methodSelected?: number
+  methodSelected: SelectMethod
   mintSelected: string
   visible: boolean
   isTyping: boolean
@@ -23,7 +24,7 @@ export type MainState = {
 
 const NAME = 'main'
 const initialState: MainState = {
-  methodSelected: undefined,
+  methodSelected: SelectMethod.manual,
   mintSelected: '',
   visible: false,
   isTyping: false,
@@ -36,7 +37,7 @@ const initialState: MainState = {
 
 export const onSelectMethod = createAsyncThunk(
   `${NAME}/onSelectMethod`,
-  async (methodSelected?: number) => {
+  async (methodSelected: number) => {
     return { methodSelected }
   },
 )

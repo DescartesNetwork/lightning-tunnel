@@ -96,7 +96,8 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
 
   const onSelectAll = (checked: boolean) => {
     if (checked) {
-      const listAddress = validRecipient.map(({ address }) => address)
+      const allRecipients = invalidRecipient.concat(validRecipient)
+      const listAddress = allRecipients.map(({ address }) => address)
       dispatch(selectAllRecipient(listAddress))
     } else dispatch(removeSelectedFile())
   }

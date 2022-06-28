@@ -13,7 +13,7 @@ import {
   Typography,
 } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import OverviewRecipient from './overViewRecipient'
+import OverviewRecipient from './overviewRecipient'
 
 import { addAmountAndTime } from 'app/model/recipients.controller'
 import { AppDispatch, AppState } from 'app/model'

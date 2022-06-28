@@ -2,22 +2,23 @@ import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount } from '@senhub/providers'
 
-import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
-import SelectToken from 'app/components/selectTokens'
-import Header from 'app/components/header'
+import { Button, Card, Col, Radio, Row, Space, Switch, Typography } from 'antd'
 import Auto from './auto'
 import Manual from './manual'
-import ConfirmTransfer from 'app/view/confirmTransfer'
 import UnlockTime from '../components/unlockTime'
 import Frequency from '../components/frequency'
 import DistributeIn from '../components/distributeIn'
+import AddUnlockTime from '../components/addUnlockTime'
+import ConfirmTransfer from 'app/view/confirmTransfer'
 import DateOption from 'app/components/dateOption'
 import CardOption from 'app/components/cardOption'
+import SelectToken from 'app/components/selectTokens'
+import Header from 'app/components/header'
 
 import { ONE_DAY, SelectMethod, Step } from 'app/constants'
+import { useSingleMints } from 'app/hooks/useSingleMints'
 import { AppState } from 'app/model'
 import { onSelectedMint, onSelectMethod } from 'app/model/main.controller'
-import { useSingleMints } from 'app/hooks/useSingleMints'
 import { onSelectStep } from 'app/model/steps.controller'
 import {
   Configs,
@@ -25,11 +26,21 @@ import {
   setGlobalConfigs,
   setGlobalUnlockTime,
 } from 'app/model/recipients.controller'
+import {
+  setAdvancedMode,
+  setListUnlockTime,
+} from 'app/model/advancedMode.controller'
 
 const SelectInputMethod = () => {
-  const [method, setMethod] = useState<number>(SelectMethod.manual)
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
   const [isUnlimited, setIsUnlimited] = useState(false)
+  const method = useSelector((state: AppState) => state.main.methodSelected)
+  const advanced = useSelector(
+    (state: AppState) => state.advancedMode.isAdvancedMode,
+  )
+  const listUnlockTime = useSelector(
+    (state: AppState) => state.advancedMode.listUnlockTime,
+  )
   const expiration = useSelector(
     (state: AppState) => state.recipients.expirationTime,
   )
@@ -71,25 +82,30 @@ const SelectInputMethod = () => {
     return dispatch(setGlobalConfigs({ configs }))
   }
 
+  const onChangeAdvanced = (isAdvanced: boolean) => {
+    if (isAdvanced) dispatch(onSelectMethod(SelectMethod.manual))
+    return dispatch(setAdvancedMode(isAdvanced))
+  }
+
   const disabled = useMemo(() => {
+    if (activeMintAddress === 'Select' || !method) return true
+    if (advanced) return (!expiration && !isUnlimited) || !listUnlockTime.length
     if (method === SelectMethod.manual)
       return (
-        activeMintAddress === 'Select' ||
-        !method ||
         !unlockTime ||
         (expiration < unlockTime && !isUnlimited) ||
         (expiration - unlockTime < distributeIn * 30 * ONE_DAY && !isUnlimited)
       )
-    return (
-      activeMintAddress === 'Select' || !method || (!expiration && !isUnlimited)
-    )
+    return !expiration && !isUnlimited
   }, [
     activeMintAddress,
+    advanced,
     distributeIn,
     expiration,
     isUnlimited,
     method,
     unlockTime,
+    listUnlockTime,
   ])
 
   return (
@@ -108,41 +124,65 @@ const SelectInputMethod = () => {
               />
             </Col>
             <Col span={24}>
-              <Space size={12} direction="vertical" style={{ width: '100%' }}>
-                <Typography.Text>
-                  Choose transfer info input method
-                </Typography.Text>
-                <Radio.Group
-                  onChange={(e) => setMethod(e.target.value)}
-                  style={{ width: '100%' }}
-                  className="select-card"
-                >
-                  <Row gutter={[12, 12]}>
-                    <Col xs={24} sm={12} md={12} lg={12}>
-                      <Radio.Button value={SelectMethod.manual}>
-                        <CardOption
-                          label="Manual"
-                          description="With a small number of recipients."
-                          active={method === SelectMethod.manual}
-                        />
-                      </Radio.Button>
-                    </Col>
-                    <Col xs={24} sm={12} md={12} lg={12}>
-                      <Radio.Button value={SelectMethod.auto}>
-                        <CardOption
-                          label="Automatic"
-                          description="Support bulk import with a CSV file."
-                          active={method === SelectMethod.auto}
-                        />
-                      </Radio.Button>
-                    </Col>
-                  </Row>
-                </Radio.Group>
-              </Space>
+              <Row gutter={[12, 12]}>
+                <Col flex="auto">
+                  <Typography.Text>
+                    Choose transfer info input method
+                  </Typography.Text>
+                </Col>
+                <Col>
+                  <Space>
+                    <Typography.Text>Advanced mode</Typography.Text>
+                    <Switch checked={advanced} onChange={onChangeAdvanced} />
+                  </Space>
+                </Col>
+                <Col span={24}>
+                  <Radio.Group
+                    onChange={(e) => dispatch(onSelectMethod(e.target.value))}
+                    style={{ width: '100%' }}
+                    className="select-card"
+                    value={method}
+                  >
+                    <Row gutter={[12, 12]}>
+                      <Col xs={24} sm={12} md={12} lg={12}>
+                        <Radio.Button value={SelectMethod.manual}>
+                          <CardOption
+                            label="Manual"
+                            description="With a small number of recipients."
+                            active={method === SelectMethod.manual}
+                          />
+                        </Radio.Button>
+                      </Col>
+                      <Col xs={24} sm={12} md={12} lg={12}>
+                        <Radio.Button
+                          disabled={advanced}
+                          value={SelectMethod.auto}
+                        >
+                          <CardOption
+                            label="Automatic"
+                            description="Support bulk import with a CSV file."
+                            active={method === SelectMethod.auto}
+                          />
+                        </Radio.Button>
+                      </Col>
+                    </Row>
+                  </Radio.Group>
+                </Col>
+              </Row>
             </Col>
+            {advanced && (
+              <Col span={24}>
+                <AddUnlockTime
+                  listUnlockTime={listUnlockTime}
+                  setListUnlockTime={(value) =>
+                    dispatch(setListUnlockTime(value))
+                  }
+                />
+              </Col>
+            )}
             <Col span={24}>
               <Row gutter={[16, 16]}>
-                {method === SelectMethod.manual && (
+                {method === SelectMethod.manual && !advanced && (
                   <Fragment>
                     <Col xs={24} md={12} xl={6}>
                       <UnlockTime
@@ -206,7 +246,7 @@ const Container = () => {
     steps: { step },
   } = useSelector((state: AppState) => state)
 
-  if (!methodSelected) return <SelectInputMethod />
+  if (step === Step.SelectMethod) return <SelectInputMethod />
   if (step === Step.AddRecipient)
     return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />

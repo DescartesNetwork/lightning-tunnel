@@ -1,20 +1,26 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Button, Card, Col, Row, Space } from 'antd'
+import { Button, Card, Col, Row } from 'antd'
 import Header from '../../../../../components/header'
-import InputInfoTransfer from '../../../../../components/inputInfoTransfer'
 import CardTotal from 'app/components/cardTotal'
-import DistributionConfig from './distributionConfig'
+import MethodInputRecipient from './methodInputRecipient'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
-import { onSelectMethod } from 'app/model/main.controller'
 import { Step } from 'app/constants'
 import useTotal from 'app/hooks/useTotal'
 import useValidateAmount from 'app/hooks/useValidateAmount'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
-import { RecipientInfo } from 'app/model/recipients.controller'
+import {
+  RecipientInfo,
+  removeRecipients,
+  setGlobalUnlockTime,
+} from 'app/model/recipients.controller'
+import {
+  setAdvancedMode,
+  setListUnlockTime,
+} from 'app/model/advancedMode.controller'
 
 const Manual = () => {
   const {
@@ -42,8 +48,11 @@ const Manual = () => {
   }, [recipientInfos])
 
   const onBack = useCallback(async () => {
-    await dispatch(onSelectMethod())
-    // await dispatch(removeRecipients())
+    await dispatch(removeRecipients())
+    await dispatch(setAdvancedMode(false))
+    await dispatch(setListUnlockTime([]))
+    await dispatch(setGlobalUnlockTime(0))
+
     dispatch(onSelectStep(Step.SelectMethod))
   }, [dispatch])
 
@@ -62,22 +71,16 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>Wallet address #{listRecipient.length + 1}</Col>
             <Col span={24}>
-              <Space direction="vertical" style={{ width: '100%' }}>
-                <InputInfoTransfer />
-                <DistributionConfig />
-              </Space>
+              <MethodInputRecipient />
             </Col>
             {listRecipient &&
               listRecipient.map(({ address, amount }, index) => (
                 <Col span={24} key={address + index}>
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <InputInfoTransfer
-                      amount={amount}
-                      walletAddress={address}
-                      index={index}
-                    />
-                    <DistributionConfig walletAddress={address} />
-                  </Space>
+                  <MethodInputRecipient
+                    walletAddress={address}
+                    amount={amount}
+                    index={index}
+                  />
                 </Col>
               ))}
             <Col span={24}>

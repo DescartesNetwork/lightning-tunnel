@@ -86,12 +86,12 @@ export const setGlobalConfigs = createAsyncThunk<
   return { globalConfigs: nextConfigs }
 })
 
-export const addRecipient = createAsyncThunk<
+export const setRecipient = createAsyncThunk<
   Partial<TreeRecipientState>,
   { walletAddress: string; nextRecipients: RecipientInfo[] },
   { state: any }
 >(
-  `${NAME}/addRecipient`,
+  `${NAME}/setRecipient`,
   async ({ walletAddress, nextRecipients }, { getState }) => {
     const {
       recipients: { recipientInfos },
@@ -180,7 +180,7 @@ const slice = createSlice({
   extraReducers: (builder) =>
     void builder
       .addCase(
-        addRecipient.fulfilled,
+        setRecipient.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

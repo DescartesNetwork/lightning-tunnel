@@ -1,5 +1,6 @@
-import { useSelector } from 'react-redux'
 import { ReactNode } from 'react'
+import { useSelector } from 'react-redux'
+import moment from 'moment'
 
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from 'shared/antd/mint'
@@ -9,7 +10,6 @@ import useTotal from 'app/hooks/useTotal'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import { numeric } from 'shared/util'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
-import moment from 'moment'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   return (
@@ -33,13 +33,13 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
 
   return (
     <Row justify={isConfirm ? 'space-between' : undefined} gutter={[8, 8]}>
-      <Col md={12} lg={4}>
+      <Col xs={24} sm={12} lg={4}>
         <Content
           label="Recipients"
           value={<Typography.Text>{quantity}</Typography.Text>}
         />
       </Col>
-      <Col md={12} lg={4}>
+      <Col xs={24} sm={12} lg={4}>
         <Content
           label="Unlock time"
           value={
@@ -51,7 +51,7 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
           }
         />
       </Col>
-      <Col md={12} lg={4}>
+      <Col xs={24} sm={12} lg={4}>
         <Content
           label="Expiration time"
           value={
@@ -63,7 +63,7 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
           }
         />
       </Col>
-      <Col md={12} lg={4}>
+      <Col xs={24} sm={12} lg={4}>
         <Content
           label="Your balance"
           value={
@@ -79,7 +79,7 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
         />
       </Col>
       {!isConfirm && (
-        <Col md={12} lg={4}>
+        <Col xs={24} sm={12} lg={4}>
           <Content
             label="Total"
             value={
@@ -93,7 +93,7 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
           />
         </Col>
       )}
-      <Col md={12} lg={4}>
+      <Col xs={24} sm={12} lg={4}>
         <Content
           label="Remaining"
           value={

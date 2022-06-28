@@ -19,6 +19,8 @@ import { TypeDistribute } from 'app/model/main.controller'
 import { shortenAddress } from 'shared/util'
 import { COLUMNS_AIRDROP } from '../columns'
 import ColumAction from '../columns/columAction'
+import RowBetweenNodeTitle from 'app/components/rowBetweenNodeTitle'
+import ColumnAmount from '../columns/columnTotal'
 
 const DEFAULT_AMOUNT = 4
 
@@ -30,10 +32,10 @@ const AirdropReceive = () => {
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
   const distributors = useSelector((state: AppState) => state.distributors)
   const {
-    ui: { infix },
+    ui: { width },
   } = useUI()
 
-  const isMobile = infix === 'xs'
+  const isMobile = width < 768
 
   const filterAirdrops = useCallback(async () => {
     if (!receiveList.length) return
@@ -59,8 +61,6 @@ const AirdropReceive = () => {
   useEffect(() => {
     filterAirdrops()
   }, [filterAirdrops])
-
-  console.log(listAirdrop, '  listAirdrop', receiveList)
 
   return (
     <Spin spinning={loading}>
@@ -95,21 +95,30 @@ const AirdropReceive = () => {
                         borderImageSource:
                           'linear-gradient(90deg,transparent, #4F5B5C, transparent)',
                       }}
-                      cardId={airdrop.receiptAddress}
+                      cardId={receiptAddress}
                       cardHeader={
                         <Row gutter={[12, 12]}>
-                          <Col flex="auto">
-                            <Space>
-                              <MintAvatar mintAddress={mintAddress} />
-                              <MintSymbol mintAddress={mintAddress} />
-                            </Space>
-                          </Col>
-                          <Col>
-                            <ColumnStatus
-                              receiptAddress={receiptAddress}
-                              startedAt={recipientData.startedAt.toNumber()}
-                              distributorAddress={distributorAddress}
-                            />
+                          <Col span={24}>
+                            <RowBetweenNodeTitle
+                              title={
+                                <Space>
+                                  <MintAvatar mintAddress={mintAddress} />
+                                  <Space size={6}>
+                                    <ColumnAmount
+                                      amount={recipientData.amount}
+                                      mintAddress={mintAddress}
+                                    />
+                                    <MintSymbol mintAddress={mintAddress} />
+                                  </Space>
+                                </Space>
+                              }
+                            >
+                              <ColumnStatus
+                                receiptAddress={receiptAddress}
+                                startedAt={recipientData.startedAt.toNumber()}
+                                distributorAddress={distributorAddress}
+                              />
+                            </RowBetweenNodeTitle>
                           </Col>
                           <Col span={24}>
                             <RowSpaceBetween
@@ -131,9 +140,11 @@ const AirdropReceive = () => {
                         <Col flex="auto">Unlock time:</Col>
                         <Col>
                           <Typography.Text>
-                            {moment(recipientData.startedAt.toNumber()).format(
-                              'MM-DD-YYYY : HH:mm',
-                            )}
+                            {recipientData.startedAt.toNumber()
+                              ? moment(
+                                  recipientData.startedAt.toNumber() * 1000,
+                                ).format('MMM DD, YYYY HH:mm')
+                              : 'Immediately'}
                           </Typography.Text>
                         </Col>
                         <Col span={24} />

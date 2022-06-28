@@ -5,12 +5,14 @@ type TotalAirdropProps = {
   valueInUSD: number
   numberOfCampaign: number
   recipientList: number
+  loading: boolean
 }
 
 const TotalAirdrop = ({
   valueInUSD,
   numberOfCampaign,
   recipientList,
+  loading,
 }: TotalAirdropProps) => {
   return (
     <Row gutter={[24, 24]} style={{ height: '100%' }}>
@@ -20,6 +22,7 @@ const TotalAirdrop = ({
           icon="wallet-outline"
           value={valueInUSD}
           cardStyles={{ padding: '8px 24px' }}
+          loading={!valueInUSD && loading}
         />
       </Col>
       <Col span={24}>
@@ -29,11 +32,12 @@ const TotalAirdrop = ({
           value={numberOfCampaign}
           cardStyles={{ padding: '8px 24px' }}
           unit=""
+          loading={!numberOfCampaign && loading}
         />
       </Col>
       <Col span={24}>
         <HeroCard
-          loading={!recipientList}
+          loading={!recipientList && loading}
           label="Total recipients"
           icon="people-outline"
           value={recipientList}

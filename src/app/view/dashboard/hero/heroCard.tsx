@@ -1,7 +1,7 @@
-import { CSSProperties, Suspense } from 'react'
+import { CSSProperties } from 'react'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Card, Col, Row, Typography } from 'antd'
+import { Card, Col, Row, Spin, Typography } from 'antd'
 
 import { numeric } from 'shared/util'
 
@@ -22,7 +22,7 @@ const HeroCard = ({
   loading = false,
   cardStyles = {},
 }: HeroCardProps) => (
-  <Suspense fallback={<>...Loading</>}>
+  <Spin spinning={loading}>
     <Card
       bordered={false}
       className="card-lightning"
@@ -44,7 +44,7 @@ const HeroCard = ({
         </Col>
       </Row>
     </Card>
-  </Suspense>
+  </Spin>
 )
 
 export default HeroCard

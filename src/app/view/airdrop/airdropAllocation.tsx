@@ -1,7 +1,6 @@
-import { Card, Col, Empty, Row, Typography } from 'antd'
+import { Card, Col, Row, Typography, Spin } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
 import { AllocationType } from 'app/constants'
-import { Suspense } from 'react'
 
 type AirdropAllocationProps = {
   airdropAllocation: Record<string, AllocationType>
@@ -13,7 +12,7 @@ const AirdropAllocation = ({
   loading,
 }: AirdropAllocationProps) => {
   return (
-    <Suspense fallback={<>...Loading</>}>
+    <Spin spinning={loading}>
       <Card
         className="card-lightning"
         style={{ height: '100%' }}
@@ -30,15 +29,11 @@ const AirdropAllocation = ({
             </Row>
           </Col>
           <Col span={24}>
-            {!Object.keys(airdropAllocation).length ? (
-              <Empty />
-            ) : (
-              <DoughnutChart data={airdropAllocation} />
-            )}
+            <DoughnutChart data={airdropAllocation} />
           </Col>
         </Row>
       </Card>
-    </Suspense>
+    </Spin>
   )
 }
 

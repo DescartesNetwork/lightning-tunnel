@@ -50,6 +50,7 @@ const Vesting = () => {
         <Row gutter={[24, 24]}>
           <Col span={24} lg={8}>
             <StatisticVesting
+              loading={loadingVesting}
               valueInUSD={totalUSDVesting}
               numberOfCampaign={numberOfCampaigns}
               recipientList={numberOfRecipient}

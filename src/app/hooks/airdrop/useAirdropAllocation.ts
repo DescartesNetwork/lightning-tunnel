@@ -88,10 +88,10 @@ const useAirdropAllocation = () => {
         const tokenInfo = await tokenProvider.findByAddress(mint)
         chartData[mint] = {
           mint,
-          name: `${tokenInfo?.symbol}(${tokenInfo?.name})`,
+          name: `${tokenInfo?.symbol}`,
           amountToken: tokenAmounts[mint],
           usdValue: usdValues[mint],
-          ratioAirdrop: ratioAirdrops[mint],
+          ratio: ratioAirdrops[mint],
         }
       }
       setAirdropAllocation(chartData)

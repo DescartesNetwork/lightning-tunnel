@@ -1,6 +1,4 @@
-import React from 'react'
-
-import { Card, Col, Row, Typography } from 'antd'
+import { Card, Col, Row, Spin, Typography } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
 import { AllocationType } from 'app/constants'
 
@@ -14,24 +12,28 @@ const VestingAllocation = ({
   loading,
 }: VestingAllocationProps) => {
   return (
-    <Card
-      className="card-lightning"
-      style={{ height: '100%' }}
-      bodyStyle={{ paddingBottom: 0 }}
-    >
-      <Row gutter={[0, 24]}>
-        <Col span={24}>
-          <Row>
-            <Col flex="auto">
-              <Typography.Title level={5}>Vesting allocation</Typography.Title>
-            </Col>
-          </Row>
-        </Col>
-        <Col span={24}>
-          <DoughnutChart data={vestingAllocation} />
-        </Col>
-      </Row>
-    </Card>
+    <Spin spinning={loading}>
+      <Card
+        className="card-lightning"
+        style={{ height: '100%' }}
+        bodyStyle={{ paddingBottom: 0 }}
+      >
+        <Row gutter={[0, 24]}>
+          <Col span={24}>
+            <Row>
+              <Col flex="auto">
+                <Typography.Title level={5}>
+                  Vesting allocation
+                </Typography.Title>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <DoughnutChart data={vestingAllocation} />
+          </Col>
+        </Row>
+      </Card>
+    </Spin>
   )
 }
 

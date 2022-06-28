@@ -25,7 +25,7 @@ export type AllocationType = {
   name: string
   amountToken: number
   usdValue: number
-  ratioAirdrop: number
+  ratio: number
 }
 
 export enum RecipientFileType {

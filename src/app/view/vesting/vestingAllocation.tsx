@@ -1,5 +1,6 @@
 import { Card, Col, Row, Spin, Typography } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
+
 import { AllocationType } from 'app/constants'
 
 type VestingAllocationProps = {

@@ -1,5 +1,6 @@
 import { Card, Col, Row, Typography, Spin } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
+
 import { AllocationType } from 'app/constants'
 
 type AirdropAllocationProps = {

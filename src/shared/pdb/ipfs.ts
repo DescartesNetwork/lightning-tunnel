@@ -8,8 +8,7 @@ class IPFS {
     try {
       if (!window.ipfs) window.ipfs = await create()
       return window.ipfs
-    } catch (er: any) {
-      console.log(er.message)
+    } catch (er) {
       await asyncWait(500)
       return await this._ipfs()
     }

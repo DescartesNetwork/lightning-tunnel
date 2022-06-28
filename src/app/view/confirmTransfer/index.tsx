@@ -54,7 +54,6 @@ const ConfirmTransfer = () => {
   const treeData = useMemo(() => {
     if (!recipientInfos || !mintDecimals) return
     let listRecipient: RecipientInfo[] = []
-
     for (const walletAddress in recipientInfos) {
       listRecipient = listRecipient.concat(recipientInfos[walletAddress])
     }

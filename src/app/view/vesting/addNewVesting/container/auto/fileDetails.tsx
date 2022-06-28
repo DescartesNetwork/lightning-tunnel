@@ -18,6 +18,7 @@ import {
   selectAllRecipient,
 } from 'app/model/file.controller'
 import useFilteredVestingRecipient from 'app/hooks/vesting/useFilteredVestingRecipients'
+import useValidateAmount from 'app/hooks/useValidateAmount'
 
 const ActionButton = ({
   activeKey = '',
@@ -101,7 +102,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
     } else dispatch(removeSelectedFile())
   }
 
-  // const { amountError } = useValidateAmount(listRecipient)
+  const { amountError } = useValidateAmount()
 
   return (
     <Row gutter={[16, 16]}>
@@ -206,7 +207,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
               </Card>
             </Spin>
           </Col>
-          {/* {amountError && (
+          {amountError && (
             <Col span={24}>
               <Space size={12}>
                 <IonIcon style={{ color: '#F9575E' }} name="warning-outline" />
@@ -215,7 +216,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
                 </Typography.Text>
               </Space>
             </Col>
-          )} */}
+          )}
           <Col span={24}>
             <WrapTotal />
           </Col>

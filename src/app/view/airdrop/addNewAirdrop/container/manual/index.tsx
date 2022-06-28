@@ -35,7 +35,7 @@ const Manual = () => {
     return nextRecipient
   }, [recipientInfos])
 
-  const { amountError } = useValidateAmount(listRecipient)
+  const { amountError } = useValidateAmount()
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectStep(Step.SelectMethod))

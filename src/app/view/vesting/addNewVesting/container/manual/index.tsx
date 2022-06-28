@@ -8,7 +8,7 @@ import MethodInputRecipient from './methodInputRecipient'
 
 import { AppDispatch, AppState } from 'app/model'
 import { onSelectStep } from 'app/model/steps.controller'
-import { Step } from 'app/constants'
+import { SelectMethod, Step } from 'app/constants'
 import useTotal from 'app/hooks/useTotal'
 import useValidateAmount from 'app/hooks/useValidateAmount'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
@@ -21,6 +21,7 @@ import {
   setAdvancedMode,
   setListUnlockTime,
 } from 'app/model/advancedMode.controller'
+import { onSelectMethod } from 'app/model/main.controller'
 
 const Manual = () => {
   const {
@@ -52,11 +53,11 @@ const Manual = () => {
     await dispatch(setAdvancedMode(false))
     await dispatch(setListUnlockTime([]))
     await dispatch(setGlobalUnlockTime(0))
-
     dispatch(onSelectStep(Step.SelectMethod))
+    dispatch(onSelectMethod(SelectMethod.manual))
   }, [dispatch])
 
-  const { amountError } = useValidateAmount(listRecipient)
+  const { amountError } = useValidateAmount()
 
   const disabled =
     quantity <= 0 || amountError || remainingBalance < 0 || isTyping

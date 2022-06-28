@@ -10,6 +10,7 @@ import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import { numeric } from 'shared/util'
 import useRemainingBalance from 'app/hooks/useRemainingBalance'
 import moment from 'moment'
+import { TypeDistribute } from 'app/model/main.controller'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   return (
@@ -24,7 +25,7 @@ const Content = ({ label, value }: { label: string; value: ReactNode }) => {
 
 export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
   const {
-    main: { mintSelected },
+    main: { mintSelected, typeDistribute },
     recipients: { expirationTime, globalUnlockTime },
   } = useSelector((sate: AppState) => sate)
   const { total, quantity } = useTotal()
@@ -39,18 +40,20 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
           value={<Typography.Text>{quantity}</Typography.Text>}
         />
       </Col>
-      <Col md={12} lg={4}>
-        <Content
-          label="Unlock time"
-          value={
-            <Typography.Text>
-              {globalUnlockTime
-                ? moment(globalUnlockTime).format('DD-MM-YY HH:mm:ss')
-                : 'Immediately'}
-            </Typography.Text>
-          }
-        />
-      </Col>
+      {typeDistribute === TypeDistribute.Airdrop && (
+        <Col md={12} lg={4}>
+          <Content
+            label="Unlock time"
+            value={
+              <Typography.Text>
+                {globalUnlockTime
+                  ? moment(globalUnlockTime).format('DD-MM-YY HH:mm:ss')
+                  : 'Immediately'}
+              </Typography.Text>
+            }
+          />
+        </Col>
+      )}
       <Col md={12} lg={4}>
         <Content
           label="Expiration time"

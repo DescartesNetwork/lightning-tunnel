@@ -14,11 +14,14 @@ const SOCIALS = [
 
 const Maintenace = () => {
   return (
-    <div className="loading-screen" style={{ paddingTop: 50 }}>
-      <Row gutter={[32, 32]}>
+    <div
+      className="loading-screen"
+      style={{ paddingTop: 50, background: '#fff' }}
+    >
+      <Row gutter={[24, { xs: 24, lg: 32 }]}>
         <Col span={24}>
           <Row
-            gutter={[100, 100]}
+            gutter={[24, { xs: 8, lg: 100 }]}
             align="middle"
             style={{ flexDirection: 'column' }}
           >
@@ -27,7 +30,7 @@ const Maintenace = () => {
             </Col>
             <Col>
               <Image
-                style={{ maxWidth: 500 }}
+                style={{ maxWidth: 350 }}
                 src={bgMaintenance}
                 preview={false}
               />
@@ -36,7 +39,7 @@ const Maintenace = () => {
         </Col>
         <Col span={24}>
           <Row
-            gutter={[24, 24]}
+            gutter={[24, { xs: 16, lg: 24 }]}
             align="middle"
             style={{ flexDirection: 'column', textAlign: 'center' }}
           >
@@ -50,7 +53,7 @@ const Maintenace = () => {
             </Col>
             <Col>
               <Typography.Text>
-                SenHub are currently upgrading to make it even more useful to
+                SenHub is currently upgrading to make it even more useful to
                 you.
                 <br />
                 Thank you for your patience.

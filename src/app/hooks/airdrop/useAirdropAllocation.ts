@@ -52,9 +52,9 @@ const useAirdropAllocation = () => {
           utils.undecimalize(airdropAllocation[mint], decimal),
         )
         tokenAmounts[mint] = tokenAmount
-        const usdAirdop = (await calcUsdValue(mint, tokenAmount)) || 0
-        usdAirdropTotal += usdAirdop
-        usdValues[mint] = usdAirdop
+        const usdAirdrop = (await calcUsdValue(mint, tokenAmount)) || 0
+        usdAirdropTotal += usdAirdrop
+        usdValues[mint] = usdAirdrop
       }
 
       return { usdValues, usdAirdropTotal, tokenAmounts }

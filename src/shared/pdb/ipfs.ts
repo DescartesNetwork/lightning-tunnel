@@ -1,10 +1,10 @@
-import { create, isIPFS } from 'ipfs-core'
+import { create, isIPFS, IPFS as IPFSType } from 'ipfs-core'
 import { asyncWait } from 'shared/util'
 
 const GET_CID_TIMEOUT = 5000
 
 class IPFS {
-  private _ipfs: any = async () => {
+  private _ipfs = async (): Promise<IPFSType> => {
     try {
       if (!window.ipfs) window.ipfs = await create()
       return window.ipfs

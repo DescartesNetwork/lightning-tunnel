@@ -19,7 +19,11 @@ const conf: Record<Net, Conf> = {
    */
   devnet: {
     node: 'https://api.devnet.solana.com',
-    utility: new Utility(new SafeWallet(), 'https://api.devnet.solana.com'),
+    utility: new Utility(
+      new SafeWallet(),
+      'https://api.devnet.solana.com',
+      'A3PPh3nGBJs19KESDbBvLgwwMY4VSYFh9FNJV33wDftK',
+    ),
     fee: 1000000,
     taxman: '8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D',
   },

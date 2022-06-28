@@ -49,11 +49,11 @@ const useAirdropAllocation = () => {
         const decimal = await getDecimals(mint)
         const airdropAmount = utilsBN.fromBigint(airdropAllocation[mint])
         const tokenAmount = utilsBN.undecimalize(airdropAmount, decimal)
-        const usdAirdop = await getTotalBalance([
+        const usdAirdrop = await getTotalBalance([
           { mint, amount: airdropAmount },
         ])
-        usdAirdropTotal += usdAirdop
-        usdValues[mint] = usdAirdop
+        usdAirdropTotal += usdAirdrop
+        usdValues[mint] = usdAirdrop
         tokenAmounts[mint] = Number(tokenAmount)
       }
       return { usdValues, usdAirdropTotal, tokenAmounts }

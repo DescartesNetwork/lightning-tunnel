@@ -10,8 +10,11 @@ import ColumnExpiration from './columnExpiration'
 import { explorer, shortenAddress } from 'shared/util'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 import { ReceiveItem } from 'app/hooks/useReceiveList'
+import { ColumnsType } from 'antd/lib/table'
 
-export const COLUMNS_AIRDROP = [
+import './index.less'
+
+export const COLUMNS_AIRDROP: ColumnsType<any> = [
   {
     title: 'UNLOCK DATE',
     dataIndex: 'recipientData',

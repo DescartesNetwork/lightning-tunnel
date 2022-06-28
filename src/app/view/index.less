@@ -5,14 +5,23 @@
   margin-top: -24px;
   .lightning_tunnel-layout-content {
     padding: 51px 24px 24px 235px !important;
+    @media (max-width: 992px) {
+      padding: 51px 24px 24px !important;
+    }
   }
 }
 .sidebar {
-  position: fixed !important;
-  width: 231px !important;
+  top: 64px !important;
+  height: calc(100% + 26px) !important;
+  &.mobile {
+    top: 0 !important;
+    height: 100% !important;
+    .lightning_tunnel-drawer-content {
+      backdrop-filter: blur(8px);
+      padding-top: 64px;
+    }
+  }
   .lightning_tunnel-drawer-content-wrapper {
-    top: 64px !important;
-    height: calc(100% + 26px) !important;
     box-shadow: unset !important;
     .lightning_tunnel-drawer-header {
       display: none !important;
@@ -79,4 +88,32 @@
       background-color: unset !important;
     }
   }
+}
+
+// Expend Card
+.expand-card-collapse {
+  .lightning_tunnel-collapse-header {
+    padding: 0 !important;
+    border: none !important;
+  }
+  .lightning_tunnel-collapse-item {
+    border: none !important;
+  }
+  .lightning_tunnel-collapse-content-box {
+    padding: 0 !important;
+  }
+  & *:not(button) {
+    background-color: transparent !important;
+  }
+}
+
+// Btn sidebar in mobile
+.btn-sidebar {
+  position: fixed !important;
+  width: 44px !important;
+  height: 44px !important;
+  background: #233333 !important;
+  border: none !important;
+  bottom: 24px;
+  z-index: 99;
 }

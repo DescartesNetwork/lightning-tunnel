@@ -1,6 +1,5 @@
 .background-container {
   position: relative;
-  overflow: hidden;
   width: 100%;
   height: 100%;
 }
@@ -10,7 +9,7 @@
   $particleColor: hsl(180, 100%, 80%);
 
   position: absolute;
-  transform: translateY(-10vh);
+  top: 0;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   z-index: 1;
@@ -68,11 +67,16 @@
 
       $startPositionX: random(100);
       $startPositionY: random(100);
-      $constPX: 1;
-      @if $startPositionX <= 50 {
-        $constPX: -1;
+      $endPositionX: 0;
+      $endPositionY: 0;
+
+      @if $startPositionX < 50 {
+        $endPositionX: 100;
       }
-      $constPY: -$constPX;
+      @if $startPositionY < 50 {
+        $endPositionY: 100;
+      }
+
       $framesName: 'move-frames-' + $i;
       $moveDuration: 16000 + random(4500) + ms;
 
@@ -83,16 +87,16 @@
       @keyframes #{$framesName} {
         from {
           transform: translate3d(
-            #{- $constPX * $startPositionX + vw},
-            #{- $constPY * $startPositionY + vh},
+            #{$startPositionX + 'vw'},
+            #{$startPositionY + 'vh'},
             0
           );
         }
 
         to {
           transform: translate3d(
-            #{$constPX * $startPositionX + (random(70) * $constPY) + vw},
-            #{$constPY * $startPositionY + (random(70) * $constPX) + vh},
+            #{$endPositionX + 'vw'},
+            #{$endPositionY + 'vh'},
             0
           );
         }

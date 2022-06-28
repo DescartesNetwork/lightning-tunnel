@@ -123,7 +123,7 @@ const SelectInputMethod = () => {
             </Col>
             <Col span={24}>
               <Row gutter={[16, 16]}>
-                <Col span={12}>
+                <Col xs={24} lg={12}>
                   <DateOption
                     label="Unlock time"
                     onSwitch={setIsSendNow}
@@ -133,7 +133,7 @@ const SelectInputMethod = () => {
                     value={unlockTime}
                   />
                 </Col>
-                <Col span={12}>
+                <Col xs={24} lg={12}>
                   <DateOption
                     label="Expiration time"
                     onSwitch={setIsUnlimited}

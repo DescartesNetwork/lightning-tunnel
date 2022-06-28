@@ -46,7 +46,7 @@ const ActionButton = ({ distributorAddress }: ActionButtonProps) => {
       <Button
         onClick={() => setVisible(true)}
         type="text"
-        style={{ color: '#42E6EB' }}
+        style={{ color: '#42E6EB', padding: 0 }}
       >
         share
       </Button>
@@ -56,6 +56,7 @@ const ActionButton = ({ distributorAddress }: ActionButtonProps) => {
           type="text"
           loading={loading}
           disabled={disabled}
+          style={{ padding: 0 }}
         >
           revoke
         </Button>

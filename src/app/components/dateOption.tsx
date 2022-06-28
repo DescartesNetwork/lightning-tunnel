@@ -1,5 +1,5 @@
 import IonIcon from '@sentre/antd-ionicon'
-import { Col, DatePicker, Row, Space, Typography, Switch } from 'antd'
+import { Col, DatePicker, Row, Typography, Switch } from 'antd'
 import moment from 'moment'
 import { useState } from 'react'
 
@@ -34,10 +34,14 @@ const DateOption = ({
             <Typography.Text className="caption">{label}</Typography.Text>
           </Col>
           <Col>
-            <Space>
-              <Switch onChange={onSwitchChange} />
-              <Typography.Text>{switchText}</Typography.Text>
-            </Space>
+            <Row gutter={[8, 8]}>
+              <Col xs={{ order: 2 }} lg={{ order: 1 }}>
+                <Switch onChange={onSwitchChange} />
+              </Col>
+              <Col xs={{ order: 1 }} lg={{ order: 2 }}>
+                <Typography.Text>{switchText}</Typography.Text>
+              </Col>
+            </Row>
           </Col>
         </Row>
       </Col>

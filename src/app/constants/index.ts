@@ -20,7 +20,15 @@ export enum State {
   expired = 'Expired',
   loading = 'Loading',
 }
+export type AirdropAllocationType = {
+  mint: string
+  name: string
+  amountToken: number
+  usdValue: number
+  ratioAirdrop: number
+}
 
+export const CURRENT_TIME = new Date().getTime()
 export enum RecipientFileType {
   valid = 'valid',
   invalid = 'invalid',

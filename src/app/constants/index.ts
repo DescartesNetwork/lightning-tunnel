@@ -20,6 +20,13 @@ export enum State {
   expired = 'Expired',
   loading = 'Loading',
 }
+export type AirdropAllocationType = {
+  mint: string
+  name: string
+  amountToken: number
+  usdValue: number
+  ratioAirdrop: number
+}
 
 export enum RecipientFileType {
   valid = 'valid',

@@ -93,7 +93,9 @@ export const fetchMulCGK = async (
 ): Promise<{ [x: string]: number }> => {
   const ids = tickets.join(',')
   let url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
-  const data = await fetch(url).then((res) => res.json())
+  const data = await DataLoader.load('fetchMulCGK' + ids, () =>
+    fetch(url).then((res) => res.json()),
+  )
   for (const key in data) {
     data[key] = data[key].usd
   }

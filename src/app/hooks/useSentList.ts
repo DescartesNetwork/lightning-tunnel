@@ -15,13 +15,15 @@ const {
 const CURRENT_TIME = Date.now()
 
 const useSentList = ({ type }: { type: TypeDistribute }) => {
+  const distributors = useSelector((state: AppState) => state.distributors)
+  const history = useSelector((state: AppState) => state.history)
   const [loading, setLoading] = useState(false)
   const [listHistory, setListHistory] = useState<HistoryRecord[]>([])
-  const history = useSelector((state: AppState) => state.history)
-  const distributors = useSelector((state: AppState) => state.distributors)
+  const [numberOfRecipient, setNumberOfRecipient] = useState(0)
 
   const fetchHistory = useCallback(async () => {
     const nextHistory: HistoryRecord[] = []
+    let newNumberOfRecipient = 0
     try {
       setLoading(true)
       const airdropSalt = MerkleDistributor.salt(`${appId}/${type}/0`)
@@ -34,6 +36,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         )
         const salt = merkleDistributor.receipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)
+        newNumberOfRecipient += merkleDistributor.receipients.length
 
         if (x !== 0) continue
         const endedAt = distributors[distributorAddress].endedAt
@@ -48,6 +51,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     } catch (error) {
     } finally {
       setLoading(false)
+      setNumberOfRecipient(newNumberOfRecipient)
       return setListHistory(nextHistory)
     }
   }, [distributors, history, type])
@@ -56,7 +60,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     fetchHistory()
   }, [fetchHistory])
 
-  return { listHistory, loading }
+  return { listHistory, loading, numberOfRecipient }
 }
 
 export default useSentList

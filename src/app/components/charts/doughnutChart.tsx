@@ -49,8 +49,8 @@ const buildOptions = ({
       formatter: function (name: string) {
         const splitedString = name.split('_')
         return `{a| ${shortenTailText(splitedString[0], 7)}}{b| ${numeric(
-          Number(splitedString[1]) * 100,
-        ).format('0,0.[00]')}%}`
+          Number(splitedString[1]),
+        ).format('0,0.[00]%')}}`
       },
       icon: 'rect',
       textStyle: {

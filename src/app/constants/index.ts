@@ -28,7 +28,6 @@ export type AllocationType = {
   ratioAirdrop: number
 }
 
-export const CURRENT_TIME = new Date().getTime()
 export enum RecipientFileType {
   valid = 'valid',
   invalid = 'invalid',

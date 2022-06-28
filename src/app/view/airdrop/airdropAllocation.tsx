@@ -4,7 +4,7 @@ import { AirdropAllocationType } from 'app/constants'
 import { Suspense } from 'react'
 
 type AirdropAllocationProps = {
-  airdropAllocation: Map<string, AirdropAllocationType>
+  airdropAllocation: Record<string, AirdropAllocationType>
   loading: boolean
 }
 

@@ -25,7 +25,7 @@ export type AirdropAllocationType = {
   name: string
   amountToken: number
   usdValue: number
-  percentInTotal: number
+  ratioAirdrop: number
 }
 
 export const CURRENT_TIME = new Date().getTime()

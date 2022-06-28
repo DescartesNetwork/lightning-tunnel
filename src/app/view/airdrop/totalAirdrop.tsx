@@ -28,6 +28,7 @@ const TotalAirdrop = ({
           icon="paper-plane-outline"
           value={numberOfCampaign}
           cardStyles={{ padding: '8px 24px' }}
+          unit=""
         />
       </Col>
       <Col span={24}>
@@ -37,6 +38,7 @@ const TotalAirdrop = ({
           icon="people-outline"
           value={recipientList}
           cardStyles={{ padding: '8px 24px' }}
+          unit=""
         />
       </Col>
     </Row>

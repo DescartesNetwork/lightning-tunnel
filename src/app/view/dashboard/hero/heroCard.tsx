@@ -9,6 +9,7 @@ type HeroCardProps = {
   label: string
   icon: string
   value: string | number
+  unit?: string
   loading?: boolean
   cardStyles?: CSSProperties
 }
@@ -17,6 +18,7 @@ const HeroCard = ({
   label,
   icon,
   value,
+  unit = '$',
   loading = false,
   cardStyles = {},
 }: HeroCardProps) => (
@@ -36,7 +38,8 @@ const HeroCard = ({
         </Col>
         <Col span={24}>
           <Typography.Title level={5}>
-            ${numeric(value).format('0,0.[000]')}
+            {unit}
+            {numeric(value).format('0,0.[000]')}
           </Typography.Title>
         </Col>
       </Row>

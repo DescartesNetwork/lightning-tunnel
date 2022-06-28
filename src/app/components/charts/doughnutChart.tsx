@@ -27,10 +27,9 @@ const buildOptions = ({
   data,
   bgTooltip = '#233333',
 }: {
-  data: Map<string, AirdropAllocationType>
+  data: Record<string, AirdropAllocationType>
   bgTooltip?: string
 }) => {
-  const formattedData = Array.from(data.values())
   return {
     tooltip: {
       trigger: 'item',
@@ -100,12 +99,12 @@ const buildOptions = ({
         labelLine: {
           show: false,
         },
-        data: formattedData.map((val) => {
+        data: Object.values(data).map((val) => {
           return {
             value: val.usdValue,
-            name: `${val.name}_${val.percentInTotal}`,
+            name: `${val.name}_${val.ratioAirdrop}`,
             tokenAmount: val.amountToken,
-            percentRatio: val.percentInTotal,
+            percentRatio: val.ratioAirdrop,
           }
         }),
       },
@@ -193,7 +192,7 @@ const buildOptions = ({
 const DoughnutChart = ({
   data,
 }: {
-  data: Map<string, AirdropAllocationType>
+  data: Record<string, AirdropAllocationType>
 }) => {
   return (
     <ReactEChartsCore

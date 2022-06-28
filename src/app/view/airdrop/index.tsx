@@ -17,8 +17,8 @@ const Airdrop = () => {
     airdropAllocation,
     totalUSDAirdrop,
     numberOfCampaigns,
-    totalRecipients,
-    loadingAirdropAllocation,
+    numberOfRecipient,
+    loadingAirdrop,
   } = useAirdropAllocation()
 
   const addNewAirdrop = () => {
@@ -51,13 +51,13 @@ const Airdrop = () => {
             <TotalAirdrop
               valueInUSD={totalUSDAirdrop}
               numberOfCampaign={numberOfCampaigns}
-              recipientList={totalRecipients}
+              recipientList={numberOfRecipient}
             />
           </Col>
           <Col span={24} lg={16}>
             <AirdropAllocation
               airdropAllocation={airdropAllocation}
-              loading={loadingAirdropAllocation}
+              loading={loadingAirdrop}
             />
           </Col>
         </Row>

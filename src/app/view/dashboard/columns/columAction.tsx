@@ -84,7 +84,12 @@ const ColumAction = ({
 
   if (status && status === State.ready)
     return (
-      <Button onClick={onClaim} loading={loading} type="text">
+      <Button
+        onClick={onClaim}
+        loading={loading}
+        type="text"
+        className="btn-claim"
+      >
         claim
       </Button>
     )

@@ -21,7 +21,7 @@ const Maintenace = () => {
       <Row gutter={[24, { xs: 24, lg: 32 }]}>
         <Col span={24}>
           <Row
-            gutter={[24, { xs: 8, lg: 100 }]}
+            gutter={[24, { xs: 32, lg: 100 }]}
             align="middle"
             style={{ flexDirection: 'column' }}
           >

@@ -21,7 +21,7 @@ const useTotalUSD = () => {
   const [loading, setLoading] = useState(true)
 
   // Need to remove when completing this file
-  setTotalUSD(0)
+  // setTotalUSD(0)
   // const getMintDecimal = useCallback(
   //   async (mintAddress: string) => {
   //     try {

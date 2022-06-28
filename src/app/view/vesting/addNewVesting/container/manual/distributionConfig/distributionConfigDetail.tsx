@@ -1,24 +1,20 @@
 import { useSelector } from 'react-redux'
+import { useMemo } from 'react'
+import { account } from '@senswap/sen-js'
 import moment from 'moment'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Button, Col, Row, Typography } from 'antd'
+import { Button, Col, Row, Space, Typography } from 'antd'
 
 import { AppState } from 'app/model'
-import { useMemo } from 'react'
-import { account } from '@senswap/sen-js'
 
 const Content = ({ label, value }: { label: string; value: string }) => (
-  <Row gutter={[8, 8]}>
-    <Col span={24}>
-      <Typography.Text type="secondary" className="caption">
-        {label}
-      </Typography.Text>
-    </Col>
-    <Col span={24}>
-      <Typography.Text>{value}</Typography.Text>
-    </Col>
-  </Row>
+  <Space size={4}>
+    <Typography.Text className="caption" type="secondary">
+      {label}
+    </Typography.Text>
+    <Typography.Text>{value}</Typography.Text>
+  </Space>
 )
 
 type DistributionConfigDetailProps = {
@@ -58,19 +54,19 @@ const DistributionConfigDetail = ({
     <Row gutter={[32, 32]} align="middle">
       <Col>
         <Content
-          label="Unlock time"
+          label="Unlock time:"
           value={moment(unlockTime).format('DD-MM-YYYY HH:mm')}
         />
       </Col>
       <Col>
         <Content
-          label="Distribution frequency"
+          label="Distribution frequency:"
           value={`${configs.frequency} days`}
         />
       </Col>
       <Col>
         <Content
-          label="Distribute in"
+          label="Distribute in:"
           value={`${configs.distributeIn} months`}
         />
       </Col>

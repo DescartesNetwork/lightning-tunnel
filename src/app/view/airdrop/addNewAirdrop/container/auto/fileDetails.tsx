@@ -102,7 +102,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
     } else dispatch(removeSelectedFile())
   }
 
-  const { amountError } = useValidateAmount(validRecipient)
+  const { amountError } = useValidateAmount()
 
   return (
     <Row gutter={[16, 16]}>

@@ -20,7 +20,7 @@ export enum State {
   expired = 'Expired',
   loading = 'Loading',
 }
-export type AirdropAllocationType = {
+export type AllocationType = {
   mint: string
   name: string
   amountToken: number

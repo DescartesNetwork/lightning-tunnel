@@ -1,10 +1,10 @@
 import { Card, Col, Empty, Row, Typography } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
-import { AirdropAllocationType } from 'app/constants'
+import { AllocationType } from 'app/constants'
 import { Suspense } from 'react'
 
 type AirdropAllocationProps = {
-  airdropAllocation: Record<string, AirdropAllocationType>
+  airdropAllocation: Record<string, AllocationType>
   loading: boolean
 }
 

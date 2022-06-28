@@ -12,7 +12,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 import { numeric } from 'shared/util'
 import { shortenTailText } from 'app/helper'
-import { AirdropAllocationType } from 'app/constants'
+import { AllocationType } from 'app/constants'
 
 echarts.use([
   TitleComponent,
@@ -27,7 +27,7 @@ const buildOptions = ({
   data,
   bgTooltip = '#233333',
 }: {
-  data: Record<string, AirdropAllocationType>
+  data: Record<string, AllocationType>
   bgTooltip?: string
 }) => {
   return {
@@ -189,11 +189,7 @@ const buildOptions = ({
   }
 }
 
-const DoughnutChart = ({
-  data,
-}: {
-  data: Record<string, AirdropAllocationType>
-}) => {
+const DoughnutChart = ({ data }: { data: Record<string, AllocationType> }) => {
   return (
     <ReactEChartsCore
       style={{ height: 255 }}

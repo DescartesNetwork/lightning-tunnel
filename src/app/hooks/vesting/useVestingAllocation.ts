@@ -9,15 +9,15 @@ import useSentList from '../useSentList'
 import useTotalUSD from '../useTotalUSD'
 import { notifyError } from 'app/helper'
 
-const useAirdropAllocation = () => {
-  const [airdropAllocation, setAirdropAllocation] = useState<
+const useVestingAllocation = () => {
+  const [vestingAllocation, setVestingAllocation] = useState<
     Record<string, AllocationType>
   >({})
-  const [totalUSDAirdrop, setTotalUSDAirdrop] = useState(0)
-  const [loadingAirdrop, setLoadingAirdrop] = useState(true)
+  const [totalUSDVesting, setTotalUSDVesting] = useState(0)
+  const [loadingVesting, setLoadingVesting] = useState(true)
   const { getDecimals, tokenProvider } = useMint()
   const { listHistory, numberOfRecipient } = useSentList({
-    type: TypeDistribute.Airdrop,
+    type: TypeDistribute.Vesting,
   })
   const { calcUsdValue } = useTotalUSD()
 
@@ -40,7 +40,7 @@ const useAirdropAllocation = () => {
     [],
   )
 
-  const handleAirdropValues = useCallback(
+  const handleVestingValues = useCallback(
     async (airdropAllocation: Record<string, bigint>) => {
       let usdAirdropTotal = 0
       const usdValues: Record<string, number> = {}
@@ -76,12 +76,12 @@ const useAirdropAllocation = () => {
 
   const calcAllocationAirdrop = useCallback(async () => {
     try {
-      setLoadingAirdrop(true)
+      setLoadingVesting(true)
 
       const airdropAllocation = await calcTotalTokenByMint(listHistory)
       const { usdValues, usdAirdropTotal, tokenAmounts } =
-        await handleAirdropValues(airdropAllocation)
-      setTotalUSDAirdrop(usdAirdropTotal)
+        await handleVestingValues(airdropAllocation)
+      setTotalUSDVesting(usdAirdropTotal)
       const ratioAirdrops = await calcRatioAirdrop(usdValues, usdAirdropTotal)
       const chartData: Record<string, AllocationType> = {}
 
@@ -95,16 +95,16 @@ const useAirdropAllocation = () => {
           ratioAirdrop: ratioAirdrops[mint],
         }
       }
-      setAirdropAllocation(chartData)
+      setVestingAllocation(chartData)
     } catch (er) {
-      notifyError('Process airdrop data unsuccessfully!')
+      notifyError('Process vesting data unsuccessfully!')
     } finally {
-      setLoadingAirdrop(false)
+      setLoadingVesting(false)
     }
   }, [
     calcRatioAirdrop,
     calcTotalTokenByMint,
-    handleAirdropValues,
+    handleVestingValues,
     listHistory,
     tokenProvider,
   ])
@@ -114,12 +114,12 @@ const useAirdropAllocation = () => {
   }, [calcAllocationAirdrop])
 
   return {
-    airdropAllocation,
-    totalUSDAirdrop,
+    vestingAllocation,
+    totalUSDVesting,
     numberOfRecipient,
     numberOfCampaigns,
-    loadingAirdrop,
+    loadingVesting,
   }
 }
 
-export default useAirdropAllocation
+export default useVestingAllocation

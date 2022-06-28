@@ -3,14 +3,24 @@ import React from 'react'
 import { Col, Row } from 'antd'
 import HeroCard from '../dashboard/hero/heroCard'
 
-const StatisticVesting = () => {
+type StatisticVestingProps = {
+  valueInUSD: number
+  numberOfCampaign: number
+  recipientList: number
+}
+
+const StatisticVesting = ({
+  valueInUSD,
+  numberOfCampaign,
+  recipientList,
+}: StatisticVestingProps) => {
   return (
     <Row gutter={[24, 24]} style={{ height: '100%' }}>
       <Col span={24}>
         <HeroCard
-          label="Total airdrop"
+          label="Total vesting"
           icon="wallet-outline"
-          value={100}
+          value={valueInUSD}
           cardStyles={{ padding: '8px 24px' }}
         />
       </Col>
@@ -18,7 +28,7 @@ const StatisticVesting = () => {
         <HeroCard
           label="Total campaigns"
           icon="paper-plane-outline"
-          value={100}
+          value={numberOfCampaign}
           cardStyles={{ padding: '8px 24px' }}
         />
       </Col>
@@ -26,7 +36,7 @@ const StatisticVesting = () => {
         <HeroCard
           label="Total recipients"
           icon="people-outline"
-          value={100}
+          value={recipientList}
           cardStyles={{ padding: '8px 24px' }}
         />
       </Col>

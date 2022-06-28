@@ -2,8 +2,17 @@ import React from 'react'
 
 import { Card, Col, Row, Typography } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
+import { AllocationType } from 'app/constants'
 
-const VestingAllocation = () => {
+type VestingAllocationProps = {
+  vestingAllocation: Record<string, AllocationType>
+  loading: boolean
+}
+
+const VestingAllocation = ({
+  vestingAllocation,
+  loading,
+}: VestingAllocationProps) => {
   return (
     <Card
       className="card-lightning"
@@ -19,7 +28,7 @@ const VestingAllocation = () => {
           </Row>
         </Col>
         <Col span={24}>
-          <DoughnutChart />
+          <DoughnutChart data={vestingAllocation} />
         </Col>
       </Row>
     </Card>

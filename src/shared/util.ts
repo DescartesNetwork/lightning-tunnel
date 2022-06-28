@@ -84,6 +84,23 @@ export const fetchCGK = async (ticket = '') => {
 }
 
 /**
+ * Fetch coingecko multi data with cache
+ * @param ticket - Token ticket
+ * @returns
+ */
+export const fetchMulCGK = async (
+  tickets: string[],
+): Promise<{ [x: string]: number }> => {
+  const ids = tickets.join(',')
+  let url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
+  const data = await fetch(url).then((res) => res.json())
+  for (const key in data) {
+    data[key] = data[key].usd
+  }
+  return data
+}
+
+/**
  * Randomly choose an element in the input array
  * @param arr - Original array of elements
  * @returns

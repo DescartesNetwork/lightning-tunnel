@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMint } from '@senhub/providers'
-import { utils } from '@senswap/sen-js'
 
 import { AllocationType } from 'app/constants'
 import { HistoryRecord } from 'app/helper/history'
 import { TypeDistribute } from 'app/model/main.controller'
 import useSentList from '../useSentList'
-import useTotalUSD from '../useTotalUSD'
 import { notifyError } from 'app/helper'
+import { useCgk } from '../useCgk'
+import { utilsBN } from 'app/helper/utilsBN'
 
 const useAirdropAllocation = () => {
   const [airdropAllocation, setAirdropAllocation] = useState<
@@ -19,7 +19,7 @@ const useAirdropAllocation = () => {
   const { listHistory, numberOfRecipient } = useSentList({
     type: TypeDistribute.Airdrop,
   })
-  const { calcUsdValue } = useTotalUSD()
+  const { getTotalBalance } = useCgk()
 
   const numberOfCampaigns = useMemo(() => {
     return listHistory.length
@@ -45,21 +45,20 @@ const useAirdropAllocation = () => {
       let usdAirdropTotal = 0
       const usdValues: Record<string, number> = {}
       const tokenAmounts: Record<string, number> = {}
-
       for (const mint of Object.keys(airdropAllocation)) {
         const decimal = await getDecimals(mint)
-        const tokenAmount = Number(
-          utils.undecimalize(airdropAllocation[mint], decimal),
-        )
-        tokenAmounts[mint] = tokenAmount
-        const usdAirdrop = (await calcUsdValue(mint, tokenAmount)) || 0
+        const airdropAmount = utilsBN.fromBigint(airdropAllocation[mint])
+        const tokenAmount = utilsBN.undecimalize(airdropAmount, decimal)
+        const usdAirdrop = await getTotalBalance([
+          { mint, amount: airdropAmount },
+        ])
         usdAirdropTotal += usdAirdrop
         usdValues[mint] = usdAirdrop
+        tokenAmounts[mint] = Number(tokenAmount)
       }
-
       return { usdValues, usdAirdropTotal, tokenAmounts }
     },
-    [calcUsdValue, getDecimals],
+    [getDecimals, getTotalBalance],
   )
 
   const calcRatioAirdrop = useCallback(

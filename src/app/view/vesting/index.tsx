@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux'
 import { Button, Col, Row, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import History from './history'
+import StatisticVesting from './statisticVesting'
+import VestingAllocation from './vestingAllocation'
 
 import { useAppRouter } from 'app/hooks/useAppRoute'
 import { setTypeDistribute } from 'app/model/main.controller'
@@ -36,7 +38,14 @@ const Vesting = () => {
         </Row>
       </Col>
       <Col span={24}>
-        <Typography.Title level={2}>Chart</Typography.Title>
+        <Row gutter={[24, 24]}>
+          <Col span={24} lg={8}>
+            <StatisticVesting />
+          </Col>
+          <Col span={24} lg={16}>
+            <VestingAllocation />
+          </Col>
+        </Row>
       </Col>
       <Col span={24}>
         <History />

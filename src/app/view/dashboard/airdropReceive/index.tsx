@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import moment from 'moment'
 import { useUI } from '@senhub/providers'
 
@@ -12,8 +11,6 @@ import ColumnExpiration from '../columns/columnExpiration'
 import ColumnStatus from '../columns/columnStatus'
 
 import useReceiveList, { ReceiveItem } from 'app/hooks/useReceiveList'
-import { AppState } from 'app/model'
-import { getStatus } from 'app/hooks/useStatus'
 import { State } from 'app/constants'
 import { TypeDistribute } from 'app/model/main.controller'
 import { shortenAddress } from 'shared/util'
@@ -21,6 +18,7 @@ import { COLUMNS_AIRDROP } from '../columns'
 import ColumAction from '../columns/columAction'
 import RowBetweenNodeTitle from 'app/components/rowBetweenNodeTitle'
 import ColumnAmount from '../columns/columnTotal'
+import useStatus from 'app/hooks/useStatus'
 
 const DEFAULT_AMOUNT = 4
 
@@ -30,10 +28,10 @@ const AirdropReceive = () => {
     type: TypeDistribute.Airdrop,
   })
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
-  const distributors = useSelector((state: AppState) => state.distributors)
   const {
     ui: { width },
   } = useUI()
+  const { fetchAirdropStatus } = useStatus()
 
   const isMobile = width < 768
 
@@ -43,12 +41,11 @@ const AirdropReceive = () => {
     for (const airdrop of receiveList) {
       const { receiptAddress, distributorAddress, recipientData } = airdrop
       const { startedAt } = recipientData
-      const endedAt = distributors[distributorAddress].endedAt
-      const status = await getStatus(
-        receiptAddress,
-        startedAt.toNumber(),
-        endedAt,
-      )
+      const status = await fetchAirdropStatus({
+        distributor: distributorAddress,
+        receipt: receiptAddress,
+        startedAt: startedAt.toNumber(),
+      })
       if (status === State.ready) {
         nextAirdrops.unshift(airdrop)
         continue
@@ -56,7 +53,7 @@ const AirdropReceive = () => {
       nextAirdrops.push(airdrop)
     }
     return setListAirdrop(nextAirdrops)
-  }, [receiveList, distributors])
+  }, [receiveList, fetchAirdropStatus])
 
   useEffect(() => {
     filterAirdrops()

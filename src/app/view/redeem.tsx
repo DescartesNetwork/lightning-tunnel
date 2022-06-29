@@ -17,12 +17,15 @@ import IPFS from 'shared/pdb/ipfs'
 import configs from 'app/configs'
 
 import REDEEM_IMG from 'app/static/images/redeem.svg'
+import { useSelector } from 'react-redux'
+import { AppState } from 'app/model'
 
 const {
   sol: { utility, taxman, fee },
 } = configs
 
 const Redeem = () => {
+  const receipts = useSelector((state: AppState) => state.receipts)
   const [loading, setLoading] = useState(false)
   const [loadingCard, setLoadingCard] = useState(false)
   const [merkle, setMerkle] = useState<MerkleDistributor>()
@@ -88,7 +91,7 @@ const Redeem = () => {
         salt,
         distributorAddress,
       )
-      const receiptData = await utility.getReceiptData(receiptAddress)
+      const receiptData = receipts[receiptAddress]
       if (!receiptData) return
       const claimedAt = receiptData.claimedAt.toNumber()
       window.notify({
@@ -99,7 +102,7 @@ const Redeem = () => {
       })
       return setIsValid(false)
     } catch (error) {}
-  }, [distributor, merkle, distributorAddress, recipientData])
+  }, [distributor, distributorAddress, merkle, receipts, recipientData])
 
   const onRedeem = async () => {
     if (!recipientData || !merkle) return

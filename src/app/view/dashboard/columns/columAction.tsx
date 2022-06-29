@@ -32,9 +32,9 @@ const ColumAction = ({
   const [loading, setLoading] = useState(false)
   const startedAt = recipientData.startedAt.toNumber()
   const { status } = useStatus({
-    receiptAddress,
+    receipt: receiptAddress,
     startedAt,
-    distributorAddress,
+    distributor: distributorAddress,
   })
 
   const onClaim = async () => {

@@ -12,9 +12,9 @@ const ColumnStatus = ({
   distributorAddress,
 }: ColumnStatusProps) => {
   const { status } = useStatus({
-    receiptAddress,
+    receipt: receiptAddress,
     startedAt,
-    distributorAddress,
+    distributor: distributorAddress,
   })
 
   return <StatusTag state={status} />

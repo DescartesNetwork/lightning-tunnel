@@ -52,6 +52,7 @@ const Airdrop = () => {
               valueInUSD={totalUSDAirdrop}
               numberOfCampaign={numberOfCampaigns}
               recipientList={numberOfRecipient}
+              loading={loadingAirdrop}
             />
           </Col>
           <Col span={24} lg={16}>

@@ -24,9 +24,11 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   const fetchHistory = useCallback(async () => {
     const nextHistory: HistoryRecord[] = []
     let newNumberOfRecipient = 0
+    const listAddress: string[] = []
     try {
       setLoading(true)
       const airdropSalt = MerkleDistributor.salt(`${appId}/${type}/0`)
+
       for (const historyItem of history) {
         const { treeData, distributorAddress } = historyItem
         if (!treeData) continue
@@ -36,9 +38,15 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         )
         const salt = merkleDistributor.receipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)
-        newNumberOfRecipient += merkleDistributor.receipients.length
 
         if (x !== 0) continue
+
+        for (const { authority } of merkleDistributor.receipients) {
+          if (!listAddress.includes(authority.toBase58()))
+            listAddress.push(authority.toBase58())
+        }
+        newNumberOfRecipient = listAddress.length
+
         const endedAt = distributors[distributorAddress].endedAt
         const endTime = endedAt.toNumber() * 1000
         const balance = await getBalanceTreasury(distributorAddress)

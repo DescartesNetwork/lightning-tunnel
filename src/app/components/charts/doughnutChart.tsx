@@ -12,7 +12,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 import { numeric } from 'shared/util'
 import { shortenTailText } from 'app/helper'
-import { AirdropAllocationType } from 'app/constants'
+import { AllocationType } from 'app/constants'
 
 echarts.use([
   TitleComponent,
@@ -27,7 +27,7 @@ const buildOptions = ({
   data,
   bgTooltip = '#233333',
 }: {
-  data: Record<string, AirdropAllocationType>
+  data: Record<string, AllocationType>
   bgTooltip?: string
 }) => {
   return {
@@ -36,7 +36,13 @@ const buildOptions = ({
       backgroundColor: bgTooltip,
       extraCssText: 'border-radius: 0px',
       formatter: function (params: any) {
-        return `<div style="width: 200px; font-weight: 400"><span style="display: flex; justify-content: space-between"><span style="font-size: 14px, font-weight: 400">Value</span> <span style="font-size: 16px; font-weight: 700">${params.data.value}</span></span> <span style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 400">Token amount</span> <span style="font-size: 16px; font-weight: 700">${params.data.tokenAmount}</span></span></div>`
+        return `<div style="width: 200px; font-weight: 400"><span style="display: flex; justify-content: space-between"><span style="font-size: 14px, font-weight: 400">Value</span> <span style="font-size: 16px; font-weight: 700">${numeric(
+          params.data.value,
+        ).format(
+          '0,0.[0000]',
+        )}</span></span> <span style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 400">Token amount</span> <span style="font-size: 16px; font-weight: 700">${numeric(
+          params.data.tokenAmount,
+        ).format('0,0.[0000]')}</span></span></div>`
       },
       textStyle: {
         color: '#F4F5F5',
@@ -102,9 +108,9 @@ const buildOptions = ({
         data: Object.values(data).map((val) => {
           return {
             value: val.usdValue,
-            name: `${val.name}_${val.ratioAirdrop}`,
+            name: `${val.name}_${val.ratio}`,
             tokenAmount: val.amountToken,
-            percentRatio: val.ratioAirdrop,
+            percentRatio: val.ratio,
           }
         }),
       },
@@ -189,11 +195,7 @@ const buildOptions = ({
   }
 }
 
-const DoughnutChart = ({
-  data,
-}: {
-  data: Record<string, AirdropAllocationType>
-}) => {
+const DoughnutChart = ({ data }: { data: Record<string, AllocationType> }) => {
   return (
     <ReactEChartsCore
       style={{ height: 255 }}

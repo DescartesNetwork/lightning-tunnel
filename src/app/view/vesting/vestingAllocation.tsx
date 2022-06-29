@@ -1,17 +1,17 @@
-import { Card, Col, Row, Typography, Spin } from 'antd'
+import { Card, Col, Row, Spin, Typography } from 'antd'
 import DoughnutChart from 'app/components/charts/doughnutChart'
 
 import { AllocationType } from 'app/constants'
 
-type AirdropAllocationProps = {
-  airdropAllocation: Record<string, AllocationType>
+type VestingAllocationProps = {
+  vestingAllocation: Record<string, AllocationType>
   loading: boolean
 }
 
-const AirdropAllocation = ({
-  airdropAllocation,
+const VestingAllocation = ({
+  vestingAllocation,
   loading,
-}: AirdropAllocationProps) => {
+}: VestingAllocationProps) => {
   return (
     <Spin spinning={loading}>
       <Card
@@ -24,13 +24,13 @@ const AirdropAllocation = ({
             <Row>
               <Col flex="auto">
                 <Typography.Title level={5}>
-                  Airdrop allocation
+                  Vesting allocation
                 </Typography.Title>
               </Col>
             </Row>
           </Col>
           <Col span={24}>
-            <DoughnutChart data={airdropAllocation} />
+            <DoughnutChart data={vestingAllocation} />
           </Col>
         </Row>
       </Card>
@@ -38,4 +38,4 @@ const AirdropAllocation = ({
   )
 }
 
-export default AirdropAllocation
+export default VestingAllocation

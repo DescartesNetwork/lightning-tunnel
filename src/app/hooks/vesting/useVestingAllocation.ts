@@ -9,15 +9,15 @@ import { notifyError } from 'app/helper'
 import { useCgk } from '../useCgk'
 import { utilsBN } from 'app/helper/utilsBN'
 
-const useAirdropAllocation = () => {
-  const [airdropAllocation, setAirdropAllocation] = useState<
+const useVestingAllocation = () => {
+  const [vestingAllocation, setVestingAllocation] = useState<
     Record<string, AllocationType>
   >({})
-  const [totalUSDAirdrop, setTotalUSDAirdrop] = useState(0)
-  const [loadingAirdrop, setLoadingAirdrop] = useState(true)
+  const [totalUSDVesting, setTotalUSDVesting] = useState(0)
+  const [loadingVesting, setLoadingVesting] = useState(false)
   const { getDecimals, tokenProvider } = useMint()
   const { listHistory, numberOfRecipient } = useSentList({
-    type: TypeDistribute.Airdrop,
+    type: TypeDistribute.Vesting,
   })
   const { getTotalBalance } = useCgk()
 
@@ -40,32 +40,32 @@ const useAirdropAllocation = () => {
     [],
   )
 
-  const handleAirdropValues = useCallback(
-    async (airdropAllocation: Record<string, bigint>) => {
-      let usdAirdropTotal = 0
+  const handleVestingValues = useCallback(
+    async (vestingAllocation: Record<string, bigint>) => {
+      let usdVestingTotal = 0
       const usdValues: Record<string, number> = {}
       const tokenAmounts: Record<string, number> = {}
-      for (const mint of Object.keys(airdropAllocation)) {
+      for (const mint of Object.keys(vestingAllocation)) {
         const decimal = await getDecimals(mint)
-        const airdropAmount = utilsBN.fromBigint(airdropAllocation[mint])
-        const tokenAmount = utilsBN.undecimalize(airdropAmount, decimal)
-        const usdAirdrop = await getTotalBalance([
-          { mint, amount: airdropAmount },
+        const vestingAmount = utilsBN.fromBigint(vestingAllocation[mint])
+        const tokenAmount = utilsBN.undecimalize(vestingAmount, decimal)
+        const usdVesting = await getTotalBalance([
+          { mint, amount: vestingAmount },
         ])
-        usdAirdropTotal += usdAirdrop
-        usdValues[mint] = usdAirdrop
+        usdVestingTotal += usdVesting
+        usdValues[mint] = usdVesting
         tokenAmounts[mint] = Number(tokenAmount)
       }
-      return { usdValues, usdAirdropTotal, tokenAmounts }
+      return { usdValues, usdVestingTotal, tokenAmounts }
     },
     [getDecimals, getTotalBalance],
   )
 
-  const calcRatioAirdrop = useCallback(
-    async (usdValues: Record<string, number>, totalUSDAirdrop: number) => {
+  const calcRatioVesting = useCallback(
+    async (usdValues: Record<string, number>, totalUSDVesting: number) => {
       const tokenRatios: Record<string, number> = {}
       for (const mint in usdValues) {
-        const ratio = usdValues[mint] / totalUSDAirdrop
+        const ratio = usdValues[mint] / totalUSDVesting
         tokenRatios[mint] = ratio
       }
       return tokenRatios
@@ -73,52 +73,53 @@ const useAirdropAllocation = () => {
     [],
   )
 
-  const calcAllocationAirdrop = useCallback(async () => {
+  const calcAllocationVesting = useCallback(async () => {
+    if (!listHistory.length) return
     try {
-      setLoadingAirdrop(true)
+      setLoadingVesting(true)
 
-      const airdropAllocation = await calcTotalTokenByMint(listHistory)
-      const { usdValues, usdAirdropTotal, tokenAmounts } =
-        await handleAirdropValues(airdropAllocation)
-      setTotalUSDAirdrop(usdAirdropTotal)
-      const ratioAirdrops = await calcRatioAirdrop(usdValues, usdAirdropTotal)
+      const vestingAllocation = await calcTotalTokenByMint(listHistory)
+      const { usdValues, usdVestingTotal, tokenAmounts } =
+        await handleVestingValues(vestingAllocation)
+      setTotalUSDVesting(usdVestingTotal)
+      const ratioVestings = await calcRatioVesting(usdValues, usdVestingTotal)
       const chartData: Record<string, AllocationType> = {}
 
-      for (const mint in airdropAllocation) {
+      for (const mint in vestingAllocation) {
         const tokenInfo = await tokenProvider.findByAddress(mint)
         chartData[mint] = {
           mint,
           name: `${tokenInfo?.symbol}`,
           amountToken: tokenAmounts[mint],
           usdValue: usdValues[mint],
-          ratio: ratioAirdrops[mint],
+          ratio: ratioVestings[mint],
         }
       }
-      setAirdropAllocation(chartData)
+      setVestingAllocation(chartData)
     } catch (er) {
-      notifyError('Process airdrop data unsuccessfully!')
+      notifyError('Process vesting data unsuccessfully!')
     } finally {
-      setLoadingAirdrop(false)
+      setLoadingVesting(false)
     }
   }, [
-    calcRatioAirdrop,
+    calcRatioVesting,
     calcTotalTokenByMint,
-    handleAirdropValues,
+    handleVestingValues,
     listHistory,
     tokenProvider,
   ])
 
   useEffect(() => {
-    calcAllocationAirdrop()
-  }, [calcAllocationAirdrop])
+    calcAllocationVesting()
+  }, [calcAllocationVesting])
 
   return {
-    airdropAllocation,
-    totalUSDAirdrop,
+    vestingAllocation,
+    totalUSDVesting,
     numberOfRecipient,
     numberOfCampaigns,
-    loadingAirdrop,
+    loadingVesting,
   }
 }
 
-export default useAirdropAllocation
+export default useVestingAllocation

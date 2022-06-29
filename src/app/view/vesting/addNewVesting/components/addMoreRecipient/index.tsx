@@ -7,6 +7,7 @@ import NumericInput from '@sentre/antd-numeric-input'
 import AddUnlockTime from '../addUnlockTime'
 import DisplayUnlockTime from '../displayUnlockTime'
 import ActionEditButton from './actionEditButton'
+import CommonModal from 'app/components/commonModal'
 
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { AppDispatch, AppState } from 'app/model'
@@ -20,16 +21,13 @@ const DEFAULT_RECIPIENT = {
 type AddMoreRecipientProps = {
   walletAddress?: string
   amount?: string
-  index?: number
 }
 
-const AddMoreRecipient = ({
-  walletAddress,
-  amount,
-  index,
-}: AddMoreRecipientProps) => {
+const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
   const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [isEdit, setIsEdit] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [replaceRecipient, setReplaceRecipient] = useState<RecipientInfo[]>([])
   const [nextUnlockTime, setNextUnlockTime] = useState<number[]>([])
   const isDecimals = useSelector((state: AppState) => state.setting.decimal)
   const mintSelected = useSelector((state: AppState) => state.main.mintSelected)
@@ -42,6 +40,9 @@ const AddMoreRecipient = ({
   const recipientInfos = useSelector(
     (state: AppState) => state.recipients.recipientInfos,
   )
+  const expirationTime = useSelector(
+    (state: AppState) => state.recipients.expirationTime,
+  )
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const dispatch = useDispatch<AppDispatch>()
 
@@ -50,36 +51,76 @@ const AddMoreRecipient = ({
   }
   const onAmount = (val: string) => setFormInput({ ...formInput, amount: val })
 
+  const amountError = useMemo(
+    () => !isDecimals && Number(formInput.amount) % 1 !== 0,
+    [formInput, isDecimals],
+  )
+
   const ok = useMemo(() => {
     const { walletAddress, amount } = formInput
-    if (!account.isAddress(walletAddress) || !amount) return false
-    if (!isDecimals && Number(amount) % 1 !== 0) return false
+    if (!account.isAddress(walletAddress) || !amount || amountError)
+      return false
     if (!nextUnlockTime.length) return false
 
     for (const unlockTime of nextUnlockTime) {
       if (!unlockTime) return false
+      if (unlockTime > expirationTime && !!expirationTime) return false
     }
     return true
-  }, [formInput, isDecimals, nextUnlockTime])
+  }, [amountError, expirationTime, formInput, nextUnlockTime])
 
   const setNewRecipient = () => {
     if (!ok) return
     const { walletAddress: address, amount } = formInput
-    const nextRecipients: RecipientInfo[] = []
-    const newAmount =
-      utils.decimalize(amount, mintDecimals) / BigInt(nextUnlockTime.length)
 
-    for (const unlockTime of nextUnlockTime) {
+    const nextRecipients: RecipientInfo[] = []
+    const decimalAmount = utils.decimalize(amount, mintDecimals)
+    const newAmount = decimalAmount / BigInt(nextUnlockTime.length)
+
+    for (let i = 0; i < nextUnlockTime.length; i++) {
+      const unlockTime = nextUnlockTime[i]
+      let actualAmount = newAmount
+
+      if (i === nextUnlockTime.length - 1) {
+        let restAmount = BigInt(0)
+        for (const { amount } of nextRecipients) {
+          const decimalAmount = utils.decimalize(amount, mintDecimals)
+          restAmount += decimalAmount
+        }
+        actualAmount = decimalAmount - restAmount
+      }
+
       nextRecipients.push({
         address,
-        amount: utils.undecimalize(newAmount, mintDecimals),
+        amount: utils.undecimalize(actualAmount, mintDecimals),
         unlockTime,
       })
     }
-    if (!walletAddress) setFormInput(DEFAULT_RECIPIENT) // apply for add new recipient
+
+    //check recipient is existed
+    if (recipientInfos[address] && !isEdit) {
+      setReplaceRecipient(nextRecipients)
+      return setVisible(true)
+    }
+    // apply for add new recipient
+    if (!walletAddress) setFormInput(DEFAULT_RECIPIENT)
     setNextUnlockTime([])
     setIsEdit(false)
     return dispatch(setRecipient({ walletAddress: address, nextRecipients }))
+  }
+
+  const onReplace = () => {
+    setNextUnlockTime([])
+    setIsEdit(false)
+    setVisible(false)
+    // apply for add new recipient
+    if (!walletAddress) setFormInput(DEFAULT_RECIPIENT)
+    return dispatch(
+      setRecipient({
+        walletAddress: formInput.walletAddress,
+        nextRecipients: replaceRecipient,
+      }),
+    )
   }
 
   const fetchDefaultUnlockTime = useCallback(() => {
@@ -125,7 +166,7 @@ const AddMoreRecipient = ({
           placeholder="Amount"
           onChange={onAmount}
           autoComplete="off"
-          className={false ? 'recipient-input-error' : 'recipient-input'}
+          className={amountError ? 'recipient-input-error' : 'recipient-input'}
           disabled={!isEdit && !!walletAddress}
         />
       </Col>
@@ -158,6 +199,15 @@ const AddMoreRecipient = ({
           />
         )}
       </Col>
+      <CommonModal
+        btnText="Replace"
+        description={'Do you want replace this recipient'}
+        title={'Recipient existed'}
+        onCancel={() => setVisible(false)}
+        onConfirm={onReplace}
+        setVisible={setVisible}
+        visible={visible}
+      />
     </Row>
   )
 }

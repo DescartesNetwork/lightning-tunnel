@@ -30,6 +30,7 @@ import {
   setAdvancedMode,
   setListUnlockTime,
 } from 'app/model/advancedMode.controller'
+import { useAppRouter } from 'app/hooks/useAppRoute'
 
 const SelectInputMethod = () => {
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
@@ -53,9 +54,9 @@ const SelectInputMethod = () => {
   const distributeIn = useSelector(
     (state: AppState) => state.recipients.globalConfigs.distributeIn,
   )
-
   const dispatch = useDispatch()
   const { accounts } = useAccount()
+  const { pushHistory } = useAppRouter()
 
   const myMints = useMemo(
     () => Object.values(accounts).map((acc) => acc.mint),
@@ -89,7 +90,12 @@ const SelectInputMethod = () => {
 
   const disabled = useMemo(() => {
     if (activeMintAddress === 'Select' || !method) return true
-    if (advanced) return (!expiration && !isUnlimited) || !listUnlockTime.length
+    if (advanced)
+      return (
+        (!expiration && !isUnlimited) ||
+        !listUnlockTime.length ||
+        listUnlockTime.includes(0)
+      )
     if (method === SelectMethod.manual)
       return (
         !unlockTime ||
@@ -224,7 +230,17 @@ const SelectInputMethod = () => {
             </Col>
           </Row>
         </Col>
-        <Col span={24}>
+        <Col span={12}>
+          <Button
+            size="large"
+            onClick={() => pushHistory('/vesting')}
+            block
+            type="ghost"
+          >
+            Cancel
+          </Button>
+        </Col>
+        <Col span={12}>
           <Button
             size="large"
             onClick={onContinue}

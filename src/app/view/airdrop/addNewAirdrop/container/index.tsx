@@ -20,6 +20,7 @@ import {
   setExpiration,
   setGlobalUnlockTime,
 } from 'app/model/recipients.controller'
+import { useAppRouter } from 'app/hooks/useAppRoute'
 
 const SelectInputMethod = () => {
   const { expirationTime: endDate, globalUnlockTime } = useSelector(
@@ -31,9 +32,9 @@ const SelectInputMethod = () => {
   const [expirationTime, setExpirationTime] = useState(endDate)
   const [isSendNow, setIsSendNow] = useState(false)
   const [isUnlimited, setIsUnlimited] = useState(false)
-
   const dispatch = useDispatch()
   const { accounts } = useAccount()
+  const { pushHistory } = useAppRouter()
 
   const myMints = useMemo(
     () => Object.values(accounts).map((acc) => acc.mint),
@@ -64,7 +65,8 @@ const SelectInputMethod = () => {
     !method ||
     (!unlockTime && !isSendNow) ||
     (!expirationTime && !isUnlimited) ||
-    expirationTime < globalUnlockTime
+    (expirationTime < globalUnlockTime && !isUnlimited) ||
+    (expirationTime < Date.now() && !isUnlimited)
 
   useEffect(() => {
     dispatch(setGlobalUnlockTime(startTime))
@@ -145,8 +147,17 @@ const SelectInputMethod = () => {
             </Col>
           </Row>
         </Col>
-
-        <Col span={24}>
+        <Col span={12}>
+          <Button
+            size="large"
+            onClick={() => pushHistory('/airdrop')}
+            block
+            type="ghost"
+          >
+            Cancel
+          </Button>
+        </Col>
+        <Col span={12}>
           <Button
             size="large"
             onClick={onContinue}

@@ -122,14 +122,27 @@ export const editRecipient = createAsyncThunk<
     let nextRecipients = { ...recipients.recipientInfos }
     const listRecipient = nextRecipients[walletAddress]
     const newRecipient: RecipientInfo[] = []
-    const oldAmount = Number(listRecipient[0].amount) * listRecipient.length
+    let oldAmount = 0
+    for (const { amount } of listRecipient) {
+      oldAmount += Number(amount)
+    }
     const distributionAmount = Math.floor((distributeIn * 30) / frequency)
-    const actualAmount = Number(oldAmount) / distributionAmount
+    const singleAmount = Number(oldAmount) / distributionAmount
     for (let i = 0; i < distributionAmount; i++) {
       let nextUnlockTime = 0
+      let actualAmount = singleAmount
       if (i === 0) nextUnlockTime = unlockTime
       if (i !== 0)
         nextUnlockTime = frequency * ONE_DAY + newRecipient[i - 1].unlockTime
+
+      if (i === distributionAmount - 1) {
+        let restAmount = 0
+        for (const { amount } of nextRecipients) {
+          restAmount += Number(amount)
+        }
+        actualAmount = Number(oldAmount) - restAmount
+      }
+
       const recipient: RecipientInfo = {
         address: walletAddress,
         amount: actualAmount.toString(),

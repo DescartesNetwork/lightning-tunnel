@@ -21,6 +21,8 @@ const AllApplications = () => {
   const [visible, setVisible] = useState(false)
   const appIds = useRootSelector((state: RootState) => state.page.appIds)
   const register = useRootSelector((state: RootState) => state.page.register)
+  const onUninstallApp = useUninstallApp(appId)
+  const onGotoStore = useGoToStore()
 
   const onChange = useCallback(
     (appIds: AppIds) => dispatch(updatePage(appIds)),
@@ -30,12 +32,16 @@ const AllApplications = () => {
     await setAppId('')
     return setVisible(false)
   }
+
   const onConfirm = async (appId: string) => {
     await setAppId(appId)
     return setVisible(true)
   }
-  const onUninstall = useUninstallApp(appId)
-  const onGotoStore = useGoToStore()
+
+  const onUninstall = useCallback(async () => {
+    await onUninstallApp()
+    return setVisible(false)
+  }, [onUninstallApp])
 
   return (
     <Row gutter={[16, 16]}>

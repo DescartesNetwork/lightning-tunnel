@@ -73,6 +73,7 @@ declare module '@senhub/context' {
 declare module '@senhub/providers' {
   export * from 'os/providers'
 }
+<<<<<<< HEAD
 
 /**
  * Declare namespace
@@ -90,3 +91,5 @@ declare module '*.csv' {
   const value: any
   export default value
 }
+=======
+>>>>>>> 49a126b34bd8ad3c7f51e11374fd3e52088ef572

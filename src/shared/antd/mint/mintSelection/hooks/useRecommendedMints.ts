@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import { net } from '@sentre/senhub'
 
 import { useSortMints } from 'shared/hooks/useSortMints'
-import { net } from 'shared/runtime'
-import localStorage from 'shared/storage'
 import { useMyMints } from './useMyMints'
 
 const LIMIT_ITEM = 8

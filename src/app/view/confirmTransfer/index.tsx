@@ -23,11 +23,14 @@ import configs from 'app/configs'
 import IPFS from 'shared/pdb/ipfs'
 import History, { HistoryRecord } from 'app/helper/history'
 import { getHistory } from 'app/model/history.controller'
+import { getDistributors } from 'app/model/distributor.controller'
+
 import { notifySuccess } from 'app/helper'
 import {
   RecipientInfo,
   removeRecipients,
 } from 'app/model/recipients.controller'
+import { useAppRouter } from 'app/hooks/useAppRoute'
 
 const {
   sol: { utility, fee, taxman },
@@ -50,6 +53,7 @@ const ConfirmTransfer = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
+  const { pushHistory } = useAppRouter()
 
   const treeData = useMemo(() => {
     if (!recipientInfos || !mintDecimals) return
@@ -115,7 +119,7 @@ const ConfirmTransfer = () => {
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
       await dispatch(getHistory({ walletAddress }))
-
+      await dispatch(getDistributors())
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)
@@ -136,7 +140,8 @@ const ConfirmTransfer = () => {
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(removeRecipients())
     dispatch(onSelectStep(Step.SelectMethod))
-  }, [dispatch])
+    return pushHistory(`/${typeDistribute}`)
+  }, [dispatch, pushHistory, typeDistribute])
 
   return (
     <Card bordered={false} className="card-lightning">

@@ -1,9 +1,12 @@
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
+
 import { Space } from 'antd'
 import InputInfoTransfer from 'app/components/inputInfoTransfer'
 import DistributionConfig from './distributionConfig'
-import { useSelector } from 'react-redux'
-import { AppState } from 'app/model'
 import AddMoreRecipient from '../../components/addMoreRecipient'
+
+import { AppState } from 'app/model'
 
 type MethodInputRecipientProps = {
   walletAddress?: string
@@ -16,14 +19,21 @@ const InputInfo = ({
   amount,
   index,
 }: MethodInputRecipientProps) => {
+  const [isEdit, setIsEdit] = useState(false)
   return (
     <Space direction="vertical" style={{ width: '100%' }}>
       <InputInfoTransfer
         amount={amount}
         walletAddress={walletAddress}
         index={index}
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
       />
-      <DistributionConfig walletAddress={walletAddress} />
+      <DistributionConfig
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        walletAddress={walletAddress}
+      />
     </Space>
   )
 }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
@@ -19,6 +19,7 @@ import {
 import { onSelectMethod } from 'app/model/main.controller'
 
 const Manual = () => {
+  const [isEdit, setIsEdit] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
     recipients: { recipientInfos },
@@ -56,7 +57,6 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
-                <Col span={24}>Wallet address #{listRecipient.length + 1}</Col>
                 {listRecipient &&
                   listRecipient.map(({ address, amount }, index) => (
                     <Col span={24} key={address + index}>
@@ -64,6 +64,8 @@ const Manual = () => {
                         amount={amount}
                         walletAddress={address}
                         index={index}
+                        isEdit={isEdit}
+                        setIsEdit={setIsEdit}
                       />
                     </Col>
                   ))}

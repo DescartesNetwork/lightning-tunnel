@@ -71,10 +71,6 @@ const Manual = () => {
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]}>
-            <Col span={24}>Wallet address #{listRecipient.length + 1}</Col>
-            <Col span={24}>
-              <MethodInputRecipient />
-            </Col>
             {listRecipient &&
               listRecipient.map(({ address, amount }, index) => (
                 <Col span={24} key={address + index}>
@@ -85,6 +81,9 @@ const Manual = () => {
                   />
                 </Col>
               ))}
+            <Col span={24}>
+              <MethodInputRecipient />
+            </Col>
             <Col span={24}>
               <CardTotal />
             </Col>

@@ -30,6 +30,7 @@ export const getHistory = createAsyncThunk<
   const data = await history.get()
   return data
 })
+
 export const setStateHistory = createAsyncThunk<
   HistoryState,
   { cid: string; state: string; walletAddress: string },

@@ -1,4 +1,11 @@
-import { ChangeEvent, Fragment, useCallback, useEffect, useState } from 'react'
+import {
+  ChangeEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account, utils } from '@senswap/sen-js'
 
@@ -20,7 +27,8 @@ type InputInfoTransferProps = {
   walletAddress?: string
   amount?: string
   index?: number
-  isSelect?: boolean
+  isEdit?: boolean
+  setIsEdit?: (value: boolean) => void
 }
 
 const DEFAULT_RECIPIENT = {
@@ -34,29 +42,33 @@ const ActionButton = ({
   walletAddress,
   addNewRecipient,
   remove,
+  isEdit = false,
+  setIsEdit = () => {},
 }: {
   walletAddress?: string
   addNewRecipient: () => void
   remove: () => void
+  isEdit?: boolean
+  setIsEdit?: (value: boolean) => void
 }) => {
   return (
     <Fragment>
       {walletAddress ? (
-        <Space>
-          <Button
-            type="text"
-            size="small"
-            style={{ padding: 0 }}
-            onClick={remove}
-            icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
-          />
-          <Button
-            type="text"
-            size="small"
-            style={{ padding: 0 }}
-            icon={<IonIcon style={{ fonSize: 20 }} name="create-outline" />}
-          />
-        </Space>
+        <Fragment>
+          {!isEdit ? (
+            <Button
+              type="text"
+              size="small"
+              style={{ padding: 0 }}
+              onClick={remove}
+              icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
+            />
+          ) : (
+            <Button type="text" size="small">
+              Save
+            </Button>
+          )}
+        </Fragment>
       ) : (
         <Button
           type="text"
@@ -74,6 +86,9 @@ const ActionButton = ({
 const InputInfoTransfer = ({
   walletAddress,
   amount,
+  index,
+  isEdit = false,
+  setIsEdit,
 }: InputInfoTransferProps) => {
   const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [amountError, setAmountError] = useState('')
@@ -211,7 +226,12 @@ const InputInfoTransfer = ({
       return setAmountError('Should be natural numbers')
   }, [amount, decimal])
 
-  const disabledInput = walletAddress ? true : false
+  const walletAddrIndx = useMemo(() => {
+    if (walletAddress && index !== undefined) return index + 1
+    return Object.keys(recipients.recipientInfos).length + 1
+  }, [index, recipients.recipientInfos, walletAddress])
+
+  const disabledInput = walletAddress && !isEdit ? true : false
 
   useEffect(() => {
     recipientInfo()
@@ -227,7 +247,21 @@ const InputInfoTransfer = ({
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between">
-      <Col span={18}>
+      <Col span={24}>
+        <Row>
+          <Col flex="auto">Wallet address #{walletAddrIndx}</Col>
+          <Col>
+            <ActionButton
+              addNewRecipient={addNewRecipient}
+              walletAddress={walletAddress}
+              remove={onRemove}
+              isEdit={isEdit}
+              setIsEdit={setIsEdit}
+            />
+          </Col>
+        </Row>
+      </Col>
+      <Col span={19}>
         <Input
           disabled={disabledInput}
           value={formInput.walletAddress}
@@ -247,13 +281,6 @@ const InputInfoTransfer = ({
           onChange={onAmount}
           className={amountError ? 'recipient-input-error' : 'recipient-input'}
           autoComplete="off"
-        />
-      </Col>
-      <Col span={1}>
-        <ActionButton
-          addNewRecipient={addNewRecipient}
-          walletAddress={walletAddress}
-          remove={onRemove}
         />
       </Col>
       {(walletError || amountError) && (

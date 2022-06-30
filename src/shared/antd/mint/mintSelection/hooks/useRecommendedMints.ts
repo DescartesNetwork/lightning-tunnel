@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
+import { net, storage } from '@sentre/senhub'
 
 import { useSortMints } from 'shared/hooks/useSortMints'
-import { net } from 'shared/runtime'
-import localStorage from 'shared/storage'
+
 import { useMyMints } from './useMyMints'
 
 const LIMIT_ITEM = 8
@@ -14,7 +14,7 @@ export const useRecommendedMints = () => {
   const { sortedMints } = useSortMints(myMints)
 
   const getRecommendedMints = useCallback(async () => {
-    let mints: string[] = localStorage.get(LOCAL_STORAGE_ID) || []
+    let mints: string[] = storage.get(LOCAL_STORAGE_ID) || []
     for (const mint of sortedMints) {
       if (mints.length >= LIMIT_ITEM) break
       if (mints.includes(mint)) continue
@@ -24,10 +24,10 @@ export const useRecommendedMints = () => {
   }, [sortedMints])
 
   const addRecommendMint = useCallback(async (mintAddress: string) => {
-    let mints: string[] = localStorage.get(LOCAL_STORAGE_ID) || []
+    let mints: string[] = storage.get(LOCAL_STORAGE_ID) || []
     mints = mints.filter((mint) => mint !== mintAddress)
     const newMints = [mintAddress, ...mints].slice(0, LIMIT_ITEM)
-    localStorage.set(LOCAL_STORAGE_ID, newMints)
+    storage.set(LOCAL_STORAGE_ID, newMints)
     return setRecommendedMints(newMints)
   }, [])
 

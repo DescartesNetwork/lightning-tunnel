@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import LazyLoad from '@sentre/react-lazyload'
+import LazyLoad from '@senswap/react-lazyload'
 
 import { Button, Empty, Col, Input, Row, Spin } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'

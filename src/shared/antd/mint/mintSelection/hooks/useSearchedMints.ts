@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useMint } from '@senhub/providers'
+import { useMint } from '@sentre/senhub'
 
 import { useMyMints } from './useMyMints'
 import { useSortMints } from 'shared/hooks/useSortMints'

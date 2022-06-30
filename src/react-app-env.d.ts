@@ -75,15 +75,6 @@ declare module '@senhub/providers' {
 }
 
 /**
- * Declare namespace
- */
-declare namespace JSX {
-  interface IntrinsicElements {
-    'ion-icon': any
-  }
-}
-
-/**
  * Declare import csv
  */
 declare module '*.csv' {

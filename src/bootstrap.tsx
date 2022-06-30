@@ -2,7 +2,6 @@ import { render } from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { RootContext } from '@senhub/context'
-import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { ConfigProvider } from 'antd'
 import View from 'os/view'
@@ -13,11 +12,9 @@ import reportWebVitals from 'reportWebVitals'
 render(
   <Provider context={RootContext} store={store}>
     <BrowserRouter>
-      <QueryClientProvider client={new QueryClient()}>
-        <ConfigProvider prefixCls={'sentre'}>
-          <View />
-        </ConfigProvider>
-      </QueryClientProvider>
+      <ConfigProvider prefixCls={'sentre'}>
+        <View />
+      </ConfigProvider>
     </BrowserRouter>
   </Provider>,
   document.getElementById('root'),

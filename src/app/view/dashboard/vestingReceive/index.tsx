@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import isEqual from 'react-fast-compare'
 import { useUI } from '@senhub/providers'
 import moment from 'moment'
@@ -18,11 +17,10 @@ import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 
 import useReceiveList, { ReceiveItem } from 'app/hooks/useReceiveList'
 import { TypeDistribute } from 'app/model/main.controller'
-import { AppState } from 'app/model'
-import { getStatus } from 'app/hooks/useStatus'
 import { State } from 'app/constants'
 import { shortenAddress } from 'shared/util'
 import { COLUMNS_AIRDROP } from '../columns'
+import useStatus from 'app/hooks/useStatus'
 
 const DEFAULT_AMOUNT = 4
 
@@ -32,11 +30,10 @@ const VestingReceive = () => {
   const { receiveList, loading } = useReceiveList({
     type: TypeDistribute.Vesting,
   })
-  const distributors = useSelector((state: AppState) => state.distributors)
   const {
     ui: { width },
   } = useUI()
-
+  const { fetchAirdropStatus } = useStatus()
   const isMobile = width < 768
 
   const getIndexPriorityItem = useCallback(
@@ -45,12 +42,11 @@ const VestingReceive = () => {
       for (const vesting of listVesting) {
         const { receiptAddress, distributorAddress, recipientData } = vesting
         const { startedAt } = recipientData
-        const endedAt = distributors[distributorAddress].endedAt
-        const status = await getStatus(
-          receiptAddress,
-          startedAt.toNumber(),
-          endedAt,
-        )
+        const status = await fetchAirdropStatus({
+          receipt: receiptAddress,
+          startedAt: startedAt.toNumber(),
+          distributor: distributorAddress,
+        })
         listStatus.push(status)
       }
       if (listStatus.indexOf(State.ready) !== -1)
@@ -63,7 +59,7 @@ const VestingReceive = () => {
         return listStatus.indexOf(State.expired)
       return 0
     },
-    [distributors],
+    [fetchAirdropStatus],
   )
 
   const filterVesting = useCallback(async () => {
@@ -96,13 +92,12 @@ const VestingReceive = () => {
         vestingItem = { ...vestingItem, children: listChildren }
         const { distributorAddress, recipientData, receiptAddress } =
           vestingItem
-        const endedAt = distributors[distributorAddress].endedAt
         const { startedAt } = recipientData
-        const status = await getStatus(
-          receiptAddress,
-          startedAt.toNumber(),
-          endedAt,
-        )
+        const status = await fetchAirdropStatus({
+          distributor: distributorAddress,
+          receipt: receiptAddress,
+          startedAt: startedAt.toNumber(),
+        })
         if (status === State.ready) {
           filteredVesting.unshift(vestingItem)
           continue
@@ -113,7 +108,7 @@ const VestingReceive = () => {
     }
 
     return setListVesting(filteredVesting)
-  }, [distributors, getIndexPriorityItem, receiveList])
+  }, [fetchAirdropStatus, getIndexPriorityItem, receiveList])
 
   useEffect(() => {
     filterVesting()

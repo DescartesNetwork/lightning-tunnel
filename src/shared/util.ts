@@ -96,10 +96,11 @@ export const fetchMulCGK = async (
   const data = await DataLoader.load('fetchMulCGK' + ids, () =>
     fetch(url).then((res) => res.json()),
   )
+  const result: { [x: string]: number } = {}
   for (const key in data) {
-    data[key] = data[key].usd
+    result[key] = data[key].usd
   }
-  return data
+  return result
 }
 
 /**

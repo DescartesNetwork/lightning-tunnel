@@ -19,6 +19,7 @@ import { useAppRouter } from 'app/hooks/useAppRoute'
 import BG from 'app/static/images/background-LT.png'
 
 import './index.less'
+import ReceiptWatcher from 'app/watcher/receipt.watcher'
 
 const { Content } = Layout
 
@@ -93,6 +94,7 @@ const View = () => {
           )}
         </Content>
         <DistributorWatcher />
+        <ReceiptWatcher />
         <HistoryWatcher />
       </Layout>
     </Layout>

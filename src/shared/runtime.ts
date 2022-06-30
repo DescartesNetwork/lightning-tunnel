@@ -63,14 +63,10 @@ export const chainId: ChainId = getChainId()
  * RPC Node
  */
 const CLUSTERS: Record<Net, string> = {
-<<<<<<< HEAD
-  devnet: 'https://psytrbhymqlkfrhudd.dev.genesysgo.net:8899/',
-=======
   devnet:
     env === 'development'
       ? 'https://api.devnet.solana.com'
       : 'https://devnet.genesysgo.net',
->>>>>>> 49a126b34bd8ad3c7f51e11374fd3e52088ef572
   testnet: 'https://api.testnet.solana.com',
   mainnet:
     env === 'development'

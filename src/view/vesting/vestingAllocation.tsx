@@ -1,5 +1,6 @@
 import { Card, Col, Row, Spin, Typography } from 'antd'
 import DoughnutChart from 'components/charts/doughnutChart'
+import CustomizedLegend from 'components/charts/doughnutChart/customizedLegend'
 
 import { AllocationType } from '../../constants'
 
@@ -19,7 +20,7 @@ const VestingAllocation = ({
         style={{ height: '100%' }}
         bodyStyle={{ paddingBottom: 0 }}
       >
-        <Row gutter={[0, 24]}>
+        <Row gutter={[0, 0]}>
           <Col span={24}>
             <Row>
               <Col flex="auto">
@@ -30,7 +31,14 @@ const VestingAllocation = ({
             </Row>
           </Col>
           <Col span={24}>
-            <DoughnutChart data={vestingAllocation} />
+            <Row>
+              <Col xs={14} sm={10}>
+                <DoughnutChart data={vestingAllocation} />
+              </Col>
+              <Col xs={10} sm={14}>
+                <CustomizedLegend data={vestingAllocation} />
+              </Col>
+            </Row>
           </Col>
         </Row>
       </Card>

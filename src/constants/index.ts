@@ -23,6 +23,7 @@ export enum State {
 export type AllocationType = {
   mint: string
   name: string
+  symbol: string
   amountToken: number
   usdValue: number
   ratio: number

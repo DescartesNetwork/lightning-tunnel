@@ -11,8 +11,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers'
 
 import { util } from '@sentre/senhub'
-import { shortenTailText } from 'helper'
-import { AllocationType } from '../../constants'
+import { AllocationType } from '../../../constants'
 
 echarts.use([
   TitleComponent,
@@ -49,38 +48,13 @@ const buildOptions = ({
       },
     },
     legend: {
-      top: '15%',
-      right: 'right',
-      orient: 'vertical',
-      formatter: function (name: string) {
-        const splitedString = name.split('_')
-        return `{a| ${shortenTailText(splitedString[0], 7)}}{b| ${util
-          .numeric(Number(splitedString[1]))
-          .format('0,0.[00]%')}}`
-      },
-      icon: 'rect',
-      textStyle: {
-        width: 500,
-        rich: {
-          a: {
-            color: '#A7ADAD',
-            fontSize: 14,
-          },
-          b: {
-            width: 50,
-            padding: 16,
-            fontSize: 14,
-            color: '#F4F5F5',
-            align: 'right',
-          },
-        },
-      },
+      show: false,
     },
     series: [
       {
-        left: 0,
-        center: [100, '50%'],
-        name: 'Access From',
+        width: '300',
+        center: [110, '50%'],
+        name: 'Sentre chart',
         type: 'pie',
         radius: ['40%', '70%'],
         avoidLabelOverlap: false,
@@ -91,14 +65,15 @@ const buildOptions = ({
         emphasis: {
           label: {
             show: true,
-            formatter: function (params: any) {
-              const splitedString = params.name.split('_')
-              return splitedString[0]
-            },
             fontSize: 20,
             fontWeight: 'bold',
             color: '#F4F5F5',
             overflow: 'hidden',
+          },
+        },
+        itemStyle: {
+          color: (params: any) => {
+            return util.randomColor(params.name)
           },
         },
 
@@ -108,7 +83,7 @@ const buildOptions = ({
         data: Object.values(data).map((val) => {
           return {
             value: val.usdValue,
-            name: `${val.name}_${val.ratio}`,
+            name: `${val.symbol}`,
             tokenAmount: val.amountToken,
             percentRatio: val.ratio,
           }
@@ -118,75 +93,26 @@ const buildOptions = ({
     media: [
       {
         query: {
-          maxWidth: 768,
+          maxWidth: 300,
         },
         option: {
-          legend: {
-            textStyle: {
-              width: 400,
-            },
-          },
-        },
-      },
-      {
-        query: {
-          maxWidth: 630,
-        },
-        option: {
-          legend: {
-            textStyle: {
-              width: 350,
-            },
-          },
-        },
-      },
-      {
-        query: {
-          maxWidth: 576,
-        },
-        option: {
-          legend: {
-            textStyle: {
-              width: 270,
-            },
-          },
-        },
-      },
-      {
-        query: {
-          maxWidth: 485,
-        },
-        option: {
-          legend: {
-            textStyle: {
-              width: 180,
-            },
-          },
-        },
-      },
-      {
-        query: {
-          maxWidth: 400,
-        },
-        option: {
-          legend: {
-            top: '25%',
-            textStyle: {
-              width: 100,
-              rich: {
-                a: {
-                  fontSize: 10,
-                },
-                b: {
-                  fontSize: 10,
-                },
-              },
-            },
-          },
           series: [
             {
-              center: [75, '50%'],
-              radius: ['30%', '50%'],
+              center: [100, '50%'],
+              radius: ['35%', '60%'],
+            },
+          ],
+        },
+      },
+      {
+        query: {
+          maxWidth: 200,
+        },
+        option: {
+          series: [
+            {
+              center: [70, '50%'],
+              radius: ['25%', '45%'],
             },
           ],
         },
@@ -198,7 +124,6 @@ const buildOptions = ({
 const DoughnutChart = ({ data }: { data: Record<string, AllocationType> }) => {
   return (
     <ReactEChartsCore
-      style={{ height: 255 }}
       echarts={echarts}
       option={buildOptions({ data, bgTooltip: '#123432' })}
       notMerge={true}

@@ -4,15 +4,13 @@ import { Col, Row, Space, Typography } from 'antd'
 
 import { AllocationType } from '../../../constants'
 
-import './customizedLegend.less'
-
 const CustomizedLegend = ({
   data,
 }: {
   data: Record<string, AllocationType>
 }) => {
   return (
-    <Row className="customized-legend" gutter={[12, 12]}>
+    <Row gutter={[12, 12]} style={{ marginTop: 60 }}>
       {Object.values(data).map((item) => (
         <Col span={24}>
           <Row align="middle" wrap={false} gutter={[16, 16]}>

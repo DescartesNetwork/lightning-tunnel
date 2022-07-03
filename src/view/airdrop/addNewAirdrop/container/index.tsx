@@ -11,7 +11,7 @@ import ConfirmTransfer from '../../../confirmTransfer'
 import DateOption from '../../../../components/dateOption'
 import CardOption from 'components/cardOption'
 
-import { SelectMethod, Step } from '../../../../constants'
+import { SelectMethod, Step } from '../../../constants'
 import { AppState } from 'model'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'
 import { useSingleMints } from 'hooks/useSingleMints'
@@ -45,6 +45,18 @@ const SelectInputMethod = () => {
 
   const endTime = useMemo(() => {
     return isUnlimited ? 0 : expirationTime
+  }, [expirationTime, isUnlimited])
+
+  const validStartDate = useMemo(() => {
+    if (expirationTime < globalUnlockTime && !isSendNow && expirationTime)
+      return 'Must be less than the expiration time.'
+    return ''
+  }, [expirationTime, globalUnlockTime, isSendNow])
+
+  const validEndDate = useMemo(() => {
+    if (expirationTime < Date.now() && !isUnlimited && expirationTime)
+      return 'Must be greater than current time'
+    return ''
   }, [expirationTime, isUnlimited])
 
   const onContinue = () => {
@@ -128,6 +140,7 @@ const SelectInputMethod = () => {
                     onChange={setUnlockTime}
                     placeholder="Select unlock time"
                     value={unlockTime}
+                    error={validStartDate}
                   />
                 </Col>
                 <Col xs={24} lg={12}>
@@ -138,6 +151,7 @@ const SelectInputMethod = () => {
                     onChange={setExpirationTime}
                     placeholder="Select time"
                     value={expirationTime}
+                    error={validEndDate}
                   />
                 </Col>
               </Row>

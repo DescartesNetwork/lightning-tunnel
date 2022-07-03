@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMint } from '@sentre/senhub'
 
-import { AllocationType } from '../../constants'
+import { AllocationType } from '../../view/constants'
 import { HistoryRecord } from 'helper/history'
 import { TypeDistribute } from 'model/main.controller'
 import useSentList from '../useSentList'

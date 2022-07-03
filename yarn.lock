@@ -1998,9 +1998,9 @@
   "version" "3.2.2"
 
 "@sentre/senhub@^3.0.28":
-  "integrity" "sha512-O78DMwJW5YdqRse8tAMXW+HsBqO+U4lelifewMvOUoT7Jxl4BjWqJ1SUuWGuSF0QZCgXT+3sOvkvguRIktecSg=="
-  "resolved" "https://registry.npmjs.org/@sentre/senhub/-/senhub-3.0.29.tgz"
-  "version" "3.0.29"
+  "integrity" "sha512-JbsBswMBEc70KA6FVGgg3NP/ph1AokGOgXMZCNpLGyxkPI2/K7S0xK4cqCPgHKccZR1EHoM8pDINLRgXtFIseA=="
+  "resolved" "https://registry.npmjs.org/@sentre/senhub/-/senhub-3.0.30.tgz"
+  "version" "3.0.30"
   dependencies:
     "@dnd-kit/core" "^4.0.1"
     "@dnd-kit/sortable" "^5.0.0"

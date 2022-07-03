@@ -10,8 +10,8 @@ const AccountInfoHeader = ({
   onChecked = () => {},
 }: AccountInfoHeaderProps) => {
   return (
-    <Row gutter={[16, 8]} align="middle" wrap={false} justify="space-between">
-      <Col span={3}>
+    <Row gutter={[16, 8]} align="middle">
+      <Col span={2}>
         <Space>
           {selected && (
             <Checkbox
@@ -22,10 +22,10 @@ const AccountInfoHeader = ({
           <Typography.Text type="secondary">No.</Typography.Text>
         </Space>
       </Col>
-      <Col span={12}>
+      <Col span={14}>
         <Typography.Text type="secondary">Wallet address</Typography.Text>
       </Col>
-      <Col span={6}>
+      <Col span={4}>
         <Typography.Text type="secondary">Amount</Typography.Text>
       </Col>
     </Row>

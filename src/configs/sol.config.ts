@@ -22,7 +22,7 @@ const conf: Record<Net, Conf> = {
     utility: new Utility(
       new SafeWallet(),
       rpc,
-      'A3PPh3nGBJs19KESDbBvLgwwMY4VSYFh9FNJV33wDftK',
+      'AKTU61s8NJ8zJATQiceREdhXbedRnKrd1BVgnCuxmD2F',
     ),
     fee: 1000000,
     taxman: '8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D',

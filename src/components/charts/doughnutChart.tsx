@@ -12,7 +12,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 import { util } from '@sentre/senhub'
 import { shortenTailText } from 'helper'
-import { AllocationType } from '../../constants'
+import { AllocationType } from '../../view/constants'
 
 echarts.use([
   TitleComponent,

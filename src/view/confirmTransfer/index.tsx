@@ -14,7 +14,7 @@ import ButtonHome from 'components/buttonHome'
 import { WrapTotal } from 'components/cardTotal'
 
 import { onSelectStep } from 'model/steps.controller'
-import { Step } from '../../constants'
+import { Step } from '../constants'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'hooks/useTotal'
 import useRemainingBalance from 'hooks/useRemainingBalance'

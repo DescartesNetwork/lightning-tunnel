@@ -10,6 +10,7 @@ type DateOptionProps = {
   onSwitch: (value: boolean) => void
   label: string
   value: number
+  error: string
 }
 
 const DateOption = ({
@@ -19,6 +20,7 @@ const DateOption = ({
   onSwitch,
   label,
   value,
+  error,
 }: DateOptionProps) => {
   const [disabled, setDisabled] = useState(false)
   const onSwitchChange = (isDisable: boolean) => {
@@ -58,6 +60,13 @@ const DateOption = ({
           placement="bottomRight"
         />
       </Col>
+      {error && (
+        <Col span={24}>
+          <Typography.Text className="caption" style={{ color: '#F9575E' }}>
+            {error}
+          </Typography.Text>
+        </Col>
+      )}
     </Row>
   )
 }

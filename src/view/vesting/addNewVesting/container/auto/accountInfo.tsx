@@ -11,6 +11,7 @@ import EditTimeAndAmount from './action/editTimeAndAmount'
 import { AppDispatch, AppState } from 'model'
 import { removeRecipient } from 'model/recipients.controller'
 import { VestingItem } from 'hooks/vesting/useFilteredVestingRecipients'
+import { FORMAT_DATE } from 'view/constants'
 
 type AccountInfoProps = {
   vestingItem: VestingItem
@@ -76,7 +77,7 @@ const AccountInfo = forwardRef(
             {vestingItem.config.map(({ amount, unlockTime }, index) => (
               <Col key={index} className="vesting-config">
                 <Typography.Text className="caption">
-                  {amount} / {moment(unlockTime).format('MM-DD-YYYY HH:mm')}
+                  {amount} / {moment(unlockTime).format(FORMAT_DATE)}
                 </Typography.Text>
               </Col>
             ))}

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ONE_DAY } from '../constants'
+import { ONE_DAY } from '../view/constants'
 import { DISTRIBUTE_IN_TIME } from 'view/vesting/addNewVesting/components/distributeIn'
 import { FREQUENCY } from 'view/vesting/addNewVesting/components/frequency'
 
@@ -177,9 +177,9 @@ export const addAmountAndTime = createAsyncThunk<
       recipients: { recipientInfos },
     } = getState()
     const newRecipients = { ...recipientInfos }
-    const oldValue = newRecipients[walletAddress]
-    const newValue = oldValue.concat(nextRecipientInfos)
-    newRecipients[walletAddress] = newValue
+    console.log(newRecipients[walletAddress], 'old value')
+    newRecipients[walletAddress] = nextRecipientInfos
+    console.log(nextRecipientInfos, 'nextRecipientInfos')
     return { recipientInfos: newRecipients }
   },
 )

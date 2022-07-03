@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
@@ -8,7 +8,7 @@ import CardTotal from 'components/cardTotal'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
-import { SelectMethod, Step } from '../../../../../constants'
+import { SelectMethod, Step } from '../../../../constants'
 import useTotal from 'hooks/useTotal'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
@@ -16,7 +16,6 @@ import { RecipientInfo, removeRecipients } from 'model/recipients.controller'
 import { onSelectMethod } from 'model/main.controller'
 
 const Manual = () => {
-  const [isEdit, setIsEdit] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
     recipients: { recipientInfos },
@@ -61,8 +60,6 @@ const Manual = () => {
                         amount={amount}
                         walletAddress={address}
                         index={index}
-                        isEdit={isEdit}
-                        setIsEdit={setIsEdit}
                       />
                     </Col>
                   ))}

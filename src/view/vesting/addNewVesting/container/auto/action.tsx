@@ -5,7 +5,7 @@ import { Button, Col, Row } from 'antd'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
-import { RecipientFileType, Step } from '../../../../../constants'
+import { RecipientFileType, Step } from '../../../../constants'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import useFilteredVestingRecipient from 'hooks/vesting/useFilteredVestingRecipients'

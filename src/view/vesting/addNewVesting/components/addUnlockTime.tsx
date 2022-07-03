@@ -1,7 +1,10 @@
 import moment from 'moment'
 
-import { Button, Col, DatePicker, Row } from 'antd'
+import { Button, Col, DatePicker, Row, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
+import { useSelector } from 'react-redux'
+import { AppState } from 'model'
+import { useCallback } from 'react'
 
 type AddUnlockTimeProps = {
   listUnlockTime: number[]
@@ -12,6 +15,18 @@ const AddUnlockTime = ({
   listUnlockTime,
   setListUnlockTime,
 }: AddUnlockTimeProps) => {
+  const expiration = useSelector(
+    (state: AppState) => state.recipients.expirationTime,
+  )
+  const checkValid = useCallback(
+    (unlockTime: number) => {
+      if (!expiration) return true
+      if (unlockTime > expiration) return false
+      return true
+    },
+    [expiration],
+  )
+
   const onAdd = () => {
     const data = [...listUnlockTime]
     data.push(0)
@@ -64,6 +79,16 @@ const AddUnlockTime = ({
                 icon={<IonIcon name="remove-circle-outline" />}
               />
             </Col>
+            {!checkValid(unlockTime) && (
+              <Col span={24}>
+                <Typography.Text
+                  className="caption"
+                  style={{ color: '#F9575E' }}
+                >
+                  Must be less than expiration time.
+                </Typography.Text>
+              </Col>
+            )}
           </Row>
         </Col>
       ))}

@@ -11,7 +11,7 @@ import ColumnExpiration from '../columns/columnExpiration'
 import ColumnStatus from '../columns/columnStatus'
 
 import useReceiveList, { ReceiveItem } from 'hooks/useReceiveList'
-import { State } from '../../../constants'
+import { State } from '../../constants'
 import { TypeDistribute } from 'model/main.controller'
 import { util } from '@sentre/senhub'
 import { COLUMNS_AIRDROP } from '../columns'

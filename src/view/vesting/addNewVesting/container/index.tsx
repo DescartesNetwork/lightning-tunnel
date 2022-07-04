@@ -15,7 +15,7 @@ import CardOption from 'components/cardOption'
 import SelectToken from 'components/selectTokens'
 import Header from 'components/header'
 
-import { ONE_DAY, SelectMethod, Step } from '../../../constants'
+import { ONE_DAY, SelectMethod, Step } from '../../../../constants'
 import { useSingleMints } from 'hooks/useSingleMints'
 import { AppState } from 'model'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { SelectMethod } from '../view/constants'
+import { SelectMethod } from '../constants'
 
 /**
  * Interface & Utility

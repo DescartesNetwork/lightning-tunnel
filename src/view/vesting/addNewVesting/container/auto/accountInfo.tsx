@@ -11,7 +11,7 @@ import EditTimeAndAmount from './action/editTimeAndAmount'
 import { AppDispatch, AppState } from 'model'
 import { removeRecipient } from 'model/recipients.controller'
 import { VestingItem } from 'hooks/vesting/useFilteredVestingRecipients'
-import { FORMAT_DATE } from 'view/constants'
+import { FORMAT_DATE } from '../../../../../constants'
 
 type AccountInfoProps = {
   vestingItem: VestingItem

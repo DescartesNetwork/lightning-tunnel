@@ -10,7 +10,7 @@ import { AppState } from 'model'
 import IPFS from 'helper/ipfs'
 import configs from 'configs'
 import useStatus from 'hooks/useStatus'
-import { State } from '../../constants'
+import { State } from '../../../constants'
 
 type ColumActionProps = {
   distributorAddress: string

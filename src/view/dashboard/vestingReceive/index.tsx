@@ -17,7 +17,7 @@ import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 
 import useReceiveList, { ReceiveItem } from 'hooks/useReceiveList'
 import { TypeDistribute } from 'model/main.controller'
-import { State } from '../../constants'
+import { State } from '../../../constants'
 import { COLUMNS_AIRDROP } from '../columns'
 import useStatus from 'hooks/useStatus'
 

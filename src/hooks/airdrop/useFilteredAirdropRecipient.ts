@@ -4,7 +4,7 @@ import { account } from '@senswap/sen-js'
 
 import { AppState } from 'model'
 import { RecipientInfo } from 'model/recipients.controller'
-import { RecipientFileType } from '../../view/constants'
+import { RecipientFileType } from '../../constants'
 
 const useFilteredAirdropRecipient = ({ type }: { type: RecipientFileType }) => {
   const recipientInfos = useSelector(

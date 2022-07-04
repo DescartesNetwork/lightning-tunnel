@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { AppState } from 'model'
 import { RecipientInfo } from 'model/recipients.controller'
 import { account } from '@senswap/sen-js'
-import { RecipientFileType } from '../../view/constants'
+import { RecipientFileType } from '../../constants'
 
 export type VestingItem = {
   address: string

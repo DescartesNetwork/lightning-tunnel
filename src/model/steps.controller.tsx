@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { Step } from '../view/constants'
+import { Step } from '../constants'
 
 /**
  * Interface & Utility

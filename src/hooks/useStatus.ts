@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { State } from '../view/constants'
 import { AppState } from 'model'
+import { State } from '../constants'
 
 const CURRENT_TIME = Date.now()
 

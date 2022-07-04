@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ONE_DAY } from '../view/constants'
+import { ONE_DAY } from '../constants'
 import { DISTRIBUTE_IN_TIME } from 'view/vesting/addNewVesting/components/distributeIn'
 import { FREQUENCY } from 'view/vesting/addNewVesting/components/frequency'
 

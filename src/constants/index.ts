@@ -29,9 +29,17 @@ export type AllocationType = {
   ratio: number
 }
 
+export enum SIDE_BAR_ITEMS {
+  Vesting = 'vesting',
+  Dashboard = 'dashboard',
+  Airdrop = 'airdrop',
+}
+
 export enum RecipientFileType {
   valid = 'valid',
   invalid = 'invalid',
 }
 
 export const ONE_DAY = 24 * 60 * 60 * 1000
+
+export const FORMAT_DATE = 'MMM DD, YYYY HH:mm'

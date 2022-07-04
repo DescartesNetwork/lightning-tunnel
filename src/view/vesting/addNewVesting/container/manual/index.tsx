@@ -8,7 +8,7 @@ import MethodInputRecipient from './methodInputRecipient'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
-import { SelectMethod, Step } from '../../../../constants'
+import { SelectMethod, Step } from '../../../../../constants'
 import useTotal from 'hooks/useTotal'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'

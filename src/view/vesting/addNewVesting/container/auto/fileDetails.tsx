@@ -10,7 +10,7 @@ import ModalDeleteFile from 'components/commonModal'
 import { WrapTotal } from 'components/cardTotal'
 
 import { AppDispatch, AppState } from 'model'
-import { CollapseAddNew, RecipientFileType } from '../../../../constants'
+import { CollapseAddNew, RecipientFileType } from '../../../../../constants'
 import { addRecipients } from 'model/recipients.controller'
 import {
   selectRecipient,

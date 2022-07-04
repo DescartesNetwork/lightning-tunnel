@@ -10,7 +10,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers'
 
 import { util } from '@sentre/senhub'
-import { AllocationType } from 'view/constants'
+import { AllocationType } from '../../../constants'
 
 echarts.use([
   TitleComponent,

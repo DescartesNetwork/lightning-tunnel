@@ -11,7 +11,7 @@ import ConfirmTransfer from '../../../confirmTransfer'
 import DateOption from '../../../../components/dateOption'
 import CardOption from 'components/cardOption'
 
-import { SelectMethod, Step } from '../../../constants'
+import { SelectMethod, Step } from '../../../../constants'
 import { AppState } from 'model'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'
 import { useSingleMints } from 'hooks/useSingleMints'

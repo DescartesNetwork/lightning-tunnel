@@ -11,7 +11,7 @@ import useTotal from 'hooks/useTotal'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import { TypeDistribute } from 'model/main.controller'
-import { FORMAT_DATE } from 'view/constants'
+import { FORMAT_DATE } from '../constants'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   return (

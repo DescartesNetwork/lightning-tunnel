@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { Tag } from 'antd'
 
-import { State } from '../view/constants'
+import { State } from '../constants'
 
 const STATUS_COLOR: Record<State, string> = {
   Waiting: '#D4B106',

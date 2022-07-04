@@ -55,7 +55,7 @@ const SelectInputMethod = () => {
 
   const validEndDate = useMemo(() => {
     if (expirationTime < Date.now() && !isUnlimited && expirationTime)
-      return 'Must be greater than current time'
+      return 'Must be greater than current time.'
     return ''
   }, [expirationTime, isUnlimited])
 

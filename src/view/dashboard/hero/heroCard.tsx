@@ -4,6 +4,8 @@ import { util } from '@sentre/senhub'
 import IonIcon from '@sentre/antd-ionicon'
 import { Card, Col, Row, Spin, Typography } from 'antd'
 
+import './heroCard.less'
+
 type HeroCardProps = {
   label: string
   icon: string
@@ -28,7 +30,7 @@ const HeroCard = ({
       bodyStyle={cardStyles}
       style={{ height: '100%' }}
     >
-      <Row gutter={[12, 12]} align="middle">
+      <Row align="middle">
         <Col flex="auto">
           <Typography.Text type="secondary">{label}</Typography.Text>
         </Col>

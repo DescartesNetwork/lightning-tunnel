@@ -34,12 +34,4 @@ export enum RecipientFileType {
   invalid = 'invalid',
 }
 
-export enum SIDE_BAR_ITEMS {
-  Vesting = 'vesting',
-  Dashboard = 'dashboard',
-  Airdrop = 'airdrop',
-}
-
-export const FORMAT_DATE = 'MMM DD, YYYY HH:mm'
-
 export const ONE_DAY = 24 * 60 * 60 * 1000

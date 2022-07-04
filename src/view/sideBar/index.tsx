@@ -10,7 +10,7 @@ import { AppDispatch } from 'model'
 import { onSelectMethod, setTypeDistribute } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
 import { removeRecipients } from 'model/recipients.controller'
-import { SelectMethod, Step } from '../../constants'
+import { SelectMethod, Step } from '../constants'
 import { SIDE_BAR_ITEMS } from '../constants'
 
 const LIST_MENU_ITEM = [

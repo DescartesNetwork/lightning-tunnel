@@ -3,6 +3,7 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import { useUI } from '@sentre/senhub'
 
 import { Button, Col, Drawer, Layout, Row } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import Redeem from './redeem'
 import SideBar from './sideBar'
 import Dashboard from './dashboard'
@@ -12,14 +13,13 @@ import AddNewAirdrop from './airdrop/addNewAirdrop'
 import AddNewVesting from './vesting/addNewVesting'
 import HistoryWatcher from 'watcher/history.watcher'
 import DistributorWatcher from 'watcher/distributor.watcher'
-import IonIcon from '@sentre/antd-ionicon'
+import ReceiptWatcher from 'watcher/receipt.watcher'
 
 import { useAppRouter } from 'hooks/useAppRoute'
 
 import BG from 'static/images/background-LT.png'
 
 import './index.less'
-import ReceiptWatcher from 'watcher/receipt.watcher'
 
 const { Content } = Layout
 
@@ -49,6 +49,7 @@ const View = () => {
         mask={isMobile}
         visible={drawerVisible}
         onClose={() => setVisible(false)}
+        forceRender
       >
         <SideBar />
       </Drawer>

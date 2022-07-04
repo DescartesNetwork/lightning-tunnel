@@ -8,7 +8,7 @@ import CardTotal from 'components/cardTotal'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
-import { SelectMethod, Step } from '../../../../../constants'
+import { SelectMethod, Step } from '../../../../constants'
 import useTotal from 'hooks/useTotal'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
@@ -53,7 +53,6 @@ const Manual = () => {
           <Row gutter={[24, 24]}>
             <Col span={24}>
               <Row gutter={[8, 8]}>
-                <Col span={24}>Wallet address #{listRecipient.length + 1}</Col>
                 {listRecipient &&
                   listRecipient.map(({ address, amount }, index) => (
                     <Col span={24} key={address + index}>

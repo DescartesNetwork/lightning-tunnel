@@ -15,7 +15,7 @@ import CardOption from 'components/cardOption'
 import SelectToken from 'components/selectTokens'
 import Header from 'components/header'
 
-import { ONE_DAY, SelectMethod, Step } from '../../../../constants'
+import { ONE_DAY, SelectMethod, Step } from '../../../constants'
 import { useSingleMints } from 'hooks/useSingleMints'
 import { AppState } from 'model'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'
@@ -87,6 +87,15 @@ const SelectInputMethod = () => {
     if (isAdvanced) dispatch(onSelectMethod(SelectMethod.manual))
     return dispatch(setAdvancedMode(isAdvanced))
   }
+
+  const validEndDate = useMemo(() => {
+    if (isUnlimited || !expiration) return ''
+    if (expiration < Date.now()) return 'Must be greater than current time.'
+    const totalVestingTime = unlockTime + distributeIn * 30 * ONE_DAY
+    if (expiration < totalVestingTime)
+      return 'Must be greater than the total vesting time.'
+    return ''
+  }, [distributeIn, expiration, isUnlimited, unlockTime])
 
   const disabled = useMemo(() => {
     if (activeMintAddress === 'Select' || !method) return true
@@ -224,6 +233,7 @@ const SelectInputMethod = () => {
                     onChange={onExpirationChange}
                     placeholder="Select time"
                     value={expiration}
+                    error={validEndDate}
                   />
                 </Col>
               </Row>

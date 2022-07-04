@@ -21,6 +21,8 @@ import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'model/file.controller'
 import ModalErrorDuplicate from './action/modalError'
 import { getFileCSV } from 'helper'
+import useCalculateAmount from '../../../../../hooks/useCalculateAmount'
+import { BN } from 'bn.js'
 
 const INDEX_ADDRESS = 0
 const INDEX_AMOUNT = 1
@@ -44,6 +46,7 @@ const UploadFile = () => {
   const [listDuplicate, setListDuplicate] = useState<string[]>([])
   const [isWrongFormat, setIsWrongFormat] = useState(false)
   const [visible, setVisible] = useState(false)
+  const { calcListAmount } = useCalculateAmount()
 
   const {
     recipients: { recipientInfos },
@@ -81,7 +84,10 @@ const UploadFile = () => {
 
         const recipientInfo: RecipientInfo[] = []
         const amountVesting = recipientData.length - INDEX_FIRST_UNLOCK_TIME
-        const newAmount = amount / BigInt(amountVesting)
+        const listAmount = calcListAmount(
+          new BN(amount.toString()),
+          amountVesting,
+        )
         for (let i = INDEX_FIRST_UNLOCK_TIME; i < recipientData.length; i++) {
           const unlockTime = new Date(recipientData[i]).getTime()
 
@@ -91,10 +97,10 @@ const UploadFile = () => {
             setLoading(false)
             return setVisible(true)
           }
-
+          const actualAmount = listAmount[i - INDEX_FIRST_UNLOCK_TIME]
           recipientInfo.push({
             address,
-            amount: utils.undecimalize(newAmount, mintDecimals),
+            amount: utils.undecimalize(actualAmount, mintDecimals),
             unlockTime,
           })
         }
@@ -112,7 +118,7 @@ const UploadFile = () => {
       setLoading(false)
       return false
     },
-    [dispatch, mintDecimals],
+    [calcListAmount, dispatch, mintDecimals],
   )
 
   const remove = async () => {

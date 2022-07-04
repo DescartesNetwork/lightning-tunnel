@@ -12,6 +12,8 @@ import CommonModal from 'components/commonModal'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { AppDispatch, AppState } from 'model'
 import { setRecipient, RecipientInfo } from 'model/recipients.controller'
+import useCalculateAmount from 'hooks/useCalculateAmount'
+import { BN } from 'bn.js'
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
@@ -45,6 +47,7 @@ const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
   )
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const dispatch = useDispatch<AppDispatch>()
+  const { calcListAmount } = useCalculateAmount()
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormInput({ ...formInput, [e.target.name]: e.target.value })
@@ -75,24 +78,15 @@ const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
 
     const nextRecipients: RecipientInfo[] = []
     const decimalAmount = utils.decimalize(amount, mintDecimals)
-    const newAmount = decimalAmount / BigInt(nextUnlockTime.length)
-
+    const listAmount = calcListAmount(
+      new BN(decimalAmount.toString()),
+      nextUnlockTime.length,
+    )
     for (let i = 0; i < nextUnlockTime.length; i++) {
       const unlockTime = nextUnlockTime[i]
-      let actualAmount = newAmount
-
-      if (i === nextUnlockTime.length - 1) {
-        let restAmount = BigInt(0)
-        for (const { amount } of nextRecipients) {
-          const decimalAmount = utils.decimalize(amount, mintDecimals)
-          restAmount += decimalAmount
-        }
-        actualAmount = decimalAmount - restAmount
-      }
-
       nextRecipients.push({
         address,
-        amount: utils.undecimalize(actualAmount, mintDecimals),
+        amount: utils.undecimalize(listAmount[i], mintDecimals),
         unlockTime,
       })
     }

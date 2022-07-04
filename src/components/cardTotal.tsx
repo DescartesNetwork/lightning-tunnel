@@ -11,6 +11,7 @@ import useTotal from 'hooks/useTotal'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import { TypeDistribute } from 'model/main.controller'
+import { FORMAT_DATE } from 'view/constants'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
   return (
@@ -34,82 +35,90 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
 
   return (
     <Row justify={isConfirm ? 'space-between' : undefined} gutter={[8, 8]}>
-      <Col xs={24} sm={12} lg={4}>
-        <Content
-          label="Recipients"
-          value={<Typography.Text>{quantity}</Typography.Text>}
-        />
+      <Col span={12}>
+        <Row gutter={[24, 24]}>
+          <Col>
+            <Content
+              label="Recipients"
+              value={<Typography.Text>{quantity}</Typography.Text>}
+            />
+          </Col>
+          {typeDistribute === TypeDistribute.Airdrop && (
+            <Col>
+              <Content
+                label="Unlock time"
+                value={
+                  <Typography.Text>
+                    {globalUnlockTime
+                      ? moment(globalUnlockTime).format(FORMAT_DATE)
+                      : 'Immediately'}
+                  </Typography.Text>
+                }
+              />
+            </Col>
+          )}
+          <Col>
+            <Content
+              label="Expiration time"
+              value={
+                <Typography.Text>
+                  {expirationTime
+                    ? moment(expirationTime).format(FORMAT_DATE)
+                    : 'Unlimited'}
+                </Typography.Text>
+              }
+            />
+          </Col>
+        </Row>
       </Col>
-      {typeDistribute === TypeDistribute.Airdrop && (
-        <Col md={12} lg={4}>
-          <Content
-            label="Unlock time"
-            value={
-              <Typography.Text>
-                {globalUnlockTime
-                  ? moment(globalUnlockTime).format('DD-MM-YY HH:mm:ss')
-                  : 'Immediately'}
-              </Typography.Text>
-            }
-          />
-        </Col>
-      )}
-      <Col md={12} lg={4}>
-        <Content
-          label="Expiration time"
-          value={
-            <Typography.Text>
-              {expirationTime
-                ? moment(expirationTime).format('DD-MM-YY HH:mm:ss')
-                : 'Unlimited'}
-            </Typography.Text>
-          }
-        />
-      </Col>
-      <Col xs={24} sm={12} lg={4}>
-        <Content
-          label="Your balance"
-          value={
-            <Space size={4}>
-              <Typography.Text>
-                {util.numeric(balance).format('0,0.00[0000]')}
-              </Typography.Text>
-              <Typography.Text>
-                <MintSymbol mintAddress={mintSelected} />
-              </Typography.Text>
-            </Space>
-          }
-        />
-      </Col>
-      {!isConfirm && (
-        <Col xs={24} sm={12} lg={4}>
-          <Content
-            label="Total"
-            value={
-              <Space size={4}>
-                <Typography.Title level={5}>{total}</Typography.Title>
-                <Typography.Title level={5}>
-                  <MintSymbol mintAddress={mintSelected} />
-                </Typography.Title>
-              </Space>
-            }
-          />
-        </Col>
-      )}
-      <Col xs={24} sm={12} lg={4}>
-        <Content
-          label="Remaining"
-          value={
-            <Space size={4}>
-              <Typography.Text>
-                {util.numeric(remainingBalance).format('0,0.00[0000]')}
-              </Typography.Text>
-              <Typography.Text>
-                <MintSymbol mintAddress={mintSelected} />
-              </Typography.Text>
-            </Space>
-          }
-        />
+      <Col span={12}>
+        <Row gutter={[24, 24]}>
+          <Col>
+            <Content
+              label="Your balance"
+              value={
+                <Space size={4}>
+                  <Typography.Text>
+                    {util.numeric(balance).format('0,0.00[0000]')}
+                  </Typography.Text>
+                  <Typography.Text>
+                    <MintSymbol mintAddress={mintSelected} />
+                  </Typography.Text>
+                </Space>
+              }
+            />
+          </Col>
+          {!isConfirm && (
+            <Col>
+              <Content
+                label="Total"
+                value={
+                  <Space size={4}>
+                    <Typography.Title level={5}>{total}</Typography.Title>
+                    <Typography.Title level={5}>
+                      <MintSymbol mintAddress={mintSelected} />
+                    </Typography.Title>
+                  </Space>
+                }
+              />
+            </Col>
+          )}
+          <Col>
+            <Content
+              label="Remaining"
+              value={
+                <Space size={4}>
+                  <Typography.Text>
+                    {util.numeric(remainingBalance).format('0,0.00[0000]')}
+                  </Typography.Text>
+                  <Typography.Text>
+                    <MintSymbol mintAddress={mintSelected} />
+                  </Typography.Text>
+                </Space>
+              }
+            />
+          </Col>
+        </Row>
       </Col>
     </Row>
   )

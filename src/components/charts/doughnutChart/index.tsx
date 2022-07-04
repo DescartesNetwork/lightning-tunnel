@@ -1,5 +1,4 @@
 import * as echarts from 'echarts/core'
-
 import ReactEChartsCore from 'echarts-for-react/lib/core'
 import { PieChart } from 'echarts/charts'
 import {
@@ -11,7 +10,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers'
 
 import { util } from '@sentre/senhub'
-import { AllocationType } from '../../../constants'
+import { AllocationType } from 'view/constants'
 
 echarts.use([
   TitleComponent,

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { Col, Radio, Row, Space, Typography } from 'antd'
 import SettingButton from './settingButton'
 
-import { Step } from '../../constants'
+import { Step } from '../../view/constants'
 import { AppState } from 'model'
 
 export type HeaderProps = { label?: string }

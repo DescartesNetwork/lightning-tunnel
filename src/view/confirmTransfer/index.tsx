@@ -13,9 +13,8 @@ import { MintSymbol } from 'shared/antd/mint'
 import ButtonHome from 'components/buttonHome'
 import { WrapTotal } from 'components/cardTotal'
 
-import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
-import { Step } from '../../constants'
+import { Step } from '../constants'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useTotal from 'hooks/useTotal'
 import useRemainingBalance from 'hooks/useRemainingBalance'
@@ -23,8 +22,11 @@ import configs from 'configs'
 import IPFS from 'helper/ipfs'
 import History, { HistoryRecord } from 'helper/history'
 import { getHistory } from 'model/history.controller'
+import { AppDispatch, AppState } from 'model'
 import { notifySuccess } from 'helper'
 import { RecipientInfo, removeRecipients } from 'model/recipients.controller'
+import { useAppRouter } from 'hooks/useAppRoute'
+import { getDistributors } from 'model/distributor.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -47,6 +49,7 @@ const ConfirmTransfer = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
+  const { pushHistory } = useAppRouter()
 
   const treeData = useMemo(() => {
     if (!recipientInfos || !mintDecimals) return
@@ -112,7 +115,7 @@ const ConfirmTransfer = () => {
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
       await dispatch(getHistory({ walletAddress }))
-
+      await dispatch(getDistributors())
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)
@@ -133,7 +136,8 @@ const ConfirmTransfer = () => {
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(removeRecipients())
     dispatch(onSelectStep(Step.SelectMethod))
-  }, [dispatch])
+    return pushHistory(`/${typeDistribute}`)
+  }, [dispatch, pushHistory, typeDistribute])
 
   return (
     <Card bordered={false} className="card-lightning">

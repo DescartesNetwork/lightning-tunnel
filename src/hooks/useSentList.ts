@@ -15,11 +15,11 @@ const {
 const CURRENT_TIME = Date.now()
 
 const useSentList = ({ type }: { type: TypeDistribute }) => {
-  const distributors = useSelector((state: AppState) => state.distributors)
-  const history = useSelector((state: AppState) => state.history)
   const [loading, setLoading] = useState(false)
   const [listHistory, setListHistory] = useState<HistoryRecord[]>([])
   const [numberOfRecipient, setNumberOfRecipient] = useState(0)
+  const distributors = useSelector((state: AppState) => state.distributors)
+  const history = useSelector((state: AppState) => state.history)
 
   const fetchHistory = useCallback(async () => {
     const nextHistory: HistoryRecord[] = []
@@ -56,7 +56,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         }
         nextHistory.push(historyItem)
       }
-    } catch (error) {
+    } catch (er) {
     } finally {
       setLoading(false)
       setNumberOfRecipient(newNumberOfRecipient)

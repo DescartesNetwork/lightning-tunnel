@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ONE_DAY } from '../constants'
+import { ONE_DAY } from '../view/constants'
 import { DISTRIBUTE_IN_TIME } from 'view/vesting/addNewVesting/components/distributeIn'
 import { FREQUENCY } from 'view/vesting/addNewVesting/components/frequency'
 
@@ -128,6 +128,7 @@ export const editRecipient = createAsyncThunk<
     }
     const distributionAmount = Math.floor((distributeIn * 30) / frequency)
     const singleAmount = Number(oldAmount) / distributionAmount
+
     for (let i = 0; i < distributionAmount; i++) {
       let nextUnlockTime = 0
       let actualAmount = singleAmount
@@ -137,7 +138,7 @@ export const editRecipient = createAsyncThunk<
 
       if (i === distributionAmount - 1) {
         let restAmount = 0
-        for (const { amount } of nextRecipients) {
+        for (const { amount } of newRecipient) {
           restAmount += Number(amount)
         }
         actualAmount = Number(oldAmount) - restAmount
@@ -150,6 +151,7 @@ export const editRecipient = createAsyncThunk<
         configs,
       }
       newRecipient[i] = recipient
+      // console.log(recipient, 'recipient')
     }
 
     nextRecipients[walletAddress] = newRecipient
@@ -175,9 +177,9 @@ export const addAmountAndTime = createAsyncThunk<
       recipients: { recipientInfos },
     } = getState()
     const newRecipients = { ...recipientInfos }
-    const oldValue = newRecipients[walletAddress]
-    const newValue = oldValue.concat(nextRecipientInfos)
-    newRecipients[walletAddress] = newValue
+    console.log(newRecipients[walletAddress], 'old value')
+    newRecipients[walletAddress] = nextRecipientInfos
+    console.log(nextRecipientInfos, 'nextRecipientInfos')
     return { recipientInfos: newRecipients }
   },
 )

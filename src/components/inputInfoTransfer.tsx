@@ -1,26 +1,43 @@
-import { ChangeEvent, Fragment, useCallback, useEffect, useState } from 'react'
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  Fragment,
+} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account, utils } from '@senswap/sen-js'
+import BN from 'bn.js'
 
-import { Button, Col, Input, Row, Space, Typography } from 'antd'
+import { Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import NumericInput from '@sentre/antd-numeric-input'
 import ModalMerge from './commonModal'
+import DistributionConfigDetail from 'view/vesting/addNewVesting/container/manual/distributionConfigDetail'
+import ActionButton from './actionButton'
+import UnlockTime from 'view/vesting/addNewVesting/components/unlockTime'
 
-import { AppState } from 'model'
+import { AppDispatch, AppState } from 'model'
 import {
   setRecipient,
   RecipientInfo,
   removeRecipient,
 } from 'model/recipients.controller'
-import { setIsTyping } from 'model/main.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import useCalculateAmount from 'hooks/useCalculateAmount'
+import { setIsTyping, TypeDistribute } from 'model/main.controller'
+import Frequency, {
+  FREQUENCY,
+} from 'view/vesting/addNewVesting/components/frequency'
+import DistributeIn, {
+  DISTRIBUTE_IN_TIME,
+} from 'view/vesting/addNewVesting/components/distributeIn'
 
 type InputInfoTransferProps = {
   walletAddress?: string
   amount?: string
   index?: number
-  isSelect?: boolean
 }
 
 const DEFAULT_RECIPIENT = {
@@ -30,62 +47,29 @@ const DEFAULT_RECIPIENT = {
 
 const ONE_DAY = 24 * 60 * 60 * 1000
 
-const ActionButton = ({
-  walletAddress,
-  addNewRecipient,
-  remove,
-}: {
-  walletAddress?: string
-  addNewRecipient: () => void
-  remove: () => void
-}) => {
-  return (
-    <Fragment>
-      {walletAddress ? (
-        <Space>
-          <Button
-            type="text"
-            size="small"
-            style={{ padding: 0 }}
-            onClick={remove}
-            icon={<IonIcon style={{ fonSize: 20 }} name="trash-outline" />}
-          />
-          <Button
-            type="text"
-            size="small"
-            style={{ padding: 0 }}
-            icon={<IonIcon style={{ fonSize: 20 }} name="create-outline" />}
-          />
-        </Space>
-      ) : (
-        <Button
-          type="text"
-          size="small"
-          style={{ padding: 0, color: '#42E6EB' }}
-          onClick={addNewRecipient}
-        >
-          OK
-        </Button>
-      )}
-    </Fragment>
-  )
-}
-
 const InputInfoTransfer = ({
   walletAddress,
   amount,
+  index,
 }: InputInfoTransferProps) => {
   const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [amountError, setAmountError] = useState('')
   const [walletError, setWalletError] = useState('')
   const [visible, setVisible] = useState(false)
+  const [isEdit, setIsEdit] = useState(false)
+  const [nextFrequency, setNextFrequency] = useState(FREQUENCY.seven)
+  const [nextDistributeIn, setNextDistributeIn] = useState(
+    DISTRIBUTE_IN_TIME.three,
+  )
+  const [nextUnlockTime, setNextUnlockTime] = useState(0)
   const {
     main: { mintSelected, typeDistribute },
     recipients,
     setting: { decimal },
   } = useSelector((state: AppState) => state)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const mintDecimals = useMintDecimals(mintSelected) || 0
+  const { calcListAmount } = useCalculateAmount()
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormInput({ ...formInput, [e.target.name]: e.target.value })
@@ -93,12 +77,10 @@ const InputInfoTransfer = ({
 
   const onAmount = (val: string) => setFormInput({ ...formInput, amount: val })
 
-  const recipientInfo = useCallback(async () => {
-    if (account.isAddress(walletAddress) && amount) {
-      return setFormInput({ walletAddress, amount })
-    }
-    return setFormInput(DEFAULT_RECIPIENT)
-  }, [walletAddress, amount])
+  const configs = useMemo(
+    () => ({ distributeIn: nextDistributeIn, frequency: nextFrequency }),
+    [nextDistributeIn, nextFrequency],
+  )
 
   const addNewRecipient = async () => {
     const { walletAddress, amount } = formInput
@@ -107,46 +89,39 @@ const InputInfoTransfer = ({
     if (!amount) return setAmountError('Amount cannot be empty')
     const nextRecipients: RecipientInfo[] = []
 
-    const { recipientInfos, globalConfigs, globalUnlockTime } = recipients
-    if (recipientInfos[walletAddress]) return setVisible(true)
+    const { recipientInfos } = recipients
+    if (recipientInfos[walletAddress] && !isEdit) return setVisible(true)
 
     if (typeDistribute === 'airdrop') {
       const recipient: RecipientInfo = {
         address: walletAddress,
         amount,
-        unlockTime: globalUnlockTime,
+        unlockTime: nextUnlockTime,
       }
       nextRecipients.push(recipient)
     }
 
     if (typeDistribute === 'vesting') {
-      const { distributeIn, frequency } = globalConfigs
-      const distributionAmount = Math.floor((distributeIn * 30) / frequency)
+      const distributionAmount = Math.floor(
+        (nextDistributeIn * 30) / nextFrequency,
+      )
       const decimalAmount = utils.decimalize(amount, mintDecimals)
-      const singleAmount = decimalAmount / BigInt(distributionAmount)
-
+      const actualAmount = calcListAmount(
+        new BN(decimalAmount.toString()),
+        distributionAmount,
+      )
       for (let i = 0; i < distributionAmount; i++) {
         let unlockTime = 0
-        let actualAmount = singleAmount
-        if (i === 0) unlockTime = globalUnlockTime
+        if (i === 0) unlockTime = nextUnlockTime
         if (i !== 0)
-          unlockTime = frequency * ONE_DAY + nextRecipients[i - 1].unlockTime
-
-        if (i === distributionAmount - 1) {
-          let restAmount = 0
-          for (const { amount } of nextRecipients) restAmount += Number(amount)
-
-          actualAmount = utils.decimalize(
-            Number(amount) - restAmount,
-            mintDecimals,
-          )
-        }
+          unlockTime =
+            nextFrequency * ONE_DAY + nextRecipients[i - 1].unlockTime
 
         const recipient: RecipientInfo = {
           address: walletAddress,
-          amount: utils.undecimalize(actualAmount, mintDecimals),
-          unlockTime: unlockTime,
-          configs: globalConfigs,
+          amount: utils.undecimalize(actualAmount[i], mintDecimals),
+          unlockTime,
+          configs,
         }
         nextRecipients.push(recipient)
       }
@@ -154,8 +129,9 @@ const InputInfoTransfer = ({
 
     setWalletError('')
     setAmountError('')
-    await dispatch(setRecipient({ walletAddress, nextRecipients }))
-    return setFormInput(DEFAULT_RECIPIENT)
+    setIsEdit(false)
+    if (!isEdit) setFormInput(DEFAULT_RECIPIENT)
+    return dispatch(setRecipient({ walletAddress, nextRecipients }))
   }
 
   const onMerge = async () => {
@@ -168,14 +144,19 @@ const InputInfoTransfer = ({
       utils.decimalize(oldAmount, mintDecimals) +
       utils.decimalize(amount, mintDecimals)
 
-    const actualAmount = utils.undecimalize(decimalAmount, mintDecimals)
+    const listAmount = calcListAmount(
+      new BN(decimalAmount.toString()),
+      amountRecipient,
+    )
 
-    const nextRecipients = recipientInfos[walletAddress].map((recipient) => {
-      return {
-        ...recipient,
-        amount: (Number(actualAmount) / amountRecipient).toString(),
-      }
-    })
+    const nextRecipients = recipientInfos[walletAddress].map(
+      (recipient, index) => {
+        return {
+          ...recipient,
+          amount: utils.undecimalize(listAmount[index], mintDecimals),
+        }
+      },
+    )
 
     await dispatch(setRecipient({ walletAddress, nextRecipients }))
     await setVisible(false)
@@ -190,6 +171,13 @@ const InputInfoTransfer = ({
     if (!account.isAddress(walletAddress)) return
     return dispatch(removeRecipient(walletAddress))
   }
+
+  const recipientInfo = useCallback(async () => {
+    if (account.isAddress(walletAddress) && amount) {
+      return setFormInput({ walletAddress, amount })
+    }
+    return setFormInput(DEFAULT_RECIPIENT)
+  }, [walletAddress, amount])
 
   const checkIsTyping = useCallback(() => {
     if (amount || walletAddress) return
@@ -211,7 +199,31 @@ const InputInfoTransfer = ({
       return setAmountError('Should be natural numbers')
   }, [amount, decimal])
 
-  const disabledInput = walletAddress ? true : false
+  const fetchUnlockTime = useCallback(() => {
+    const { globalUnlockTime, recipientInfos } = recipients
+    if (!account.isAddress(walletAddress))
+      return setNextUnlockTime(globalUnlockTime)
+    return setNextUnlockTime(recipientInfos[walletAddress][0].unlockTime)
+  }, [recipients, walletAddress])
+
+  const fetchConfigs = useCallback(() => {
+    const { globalConfigs, recipientInfos } = recipients
+    if (!account.isAddress(walletAddress)) {
+      setNextDistributeIn(globalConfigs.distributeIn)
+      return setNextFrequency(globalConfigs.frequency)
+    }
+    const itemConfig = recipientInfos[walletAddress][0].configs
+    if (!itemConfig) return
+    setNextDistributeIn(itemConfig.distributeIn)
+    return setNextFrequency(itemConfig.frequency)
+  }, [recipients, walletAddress])
+
+  const walletAddrIndx = useMemo(() => {
+    if (walletAddress && index !== undefined) return index + 1
+    return Object.keys(recipients.recipientInfos).length + 1
+  }, [index, recipients.recipientInfos, walletAddress])
+
+  const disabledInput = walletAddress && !isEdit ? true : false
 
   useEffect(() => {
     recipientInfo()
@@ -225,11 +237,30 @@ const InputInfoTransfer = ({
     checkIsTyping()
   }, [checkIsTyping])
 
+  useEffect(() => {
+    fetchConfigs()
+    fetchUnlockTime()
+  }, [fetchConfigs, fetchUnlockTime])
+
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between">
-      <Col span={18}>
+      <Col span={24}>
+        <Row>
+          <Col flex="auto">Wallet address #{walletAddrIndx}</Col>
+          <Col>
+            <ActionButton
+              addNewRecipient={addNewRecipient}
+              walletAddress={walletAddress}
+              remove={onRemove}
+              isEdit={isEdit}
+              setIsEdit={setIsEdit}
+            />
+          </Col>
+        </Row>
+      </Col>
+      <Col span={19}>
         <Input
-          disabled={disabledInput}
+          disabled={!!walletAddress}
           value={formInput.walletAddress}
           name="walletAddress"
           placeholder="Wallet address"
@@ -249,13 +280,6 @@ const InputInfoTransfer = ({
           autoComplete="off"
         />
       </Col>
-      <Col span={1}>
-        <ActionButton
-          addNewRecipient={addNewRecipient}
-          walletAddress={walletAddress}
-          remove={onRemove}
-        />
-      </Col>
       {(walletError || amountError) && (
         <Col span={24}>
           <Space>
@@ -265,6 +289,42 @@ const InputInfoTransfer = ({
             </Typography.Text>
           </Space>
         </Col>
+      )}
+      {/* Only for Vesting */}
+      {typeDistribute === TypeDistribute.Vesting && (
+        <Fragment>
+          {isEdit ? (
+            <Col span={24}>
+              <Row gutter={[16, 16]}>
+                <Col xs={12} md={7}>
+                  <UnlockTime
+                    unlockTime={nextUnlockTime}
+                    onChange={setNextUnlockTime}
+                  />
+                </Col>
+                <Col xs={12} md={7}>
+                  <Frequency
+                    frequency={nextFrequency}
+                    onChange={setNextFrequency}
+                  />
+                </Col>
+                <Col xs={12} md={7}>
+                  <DistributeIn
+                    distributeIn={nextDistributeIn}
+                    onChange={setNextDistributeIn}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          ) : (
+            <Col span={24}>
+              <DistributionConfigDetail
+                configs={configs}
+                unlockTime={nextUnlockTime}
+              />
+            </Col>
+          )}
+        </Fragment>
       )}
       <ModalMerge
         title="Do you want to merge wallet addresses?"

@@ -10,7 +10,7 @@ import AccountInfo from './accountInfo'
 import ModalDeleteFile from 'components/commonModal'
 
 import { AppDispatch, AppState } from 'model'
-import { CollapseAddNew, RecipientFileType } from '../../../../../constants'
+import { CollapseAddNew, RecipientFileType } from '../../../../constants'
 import { addRecipients } from 'model/recipients.controller'
 import {
   selectRecipient,

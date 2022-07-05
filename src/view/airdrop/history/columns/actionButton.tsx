@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import BN from 'bn.js'
 import { FeeOptions } from '@sentre/utility'
+import { useUI } from '@sentre/senhub'
 
 import { Button, Space } from 'antd'
 import ModalShare from 'components/modalShare'
@@ -19,7 +20,15 @@ type ActionButtonProps = { distributorAddress: string; remaining: number }
 const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { disabled, isRevoke } = useCanRevoke(distributorAddress, remaining)
+  const { disabled, isRevoke, setDisabled } = useCanRevoke(
+    distributorAddress,
+    remaining,
+  )
+  const {
+    ui: { width },
+  } = useUI()
+
+  const isMobile = width < 768
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
@@ -31,6 +40,7 @@ const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
     setLoading(true)
     try {
       const { txId } = await utility.revoke({ distributorAddress, feeOptions })
+      setDisabled(true)
       return notifySuccess('Revoked token', txId)
     } catch (er) {
       notifyError(er)
@@ -42,7 +52,7 @@ const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
   const redeemLink = `${window.location.origin}/${appId}/redeem/${distributorAddress}?autoInstall=true`
 
   return (
-    <Space size={24}>
+    <Space size={isMobile ? 16 : 24}>
       <Button
         onClick={() => setVisible(true)}
         type="text"

@@ -4,15 +4,15 @@ import { Col, Row, Space, Typography } from 'antd'
 
 import ExpandCard from 'components/expandCard'
 import RowBetweenNodeTitle from 'components/rowBetweenNodeTitle'
-import ColumnTotal from './columns/columnTotal'
-import ActionButton from './columns/actionButton'
+import ColumnTotal from '../view/airdrop/history/columns/columnTotal'
+import ActionButton from '../view/airdrop/history/columns/actionButton'
 import RowSpaceBetween from 'components/rowSpaceBetween'
-import UnlockDateColumn from './columns/unlockDateColumn'
+import UnlockDateColumn from '../view/airdrop/history/columns/unlockDateColumn'
 
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 import { ItemSent } from 'hooks/useSentList'
 
-const AirdropCard = ({ itemSent }: { itemSent: ItemSent }) => {
+const HistoryCard = ({ itemSent }: { itemSent: ItemSent }) => {
   const {
     distributorAddress,
     mint: mintAddress,
@@ -77,4 +77,4 @@ const AirdropCard = ({ itemSent }: { itemSent: ItemSent }) => {
   )
 }
 
-export default AirdropCard
+export default HistoryCard

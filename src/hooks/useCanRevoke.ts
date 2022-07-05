@@ -5,7 +5,7 @@ import { AppState } from 'model'
 
 const useCanRevoke = (distributorAddress: string, remaining: number) => {
   const [isRevoke, setIsRevoke] = useState(false)
-  const [disabled, setSetDisabled] = useState(false)
+  const [disabled, setDisabled] = useState(false)
 
   const endedAt = useSelector(
     (state: AppState) => state.distributors[distributorAddress].endedAt,
@@ -16,7 +16,7 @@ const useCanRevoke = (distributorAddress: string, remaining: number) => {
     const endTime = endedAt.toNumber() * 1000
     if (!endTime) return setIsRevoke(false)
 
-    if (remaining === 0) setSetDisabled(true)
+    if (remaining === 0) setDisabled(true)
 
     if (endTime < CURRENT_TIME) return setIsRevoke(true)
 
@@ -27,7 +27,7 @@ const useCanRevoke = (distributorAddress: string, remaining: number) => {
     checkCanRevoke()
   }, [checkCanRevoke])
 
-  return { isRevoke, disabled }
+  return { isRevoke, disabled, setDisabled }
 }
 
 export default useCanRevoke

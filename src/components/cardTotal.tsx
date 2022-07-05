@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
-import { util } from '@sentre/senhub'
+import { util, useUI } from '@sentre/senhub'
 
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from 'shared/antd/mint'
@@ -14,12 +14,20 @@ import { TypeDistribute } from 'model/main.controller'
 import { FORMAT_DATE } from '../constants'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
+  const {
+    ui: { width },
+  } = useUI()
+
+  const isMobile = width < 1200
   return (
     <Row gutter={[4, 4]}>
-      <Col span={24}>
+      <Col
+        flex={isMobile ? 'auto' : undefined}
+        span={isMobile ? undefined : 24}
+      >
         <Typography.Text type="secondary">{label}</Typography.Text>
       </Col>
-      <Col span={24}>{value}</Col>
+      <Col span={isMobile ? undefined : 24}>{value}</Col>
     </Row>
   )
 }
@@ -35,16 +43,21 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
 
   return (
     <Row justify={isConfirm ? 'space-between' : undefined} gutter={[8, 8]}>
-      <Col span={12}>
-        <Row gutter={[24, 24]}>
-          <Col>
+      <Col xs={24} xl={12}>
+        <Row
+          gutter={[
+            { xs: 16, sm: 16, md: 16, xl: 48 },
+            { xs: 16, sm: 16, md: 16, xl: 48 },
+          ]}
+        >
+          <Col xs={24} xl={8}>
             <Content
               label="Recipients"
               value={<Typography.Text>{quantity}</Typography.Text>}
             />
           </Col>
           {typeDistribute === TypeDistribute.Airdrop && (
-            <Col>
+            <Col xs={24} xl={8}>
               <Content
                 label="Unlock time"
                 value={
@@ -57,7 +70,7 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
               />
             </Col>
           )}
-          <Col>
+          <Col xs={24} xl={8}>
             <Content
               label="Expiration time"
               value={
@@ -71,9 +84,14 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
           </Col>
         </Row>
       </Col>
-      <Col span={12}>
-        <Row gutter={[24, 24]}>
-          <Col>
+      <Col xs={24} xl={12} className="overview-data">
+        <Row
+          gutter={[
+            { xs: 16, sm: 16, md: 16, xl: 48 },
+            { xs: 16, sm: 16, md: 16, xl: 48 },
+          ]}
+        >
+          <Col xs={24} xl={8}>
             <Content
               label="Your balance"
               value={
@@ -89,7 +107,7 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
             />
           </Col>
           {!isConfirm && (
-            <Col>
+            <Col xs={24} xl={8}>
               <Content
                 label="Total"
                 value={
@@ -103,7 +121,7 @@ export const WrapTotal = ({ isConfirm = false }: { isConfirm?: boolean }) => {
               />
             </Col>
           )}
-          <Col>
+          <Col xs={24} xl={8}>
             <Content
               label="Remaining"
               value={

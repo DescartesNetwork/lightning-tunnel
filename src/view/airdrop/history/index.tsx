@@ -3,7 +3,7 @@ import { useUI } from '@sentre/senhub'
 
 import { Button, Card, Col, Row, Spin, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import AirdropCard from './airdropCard'
+import HistoryCard from '../../../components/historyCard'
 
 import { COLUMNS_AIRDROP } from './columns'
 import { TypeDistribute } from 'model/main.controller'
@@ -36,7 +36,7 @@ const History = () => {
           {isMobile ? (
             <Col span={24}>
               {listHistory.slice(0, amountAirdrop).map((history) => (
-                <AirdropCard
+                <HistoryCard
                   itemSent={history}
                   key={history.distributorAddress}
                 />

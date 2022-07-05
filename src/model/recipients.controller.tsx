@@ -151,7 +151,6 @@ export const editRecipient = createAsyncThunk<
         configs,
       }
       newRecipient[i] = recipient
-      // console.log(recipient, 'recipient')
     }
 
     nextRecipients[walletAddress] = newRecipient
@@ -177,9 +176,7 @@ export const addAmountAndTime = createAsyncThunk<
       recipients: { recipientInfos },
     } = getState()
     const newRecipients = { ...recipientInfos }
-    console.log(newRecipients[walletAddress], 'old value')
     newRecipients[walletAddress] = nextRecipientInfos
-    console.log(nextRecipientInfos, 'nextRecipientInfos')
     return { recipientInfos: newRecipients }
   },
 )

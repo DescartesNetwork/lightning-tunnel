@@ -1,19 +1,11 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useUI, util } from '@sentre/senhub'
+import { useUI } from '@sentre/senhub'
 import { MerkleDistributor } from '@sentre/utility'
-import moment from 'moment'
 
-import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
+import { Button, Card, Col, Row, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import ExpandCard from 'components/expandCard'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
-import RowSpaceBetween from 'components/rowSpaceBetween'
-import ColumnExpiration from '../columns/columnExpiration'
-import ColumnStatus from '../columns/columnStatus'
-import ColumAction from '../columns/columAction'
-import ColumnAmount from '../columns/columnTotal'
-import RowBetweenNodeTitle from 'components/rowBetweenNodeTitle'
+import ListAirdropMobile from './listAirdropMobile'
 
 import { State } from '../../../constants'
 import { TypeDistribute } from 'model/main.controller'
@@ -91,89 +83,10 @@ const AirdropReceive = () => {
         </Col>
         <Col span={24}>
           {isMobile ? (
-            <Fragment>
-              {listAirdrop.slice(0, amountAirdrop).map((airdrop, idx) => {
-                const {
-                  mintAddress,
-                  receiptAddress,
-                  recipientData,
-                  distributorAddress,
-                  sender,
-                } = airdrop
-
-                return (
-                  <ExpandCard
-                    style={{
-                      border: '1px solid transparent',
-                      borderImageSlice: '0 0 1 0',
-                      borderImageWidth: 1,
-                      borderImageSource:
-                        'linear-gradient(90deg,transparent, #4F5B5C, transparent)',
-                    }}
-                    cardId={receiptAddress}
-                    cardHeader={
-                      <Row gutter={[12, 12]}>
-                        <Col span={24}>
-                          <RowBetweenNodeTitle
-                            title={
-                              <Space>
-                                <MintAvatar mintAddress={mintAddress} />
-                                <Space size={6}>
-                                  <ColumnAmount
-                                    amount={recipientData.amount}
-                                    mintAddress={mintAddress}
-                                  />
-                                  <MintSymbol mintAddress={mintAddress} />
-                                </Space>
-                              </Space>
-                            }
-                          >
-                            <ColumnStatus
-                              receiptAddress={receiptAddress}
-                              startedAt={recipientData.startedAt.toNumber()}
-                              distributorAddress={distributorAddress}
-                            />
-                          </RowBetweenNodeTitle>
-                        </Col>
-                        <Col span={24}>
-                          <RowSpaceBetween
-                            label={`Sender: ${util.shortenAddress(sender, 4)}`}
-                            value={
-                              <ColumAction
-                                distributorAddress={distributorAddress}
-                                receiptAddress={receiptAddress}
-                                recipientData={recipientData}
-                              />
-                            }
-                          />
-                        </Col>
-                      </Row>
-                    }
-                    key={idx}
-                  >
-                    <Row gutter={[4, 4]}>
-                      <Col flex="auto">Unlock time:</Col>
-                      <Col>
-                        <Typography.Text>
-                          {recipientData.startedAt.toNumber()
-                            ? moment(
-                                recipientData.startedAt.toNumber() * 1000,
-                              ).format('MMM DD, YYYY HH:mm')
-                            : 'Immediately'}
-                        </Typography.Text>
-                      </Col>
-                      <Col span={24} />
-                      <Col flex="auto">Expiration time:</Col>
-                      <Col>
-                        <ColumnExpiration
-                          distributorAddress={distributorAddress}
-                        />
-                      </Col>
-                    </Row>
-                  </ExpandCard>
-                )
-              })}
-            </Fragment>
+            <ListAirdropMobile
+              listAirdrop={listAirdrop}
+              amountAirdrop={amountAirdrop}
+            />
           ) : (
             <Table
               dataSource={listAirdrop.slice(0, amountAirdrop)}

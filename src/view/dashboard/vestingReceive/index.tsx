@@ -1,21 +1,12 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import isEqual from 'react-fast-compare'
-import { useUI, util } from '@sentre/senhub'
+import { useUI } from '@sentre/senhub'
 import { MerkleDistributor } from '@sentre/utility'
-import moment from 'moment'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
-import ColumAction from '../columns/columAction'
-import ColumnExpiration from '../columns/columnExpiration'
-import ColumnTotal from 'view/vesting/history/columns/columnTotal'
-import ColumnStatus from '../columns/columnStatus'
-import RowBetweenNodeTitle from 'components/rowBetweenNodeTitle'
-import RowSpaceBetween from 'components/rowSpaceBetween'
-import ExpandCard from 'components/expandCard'
-import ColumnAmount from '../columns/columnTotal'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { Button, Card, Col, Row, Table, Typography } from 'antd'
+import ListVestingMobile from './listVestingMobile'
 
 import { TypeDistribute } from 'model/main.controller'
 import { State } from '../../../constants'
@@ -32,7 +23,7 @@ const {
 } = configs
 
 const VestingReceive = () => {
-  const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
+  const [amountVesting, setAmountVesting] = useState(DEFAULT_AMOUNT)
   const [listVesting, setListVesting] = useState<ReceiveItem[]>([])
   const listReceived = useSelector((state: AppState) => state.listReceived)
   const {
@@ -147,133 +138,13 @@ const VestingReceive = () => {
         </Col>
         <Col span={24}>
           {isMobile ? (
-            <Fragment>
-              {listVesting.slice(0, amountAirdrop).map((vesting, idx) => {
-                const {
-                  mintAddress,
-                  receiptAddress,
-                  recipientData,
-                  distributorAddress,
-                  sender,
-                  children,
-                } = vesting
-
-                return (
-                  <ExpandCard
-                    style={{
-                      border: '1px solid transparent',
-                      borderImageSlice: '0 0 1 0',
-                      borderImageWidth: 1,
-                      borderImageSource:
-                        'linear-gradient(90deg,transparent, #4F5B5C, transparent)',
-                    }}
-                    cardId={vesting.receiptAddress}
-                    cardHeader={
-                      <Row gutter={[12, 12]}>
-                        <Col span={24}>
-                          <RowBetweenNodeTitle
-                            title={
-                              <Space>
-                                <MintAvatar mintAddress={mintAddress} />
-                                <Space size={6}>
-                                  <ColumnAmount
-                                    amount={recipientData.amount}
-                                    mintAddress={mintAddress}
-                                  />
-                                  <MintSymbol mintAddress={mintAddress} />
-                                </Space>
-                              </Space>
-                            }
-                          >
-                            <ColumnStatus
-                              receiptAddress={receiptAddress}
-                              startedAt={recipientData.startedAt.toNumber()}
-                              distributorAddress={distributorAddress}
-                            />
-                          </RowBetweenNodeTitle>
-                        </Col>
-                        <Col span={24}>
-                          <RowSpaceBetween
-                            label={`Sender: ${util.shortenAddress(sender, 4)}`}
-                            value={
-                              <ColumAction
-                                distributorAddress={distributorAddress}
-                                receiptAddress={receiptAddress}
-                                recipientData={recipientData}
-                              />
-                            }
-                          />
-                        </Col>
-                        <Col span={24}>
-                          <Space size={6}>
-                            <Typography.Text type="secondary">
-                              Expiration time:
-                            </Typography.Text>
-                            <ColumnExpiration
-                              distributorAddress={distributorAddress}
-                            />
-                          </Space>
-                        </Col>
-                      </Row>
-                    }
-                    key={idx}
-                  >
-                    <Row gutter={[4, 4]}>
-                      {children?.map((childrenVesting, idx) => {
-                        const {
-                          mintAddress: childMintAddress,
-                          recipientData: childReciptData,
-                          receiptAddress: childReciptAddr,
-                          distributorAddress: childDistributorAddr,
-                        } = childrenVesting
-
-                        return (
-                          <Col span={24} key={idx}>
-                            <RowBetweenNodeTitle
-                              title={
-                                <Space direction="vertical" size={0}>
-                                  <Space>
-                                    <ColumnTotal
-                                      total={childReciptData.amount.toString()}
-                                      mint={childMintAddress}
-                                    />
-                                    <MintSymbol mintAddress={mintAddress} />
-                                  </Space>
-                                  <Typography.Text type="secondary">
-                                    {childReciptData.startedAt.toNumber()
-                                      ? moment(
-                                          childReciptData.startedAt.toNumber() *
-                                            1000,
-                                        ).format('MMM DD, YYYY HH:mm')
-                                      : 'Immediately'}
-                                  </Typography.Text>
-                                </Space>
-                              }
-                            >
-                              <Space>
-                                <ColumnStatus
-                                  receiptAddress={childReciptAddr}
-                                  startedAt={childReciptData.startedAt.toNumber()}
-                                  distributorAddress={childDistributorAddr}
-                                />
-                                <ColumAction
-                                  distributorAddress={childDistributorAddr}
-                                  receiptAddress={childReciptAddr}
-                                  recipientData={childReciptData}
-                                />
-                              </Space>
-                            </RowBetweenNodeTitle>
-                          </Col>
-                        )
-                      })}
-                    </Row>
-                  </ExpandCard>
-                )
-              })}
-            </Fragment>
+            <ListVestingMobile
+              listVesting={listVesting}
+              amountVesting={amountVesting}
+            />
           ) : (
             <Table
-              dataSource={listVesting.slice(0, amountAirdrop)}
+              dataSource={listVesting.slice(0, amountVesting)}
               pagination={false}
               columns={COLUMNS_AIRDROP}
               rowKey={(record) => record.receiptAddress}
@@ -282,10 +153,10 @@ const VestingReceive = () => {
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
           <Button
-            onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}
+            onClick={() => setAmountVesting(amountVesting + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountAirdrop >= listVesting.length}
+            disabled={amountVesting >= listVesting.length}
           >
             VIEW MORE
           </Button>

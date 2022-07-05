@@ -39,7 +39,7 @@ export const getHistory = createAsyncThunk<
 
   const history = new History('history', walletAddress)
   const localHistory = (await history.get()) as HistoryRecord[]
-  console.log(localHistory)
+
   if (localHistory.length) return localHistory
   const ipfs = new IPFS()
   for (const distributeData of listDistributor) {

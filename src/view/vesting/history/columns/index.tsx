@@ -5,8 +5,8 @@ import UnlockDateColumn from './unlockDateColumn'
 import ColumnTotal from './columnTotal'
 import ActionButton from './actionButton'
 
-import { HistoryRecord } from 'helper/history'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { ItemSent } from 'hooks/useSentList'
 
 export const COLUMNS_AIRDROP = [
   {
@@ -37,7 +37,7 @@ export const COLUMNS_AIRDROP = [
   {
     title: 'AMOUNT',
     dataIndex: 'total',
-    render: (total: string, { mint }: HistoryRecord) => (
+    render: (total: string, { mint }: ItemSent) => (
       <ColumnTotal total={total} mint={mint} />
     ),
   },
@@ -45,8 +45,11 @@ export const COLUMNS_AIRDROP = [
   {
     title: 'ACTION',
     dataIndex: 'distributorAddress',
-    render: (distributorAddress: string) => (
-      <ActionButton distributorAddress={distributorAddress} />
+    render: (distributorAddress: string, { remaining }: ItemSent) => (
+      <ActionButton
+        remaining={remaining}
+        distributorAddress={distributorAddress}
+      />
     ),
   },
 ]

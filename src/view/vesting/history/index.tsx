@@ -49,6 +49,7 @@ const History = () => {
                     time,
                     total,
                     treeData,
+                    remaining,
                   } = hisotry
 
                   return (
@@ -79,6 +80,7 @@ const History = () => {
                               }
                             >
                               <ActionButton
+                                remaining={remaining}
                                 distributorAddress={distributorAddress}
                               />
                             </RowBetweenNodeTitle>

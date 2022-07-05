@@ -14,12 +14,12 @@ const {
   sol: { utility, fee, taxman },
 } = configs
 
-type ActionButtonProps = { distributorAddress: string }
+type ActionButtonProps = { distributorAddress: string; remaining: number }
 
-const ActionButton = ({ distributorAddress }: ActionButtonProps) => {
+const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { disabled, isRevoke } = useCanRevoke({ distributorAddress })
+  const { disabled, isRevoke } = useCanRevoke(distributorAddress, remaining)
 
   const feeOptions: FeeOptions = {
     fee: new BN(fee),
@@ -42,7 +42,7 @@ const ActionButton = ({ distributorAddress }: ActionButtonProps) => {
   const redeemLink = `${window.location.origin}/${appId}/redeem/${distributorAddress}?autoInstall=true`
 
   return (
-    <Space>
+    <Space size={24}>
       <Button
         onClick={() => setVisible(true)}
         type="text"
@@ -56,7 +56,7 @@ const ActionButton = ({ distributorAddress }: ActionButtonProps) => {
           type="text"
           loading={loading}
           disabled={disabled}
-          style={{ padding: 0 }}
+          style={{ color: '#42E6EB' }}
         >
           revoke
         </Button>

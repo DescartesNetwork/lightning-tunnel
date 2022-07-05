@@ -1,20 +1,13 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
+import { useUI } from '@sentre/senhub'
 
-import { Button, Card, Col, Row, Space, Spin, Table, Typography } from 'antd'
+import { Button, Card, Col, Row, Spin, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
+import AirdropCard from './airdropCard'
 
 import { COLUMNS_AIRDROP } from './columns'
-import useSentList from 'hooks/useSentList'
 import { TypeDistribute } from 'model/main.controller'
-import { useUI } from '@sentre/senhub'
-import ExpandCard from 'components/expandCard'
-import RowBetweenNodeTitle from 'components/rowBetweenNodeTitle'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
-import ColumnTotal from './columns/columnTotal'
-import ActionButton from './columns/actionButton'
-import RowSpaceBetween from 'components/rowSpaceBetween'
-import UnlockDateColumn from './columns/unlockDateColumn'
-import moment from 'moment'
+import useSentList from 'hooks/useSentList'
 
 const DEFAULT_AMOUNT = 4
 
@@ -39,85 +32,27 @@ const History = () => {
               <Col>Filter</Col>
             </Row>
           </Col>
-          <Col span={24}>
-            {isMobile ? (
-              <Fragment>
-                {listHistory.slice(0, amountAirdrop).map((hisotry, idx) => {
-                  const {
-                    distributorAddress,
-                    mint: mintAddress,
-                    time,
-                    total,
-                    treeData,
-                  } = hisotry
 
-                  return (
-                    <ExpandCard
-                      style={{
-                        border: '1px solid transparent',
-                        borderImageSlice: '0 0 1 0',
-                        borderImageWidth: 1,
-                        borderImageSource:
-                          'linear-gradient(90deg,transparent, #4F5B5C, transparent)',
-                      }}
-                      cardId={`card_airdrop_${idx}`}
-                      cardHeader={
-                        <Row gutter={[12, 12]}>
-                          <Col span={24}>
-                            <RowBetweenNodeTitle
-                              title={
-                                <Space>
-                                  <MintAvatar mintAddress={mintAddress} />
-                                  <Space size={6}>
-                                    <ColumnTotal
-                                      total={total.toString()}
-                                      mint={mintAddress}
-                                    />
-                                    <MintSymbol mintAddress={mintAddress} />
-                                  </Space>
-                                </Space>
-                              }
-                            >
-                              <ActionButton
-                                distributorAddress={distributorAddress}
-                              />
-                            </RowBetweenNodeTitle>
-                          </Col>
-                        </Row>
-                      }
-                      key={idx}
-                    >
-                      <Row gutter={[8, 8]}>
-                        <Col span={24}>
-                          <RowSpaceBetween
-                            label="Created time"
-                            value={
-                              <Typography.Text>
-                                {moment(time).format('MMM DD, YYYY HH:mm')}
-                              </Typography.Text>
-                            }
-                          />
-                        </Col>
-                        <Col span={24}>
-                          <RowSpaceBetween
-                            label="Unlock time"
-                            value={<UnlockDateColumn treeData={treeData} />}
-                          />
-                        </Col>
-                      </Row>
-                    </ExpandCard>
-                  )
-                })}
-              </Fragment>
-            ) : (
+          {isMobile ? (
+            <Col span={24}>
+              {listHistory.slice(0, amountAirdrop).map((history) => (
+                <AirdropCard
+                  itemSent={history}
+                  key={history.distributorAddress}
+                />
+              ))}
+            </Col>
+          ) : (
+            <Col span={24}>
               <Table
                 dataSource={listHistory.slice(0, amountAirdrop)}
                 pagination={false}
                 columns={COLUMNS_AIRDROP}
                 rowKey={(record) => record.distributorAddress}
               />
-            )}
-          </Col>
+            </Col>
+          )}
+
           <Col span={24} style={{ textAlign: 'center' }}>
             <Button
               onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}

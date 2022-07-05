@@ -5,24 +5,31 @@ import { MerkleDistributor } from '@sentre/utility'
 import { HistoryRecord } from 'helper/history'
 import configs from 'configs'
 import { AppState } from 'model'
-import { getBalanceTreasury } from './useCanRevoke'
+import useListRemaining from 'hooks/useListRemaining'
+
 import { TypeDistribute } from 'model/main.controller'
 
 const {
   manifest: { appId },
+  sol: { utility },
 } = configs
 
 const CURRENT_TIME = Date.now()
 
+export type ItemSent = HistoryRecord & {
+  remaining: number
+}
+
 const useSentList = ({ type }: { type: TypeDistribute }) => {
   const [loading, setLoading] = useState(false)
-  const [listHistory, setListHistory] = useState<HistoryRecord[]>([])
+  const [sentList, setSentList] = useState<ItemSent[]>([])
   const [numberOfRecipient, setNumberOfRecipient] = useState(0)
   const distributors = useSelector((state: AppState) => state.distributors)
   const history = useSelector((state: AppState) => state.history)
+  const { listRemaining } = useListRemaining()
 
   const fetchHistory = useCallback(async () => {
-    const nextHistory: HistoryRecord[] = []
+    const nextHistory: ItemSent[] = []
     let newNumberOfRecipient = 0
     const listAddress: string[] = []
     try {
@@ -49,26 +56,35 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
 
         const endedAt = distributors[distributorAddress].endedAt
         const endTime = endedAt.toNumber() * 1000
-        const balance = await getBalanceTreasury(distributorAddress)
-        if (endTime < CURRENT_TIME && endTime && balance) {
-          nextHistory.unshift(historyItem)
+        const treasurerAddress = await utility.deriveTreasurerAddress(
+          distributorAddress,
+        )
+        const remaining = listRemaining[treasurerAddress]
+        const itemSent = { ...historyItem, remaining }
+
+        if (
+          endTime < CURRENT_TIME &&
+          endTime &&
+          listRemaining[treasurerAddress]
+        ) {
+          nextHistory.unshift(itemSent)
           continue
         }
-        nextHistory.push(historyItem)
+        nextHistory.push(itemSent)
       }
     } catch (er) {
     } finally {
       setLoading(false)
       setNumberOfRecipient(newNumberOfRecipient)
-      return setListHistory(nextHistory)
+      return setSentList(nextHistory)
     }
-  }, [distributors, history, type])
+  }, [distributors, history, listRemaining, type])
 
   useEffect(() => {
     fetchHistory()
   }, [fetchHistory])
 
-  return { listHistory, loading, numberOfRecipient }
+  return { listHistory: sentList, loading, numberOfRecipient }
 }
 
 export default useSentList

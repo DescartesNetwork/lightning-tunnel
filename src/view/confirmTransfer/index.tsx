@@ -13,20 +13,19 @@ import { MintSymbol } from 'shared/antd/mint'
 import ButtonHome from 'components/buttonHome'
 import { WrapTotal } from 'components/cardTotal'
 
-import { onSelectStep } from 'model/steps.controller'
-import { Step } from '../../constants'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { useAppRouter } from 'hooks/useAppRoute'
 import useTotal from 'hooks/useTotal'
 import useRemainingBalance from 'hooks/useRemainingBalance'
-import configs from 'configs'
-import IPFS from 'helper/ipfs'
-import History, { HistoryRecord } from 'helper/history'
-import { getHistory } from 'model/history.controller'
 import { AppDispatch, AppState } from 'model'
+import { getHistory } from 'model/history.controller'
+import { onSelectStep } from 'model/steps.controller'
+import { Step } from '../../constants'
+import History, { HistoryRecord } from 'helper/history'
 import { notifySuccess } from 'helper'
+import IPFS from 'helper/ipfs'
 import { RecipientInfo, removeRecipients } from 'model/recipients.controller'
-import { useAppRouter } from 'hooks/useAppRoute'
-import { getDistributors } from 'model/distributor.controller'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
+import configs from 'configs'
 
 const {
   sol: { utility, fee, taxman },
@@ -115,7 +114,6 @@ const ConfirmTransfer = () => {
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
       await dispatch(getHistory({ walletAddress }))
-      await dispatch(getDistributors())
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)

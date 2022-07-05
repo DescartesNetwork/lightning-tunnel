@@ -34,7 +34,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         if (!treeData) continue
         const parseData = JSON.parse(JSON.stringify(treeData)).data
         const merkleDistributor = MerkleDistributor.fromBuffer(
-          Buffer.from(parseData),
+          Buffer.from(parseData || treeData),
         )
         const salt = merkleDistributor.receipients[0].salt
         const x = Buffer.compare(airdropSalt, salt)

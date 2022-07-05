@@ -8,9 +8,9 @@ import ColumnStatus from './columnStatus'
 import ColumAction from './columAction'
 import ColumnExpiration from './columnExpiration'
 
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
-import { ReceiveItem } from 'hooks/useReceiveList'
 import { ColumnsType } from 'antd/lib/table'
+import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { ReceiveItem } from 'model/listReceived.controller'
 
 import './index.less'
 

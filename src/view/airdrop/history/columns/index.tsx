@@ -14,7 +14,7 @@ export const COLUMNS_AIRDROP = [
     dataIndex: 'time',
     render: (time: string) => (
       <Typography.Text>
-        {moment(time).format('MMM DD, YYYY HH:mm')}
+        {time ? moment(time).format('MMM DD, YYYY HH:mm') : '--'}
       </Typography.Text>
     ),
   },

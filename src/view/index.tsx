@@ -14,6 +14,7 @@ import AddNewVesting from './vesting/addNewVesting'
 import HistoryWatcher from 'watcher/history.watcher'
 import DistributorWatcher from 'watcher/distributor.watcher'
 import ReceiptWatcher from 'watcher/receipt.watcher'
+import ListReceivedWatcher from 'watcher/listReceived.watcher'
 
 import { useAppRouter } from 'hooks/useAppRoute'
 
@@ -97,6 +98,7 @@ const View = () => {
         <DistributorWatcher />
         <ReceiptWatcher />
         <HistoryWatcher />
+        <ListReceivedWatcher />
       </Layout>
     </Layout>
   )

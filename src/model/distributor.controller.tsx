@@ -37,6 +37,13 @@ export const getDistributors = createAsyncThunk(
   },
 )
 
+export const upsetDistributor = createAsyncThunk<
+  DistributorState,
+  { address: string; distributorData: DistributorData }
+>(`${NAME}/upsetDistributor`, ({ address, distributorData }) => {
+  return { [address]: distributorData }
+})
+
 /**
  * Usual procedure
  */
@@ -46,10 +53,15 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      getDistributors.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        getDistributors.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        upsetDistributor.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

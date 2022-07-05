@@ -9,7 +9,7 @@ const UnlockDateColumn = ({ treeData }: { treeData?: Buffer }) => {
     if (!treeData) return 0
     const parseData = JSON.parse(JSON.stringify(treeData)).data
     const merkleDistributor = MerkleDistributor.fromBuffer(
-      Buffer.from(parseData),
+      Buffer.from(parseData || treeData),
     )
     return merkleDistributor.receipients[0].startedAt.toNumber()
   }, [treeData])

@@ -10,6 +10,7 @@ import file from 'model/file.controller'
 import history from 'model/history.controller'
 import distributors from 'model/distributor.controller'
 import advancedMode from 'model/advancedMode.controller'
+import listReceived from 'model/listReceived.controller'
 
 /**
  * Isolated store
@@ -28,6 +29,7 @@ const model = configureStore({
     recipients,
     advancedMode,
     receipts,
+    listReceived,
   },
 })
 

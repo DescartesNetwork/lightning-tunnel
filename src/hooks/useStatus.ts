@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux'
 import { AppState } from 'model'
 import { State } from '../constants'
 
-const CURRENT_TIME = Date.now()
-
 type PropsUseStatus = {
   receipt: string
   startedAt: number
@@ -19,6 +17,7 @@ const useStatus = (props?: PropsUseStatus) => {
 
   const fetchAirdropStatus = useCallback(
     async (props: PropsUseStatus) => {
+      const CURRENT_TIME = Date.now()
       const { receipt, startedAt, distributor } = props
       const receiptData = receipts[receipt]
       const endedAt = distributors[distributor].endedAt

@@ -1,13 +1,12 @@
 import { Fragment, useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useWallet } from '@sentre/senhub'
+import { useWallet, rpc } from '@sentre/senhub'
 import { account } from '@senswap/sen-js'
+import { Connection } from '@solana/web3.js'
 
 import { AppDispatch } from 'model'
 import { getReceipts, upsetReceipt } from 'model/receipts.controller'
 import configs from 'configs'
-import { Connection } from '@solana/web3.js'
-import { rpc } from '@sentre/senhub'
 
 const {
   sol: { utility },

@@ -6,16 +6,15 @@ import SelectExistMintToken from './selectExistMintToken'
 import SelectTokenByTime from './selectTokenByTime'
 
 import { ItemSent } from 'hooks/useSentList'
-import { ONE_DAY } from '../constants'
+import { ALL, ONE_DAY } from '../constants'
 
-const ALL = 'all'
 type FilterSentListProps = {
   listSent: ItemSent[]
   onFilter: (data: ItemSent[]) => void
 }
 const FilterSentList = ({ listSent, onFilter }: FilterSentListProps) => {
-  const [mintKey, setMintKey] = useState('all')
-  const [timeKey, setTimeKey] = useState('all')
+  const [mintKey, setMintKey] = useState(ALL)
+  const [timeKey, setTimeKey] = useState(ALL)
 
   const listMintAddr = useMemo(() => {
     if (!listSent.length) return []

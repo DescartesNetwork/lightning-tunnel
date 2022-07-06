@@ -7,8 +7,7 @@ import SelectExistMintToken from './selectExistMintToken'
 import { ReceiveItem } from 'model/listReceived.controller'
 import SelectTokenByStatus from './selectTokenByStatus'
 import useStatus from 'hooks/useStatus'
-
-const ALL = 'all'
+import { ALL } from '../constants'
 
 type FilterReceiveListProps = {
   listReceive: ReceiveItem[]
@@ -18,8 +17,8 @@ const FilterReceiveList = ({
   listReceive,
   onFilter,
 }: FilterReceiveListProps) => {
-  const [mintKey, setMintKey] = useState('all')
-  const [statusKey, setStatusKey] = useState('all')
+  const [mintKey, setMintKey] = useState(ALL)
+  const [statusKey, setStatusKey] = useState(ALL)
   const { fetchAirdropStatus } = useStatus()
 
   const listMintAddr = useMemo(() => {

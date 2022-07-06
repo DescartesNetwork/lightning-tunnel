@@ -1,12 +1,75 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { account } from '@senswap/sen-js'
+import { useUI } from '@sentre/senhub'
 
-import { Space } from 'antd'
+import { Button, Col, Modal, Row, Space, Typography } from 'antd'
 import SelectExistMintToken from './selectExistMintToken'
 import SelectTokenByTime from './selectTokenByTime'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { ItemSent } from 'hooks/useSentList'
 import { ALL, ONE_DAY } from '../constants'
+
+type ConfirmParamsType = { mintKey: string; timeKey: string }
+type FilterSentListMobileProps = {
+  mintAddressess: string[]
+  onConfirm: (selected: ConfirmParamsType) => void
+}
+
+const FilterSentListMobile = ({
+  mintAddressess,
+  onConfirm,
+}: FilterSentListMobileProps) => {
+  const [visible, setVisible] = useState(false)
+  const [mintKey, setMintKey] = useState(ALL)
+  const [timeKey, setTimeKey] = useState(ALL)
+
+  const onClick = () => {
+    onConfirm({ mintKey, timeKey })
+    setVisible(false)
+  }
+
+  return (
+    <Fragment>
+      <Button
+        type="text"
+        icon={<IonIcon name="funnel-outline" />}
+        onClick={() => setVisible(true)}
+      />
+
+      <Modal
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        closable={false}
+        footer={false}
+        className="card-lightning"
+      >
+        <Row gutter={[24, 24]}>
+          <Col span={24}>
+            <Space size={8} direction="vertical" style={{ width: '100%' }}>
+              <Typography.Text type="secondary">
+                Filter by token
+              </Typography.Text>
+              <SelectExistMintToken
+                mintAddresses={mintAddressess}
+                onChange={setMintKey}
+                style={{ width: '100%' }}
+              />
+            </Space>
+          </Col>
+          <Col span={24}>
+            <SelectTokenByTime onChange={setTimeKey} value={timeKey} />
+          </Col>
+          <Col span={24}>
+            <Button type="primary" onClick={onClick} block>
+              Confirm
+            </Button>
+          </Col>
+        </Row>
+      </Modal>
+    </Fragment>
+  )
+}
 
 type FilterSentListProps = {
   listSent: ItemSent[]
@@ -15,6 +78,11 @@ type FilterSentListProps = {
 const FilterSentList = ({ listSent, onFilter }: FilterSentListProps) => {
   const [mintKey, setMintKey] = useState(ALL)
   const [timeKey, setTimeKey] = useState(ALL)
+  const {
+    ui: { infix },
+  } = useUI()
+
+  const isMobile = infix === 'xs'
 
   const listMintAddr = useMemo(() => {
     if (!listSent.length) return []
@@ -55,6 +123,17 @@ const FilterSentList = ({ listSent, onFilter }: FilterSentListProps) => {
   useEffect(() => {
     onFilter(filteredListSent)
   }, [filteredListSent, onFilter])
+
+  if (isMobile)
+    return (
+      <FilterSentListMobile
+        mintAddressess={listMintAddr}
+        onConfirm={({ mintKey, timeKey }) => {
+          setMintKey(mintKey)
+          setTimeKey(timeKey)
+        }}
+      />
+    )
 
   return (
     <Space>

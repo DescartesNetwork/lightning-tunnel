@@ -1,5 +1,9 @@
+import { useUI } from '@sentre/senhub'
+
 import { Select } from 'antd'
-import { State } from '../constants'
+import RadioButtonSelect from './radioButtonSelect'
+
+import { ALL, State } from '../constants'
 
 const STATUS_OPTIONS = [
   State.loading,
@@ -11,8 +15,27 @@ const STATUS_OPTIONS = [
 
 type SelectTokenByStatusProps = {
   onChange: (val: string) => void
+  value?: string
 }
-const SelectTokenByStatus = ({ onChange }: SelectTokenByStatusProps) => {
+const SelectTokenByStatus = ({
+  onChange,
+  value = ALL,
+}: SelectTokenByStatusProps) => {
+  const {
+    ui: { infix },
+  } = useUI()
+  const isMobile = infix === 'xs'
+
+  if (isMobile)
+    return (
+      <RadioButtonSelect
+        label="Filter by time"
+        onSelected={onChange}
+        value={STATUS_OPTIONS}
+        selected={value}
+      />
+    )
+
   return (
     <Select
       className="select-existed-token"

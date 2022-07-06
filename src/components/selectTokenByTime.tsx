@@ -1,13 +1,32 @@
+import { useUI } from '@sentre/senhub'
+
 import { Select } from 'antd'
+import RadioButtonSelect from './radioButtonSelect'
 
 import { ALL } from '../constants'
 
 const TIME_OPTIONS = [7, 30, 90]
 
 type SelectTokenByTimeProps = {
+  value?: string
   onChange: (val: string) => void
 }
-const SelectTokenByTime = ({ onChange }: SelectTokenByTimeProps) => {
+const SelectTokenByTime = ({ onChange, value }: SelectTokenByTimeProps) => {
+  const {
+    ui: { infix },
+  } = useUI()
+  const isMobile = infix === 'xs'
+
+  if (isMobile)
+    return (
+      <RadioButtonSelect
+        label="Filter by time"
+        onSelected={onChange}
+        value={TIME_OPTIONS}
+        selected={value}
+      />
+    )
+
   return (
     <Select
       className="select-existed-token"

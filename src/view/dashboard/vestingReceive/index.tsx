@@ -37,10 +37,10 @@ const VestingReceive = () => {
     for (const address in listReceived) {
       const { index, recipientData, children } = listReceived[address]
       const { salt } = recipientData
-      const airdropSalt = MerkleDistributor.salt(
+      const vestingSalt = MerkleDistributor.salt(
         `${appId}/${TypeDistribute.Vesting}/${index}`,
       )
-      if (Buffer.compare(airdropSalt, salt) !== 0) continue
+      if (Buffer.compare(vestingSalt, salt) !== 0) continue
       if (!children) continue
       vestingReceive = vestingReceive.concat(children)
     }
@@ -76,7 +76,9 @@ const VestingReceive = () => {
   const filterVesting = useCallback(async () => {
     if (!receiveList.length) return
     const vestings: Record<string, ReceiveItem[]> = {}
-    const filteredVesting: ReceiveItem[] = []
+    let filteredVesting: ReceiveItem[] = []
+    const readyList: ReceiveItem[] = []
+    const otherList: ReceiveItem[] = []
     for (const vesting of receiveList) {
       const { distributorAddress } = vesting
       if (vestings[distributorAddress]) {
@@ -110,13 +112,19 @@ const VestingReceive = () => {
           startedAt: startedAt.toNumber(),
         })
         if (status === State.ready) {
-          filteredVesting.unshift(vestingItem)
+          readyList.push(vestingItem)
           continue
         }
 
-        filteredVesting.push(vestingItem)
+        otherList.push(vestingItem)
       }
     }
+
+    readyList.sort(
+      (a, b) =>
+        Number(b.recipientData.startedAt) - Number(a.recipientData.startedAt),
+    )
+    filteredVesting = readyList.concat(otherList)
 
     return setListVesting(filteredVesting)
   }, [fetchAirdropStatus, getIndexPriorityItem, receiveList])

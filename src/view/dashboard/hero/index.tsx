@@ -11,8 +11,8 @@ import { useCgk } from 'hooks/useCgk'
 
 const Hero = () => {
   const [totalReceived, setTotalReceived] = useState(0)
+  const [totalDistribution, setTotalDistribution] = useState(0)
   const { totalUSD, loading } = useTotalUSD()
-  const listReceived = useSelector((state: AppState) => state.listReceived)
   const receipts = useSelector((state: AppState) => state.receipts)
   const distributors = useSelector((state: AppState) => state.distributors)
   const { getTotalBalance } = useCgk()
@@ -23,6 +23,7 @@ const Hero = () => {
     if (!listReceipt.length) return setTotalReceived(0)
     for (const { amount, distributor } of listReceipt) {
       const address = distributor.toBase58()
+      if (!distributors[address]) continue
       const { mint } = distributors[address]
       const mintBalance = { mint: mint.toBase58(), amount }
       mintBalances.push(mintBalance)
@@ -31,9 +32,25 @@ const Hero = () => {
     return setTotalReceived(total)
   }, [distributors, getTotalBalance, receipts])
 
+  const fetchTotalDistribution = useCallback(async () => {
+    const listDistributor = Object.values(distributors)
+    const mintBalances: { mint: string; amount: BN | bigint }[] = []
+    if (!listDistributor.length) return setTotalDistribution(0)
+    for (const { total, mint } of listDistributor) {
+      const mintBalance = { mint: mint.toBase58(), amount: total }
+      mintBalances.push(mintBalance)
+    }
+    const total = await getTotalBalance(mintBalances)
+    return setTotalDistribution(total)
+  }, [distributors, getTotalBalance])
+
   useEffect(() => {
     fetchTotalReceived()
   }, [fetchTotalReceived])
+
+  useEffect(() => {
+    fetchTotalDistribution()
+  }, [fetchTotalDistribution])
 
   return (
     <Row gutter={[24, 24]}>
@@ -50,7 +67,7 @@ const Hero = () => {
         <HeroCard
           label="Total distribution"
           icon="log-out-outline"
-          value={Object.keys(listReceived).length}
+          value={totalDistribution}
         />
       </Col>
       <Col lg={8} md={12} xs={24}>

@@ -89,6 +89,7 @@ const ColumAction = ({
         loading={loading}
         type="text"
         className="btn-claim"
+        style={{ color: '#42E6EB' }}
       >
         claim
       </Button>

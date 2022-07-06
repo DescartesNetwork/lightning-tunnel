@@ -47,12 +47,15 @@ const AirdropReceive = () => {
       if (Buffer.compare(airdropSalt, salt) !== 0) continue
       airdropReceive.push(listReceived[address])
     }
+
     return airdropReceive
   }, [listReceived])
 
   const filterAirdrops = useCallback(async () => {
     if (!receiveList.length) return
-    const nextAirdrops: ReceiveItem[] = []
+    let nextAirdrops: ReceiveItem[] = []
+    const readyList: ReceiveItem[] = []
+    const otherList: ReceiveItem[] = []
     for (const airdrop of receiveList) {
       const { receiptAddress, distributorAddress, recipientData } = airdrop
       const { startedAt } = recipientData
@@ -62,11 +65,16 @@ const AirdropReceive = () => {
         startedAt: startedAt.toNumber(),
       })
       if (status === State.ready) {
-        nextAirdrops.unshift(airdrop)
+        readyList.push(airdrop)
         continue
       }
-      nextAirdrops.push(airdrop)
+      otherList.push(airdrop)
     }
+    readyList.sort(
+      (a, b) =>
+        Number(b.recipientData.startedAt) - Number(a.recipientData.startedAt),
+    )
+    nextAirdrops = readyList.concat(otherList)
     return setListAirdrop(nextAirdrops)
   }, [receiveList, fetchAirdropStatus])
 

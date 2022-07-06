@@ -6,8 +6,8 @@ import { MerkleDistributor } from '@sentre/utility'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Table, Typography } from 'antd'
-import ListVestingMobile from './listVestingMobile'
 import FilterReceiveList from 'components/filterReceiveList'
+import ListReceiveMobile from 'components/listReceiveMobile'
 
 import { TypeDistribute } from 'model/main.controller'
 import { State } from '../../../constants'
@@ -155,9 +155,8 @@ const VestingReceive = () => {
         </Col>
         <Col span={24}>
           {isMobile ? (
-            <ListVestingMobile
-              listVesting={filteredListVesting}
-              amountVesting={amountVesting}
+            <ListReceiveMobile
+              listReceive={filteredListVesting.slice(0, amountVesting)}
             />
           ) : (
             <Table

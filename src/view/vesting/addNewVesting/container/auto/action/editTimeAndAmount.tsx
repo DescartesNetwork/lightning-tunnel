@@ -22,19 +22,23 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
   const recipientInfo = useSelector(
     (state: AppState) => state.recipients.recipientInfos[walletAddress],
   )
+  const expirationTime = useSelector(
+    (state: AppState) => state.recipients.expirationTime,
+  )
   const decimal = useSelector((state: AppState) => state.setting.decimal)
   const [visible, setVisible] = useState(false)
   const [nextRecipientInfos, setNextRecipientInfos] = useState(recipientInfo)
   const dispatch = useDispatch<AppDispatch>()
   const DEFAULT_VALUE = { unlockTime: 0, amount: '', address: walletAddress }
 
-  const ok = useMemo(() => {
+  const disabled = useMemo(() => {
     for (const { amount, unlockTime } of nextRecipientInfos) {
       if (!unlockTime || !amount) return true
+      if (unlockTime > expirationTime) return true
       if (!decimal && Number(amount) % 1 !== 0) return true
     }
     return false
-  }, [decimal, nextRecipientInfos])
+  }, [decimal, expirationTime, nextRecipientInfos])
 
   const onAdd = () => {
     const data = [...nextRecipientInfos]
@@ -57,6 +61,12 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
   const addMoreTimeAndAmounts = () => {
     dispatch(addAmountAndTime({ walletAddress, nextRecipientInfos }))
     return setVisible(false)
+  }
+
+  const onRemove = (index: number) => {
+    const data = [...nextRecipientInfos]
+    data.splice(index, 1)
+    return setNextRecipientInfos(data)
   }
 
   return (
@@ -86,7 +96,7 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
               {nextRecipientInfos.map(({ amount, unlockTime }, index) => (
                 <Col span={24} key={index}>
                   <Row gutter={[16, 16]}>
-                    <Col span={12}>
+                    <Col span={11}>
                       <Input
                         name="amount"
                         className="recipient-input"
@@ -95,11 +105,15 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
                         onChange={(e) => onAmountChange(e, index)}
                       />
                     </Col>
-                    <Col span={12}>
+                    <Col span={11}>
                       <DatePicker
                         placeholder="Select unlock time"
                         suffixIcon={<IonIcon name="time-outline" />}
-                        className="date-option"
+                        className={
+                          unlockTime > expirationTime && expirationTime
+                            ? 'date-option error'
+                            : 'date-option'
+                        }
                         onChange={(date) =>
                           onDateChange(date?.valueOf() || 0, index)
                         }
@@ -108,6 +122,13 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
                         placement="bottomRight"
                         value={unlockTime ? moment(unlockTime) : null}
                         format={'MM-DD-YYYY HH:mm'}
+                      />
+                    </Col>
+                    <Col span={2}>
+                      <Button
+                        onClick={() => onRemove(index)}
+                        type="text"
+                        icon={<IonIcon name="remove-circle-outline" />}
                       />
                     </Col>
                     {!decimal && Number(amount) % 1 !== 0 && (
@@ -149,11 +170,11 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
                 Cancel
               </Button>
               <Button
-                disabled={ok}
+                disabled={disabled}
                 onClick={addMoreTimeAndAmounts}
                 type="primary"
               >
-                Add
+                update
               </Button>
             </Space>
           </Col>

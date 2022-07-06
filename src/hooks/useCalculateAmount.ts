@@ -11,11 +11,11 @@ const useCalculateAmount = () => {
       for (let i = 0; i < distributionAmount; i++) {
         if (i === lastNumber) {
           const nextAmount = amount.sub(currentTotal)
-          listAmount.push(BigInt(nextAmount.toString()))
+          listAmount.push(nextAmount)
           continue
         }
         currentTotal = currentTotal.add(singleAmount)
-        listAmount.push(BigInt(singleAmount.toString()))
+        listAmount.push(singleAmount)
       }
       return listAmount
     },

@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
-import { utils } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -22,7 +21,7 @@ import { setFileName } from 'model/file.controller'
 import ModalErrorDuplicate from './action/modalError'
 import { getFileCSV } from 'helper'
 import useCalculateAmount from '../../../../../hooks/useCalculateAmount'
-import { BN } from 'bn.js'
+import { utilsBN } from 'sentre-web3'
 
 const INDEX_ADDRESS = 0
 const INDEX_AMOUNT = 1
@@ -70,7 +69,7 @@ const UploadFile = () => {
         }
 
         const address = recipientData[INDEX_ADDRESS]
-        const amount = utils.decimalize(
+        const amount = utilsBN.decimalize(
           recipientData[INDEX_AMOUNT],
           mintDecimals,
         )
@@ -84,10 +83,7 @@ const UploadFile = () => {
 
         const recipientInfo: RecipientInfo[] = []
         const amountVesting = recipientData.length - INDEX_FIRST_UNLOCK_TIME
-        const listAmount = calcListAmount(
-          new BN(amount.toString()),
-          amountVesting,
-        )
+        const listAmount = calcListAmount(amount, amountVesting)
         for (let i = INDEX_FIRST_UNLOCK_TIME; i < recipientData.length; i++) {
           const unlockTime = new Date(recipientData[i]).getTime()
 
@@ -100,7 +96,7 @@ const UploadFile = () => {
           const actualAmount = listAmount[i - INDEX_FIRST_UNLOCK_TIME]
           recipientInfo.push({
             address,
-            amount: utils.undecimalize(actualAmount, mintDecimals),
+            amount: utilsBN.undecimalize(actualAmount, mintDecimals),
             unlockTime,
           })
         }

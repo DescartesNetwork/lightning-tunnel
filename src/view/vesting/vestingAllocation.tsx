@@ -2,10 +2,10 @@ import { Card, Col, Row, Spin, Typography } from 'antd'
 import DoughnutChart from 'components/charts/doughnutChart'
 import CustomizedLegend from 'components/charts/doughnutChart/customizedLegend'
 
-import { AllocationType } from '../../constants'
+import { Allocation } from '../../constants'
 
 type VestingAllocationProps = {
-  vestingAllocation: Record<string, AllocationType>
+  vestingAllocation: Record<string, Allocation>
   loading: boolean
 }
 

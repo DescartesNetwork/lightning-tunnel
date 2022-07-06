@@ -9,7 +9,11 @@ import { useAppRouter } from 'hooks/useAppRoute'
 import { AppDispatch } from 'model'
 import { onSelectMethod, setTypeDistribute } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
-import { removeRecipients } from 'model/recipients.controller'
+import {
+  removeRecipients,
+  setExpiration,
+  setGlobalUnlockTime,
+} from 'model/recipients.controller'
 import { SelectMethod, Step, SIDE_BAR_ITEMS } from '../../constants'
 
 const LIST_MENU_ITEM = [
@@ -40,6 +44,8 @@ const SideBar = () => {
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(onSelectMethod(SelectMethod.manual))
     await dispatch(removeRecipients())
+    await dispatch(setGlobalUnlockTime(0))
+    await dispatch(setExpiration(0))
     return pushHistory(`/${e.key}`)
   }
 

@@ -2,10 +2,10 @@ import { Card, Col, Row, Typography, Spin } from 'antd'
 import DoughnutChart from 'components/charts/doughnutChart'
 import CustomizedLegend from 'components/charts/doughnutChart/customizedLegend'
 
-import { AllocationType } from '../../constants'
+import { Allocation } from '../../constants'
 
 type AirdropAllocationProps = {
-  airdropAllocation: Record<string, AllocationType>
+  airdropAllocation: Record<string, Allocation>
   loading: boolean
 }
 

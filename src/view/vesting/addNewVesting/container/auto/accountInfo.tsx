@@ -31,6 +31,10 @@ const AccountInfo = forwardRef(
       (state: AppState) => state.file.selectedFile,
     )
     const decimal = useSelector((state: AppState) => state.setting.decimal)
+    const expirationTime = useSelector(
+      (state: AppState) => state.recipients.expirationTime,
+    )
+
     const dispatch = useDispatch<AppDispatch>()
     const isValidAddress = !account.isAddress(vestingItem.address)
 
@@ -74,13 +78,21 @@ const AccountInfo = forwardRef(
           className={validateAmount ? 'recipient-input-error' : ''}
         >
           <Row gutter={[16, 8]}>
-            {vestingItem.config.map(({ amount, unlockTime }, index) => (
-              <Col key={index} className="vesting-config">
-                <Typography.Text className="caption">
-                  {amount} / {moment(unlockTime).format(FORMAT_DATE)}
-                </Typography.Text>
-              </Col>
-            ))}
+            {vestingItem.config.map(({ amount, unlockTime }, index) => {
+              const invalidTime = unlockTime > expirationTime && expirationTime
+              return (
+                <Col
+                  key={index}
+                  className={
+                    invalidTime ? 'vesting-config-error' : 'vesting-config'
+                  }
+                >
+                  <Typography.Text className="caption">
+                    {amount} / {moment(unlockTime).format(FORMAT_DATE)}
+                  </Typography.Text>
+                </Col>
+              )
+            })}
           </Row>
         </Col>
         <Col span={5} className="vesting-action">

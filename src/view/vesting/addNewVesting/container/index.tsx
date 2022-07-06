@@ -92,10 +92,10 @@ const SelectInputMethod = () => {
     if (isUnlimited || !expiration) return ''
     if (expiration < Date.now()) return 'Must be greater than current time.'
     const totalVestingTime = unlockTime + distributeIn * 30 * ONE_DAY
-    if (expiration < totalVestingTime)
+    if (expiration < totalVestingTime && method === SelectMethod.manual)
       return 'Must be greater than the total vesting time.'
     return ''
-  }, [distributeIn, expiration, isUnlimited, unlockTime])
+  }, [distributeIn, expiration, isUnlimited, method, unlockTime])
 
   const disabled = useMemo(() => {
     if (activeMintAddress === 'Select' || !method) return true

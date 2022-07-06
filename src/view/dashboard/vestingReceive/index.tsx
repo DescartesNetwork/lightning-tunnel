@@ -10,7 +10,7 @@ import ListVestingMobile from './listVestingMobile'
 
 import { TypeDistribute } from 'model/main.controller'
 import { State } from '../../../constants'
-import { COLUMNS_AIRDROP } from '../columns'
+import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
 import { AppState } from 'model'
 import { ReceiveItem } from 'model/listReceived.controller'
@@ -154,7 +154,7 @@ const VestingReceive = () => {
             <Table
               dataSource={listVesting.slice(0, amountVesting)}
               pagination={false}
-              columns={COLUMNS_AIRDROP}
+              columns={COLUMNS_RECEIVE}
               rowKey={(record) => record.receiptAddress}
             />
           )}

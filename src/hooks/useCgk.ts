@@ -1,7 +1,8 @@
-import { useMint } from '@sentre/senhub'
-import BN from 'bn.js'
 import { useCallback } from 'react'
-import { utilsBN } from 'helper/utilsBN'
+import { useMint } from '@sentre/senhub'
+import { utilsBN } from 'sentre-web3'
+import BN from 'bn.js'
+
 import { fetchMulCGK } from 'helper'
 
 export const useCgk = () => {

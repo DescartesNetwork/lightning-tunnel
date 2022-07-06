@@ -9,7 +9,7 @@ import ListAirdropMobile from './listAirdropMobile'
 
 import { State } from '../../../constants'
 import { TypeDistribute } from 'model/main.controller'
-import { COLUMNS_AIRDROP } from '../columns'
+import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
 import { AppState } from 'model'
 import configs from 'configs'
@@ -99,7 +99,7 @@ const AirdropReceive = () => {
             <Table
               dataSource={listAirdrop.slice(0, amountAirdrop)}
               pagination={false}
-              columns={COLUMNS_AIRDROP}
+              columns={COLUMNS_RECEIVE}
               rowKey={(record) => record.receiptAddress}
             />
           )}

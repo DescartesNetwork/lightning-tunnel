@@ -3,19 +3,23 @@ import { Fragment } from 'react'
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Space } from 'antd'
 
+type ActionButtonProps = {
+  walletAddress?: string
+  addNewRecipient: () => void
+  remove: () => void
+  isEdit?: boolean
+  setIsEdit?: (value: boolean) => void
+  disabled: boolean
+}
+
 const ActionButton = ({
   walletAddress,
   addNewRecipient,
   remove,
   isEdit = false,
   setIsEdit = () => {},
-}: {
-  walletAddress?: string
-  addNewRecipient: () => void
-  remove: () => void
-  isEdit?: boolean
-  setIsEdit?: (value: boolean) => void
-}) => {
+  disabled,
+}: ActionButtonProps) => {
   return (
     <Fragment>
       {walletAddress ? (
@@ -38,7 +42,13 @@ const ActionButton = ({
               />
             </Space>
           ) : (
-            <Button type="text" onClick={addNewRecipient} size="small">
+            <Button
+              style={{ padding: 0, color: '#42E6EB' }}
+              type="text"
+              onClick={addNewRecipient}
+              size="small"
+              disabled={disabled}
+            >
               Save
             </Button>
           )}

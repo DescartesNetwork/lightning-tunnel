@@ -14,7 +14,7 @@ import { ReceiveItem } from 'model/listReceived.controller'
 
 import './index.less'
 
-export const COLUMNS_AIRDROP: ColumnsType<any> = [
+export const COLUMNS_RECEIVE: ColumnsType<any> = [
   {
     title: 'UNLOCK DATE',
     dataIndex: 'recipientData',

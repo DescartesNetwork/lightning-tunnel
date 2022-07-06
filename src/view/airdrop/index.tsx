@@ -7,19 +7,19 @@ import History from './history'
 import TotalAirdrop from './totalAirdrop'
 
 import { useAppRouter } from 'hooks/useAppRoute'
-import { setTypeDistribute } from 'model/main.controller'
-import useAirdropAllocation from 'hooks/airdrop/useAirdropAllocation'
+import { setTypeDistribute, TypeDistribute } from 'model/main.controller'
+import useAllocation from 'hooks/useAllocation'
 
 const Airdrop = () => {
   const { pushHistory } = useAppRouter()
   const dispatch = useDispatch()
   const {
-    airdropAllocation,
-    totalUSDAirdrop,
-    numberOfCampaigns,
+    allocation,
+    totalUSD,
     numberOfRecipient,
-    loadingAirdrop,
-  } = useAirdropAllocation()
+    numberOfCampaigns,
+    loading,
+  } = useAllocation(TypeDistribute.Airdrop)
 
   const addNewAirdrop = () => {
     pushHistory('/airdrop/add-new')
@@ -49,16 +49,16 @@ const Airdrop = () => {
         <Row gutter={[24, 24]}>
           <Col span={24} lg={8}>
             <TotalAirdrop
-              valueInUSD={totalUSDAirdrop}
+              valueInUSD={totalUSD}
               numberOfCampaign={numberOfCampaigns}
               recipientList={numberOfRecipient}
-              loading={loadingAirdrop}
+              loading={loading}
             />
           </Col>
           <Col span={24} lg={16}>
             <AirdropAllocation
-              airdropAllocation={airdropAllocation}
-              loading={loadingAirdrop}
+              airdropAllocation={allocation}
+              loading={loading}
             />
           </Col>
         </Row>

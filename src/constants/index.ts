@@ -20,11 +20,11 @@ export enum State {
   expired = 'Expired',
   loading = 'Loading',
 }
-export type AllocationType = {
+export type Allocation = {
   mint: string
   name: string
   symbol: string
-  amountToken: number
+  amountToken: string
   usdValue: number
   ratio: number
 }

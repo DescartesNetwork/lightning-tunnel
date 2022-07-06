@@ -1,6 +1,7 @@
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { account, utils } from '@senswap/sen-js'
+import { account } from '@senswap/sen-js'
+import { utilsBN } from 'sentre-web3'
 
 import { Button, Col, Input, Row } from 'antd'
 import NumericInput from '@sentre/antd-numeric-input'
@@ -13,7 +14,6 @@ import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { AppDispatch, AppState } from 'model'
 import { setRecipient, RecipientInfo } from 'model/recipients.controller'
 import useCalculateAmount from 'hooks/useCalculateAmount'
-import { BN } from 'bn.js'
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
@@ -77,16 +77,13 @@ const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
     const { walletAddress: address, amount } = formInput
 
     const nextRecipients: RecipientInfo[] = []
-    const decimalAmount = utils.decimalize(amount, mintDecimals)
-    const listAmount = calcListAmount(
-      new BN(decimalAmount.toString()),
-      nextUnlockTime.length,
-    )
+    const decimalAmount = utilsBN.decimalize(amount, mintDecimals)
+    const listAmount = calcListAmount(decimalAmount, nextUnlockTime.length)
     for (let i = 0; i < nextUnlockTime.length; i++) {
       const unlockTime = nextUnlockTime[i]
       nextRecipients.push({
         address,
-        amount: utils.undecimalize(listAmount[i], mintDecimals),
+        amount: utilsBN.undecimalize(listAmount[i], mintDecimals),
         unlockTime,
       })
     }

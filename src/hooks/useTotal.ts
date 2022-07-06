@@ -1,6 +1,8 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { account, utils } from '@senswap/sen-js'
+import { account } from '@senswap/sen-js'
+import { utilsBN } from 'sentre-web3'
+import BN from 'bn.js'
 
 import { AppState } from 'model'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
@@ -9,27 +11,41 @@ import { RecipientInfo } from 'model/recipients.controller'
 const useTotal = () => {
   const {
     main: { mintSelected },
-    recipients: { recipientInfos },
+    recipients: { recipientInfos, expirationTime },
     setting: { decimal: isDecimal },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
+  const checkUnLockTime = useCallback(
+    (recipientData: RecipientInfo[]) => {
+      if (!expirationTime) return true
+      for (const { unlockTime } of recipientData) {
+        if (unlockTime > expirationTime) return false
+      }
+      return true
+    },
+    [expirationTime],
+  )
+
   const recipientTotal = useMemo(() => {
-    if (!recipientInfos || !mintDecimals) return BigInt(0)
-    let lamports = BigInt(0)
+    if (!recipientInfos || !mintDecimals) return new BN(0)
+    let lamports = new BN(0)
     let listRecipient: RecipientInfo[] = []
     for (const address in recipientInfos) {
-      if (!account.isAddress(address)) continue
+      const validTime = checkUnLockTime(recipientInfos[address])
+
+      if (!account.isAddress(address) || !validTime) continue
       listRecipient = listRecipient.concat(recipientInfos[address])
     }
 
     for (const { amount } of listRecipient) {
-      if (isDecimal) lamports += utils.decimalize(amount, mintDecimals)
-      else if (Number(amount) % 1 === 0) lamports += BigInt(amount)
+      if (isDecimal)
+        lamports = lamports.add(utilsBN.decimalize(amount, mintDecimals))
+      else if (Number(amount) % 1 === 0) lamports = lamports.add(new BN(amount))
     }
 
     return lamports
-  }, [isDecimal, mintDecimals, recipientInfos])
+  }, [checkUnLockTime, isDecimal, mintDecimals, recipientInfos])
 
   const quantity = useMemo(
     () => Object.keys(recipientInfos).length,
@@ -37,7 +53,7 @@ const useTotal = () => {
   )
 
   return {
-    total: utils.undecimalize(recipientTotal, mintDecimals).toString(),
+    total: utilsBN.undecimalize(recipientTotal, mintDecimals).toString(),
     quantity,
   }
 }

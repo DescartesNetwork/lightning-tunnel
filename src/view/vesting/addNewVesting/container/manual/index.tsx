@@ -1,5 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import BN from 'bn.js'
+import { utilsBN } from 'sentre-web3'
 
 import { Button, Card, Col, Row } from 'antd'
 import Header from '../../../../../components/header'
@@ -22,6 +24,7 @@ import {
   setListUnlockTime,
 } from 'model/advancedMode.controller'
 import { onSelectMethod } from 'model/main.controller'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 const Manual = () => {
   const {
@@ -30,24 +33,30 @@ const Manual = () => {
   } = useSelector((state: AppState) => state)
   const { quantity } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
+  const mintDecimals = useMintDecimals(mintSelected) || 0
+  const { amountError } = useValidateAmount()
   const dispatch = useDispatch<AppDispatch>()
 
   const listRecipient = useMemo(() => {
     const nextRecipient: RecipientInfo[] = []
+    if (!mintDecimals) return nextRecipient
     for (const address in recipientInfos) {
       const recipientInfoData = recipientInfos[address]
-      let newAmount = 0
-      for (const { amount } of recipientInfoData) newAmount += Number(amount)
+      let newAmount = new BN(0)
+      for (const { amount } of recipientInfoData) {
+        const bnAmount = utilsBN.decimalize(amount, mintDecimals)
+        newAmount = newAmount.add(bnAmount)
+      }
 
       const recipient: RecipientInfo = {
         address,
-        amount: newAmount.toString(),
+        amount: utilsBN.undecimalize(newAmount, mintDecimals),
         unlockTime: 0,
       }
       nextRecipient.push(recipient)
     }
     return nextRecipient
-  }, [recipientInfos])
+  }, [mintDecimals, recipientInfos])
 
   const onBack = useCallback(async () => {
     await dispatch(removeRecipients())
@@ -57,8 +66,6 @@ const Manual = () => {
     dispatch(onSelectStep(Step.SelectMethod))
     dispatch(onSelectMethod(SelectMethod.manual))
   }, [dispatch])
-
-  const { amountError } = useValidateAmount()
 
   const disabled =
     quantity <= 0 || amountError || remainingBalance < 0 || isTyping

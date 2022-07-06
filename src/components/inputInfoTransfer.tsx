@@ -7,8 +7,7 @@ import {
   Fragment,
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { account, utils } from '@senswap/sen-js'
-import BN from 'bn.js'
+import { account } from '@senswap/sen-js'
 
 import { Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -17,6 +16,7 @@ import ModalMerge from './commonModal'
 import DistributionConfigDetail from 'view/vesting/addNewVesting/container/manual/distributionConfigDetail'
 import ActionButton from './actionButton'
 import UnlockTime from 'view/vesting/addNewVesting/components/unlockTime'
+import { utilsBN } from 'sentre-web3'
 
 import { AppDispatch, AppState } from 'model'
 import {
@@ -87,6 +87,8 @@ const InputInfoTransfer = ({
     if (!account.isAddress(walletAddress))
       return setWalletError('Wrong wallet address')
     if (!amount) return setAmountError('Amount cannot be empty')
+    if (!decimal && Number(amount) % 1 !== 0)
+      return setAmountError('Should be natural numbers')
     const nextRecipients: RecipientInfo[] = []
 
     const { recipientInfos } = recipients
@@ -105,11 +107,8 @@ const InputInfoTransfer = ({
       const distributionAmount = Math.floor(
         (nextDistributeIn * 30) / nextFrequency,
       )
-      const decimalAmount = utils.decimalize(amount, mintDecimals)
-      const actualAmount = calcListAmount(
-        new BN(decimalAmount.toString()),
-        distributionAmount,
-      )
+      const decimalAmount = utilsBN.decimalize(amount, mintDecimals)
+      const actualAmount = calcListAmount(decimalAmount, distributionAmount)
       for (let i = 0; i < distributionAmount; i++) {
         let unlockTime = 0
         if (i === 0) unlockTime = nextUnlockTime
@@ -119,7 +118,7 @@ const InputInfoTransfer = ({
 
         const recipient: RecipientInfo = {
           address: walletAddress,
-          amount: utils.undecimalize(actualAmount[i], mintDecimals),
+          amount: utilsBN.undecimalize(actualAmount[i], mintDecimals),
           unlockTime,
           configs,
         }
@@ -140,20 +139,17 @@ const InputInfoTransfer = ({
     const amountRecipient = recipientInfos[walletAddress].length
     const oldAmount =
       amountRecipient * Number(recipientInfos[walletAddress][0].amount)
-    const decimalAmount =
-      utils.decimalize(oldAmount, mintDecimals) +
-      utils.decimalize(amount, mintDecimals)
+    const decimalAmount = utilsBN
+      .decimalize(oldAmount, mintDecimals)
+      .add(utilsBN.decimalize(amount, mintDecimals))
 
-    const listAmount = calcListAmount(
-      new BN(decimalAmount.toString()),
-      amountRecipient,
-    )
+    const listAmount = calcListAmount(decimalAmount, amountRecipient)
 
     const nextRecipients = recipientInfos[walletAddress].map(
       (recipient, index) => {
         return {
           ...recipient,
-          amount: utils.undecimalize(listAmount[index], mintDecimals),
+          amount: utilsBN.undecimalize(listAmount[index], mintDecimals),
         }
       },
     )
@@ -225,6 +221,13 @@ const InputInfoTransfer = ({
 
   const disabledInput = walletAddress && !isEdit ? true : false
 
+  const disabledSave = useMemo(() => {
+    const time = nextUnlockTime + nextDistributeIn * 30 * ONE_DAY
+    const expirationTime = recipients.expirationTime
+    if (!expirationTime) return false //unlimited
+    return nextUnlockTime > expirationTime || time > expirationTime
+  }, [nextDistributeIn, nextUnlockTime, recipients.expirationTime])
+
   useEffect(() => {
     recipientInfo()
   }, [recipientInfo])
@@ -254,6 +257,7 @@ const InputInfoTransfer = ({
               remove={onRemove}
               isEdit={isEdit}
               setIsEdit={setIsEdit}
+              disabled={disabledSave}
             />
           </Col>
         </Row>

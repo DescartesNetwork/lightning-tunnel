@@ -2,13 +2,9 @@ import { util } from '@sentre/senhub'
 
 import { Col, Row, Space, Typography } from 'antd'
 
-import { AllocationType } from '../../../constants'
+import { Allocation } from '../../../constants'
 
-const CustomizedLegend = ({
-  data,
-}: {
-  data: Record<string, AllocationType>
-}) => {
+const CustomizedLegend = ({ data }: { data: Record<string, Allocation> }) => {
   return (
     <Row gutter={[12, 12]} style={{ marginTop: 60 }}>
       {Object.values(data).map((item) => (

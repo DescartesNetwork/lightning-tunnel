@@ -7,20 +7,20 @@ import StatisticVesting from './statisticVesting'
 import VestingAllocation from './vestingAllocation'
 
 import { useAppRouter } from 'hooks/useAppRoute'
-import { setTypeDistribute } from 'model/main.controller'
-import useVestingAllocation from 'hooks/vesting/useVestingAllocation'
+import { setTypeDistribute, TypeDistribute } from 'model/main.controller'
+import useAllocation from 'hooks/useAllocation'
 
 const Vesting = () => {
   const { pushHistory } = useAppRouter()
   const dispatch = useDispatch()
 
   const {
-    vestingAllocation,
-    totalUSDVesting,
+    allocation,
+    totalUSD,
     numberOfRecipient,
     numberOfCampaigns,
-    loadingVesting,
-  } = useVestingAllocation()
+    loading,
+  } = useAllocation(TypeDistribute.Vesting)
 
   const addNewVesting = () => {
     pushHistory('/vesting/add-new')
@@ -50,16 +50,16 @@ const Vesting = () => {
         <Row gutter={[24, 24]}>
           <Col span={24} lg={8}>
             <StatisticVesting
-              loading={loadingVesting}
-              valueInUSD={totalUSDVesting}
+              loading={loading}
+              valueInUSD={totalUSD}
               numberOfCampaign={numberOfCampaigns}
               recipientList={numberOfRecipient}
             />
           </Col>
           <Col span={24} lg={16}>
             <VestingAllocation
-              vestingAllocation={vestingAllocation}
-              loading={loadingVesting}
+              vestingAllocation={allocation}
+              loading={loading}
             />
           </Col>
         </Row>

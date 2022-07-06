@@ -10,7 +10,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers'
 
 import { util } from '@sentre/senhub'
-import { AllocationType } from '../../../constants'
+import { Allocation } from '../../../constants'
 
 echarts.use([
   TitleComponent,
@@ -25,7 +25,7 @@ const buildOptions = ({
   data,
   bgTooltip = '#233333',
 }: {
-  data: Record<string, AllocationType>
+  data: Record<string, Allocation>
   bgTooltip?: string
 }) => {
   return {
@@ -120,7 +120,7 @@ const buildOptions = ({
   }
 }
 
-const DoughnutChart = ({ data }: { data: Record<string, AllocationType> }) => {
+const DoughnutChart = ({ data }: { data: Record<string, Allocation> }) => {
   return (
     <ReactEChartsCore
       echarts={echarts}

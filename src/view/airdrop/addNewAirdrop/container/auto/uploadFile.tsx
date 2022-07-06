@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
-import { utils } from '@senswap/sen-js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -20,6 +19,7 @@ import {
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'model/file.controller'
 import { getFileCSV } from 'helper'
+import { utilsBN } from 'sentre-web3'
 
 const parse = (file: any): Promise<Array<[string, string]>> => {
   return new Promise((resolve, reject) => {
@@ -56,15 +56,17 @@ const UploadFile = () => {
         if (recipientInfos[address]) {
           isDuplicate = true
           const listRecipient = [...recipientInfos[address]]
-          const oldAmount = utils.decimalize(
+          const oldAmount = utilsBN.decimalize(
             listRecipient[0].amount,
             mintDecimals,
           )
-          const newAmount = oldAmount + utils.decimalize(amount, mintDecimals)
+          const newAmount = oldAmount.add(
+            utilsBN.decimalize(amount, mintDecimals),
+          )
           recipientInfos[address] = [
             {
               address,
-              amount: utils.undecimalize(newAmount, mintDecimals),
+              amount: utilsBN.undecimalize(newAmount, mintDecimals),
               unlockTime: globalUnlockTime,
             },
           ]

@@ -15,6 +15,7 @@ import useStatus from 'hooks/useStatus'
 import { AppState } from 'model'
 import { ReceiveItem } from 'model/listReceived.controller'
 import configs from 'configs'
+import FilterReceiveList from 'components/filterReceiveList'
 
 const DEFAULT_AMOUNT = 4
 
@@ -26,6 +27,9 @@ const VestingReceive = () => {
   const [amountVesting, setAmountVesting] = useState(DEFAULT_AMOUNT)
   const [listVesting, setListVesting] = useState<ReceiveItem[]>([])
   const listReceived = useSelector((state: AppState) => state.listReceived)
+  const [filteredListVesting, setFilteredListVesting] = useState<ReceiveItem[]>(
+    [],
+  )
   const {
     ui: { width },
   } = useUI()
@@ -133,18 +137,23 @@ const VestingReceive = () => {
             <Col flex="auto">
               <Typography.Title level={5}>Vesting receive</Typography.Title>
             </Col>
-            <Col>Filter</Col>
+            <Col>
+              <FilterReceiveList
+                listReceive={listVesting}
+                onFilter={setFilteredListVesting}
+              />
+            </Col>
           </Row>
         </Col>
         <Col span={24}>
           {isMobile ? (
             <ListVestingMobile
-              listVesting={listVesting}
+              listVesting={filteredListVesting}
               amountVesting={amountVesting}
             />
           ) : (
             <Table
-              dataSource={listVesting.slice(0, amountVesting)}
+              dataSource={filteredListVesting.slice(0, amountVesting)}
               pagination={false}
               columns={COLUMNS_AIRDROP}
               rowKey={(record) => record.receiptAddress}
@@ -156,7 +165,7 @@ const VestingReceive = () => {
             onClick={() => setAmountVesting(amountVesting + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountVesting >= listVesting.length}
+            disabled={amountVesting >= filteredListVesting.length}
           >
             VIEW MORE
           </Button>

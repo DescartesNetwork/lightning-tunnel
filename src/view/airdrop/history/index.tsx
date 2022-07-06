@@ -7,13 +7,15 @@ import HistoryCard from '../../../components/historyCard'
 
 import { COLUMNS_AIRDROP } from './columns'
 import { TypeDistribute } from 'model/main.controller'
-import useSentList from 'hooks/useSentList'
+import useSentList, { ItemSent } from 'hooks/useSentList'
+import FilterSentList from 'components/filterSentList'
 
 const DEFAULT_AMOUNT = 4
 
 const History = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const { loading, listHistory } = useSentList({ type: TypeDistribute.Airdrop })
+  const [filteredListHistory, setFilteredListHistory] = useState<ItemSent[]>([])
   const {
     ui: { width },
   } = useUI()
@@ -29,13 +31,18 @@ const History = () => {
               <Col flex="auto">
                 <Typography.Title level={5}>History</Typography.Title>
               </Col>
-              <Col>Filter</Col>
+              <Col>
+                <FilterSentList
+                  listSent={listHistory}
+                  onFilter={setFilteredListHistory}
+                />
+              </Col>
             </Row>
           </Col>
 
           {isMobile ? (
             <Col span={24}>
-              {listHistory.slice(0, amountAirdrop).map((history) => (
+              {filteredListHistory.slice(0, amountAirdrop).map((history) => (
                 <HistoryCard
                   itemSent={history}
                   key={history.distributorAddress}
@@ -45,7 +52,7 @@ const History = () => {
           ) : (
             <Col span={24}>
               <Table
-                dataSource={listHistory.slice(0, amountAirdrop)}
+                dataSource={filteredListHistory.slice(0, amountAirdrop)}
                 pagination={false}
                 columns={COLUMNS_AIRDROP}
                 rowKey={(record) => record.distributorAddress}
@@ -58,7 +65,7 @@ const History = () => {
               onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}
               type="ghost"
               icon={<IonIcon name="arrow-down-outline" />}
-              disabled={amountAirdrop >= listHistory.length}
+              disabled={amountAirdrop >= filteredListHistory.length}
             >
               VIEW MORE
             </Button>

@@ -4,8 +4,9 @@ import { useUI } from '@sentre/senhub'
 import { Button, Card, Col, Row, Spin, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import HistoryCard from 'components/historyCard'
+import FilterSentList from 'components/filterSentList'
 
-import useSentList from 'hooks/useSentList'
+import useSentList, { ItemSent } from 'hooks/useSentList'
 import { TypeDistribute } from 'model/main.controller'
 import { COLUMNS_AIRDROP } from './columns'
 
@@ -14,6 +15,7 @@ const DEFAULT_AMOUNT = 4
 const History = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const { loading, listHistory } = useSentList({ type: TypeDistribute.Vesting })
+  const [filteredSentToken, setFilteredSentToken] = useState<ItemSent[]>([])
   const {
     ui: { width },
   } = useUI()
@@ -29,13 +31,18 @@ const History = () => {
               <Col flex="auto">
                 <Typography.Title level={5}>History</Typography.Title>
               </Col>
-              <Col>Filter</Col>
+              <Col>
+                <FilterSentList
+                  listSent={listHistory}
+                  onFilter={setFilteredSentToken}
+                />
+              </Col>
             </Row>
           </Col>
 
           {isMobile ? (
             <Col span={24}>
-              {listHistory.slice(0, amountAirdrop).map((history) => (
+              {filteredSentToken.slice(0, amountAirdrop).map((history) => (
                 <HistoryCard
                   itemSent={history}
                   key={history.distributorAddress}
@@ -45,7 +52,7 @@ const History = () => {
           ) : (
             <Col span={24}>
               <Table
-                dataSource={listHistory.slice(0, amountAirdrop)}
+                dataSource={filteredSentToken.slice(0, amountAirdrop)}
                 pagination={false}
                 columns={COLUMNS_AIRDROP}
                 rowKey={(record) => record.distributorAddress}
@@ -57,7 +64,7 @@ const History = () => {
               onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}
               type="ghost"
               icon={<IonIcon name="arrow-down-outline" />}
-              disabled={amountAirdrop >= listHistory.length}
+              disabled={amountAirdrop >= filteredSentToken.length}
             >
               VIEW MORE
             </Button>

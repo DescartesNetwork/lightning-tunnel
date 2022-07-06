@@ -6,6 +6,7 @@ import { MerkleDistributor } from '@sentre/utility'
 import { Button, Card, Col, Row, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import ListAirdropMobile from './listAirdropMobile'
+import FilterReceiveList from 'components/filterReceiveList'
 
 import { State } from '../../../constants'
 import { TypeDistribute } from 'model/main.controller'
@@ -25,6 +26,9 @@ const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
   const listReceived = useSelector((state: AppState) => state.listReceived)
+  const [filteredListAirdrop, setFilteredListAirdrop] = useState<ReceiveItem[]>(
+    [],
+  )
   const {
     ui: { width },
   } = useUI()
@@ -86,18 +90,23 @@ const AirdropReceive = () => {
             <Col flex="auto">
               <Typography.Title level={5}>Airdrop receive</Typography.Title>
             </Col>
-            <Col>Filter</Col>
+            <Col>
+              <FilterReceiveList
+                listReceive={listAirdrop}
+                onFilter={setFilteredListAirdrop}
+              />
+            </Col>
           </Row>
         </Col>
         <Col span={24}>
           {isMobile ? (
             <ListAirdropMobile
-              listAirdrop={listAirdrop}
+              listAirdrop={filteredListAirdrop}
               amountAirdrop={amountAirdrop}
             />
           ) : (
             <Table
-              dataSource={listAirdrop.slice(0, amountAirdrop)}
+              dataSource={filteredListAirdrop.slice(0, amountAirdrop)}
               pagination={false}
               columns={COLUMNS_AIRDROP}
               rowKey={(record) => record.receiptAddress}
@@ -109,7 +118,7 @@ const AirdropReceive = () => {
             onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountAirdrop >= listAirdrop.length}
+            disabled={amountAirdrop >= filteredListAirdrop.length}
           >
             VIEW MORE
           </Button>

@@ -11,8 +11,8 @@ const CustomizedLegend = ({
 }) => {
   return (
     <Row gutter={[12, 12]} style={{ marginTop: 60 }}>
-      {Object.values(data).map((item) => (
-        <Col span={24}>
+      {Object.values(data).map((item, idx) => (
+        <Col span={24} key={idx}>
           <Row align="middle" wrap={false} gutter={[16, 16]}>
             <Col
               style={{

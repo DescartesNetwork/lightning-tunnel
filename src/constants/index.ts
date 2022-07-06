@@ -43,3 +43,5 @@ export enum RecipientFileType {
 export const ONE_DAY = 24 * 60 * 60 * 1000
 
 export const FORMAT_DATE = 'MMM DD, YYYY HH:mm'
+
+export const ALL = 'all'

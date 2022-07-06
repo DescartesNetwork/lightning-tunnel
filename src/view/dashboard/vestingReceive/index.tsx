@@ -7,6 +7,7 @@ import { MerkleDistributor } from '@sentre/utility'
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Table, Typography } from 'antd'
 import ListVestingMobile from './listVestingMobile'
+import FilterReceiveList from 'components/filterReceiveList'
 
 import { TypeDistribute } from 'model/main.controller'
 import { State } from '../../../constants'
@@ -15,7 +16,6 @@ import useStatus from 'hooks/useStatus'
 import { AppState } from 'model'
 import { ReceiveItem } from 'model/listReceived.controller'
 import configs from 'configs'
-import FilterReceiveList from 'components/filterReceiveList'
 
 const DEFAULT_AMOUNT = 4
 

@@ -4,11 +4,11 @@ import { useUI } from '@sentre/senhub'
 import { Button, Card, Col, Row, Spin, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import HistoryCard from 'components/historyCard'
+import FilterSentList from 'components/filterSentList'
 
 import useSentList, { ItemSent } from 'hooks/useSentList'
 import { TypeDistribute } from 'model/main.controller'
 import { COLUMNS_AIRDROP } from './columns'
-import FilterSentList from 'components/filterSentList'
 
 const DEFAULT_AMOUNT = 4
 

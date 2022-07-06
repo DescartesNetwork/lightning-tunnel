@@ -1,13 +1,77 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { account } from '@senswap/sen-js'
+import { useUI } from '@sentre/senhub'
 
-import { Space } from 'antd'
+import { Button, Col, Modal, Row, Space, Typography } from 'antd'
 import SelectExistMintToken from './selectExistMintToken'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { ReceiveItem } from 'model/listReceived.controller'
 import SelectTokenByStatus from './selectTokenByStatus'
 import useStatus from 'hooks/useStatus'
 import { ALL } from '../constants'
+
+type ConfirmParamsType = { mintKey: string; statusKey: string }
+
+type FilterReceiveListMobileProps = {
+  mintAddressess: string[]
+  onConfirm: (selected: ConfirmParamsType) => void
+}
+
+const FilterReceiveListMobile = ({
+  mintAddressess,
+  onConfirm,
+}: FilterReceiveListMobileProps) => {
+  const [visible, setVisible] = useState(false)
+  const [mintKey, setMintKey] = useState(ALL)
+  const [statusKey, setStatusKey] = useState(ALL)
+
+  const onClick = () => {
+    onConfirm({ mintKey, statusKey })
+    setVisible(false)
+  }
+
+  return (
+    <Fragment>
+      <Button
+        type="text"
+        icon={<IonIcon name="funnel-outline" />}
+        onClick={() => setVisible(true)}
+      />
+
+      <Modal
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        closable={false}
+        footer={false}
+        className="card-lightning"
+      >
+        <Row gutter={[24, 24]}>
+          <Col span={24}>
+            <Space size={8} direction="vertical" style={{ width: '100%' }}>
+              <Typography.Text type="secondary">
+                Filter by token
+              </Typography.Text>
+              <SelectExistMintToken
+                mintAddresses={mintAddressess}
+                onChange={setMintKey}
+                style={{ width: '100%' }}
+              />
+            </Space>
+          </Col>
+          <Col span={24}>
+            <SelectTokenByStatus onChange={setStatusKey} value={statusKey} />
+          </Col>
+          <Col span={24}>
+            <Button type="primary" onClick={onClick} block>
+              Confirm
+            </Button>
+          </Col>
+        </Row>
+      </Modal>
+    </Fragment>
+  )
+}
 
 type FilterReceiveListProps = {
   listReceive: ReceiveItem[]
@@ -20,6 +84,11 @@ const FilterReceiveList = ({
   const [mintKey, setMintKey] = useState(ALL)
   const [statusKey, setStatusKey] = useState(ALL)
   const { fetchAirdropStatus } = useStatus()
+  const {
+    ui: { infix },
+  } = useUI()
+
+  const isMobile = infix === 'xs'
 
   const listMintAddr = useMemo(() => {
     if (!listReceive.length) return []
@@ -73,6 +142,16 @@ const FilterReceiveList = ({
     filterListReceive()
   }, [filterListReceive])
 
+  if (isMobile)
+    return (
+      <FilterReceiveListMobile
+        mintAddressess={listMintAddr}
+        onConfirm={({ mintKey, statusKey }) => {
+          setMintKey(mintKey)
+          setStatusKey(statusKey)
+        }}
+      />
+    )
   return (
     <Space>
       <SelectExistMintToken

@@ -5,16 +5,16 @@ import { MerkleDistributor } from '@sentre/utility'
 
 import { Button, Card, Col, Row, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import ListAirdropMobile from './listAirdropMobile'
 import FilterReceiveList from 'components/filterReceiveList'
+import ListReceiveMobile from 'components/listReceiveMobile'
 
 import { State } from '../../../constants'
 import { TypeDistribute } from 'model/main.controller'
 import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
 import { AppState } from 'model'
-import configs from 'configs'
 import { ReceiveItem } from 'model/listReceived.controller'
+import configs from 'configs'
 
 const DEFAULT_AMOUNT = 4
 
@@ -100,9 +100,8 @@ const AirdropReceive = () => {
         </Col>
         <Col span={24}>
           {isMobile ? (
-            <ListAirdropMobile
-              listAirdrop={filteredListAirdrop}
-              amountAirdrop={amountAirdrop}
+            <ListReceiveMobile
+              listReceive={filteredListAirdrop.slice(0, amountAirdrop)}
             />
           ) : (
             <Table

@@ -3,8 +3,8 @@ import { useUI } from '@sentre/senhub'
 
 import { Button, Card, Col, Row, Spin, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import HistoryCard from 'components/historyCard'
 import FilterSentList from 'components/filterSentList'
+import ListSentMobile from 'components/listSentMobile'
 
 import useSentList, { ItemSent } from 'hooks/useSentList'
 import { TypeDistribute } from 'model/main.controller'
@@ -42,12 +42,9 @@ const History = () => {
 
           {isMobile ? (
             <Col span={24}>
-              {filteredSentToken.slice(0, amountAirdrop).map((history) => (
-                <HistoryCard
-                  itemSent={history}
-                  key={history.distributorAddress}
-                />
-              ))}
+              <ListSentMobile
+                listSent={filteredSentToken.slice(0, amountAirdrop)}
+              />
             </Col>
           ) : (
             <Col span={24}>

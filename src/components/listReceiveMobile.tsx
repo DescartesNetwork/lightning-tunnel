@@ -1,38 +1,34 @@
 import { Fragment } from 'react'
 import moment from 'moment'
-import { util } from '@sentre/senhub'
+import { util } from '@sentre/senhub/dist'
 
-import { Col, Row, Space, Typography } from 'antd'
-import ColumAction from '../columns/columAction'
-import ColumnExpiration from '../columns/columnExpiration'
-import ColumnStatus from '../columns/columnStatus'
-import ColumnAmount from '../columns/columnTotal'
+import { Col, Empty, Row, Space, Typography } from 'antd'
+
 import ExpandCard from 'components/expandCard'
 import RowBetweenNodeTitle from 'components/rowBetweenNodeTitle'
 import RowSpaceBetween from 'components/rowSpaceBetween'
-
+import ColumAction from 'view/dashboard/columns/columAction'
+import ColumnExpiration from 'view/dashboard/columns/columnExpiration'
+import ColumnAmount from 'view/dashboard/columns/columnTotal'
+import ColumnStatus from 'view/dashboard/columns/columnStatus'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+
 import { ReceiveItem } from 'model/listReceived.controller'
 
-type ListAirdropMobileProps = {
-  listAirdrop: ReceiveItem[]
-  amountAirdrop: number
-}
+type ListReceiveMobileProps = { listReceive: ReceiveItem[] }
+const ListReceiveMobile = ({ listReceive }: ListReceiveMobileProps) => {
+  if (!listReceive.length) return <Empty />
 
-const ListAirdropMobile = ({
-  listAirdrop,
-  amountAirdrop,
-}: ListAirdropMobileProps) => {
   return (
     <Fragment>
-      {listAirdrop.slice(0, amountAirdrop).map((airdrop, idx) => {
+      {listReceive.map((receiveItem, idx) => {
         const {
           mintAddress,
           receiptAddress,
           recipientData,
           distributorAddress,
           sender,
-        } = airdrop
+        } = receiveItem
 
         return (
           <ExpandCard
@@ -108,4 +104,4 @@ const ListAirdropMobile = ({
   )
 }
 
-export default ListAirdropMobile
+export default ListReceiveMobile

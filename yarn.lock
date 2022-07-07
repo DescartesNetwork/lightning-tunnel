@@ -1997,7 +1997,7 @@
   resolved "https://registry.yarnpkg.com/@sentre/react-lazyload/-/react-lazyload-3.2.2.tgz#f3d921327a2b14b9b3a9e906d01034f11387097a"
   integrity sha512-NKJhz9G8pModoZJaLMziRJtd582pFHbIydNXwRI72ECkjqbc7XIgBX+8kssrUtRxK2rW9VVQnGKDpmyZ8iSIyw==
 
-"@sentre/senhub@^3.0.28":
+"@sentre/senhub@^3.0.37":
   version "3.0.37"
   resolved "https://registry.yarnpkg.com/@sentre/senhub/-/senhub-3.0.37.tgz#340367e8c3ade523b682c6b48a384fb7259da78c"
   integrity sha512-e09i1qND/ulkSNpeNH+SHiRuShVxUFLmRLjN/5UpKhGyrSpsa8rysRueg4jf80s9f42mRcrRFA3PAEeQbS64DA==

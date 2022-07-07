@@ -4,7 +4,7 @@ import { utils } from '@senswap/sen-js'
 import { useMint, useWallet } from '@sentre/senhub'
 import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
 import { BN } from 'bn.js'
-import moment from 'moment'
+import { utilsBN } from 'sentre-web3'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -17,6 +17,8 @@ import IPFS from 'helper/ipfs'
 import configs from 'configs'
 
 import REDEEM_IMG from 'static/images/redeem.svg'
+import REDEEM_SUCCESS from 'static/images/redeem_success.svg'
+
 import { useSelector } from 'react-redux'
 import { AppState } from 'model'
 
@@ -25,13 +27,14 @@ const {
 } = configs
 
 const Redeem = () => {
-  const receipts = useSelector((state: AppState) => state.receipts)
   const [loading, setLoading] = useState(false)
   const [loadingCard, setLoadingCard] = useState(false)
   const [merkle, setMerkle] = useState<MerkleDistributor>()
   const [decimals, setDecimals] = useState<number>(0)
   const [distributor, setDistributor] = useState<DistributorData>()
   const [isValid, setIsValid] = useState(true)
+  const [amountTaken, setAmountTaken] = useState('')
+  const receipts = useSelector((state: AppState) => state.receipts)
 
   const { getDecimals } = useMint()
 
@@ -93,16 +96,18 @@ const Redeem = () => {
       )
       const receiptData = receipts[receiptAddress]
       if (!receiptData) return
-      const claimedAt = receiptData.claimedAt.toNumber()
-      window.notify({
-        type: 'error',
-        description: `You have claimed at ${moment(claimedAt * 1000).format(
-          'DD/MM/YYYY HH:mm',
-        )}`,
-      })
+      const { amount } = receiptData
+      setAmountTaken(utilsBN.undecimalize(amount, decimals))
       return setIsValid(false)
     } catch (error) {}
-  }, [distributor, distributorAddress, merkle, receipts, recipientData])
+  }, [
+    decimals,
+    distributor,
+    distributorAddress,
+    merkle,
+    receipts,
+    recipientData,
+  ])
 
   const onRedeem = async () => {
     if (!recipientData || !merkle) return
@@ -152,7 +157,7 @@ const Redeem = () => {
 
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">
-      <Col xs={24} md={16} lg={12} xl={10}>
+      <Col xs={24} md={16} lg={14}>
         <Card
           style={{ minHeight: 430 }}
           loading={loadingCard}
@@ -171,13 +176,20 @@ const Redeem = () => {
               </Button>
             </Col>
             <Col span={24}>
-              <Image src={REDEEM_IMG} preview={false} />
+              <Image
+                src={amountTaken ? REDEEM_SUCCESS : REDEEM_IMG}
+                preview={false}
+              />
             </Col>
             <Col span={24}>
               <Space direction="vertical" size={4}>
-                <Typography.Title level={3}>Redemption!</Typography.Title>
+                <Typography.Title level={3}>
+                  Redemption {amountTaken && 'successfully'}!
+                </Typography.Title>
                 <Space size={4}>
-                  <Typography.Text type="secondary">Let's take</Typography.Text>{' '}
+                  <Typography.Text type="secondary">
+                    {amountTaken ? 'You took' : "Let's take"}
+                  </Typography.Text>
                   <Typography.Title level={5} style={{ color: '#42E6EB' }}>
                     {utils.undecimalize(
                       BigInt(recipientData?.amount.toString() || 0),

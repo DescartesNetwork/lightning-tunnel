@@ -1,4 +1,4 @@
-import { Card, Col, Row, Typography, Spin } from 'antd'
+import { Card, Col, Row, Typography, Spin, Empty } from 'antd'
 import DoughnutChart from 'components/charts/doughnutChart'
 import CustomizedLegend from 'components/charts/doughnutChart/customizedLegend'
 
@@ -20,19 +20,23 @@ const AirdropAllocation = ({
         style={{ height: '100%' }}
         bodyStyle={{ paddingBottom: 0 }}
       >
-        <Row gutter={[0, 0]}>
+        <Row gutter={[24, 24]}>
           <Col span={24}>
             <Typography.Title level={5}>Airdrop allocation</Typography.Title>
           </Col>
           <Col span={24}>
-            <Row>
-              <Col xs={14} sm={10}>
-                <DoughnutChart data={airdropAllocation} />
-              </Col>
-              <Col xs={10} sm={14}>
-                <CustomizedLegend data={airdropAllocation} />
-              </Col>
-            </Row>
+            {!Object.keys(airdropAllocation).length ? (
+              <Empty />
+            ) : (
+              <Row gutter={[8, 8]} align="middle">
+                <Col xs={14} sm={10}>
+                  <DoughnutChart data={airdropAllocation} />
+                </Col>
+                <Col xs={10} sm={14}>
+                  <CustomizedLegend data={airdropAllocation} />
+                </Col>
+              </Row>
+            )}
           </Col>
         </Row>
       </Card>

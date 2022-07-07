@@ -77,6 +77,7 @@ const View = () => {
                 />
                 <Route exact path={`${appRoute}/airdrop`} component={Airdrop} />
                 <Route
+                  exact
                   path={`${appRoute}/redeem/:distributorAddress`}
                   component={Redeem}
                 />

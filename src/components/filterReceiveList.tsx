@@ -14,12 +14,12 @@ import { ALL } from '../constants'
 type ConfirmParamsType = { mintKey: string; statusKey: string }
 
 type FilterReceiveListMobileProps = {
-  mintAddressess: string[]
+  mintAddresses: string[]
   onConfirm: (selected: ConfirmParamsType) => void
 }
 
 const FilterReceiveListMobile = ({
-  mintAddressess,
+  mintAddresses,
   onConfirm,
 }: FilterReceiveListMobileProps) => {
   const [visible, setVisible] = useState(false)
@@ -53,7 +53,7 @@ const FilterReceiveListMobile = ({
                 Filter by token
               </Typography.Text>
               <SelectExistMintToken
-                mintAddresses={mintAddressess}
+                mintAddresses={mintAddresses}
                 onChange={setMintKey}
                 style={{ width: '100%' }}
               />
@@ -145,7 +145,7 @@ const FilterReceiveList = ({
   if (isMobile)
     return (
       <FilterReceiveListMobile
-        mintAddressess={listMintAddr}
+        mintAddresses={listMintAddr}
         onConfirm={({ mintKey, statusKey }) => {
           setMintKey(mintKey)
           setStatusKey(statusKey)

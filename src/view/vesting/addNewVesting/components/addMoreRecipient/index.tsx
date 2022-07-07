@@ -23,9 +23,14 @@ const DEFAULT_RECIPIENT = {
 type AddMoreRecipientProps = {
   walletAddress?: string
   amount?: string
+  index?: number
 }
 
-const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
+const AddMoreRecipient = ({
+  walletAddress,
+  amount,
+  index,
+}: AddMoreRecipientProps) => {
   const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [isEdit, setIsEdit] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -129,6 +134,11 @@ const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
     return setFormInput({ walletAddress, amount })
   }, [amount, walletAddress])
 
+  const walletAddrIndx = useMemo(() => {
+    if (walletAddress && index !== undefined) return index + 1
+    return Object.keys(recipientInfos).length + 1
+  }, [index, recipientInfos, walletAddress])
+
   useEffect(() => {
     fetchDefaultUnlockTime()
   }, [fetchDefaultUnlockTime])
@@ -139,7 +149,31 @@ const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
 
   return (
     <Row gutter={[16, 16]} align="middle">
-      <Col span={18}>
+      <Col span={24}>
+        <Row>
+          <Col flex="auto">Wallet address #{walletAddrIndx}</Col>
+          <Col>
+            {!walletAddress ? (
+              <Button
+                type="text"
+                size="small"
+                style={{ padding: 0, color: '#42E6EB' }}
+                onClick={setNewRecipient}
+                disabled={!ok}
+              >
+                OK
+              </Button>
+            ) : (
+              <ActionEditButton
+                isEdit={isEdit}
+                setIsEdit={setIsEdit}
+                onSave={setNewRecipient}
+              />
+            )}
+          </Col>
+        </Row>
+      </Col>
+      <Col span={19}>
         <Input
           value={formInput.walletAddress}
           name="walletAddress"
@@ -161,25 +195,7 @@ const AddMoreRecipient = ({ walletAddress, amount }: AddMoreRecipientProps) => {
           disabled={!isEdit && !!walletAddress}
         />
       </Col>
-      <Col span={1}>
-        {!walletAddress ? (
-          <Button
-            type="text"
-            size="small"
-            style={{ padding: 0, color: '#42E6EB' }}
-            onClick={setNewRecipient}
-            disabled={!ok}
-          >
-            OK
-          </Button>
-        ) : (
-          <ActionEditButton
-            isEdit={isEdit}
-            setIsEdit={setIsEdit}
-            onSave={setNewRecipient}
-          />
-        )}
-      </Col>
+
       <Col span={24}>
         {!isEdit && advanced ? (
           <DisplayUnlockTime listUnlockTime={nextUnlockTime} />

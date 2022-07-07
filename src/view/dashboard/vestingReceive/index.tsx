@@ -26,7 +26,7 @@ const {
 const VestingReceive = () => {
   const [amountVesting, setAmountVesting] = useState(DEFAULT_AMOUNT)
   const [listVesting, setListVesting] = useState<ReceiveItem[]>([])
-  const listReceived = useSelector((state: AppState) => state.listReceived)
+  const { listReceived } = useSelector((state: AppState) => state.listReceived)
   const [filteredListVesting, setFilteredListVesting] = useState<ReceiveItem[]>(
     [],
   )
@@ -35,6 +35,11 @@ const VestingReceive = () => {
   } = useUI()
   const { fetchAirdropStatus } = useStatus()
   const isMobile = width < 768
+
+  const loading = useMemo(
+    () => (listReceived === undefined ? true : false),
+    [listReceived],
+  )
 
   const receiveList = useMemo(() => {
     let vestingReceive: ReceiveItem[] = []
@@ -78,7 +83,7 @@ const VestingReceive = () => {
   )
 
   const filterVesting = useCallback(async () => {
-    if (!receiveList.length) return
+    if (!receiveList.length) return setListVesting([])
     const vestings: Record<string, ReceiveItem[]> = {}
     let filteredVesting: ReceiveItem[] = []
     const readyList: ReceiveItem[] = []
@@ -138,7 +143,7 @@ const VestingReceive = () => {
   }, [filterVesting])
 
   return (
-    <Card className="card-lightning">
+    <Card loading={loading} className="card-lightning">
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <Row>

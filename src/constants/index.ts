@@ -21,7 +21,6 @@ export enum State {
   loading = 'Loading',
 }
 export type Allocation = {
-  mint: string
   name: string
   symbol: string
   amountToken: string

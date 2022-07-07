@@ -27,7 +27,13 @@ const MethodInputRecipient = ({
         index={index}
       />
     )
-  return <AddMoreRecipient amount={amount} walletAddress={walletAddress} />
+  return (
+    <AddMoreRecipient
+      index={index}
+      amount={amount}
+      walletAddress={walletAddress}
+    />
+  )
 }
 
 export default MethodInputRecipient

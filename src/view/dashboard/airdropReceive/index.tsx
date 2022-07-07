@@ -25,7 +25,7 @@ const {
 const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
-  const listReceived = useSelector((state: AppState) => state.listReceived)
+  const { listReceived } = useSelector((state: AppState) => state.listReceived)
   const [filteredListAirdrop, setFilteredListAirdrop] = useState<ReceiveItem[]>(
     [],
   )
@@ -35,6 +35,11 @@ const AirdropReceive = () => {
   const { fetchAirdropStatus } = useStatus()
 
   const isMobile = width < 768
+
+  const loading = useMemo(
+    () => (listReceived === undefined ? true : false),
+    [listReceived],
+  )
 
   const receiveList = useMemo(() => {
     const airdropReceive: ReceiveItem[] = []
@@ -52,7 +57,7 @@ const AirdropReceive = () => {
   }, [listReceived])
 
   const filterAirdrops = useCallback(async () => {
-    if (!receiveList.length) return
+    if (!receiveList.length) return setListAirdrop([])
     let nextAirdrops: ReceiveItem[] = []
     const readyList: ReceiveItem[] = []
     const otherList: ReceiveItem[] = []
@@ -83,7 +88,7 @@ const AirdropReceive = () => {
   }, [filterAirdrops])
 
   return (
-    <Card className="card-lightning">
+    <Card loading={loading} className="card-lightning">
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <Row>

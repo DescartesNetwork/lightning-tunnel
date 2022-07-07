@@ -19,11 +19,20 @@ import useRemainingBalance from 'hooks/useRemainingBalance'
 import { AppDispatch, AppState } from 'model'
 import { getHistory } from 'model/history.controller'
 import { onSelectStep } from 'model/steps.controller'
+import {
+  setAdvancedMode,
+  setListUnlockTime,
+} from 'model/advancedMode.controller'
 import { Step } from '../../constants'
 import History, { HistoryRecord } from 'helper/history'
 import { notifySuccess } from 'helper'
 import IPFS from 'helper/ipfs'
-import { RecipientInfo, removeRecipients } from 'model/recipients.controller'
+import {
+  RecipientInfo,
+  removeRecipients,
+  setExpiration,
+  setGlobalUnlockTime,
+} from 'model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import configs from 'configs'
 
@@ -118,7 +127,7 @@ const ConfirmTransfer = () => {
 
       notifySuccess('Airdrop', txId)
       return setRedeemLink(
-        `${window.location.origin}/${appId}/redeem/${distributorAddress}?autoInstall=true`,
+        `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`,
       )
     } catch (error: any) {
       window.notify({
@@ -133,7 +142,11 @@ const ConfirmTransfer = () => {
   const backToDashboard = useCallback(async () => {
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(removeRecipients())
-    dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(setGlobalUnlockTime(0))
+    await dispatch(setExpiration(0))
+    await dispatch(setAdvancedMode(false))
+    await dispatch(setListUnlockTime([]))
     return pushHistory(`/${typeDistribute}`)
   }, [dispatch, pushHistory, typeDistribute])
 

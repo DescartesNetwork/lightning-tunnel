@@ -8,6 +8,8 @@ import {
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
+import { utilsBN } from 'sentre-web3'
+import BN from 'bn.js'
 
 import { Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -16,7 +18,6 @@ import ModalMerge from './commonModal'
 import DistributionConfigDetail from 'view/vesting/addNewVesting/container/manual/distributionConfigDetail'
 import ActionButton from './actionButton'
 import UnlockTime from 'view/vesting/addNewVesting/components/unlockTime'
-import { utilsBN } from 'sentre-web3'
 
 import { AppDispatch, AppState } from 'model'
 import {
@@ -102,7 +103,6 @@ const InputInfoTransfer = ({
       }
       nextRecipients.push(recipient)
     }
-
     if (typeDistribute === 'vesting') {
       const distributionAmount = Math.floor(
         (nextDistributeIn * 30) / nextFrequency,
@@ -115,7 +115,6 @@ const InputInfoTransfer = ({
         if (i !== 0)
           unlockTime =
             nextFrequency * ONE_DAY + nextRecipients[i - 1].unlockTime
-
         const recipient: RecipientInfo = {
           address: walletAddress,
           amount: utilsBN.undecimalize(actualAmount[i], mintDecimals),
@@ -136,15 +135,16 @@ const InputInfoTransfer = ({
   const onMerge = async () => {
     const { walletAddress, amount } = formInput
     const { recipientInfos } = recipients
-    const amountRecipient = recipientInfos[walletAddress].length
-    const oldAmount =
-      amountRecipient * Number(recipientInfos[walletAddress][0].amount)
-    const decimalAmount = utilsBN
-      .decimalize(oldAmount, mintDecimals)
-      .add(utilsBN.decimalize(amount, mintDecimals))
+    const recipientData = recipientInfos[walletAddress]
+    const amountRecipient = recipientData.length
 
-    const listAmount = calcListAmount(decimalAmount, amountRecipient)
+    let oldAmount = new BN(0)
+    for (const { amount } of recipientData) {
+      oldAmount = oldAmount.add(utilsBN.decimalize(amount, mintDecimals))
+    }
 
+    const newAmount = oldAmount.add(utilsBN.decimalize(amount, mintDecimals))
+    const listAmount = calcListAmount(newAmount, amountRecipient)
     const nextRecipients = recipientInfos[walletAddress].map(
       (recipient, index) => {
         return {
@@ -225,8 +225,16 @@ const InputInfoTransfer = ({
     const time = nextUnlockTime + nextDistributeIn * 30 * ONE_DAY
     const expirationTime = recipients.expirationTime
     if (!expirationTime) return false //unlimited
-    return nextUnlockTime > expirationTime || time > expirationTime
-  }, [nextDistributeIn, nextUnlockTime, recipients.expirationTime])
+    return (
+      (nextUnlockTime > expirationTime || time > expirationTime) &&
+      typeDistribute === TypeDistribute.Vesting
+    )
+  }, [
+    nextDistributeIn,
+    nextUnlockTime,
+    recipients.expirationTime,
+    typeDistribute,
+  ])
 
   useEffect(() => {
     recipientInfo()

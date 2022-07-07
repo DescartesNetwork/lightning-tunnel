@@ -8,8 +8,8 @@ import {
   TooltipComponent,
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
-
 import { util } from '@sentre/senhub'
+
 import { Allocation } from '../../../constants'
 
 echarts.use([
@@ -48,6 +48,8 @@ const buildOptions = ({
     },
     legend: {
       show: false,
+      height: '100%',
+      width: '100%',
     },
     series: [
       {

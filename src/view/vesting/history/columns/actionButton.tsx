@@ -49,7 +49,7 @@ const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
     }
   }
 
-  const redeemLink = `${window.location.origin}/${appId}/redeem/${distributorAddress}?autoInstall=true`
+  const redeemLink = `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`
 
   return (
     <Space size={isMobile ? 16 : 24}>

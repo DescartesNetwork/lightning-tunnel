@@ -24,14 +24,18 @@ export type ReceiveItem = {
   children?: ReceiveItem[]
 }
 
-export type ListReceivedState = Record<string, ReceiveItem>
+export type ListReceivedState = {
+  listReceived: Record<string, ReceiveItem> | undefined
+}
 
 /**
  * Store constructor
  */
 
 const NAME = 'listReceived'
-const initialState: ListReceivedState = {}
+const initialState: ListReceivedState = {
+  listReceived: undefined,
+}
 
 /**
  * Actions
@@ -41,7 +45,7 @@ export const fetchListReceived = createAsyncThunk<
   ListReceivedState,
   { distributors: DistributorState }
 >(`${NAME}/fetchListReceived`, async ({ distributors }) => {
-  let bulk: ListReceivedState = {}
+  let bulk: Record<string, ReceiveItem> | undefined
   const listDistributor = Object.keys(distributors).map((address) => ({
     address,
     ...distributors[address],
@@ -63,6 +67,7 @@ export const fetchListReceived = createAsyncThunk<
         const sender = authority.toBase58()
 
         for (let i = 0; i < recipients.length; i++) {
+          bulk = bulk ? { ...bulk } : {} // clone data to avoid undefined
           const { authority, salt } = recipients[i]
           if (walletAddress === authority.toBase58()) {
             const receiptAddress = await utility.deriveReceiptAddress(
@@ -77,7 +82,7 @@ export const fetchListReceived = createAsyncThunk<
               recipientData: recipients[i],
               index: i,
             }
-            if (bulk[address]) {
+            if (bulk?.[address]) {
               const { children } = bulk[address]
               let listChildren: ReceiveItem[] = []
               if (!children) listChildren = [{ ...bulk[address] }] //add current data to children if vesting
@@ -93,7 +98,7 @@ export const fetchListReceived = createAsyncThunk<
     }),
   )
 
-  return bulk
+  return { listReceived: bulk }
 })
 
 /**

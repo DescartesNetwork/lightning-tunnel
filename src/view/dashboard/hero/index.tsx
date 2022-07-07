@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useWallet } from '@sentre/senhub'
 import BN from 'bn.js'
 
 import { Col, Row, Spin } from 'antd'
@@ -16,6 +17,9 @@ const Hero = () => {
   const receipts = useSelector((state: AppState) => state.receipts)
   const distributors = useSelector((state: AppState) => state.distributors)
   const { getTotalBalance } = useCgk()
+  const {
+    wallet: { address: walletAddress },
+  } = useWallet()
 
   const fetchTotalReceived = useCallback(async () => {
     const listReceipt = Object.values(receipts)
@@ -36,13 +40,14 @@ const Hero = () => {
     const listDistributor = Object.values(distributors)
     const mintBalances: { mint: string; amount: BN | bigint }[] = []
     if (!listDistributor.length) return setTotalDistribution(0)
-    for (const { total, mint } of listDistributor) {
+    for (const { total, mint, authority } of listDistributor) {
+      if (walletAddress !== authority.toBase58()) continue
       const mintBalance = { mint: mint.toBase58(), amount: total }
       mintBalances.push(mintBalance)
     }
     const total = await getTotalBalance(mintBalances)
     return setTotalDistribution(total)
-  }, [distributors, getTotalBalance])
+  }, [distributors, getTotalBalance, walletAddress])
 
   useEffect(() => {
     fetchTotalReceived()

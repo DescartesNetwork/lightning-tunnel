@@ -64,9 +64,31 @@ const useAllocation = (type: TypeDistribute) => {
         const decimal = await getDecimals(mint)
         const amountToken = utilsBN.undecimalize(listToken[mint], decimal)
         const usdValue = tokenPrices[ticket] * Number(amountToken)
-        const ratio = usdValue / totalUSD
+        const ratio = (usdValue / totalUSD) * 100
+        if (ratio < 2) {
+          let newAmountToken = amountToken
+          let newUsdValue = usdValue
+          let newRatio = ratio
+          if (chartData['other']) {
+            const {
+              amountToken: oldAmount,
+              usdValue: oldUsd,
+              ratio: oldRatio,
+            } = chartData['other']
+            newAmountToken += oldAmount
+            newUsdValue += oldUsd
+            newRatio += oldRatio
+          }
+          chartData['other'] = {
+            name: `Other`,
+            symbol: '',
+            amountToken: newAmountToken,
+            usdValue: newUsdValue,
+            ratio: newRatio,
+          }
+          continue
+        } // group the tokens have small percent
         chartData[mint] = {
-          mint,
           name: `${tokenInfo?.name}`,
           symbol: `${tokenInfo?.symbol}`,
           amountToken,

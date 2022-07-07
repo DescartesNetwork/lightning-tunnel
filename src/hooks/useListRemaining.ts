@@ -24,6 +24,7 @@ const useListRemaining = () => {
     const { splt } = window.sentre
     const bulk: Record<string, PublicKey> = {}
     for (const address in distributors) {
+      if (!distributors[address]) continue
       const { mint } = distributors[address]
       const treasurerAddress = await utility.deriveTreasurerAddress(address)
       const associatedAddress = await splt.deriveAssociatedAddress(

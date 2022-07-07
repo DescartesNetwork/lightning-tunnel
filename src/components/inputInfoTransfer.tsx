@@ -176,8 +176,9 @@ const InputInfoTransfer = ({
   }, [walletAddress, amount])
 
   const checkIsTyping = useCallback(() => {
-    if (amount || walletAddress) return
-    if (formInput.walletAddress || formInput.amount)
+    if ((amount || walletAddress) && !isEdit)
+      return dispatch(setIsTyping(false))
+    if (formInput.walletAddress || formInput.amount || isEdit)
       return dispatch(setIsTyping(true))
     return dispatch(setIsTyping(false))
   }, [
@@ -185,6 +186,7 @@ const InputInfoTransfer = ({
     dispatch,
     formInput.amount,
     formInput.walletAddress,
+    isEdit,
     walletAddress,
   ])
 

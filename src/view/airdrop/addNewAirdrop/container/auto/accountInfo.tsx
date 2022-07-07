@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import { util } from '@sentre/senhub'
@@ -22,6 +22,7 @@ import {
   RecipientInfo,
   removeRecipient,
 } from 'model/recipients.controller'
+import { setIsTyping } from 'model/main.controller'
 
 type AccountInfoProps = {
   accountAddress?: string
@@ -66,9 +67,18 @@ const AccountInfo = ({
     return setIsEdit(false)
   }
 
+  const checkIsTyping = useCallback(() => {
+    if (isEdit) return dispatch(setIsTyping(true))
+    return dispatch(setIsTyping(false))
+  }, [dispatch, isEdit])
+
   useEffect(() => {
     setNextAmount(amount)
   }, [amount])
+
+  useEffect(() => {
+    checkIsTyping()
+  }, [checkIsTyping])
 
   return (
     <Row gutter={[16, 8]} align="middle" className="vesting-item">
@@ -121,7 +131,11 @@ const AccountInfo = ({
             <Button onClick={() => setIsEdit(false)} type="text">
               cancel
             </Button>
-            <Button onClick={onSave} type="text">
+            <Button
+              style={{ padding: 0, color: '#42E6EB' }}
+              onClick={onSave}
+              type="text"
+            >
               save
             </Button>
           </Space>

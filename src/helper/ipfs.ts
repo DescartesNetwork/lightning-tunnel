@@ -26,7 +26,7 @@ class IPFS {
     return new Promise(async (resolve, reject) => {
       setTimeout(() => {
         resolve(null)
-      }, 15000)
+      }, 30000)
       const re = await this.provider.get(cid)
       resolve(re)
     })

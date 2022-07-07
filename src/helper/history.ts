@@ -1,6 +1,6 @@
 import { account } from '@senswap/sen-js'
 import configs from 'configs'
-import { createPDB } from '@sentre/senhub'
+import { PDB } from '@sentre/senhub'
 import LocalForage from 'localforage'
 
 const {
@@ -24,7 +24,7 @@ class History {
     this.key = key
     if (!account.isAddress(walletAddress))
       throw new Error('Invalid wallet address')
-    const db = createPDB(walletAddress, appId)
+    const db = new PDB(walletAddress).createInstance(appId)
     if (!db) throw new Error('Invalid storage')
     this.db = db
   }

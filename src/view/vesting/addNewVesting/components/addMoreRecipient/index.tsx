@@ -14,6 +14,7 @@ import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { AppDispatch, AppState } from 'model'
 import { setRecipient, RecipientInfo } from 'model/recipients.controller'
 import useCalculateAmount from 'hooks/useCalculateAmount'
+import { setIsTyping } from 'model/main.controller'
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
@@ -139,6 +140,21 @@ const AddMoreRecipient = ({
     return Object.keys(recipientInfos).length + 1
   }, [index, recipientInfos, walletAddress])
 
+  const checkIsTyping = useCallback(() => {
+    if ((amount || walletAddress) && !isEdit)
+      return dispatch(setIsTyping(false))
+    if (formInput.walletAddress || formInput.amount || isEdit)
+      return dispatch(setIsTyping(true))
+    return dispatch(setIsTyping(false))
+  }, [
+    amount,
+    dispatch,
+    formInput.amount,
+    formInput.walletAddress,
+    isEdit,
+    walletAddress,
+  ])
+
   useEffect(() => {
     fetchDefaultUnlockTime()
   }, [fetchDefaultUnlockTime])
@@ -146,6 +162,10 @@ const AddMoreRecipient = ({
   useEffect(() => {
     fetchDefaultFormInput()
   }, [fetchDefaultFormInput])
+
+  useEffect(() => {
+    checkIsTyping()
+  }, [checkIsTyping])
 
   return (
     <Row gutter={[16, 16]} align="middle">

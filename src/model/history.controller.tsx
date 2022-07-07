@@ -8,14 +8,18 @@ import IPFS from 'helper/ipfs'
 /**
  * Interface & Utility
  */
-export type HistoryState = HistoryRecord[]
+export type HistoryState = {
+  listHistory: HistoryRecord[] | undefined
+}
 
 /**
  * Store constructor
  */
 
 const NAME = 'history'
-const initialState: HistoryRecord[] = []
+const initialState: HistoryState = {
+  listHistory: undefined,
+}
 
 /**
  * Actions
@@ -31,21 +35,21 @@ export const getHistory = createAsyncThunk<
 
   const { distributors } = getState()
 
-  const historyRecords: HistoryRecord[] = []
+  let listHistory: HistoryRecord[] | undefined
+
+  const history = new History('history', walletAddress)
+  const localHistory = (await history.get()) as HistoryRecord[] | undefined
+  if (localHistory && localHistory.length) return { listHistory: localHistory }
+
   const listDistributor = Object.keys(distributors).map((address) => ({
     address,
     ...distributors[address],
   }))
-
-  const history = new History('history', walletAddress)
-  const localHistory = (await history.get()) as HistoryRecord[]
-
-  if (localHistory.length) return localHistory
   const ipfs = new IPFS()
   for (const distributeData of listDistributor) {
     const { address, mint, total, metadata, authority } = distributeData
     if (authority.toBase58() !== walletAddress) continue
-
+    listHistory = listHistory ? [...listHistory] : []
     const cid = await getCID(metadata)
     const treeData: Buffer = await ipfs.get(cid)
     const historyRecord: HistoryRecord = {
@@ -55,11 +59,11 @@ export const getHistory = createAsyncThunk<
       time: '',
       treeData,
     }
-    history.append(historyRecord)
-    historyRecords.push(historyRecord)
-  }
 
-  return historyRecords
+    listHistory.push(historyRecord)
+  }
+  if (listHistory) history.set(listHistory)
+  return { listHistory }
 })
 
 /**

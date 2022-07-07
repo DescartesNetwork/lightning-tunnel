@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { MerkleDistributor } from '@sentre/utility'
 
@@ -21,24 +21,27 @@ export type ItemSent = HistoryRecord & {
 }
 
 const useSentList = ({ type }: { type: TypeDistribute }) => {
-  const [loading, setLoading] = useState(false)
   const [sentList, setSentList] = useState<ItemSent[]>([])
   const [numberOfRecipient, setNumberOfRecipient] = useState(0)
   const distributors = useSelector((state: AppState) => state.distributors)
-  const history = useSelector((state: AppState) => state.history)
+  const { listHistory } = useSelector((state: AppState) => state.history)
   const { listRemaining } = useListRemaining()
+
+  const loading = useMemo(
+    () => (listHistory === undefined ? true : false),
+    [listHistory],
+  )
 
   const fetchHistory = useCallback(async () => {
     const nextHistory: ItemSent[] = []
     let newNumberOfRecipient = 0
     const listAddress: string[] = []
     try {
-      setLoading(true)
       const airdropSalt = MerkleDistributor.salt(`${appId}/${type}/0`)
-
-      for (const historyItem of history) {
+      if (!listHistory) return
+      for (const historyItem of listHistory) {
         const { treeData, distributorAddress } = historyItem
-        if (!treeData) continue
+        if (!treeData || !distributors[distributorAddress]) continue
         const parseData = JSON.parse(JSON.stringify(treeData)).data
         const merkleDistributor = MerkleDistributor.fromBuffer(
           Buffer.from(parseData || treeData),
@@ -74,11 +77,10 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
       }
     } catch (er) {
     } finally {
-      setLoading(false)
       setNumberOfRecipient(newNumberOfRecipient)
       return setSentList(nextHistory)
     }
-  }, [distributors, history, listRemaining, type])
+  }, [distributors, listHistory, listRemaining, type])
 
   useEffect(() => {
     fetchHistory()

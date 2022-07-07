@@ -46,11 +46,15 @@ const AirdropReceive = () => {
     for (const address in listReceived) {
       const { recipientData, index } = listReceived[address]
       const { salt } = recipientData
-      const airdropSalt = MerkleDistributor.salt(
+      const airdropSalt_v2 = MerkleDistributor.salt(
         `${appId}/${TypeDistribute.Airdrop}/${index}`,
       )
-      if (Buffer.compare(airdropSalt, salt) !== 0) continue
-      airdropReceive.push(listReceived[address])
+      const airdropSalt_v1 = MerkleDistributor.salt(index.toString())
+      if (
+        Buffer.compare(airdropSalt_v2, salt) === 0 ||
+        Buffer.compare(airdropSalt_v1, salt) === 0
+      )
+        airdropReceive.push(listReceived[address])
     }
 
     return airdropReceive

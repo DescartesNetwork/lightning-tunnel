@@ -80,37 +80,38 @@ const ConfirmTransfer = () => {
       const ipfs = new IPFS()
 
       const cid = await ipfs.set(treeData.toJSON().data)
-      const {
-        multihash: { digest },
-      } = CID.parse(cid)
+      console.log(cid)
+      // const {
+      //   multihash: { digest },
+      // } = CID.parse(cid)
 
-      const metadata = Buffer.from(digest)
+      // const metadata = Buffer.from(digest)
 
-      const { txId, distributorAddress } = await utility.initializeDistributor({
-        tokenAddress: mintSelected,
-        total: merkleDistributor.getTotal(),
-        merkleRoot: merkleDistributor.deriveMerkleRoot(),
-        metadata,
-        endedAt: 0,
-        feeOptions,
-      })
+      // const { txId, distributorAddress } = await utility.initializeDistributor({
+      //   tokenAddress: mintSelected,
+      //   total: merkleDistributor.getTotal(),
+      //   merkleRoot: merkleDistributor.deriveMerkleRoot(),
+      //   metadata,
+      //   endedAt: 0,
+      //   feeOptions,
+      // })
 
-      const historyRecord: HistoryRecord = {
-        total: merkleDistributor.getTotal().toNumber(),
-        time: new Date().toString(),
-        mint: mintSelected,
-        distributorAddress,
-      }
+      // const historyRecord: HistoryRecord = {
+      //   total: merkleDistributor.getTotal().toNumber(),
+      //   time: new Date().toString(),
+      //   mint: mintSelected,
+      //   distributorAddress,
+      // }
 
-      const history = new History('history', walletAddress)
-      await history.append(historyRecord)
-      await dispatch(getHistory(walletAddress))
+      // const history = new History('history', walletAddress)
+      // await history.append(historyRecord)
+      // await dispatch(getHistory(walletAddress))
 
-      notifySuccess('Airdrop', txId)
+      // notifySuccess('Airdrop', txId)
 
-      return setRedeemLink(
-        `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`,
-      )
+      // return setRedeemLink(
+      //   `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`,
+      // )
     } catch (error: any) {
       window.notify({
         type: 'error',
@@ -202,8 +203,8 @@ const ConfirmTransfer = () => {
                 size="large"
                 onClick={onConfirm}
                 type="primary"
-                loading={loading}
-                disabled={remainingBalance < 0}
+                // loading={loading}
+                // disabled={remainingBalance < 0}
                 block
               >
                 TRANSFER

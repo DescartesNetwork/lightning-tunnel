@@ -58,6 +58,7 @@ const Redeem = () => {
       setDistributor(distributor)
 
       const cid = await getCID(distributor.metadata)
+      console.log(cid, 'cid')
       const data = await ipfs.get(cid)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 

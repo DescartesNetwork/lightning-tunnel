@@ -54,7 +54,7 @@ const Action = () => {
           size="large"
           onClick={() => dispatch(onSelectStep(Step.three))}
           type="primary"
-          disabled={disabled}
+          // disabled={disabled}
           block
         >
           Continue

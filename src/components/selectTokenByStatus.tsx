@@ -29,7 +29,7 @@ const SelectTokenByStatus = ({
   if (isMobile)
     return (
       <RadioButtonSelect
-        label="Filter by time"
+        label="Filter by status"
         onSelected={onChange}
         value={STATUS_OPTIONS}
         selected={value}
@@ -40,11 +40,11 @@ const SelectTokenByStatus = ({
     <Select
       className="select-existed-token"
       style={{ minWidth: 150 }}
-      defaultValue="all"
+      defaultValue={ALL}
       onChange={onChange}
       size="large"
     >
-      <Select.Option value="all">All status</Select.Option>
+      <Select.Option value={ALL}>All status</Select.Option>
       {STATUS_OPTIONS.map((status, idx) => (
         <Select.Option value={status} key={idx}>
           {status}

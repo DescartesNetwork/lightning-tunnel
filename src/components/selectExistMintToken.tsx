@@ -1,5 +1,8 @@
-import { Select, Space } from 'antd'
 import { CSSProperties } from 'react'
+
+import { Select, Space } from 'antd'
+
+import { ALL } from '../constants'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 
 type SelectExistMintTokenProps = {
@@ -16,11 +19,11 @@ const SelectExistMintToken = ({
     <Select
       className="select-existed-token"
       style={{ minWidth: 150, ...style }}
-      defaultValue="all"
+      defaultValue={ALL}
       onChange={onChange}
       size="large"
     >
-      <Select.Option value="all">All token</Select.Option>
+      <Select.Option value={ALL}>All token</Select.Option>
       {mintAddresses.map((mintAddr, idx) => (
         <Select.Option value={mintAddr} key={idx}>
           <Space>

@@ -18,6 +18,7 @@ import configs from 'configs'
 
 import REDEEM_IMG from 'static/images/redeem.svg'
 import REDEEM_SUCCESS from 'static/images/redeem_success.svg'
+import NOT_MEMBER from 'static/images/not_member.svg'
 
 import { useSelector } from 'react-redux'
 import { AppState } from 'model'
@@ -33,6 +34,7 @@ const Redeem = () => {
   const [decimals, setDecimals] = useState<number>(0)
   const [distributor, setDistributor] = useState<DistributorData>()
   const [isValid, setIsValid] = useState(true)
+  const [isMember, setIsMember] = useState(true)
   const [amountTaken, setAmountTaken] = useState('')
   const receipts = useSelector((state: AppState) => state.receipts)
 
@@ -59,7 +61,6 @@ const Redeem = () => {
         distributorAddress,
       )
       setDistributor(distributor)
-
       const cid = await getCID(distributor.metadata)
       const data: number[] = await ipfs.get(cid)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
@@ -78,11 +79,7 @@ const Redeem = () => {
     for (const recipient of recipients) {
       if (walletAddress === recipient.authority.toBase58()) return recipient
     }
-    window.notify({
-      type: 'warning',
-      description: 'You are not in the list.',
-    })
-
+    setIsMember(false)
     return setIsValid(false)
   }, [merkle, walletAddress])
 
@@ -155,6 +152,12 @@ const Redeem = () => {
     fetchRecipientData()
   }, [fetchRecipientData])
 
+  const img = useMemo(() => {
+    if (!isMember) return NOT_MEMBER
+    if (amountTaken) return REDEEM_SUCCESS
+    return REDEEM_IMG
+  }, [amountTaken, isMember])
+
   return (
     <Row gutter={[24, 24]} justify="center" className="lightning-container">
       <Col xs={24} md={16} lg={14}>
@@ -176,31 +179,34 @@ const Redeem = () => {
               </Button>
             </Col>
             <Col span={24}>
-              <Image
-                src={amountTaken ? REDEEM_SUCCESS : REDEEM_IMG}
-                preview={false}
-              />
+              <Image src={img} preview={false} />
             </Col>
             <Col span={24}>
-              <Space direction="vertical" size={4}>
-                <Typography.Title level={3}>
-                  Redemption {amountTaken && 'successfully'}!
-                </Typography.Title>
-                <Space size={4}>
-                  <Typography.Text type="secondary">
-                    {amountTaken ? 'You took' : "Let's take"}
-                  </Typography.Text>
-                  <Typography.Title level={5} style={{ color: '#42E6EB' }}>
-                    {utils.undecimalize(
-                      BigInt(recipientData?.amount.toString() || 0),
-                      decimals,
-                    )}{' '}
-                    <MintSymbol
-                      mintAddress={distributor?.mint.toBase58() || ''}
-                    />
+              {isMember ? (
+                <Space direction="vertical" size={4}>
+                  <Typography.Title level={3}>
+                    Redemption {amountTaken && 'successfully'}!
                   </Typography.Title>
+                  <Space size={4}>
+                    <Typography.Text type="secondary">
+                      {amountTaken ? 'You took' : "Let's take"}
+                    </Typography.Text>
+                    <Typography.Title level={5} style={{ color: '#42E6EB' }}>
+                      {utils.undecimalize(
+                        BigInt(recipientData?.amount.toString() || 0),
+                        decimals,
+                      )}{' '}
+                      <MintSymbol
+                        mintAddress={distributor?.mint.toBase58() || ''}
+                      />
+                    </Typography.Title>
+                  </Space>
                 </Space>
-              </Space>
+              ) : (
+                <Typography.Title level={3}>
+                  You are not in the list!
+                </Typography.Title>
+              )}
             </Col>
             <Col span={24}>
               {!isValid ? (

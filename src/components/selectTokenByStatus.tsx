@@ -6,9 +6,8 @@ import RadioButtonSelect from './radioButtonSelect'
 import { ALL, State } from '../constants'
 
 const STATUS_OPTIONS = [
-  State.loading,
-  State.waiting,
   State.ready,
+  State.waiting,
   State.claimed,
   State.expired,
 ]

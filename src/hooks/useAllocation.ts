@@ -12,9 +12,8 @@ import { useCgk } from './useCgk'
 const useAllocation = (type: TypeDistribute) => {
   const [allocation, setAllocation] = useState<Record<string, Allocation>>({})
   const [totalUSD, setTotalUSD] = useState(0)
-  const [loading, setLoading] = useState(false)
   const { getDecimals, tokenProvider } = useMint()
-  const { listHistory, numberOfRecipient } = useSentList({ type })
+  const { listHistory, numberOfRecipient, loading } = useSentList({ type })
   const { getTotalBalance } = useCgk()
 
   const listToken = useMemo(() => {
@@ -53,7 +52,6 @@ const useAllocation = (type: TypeDistribute) => {
 
   const fetchAllocation = useCallback(async () => {
     try {
-      setLoading(true)
       const chartData: Record<string, Allocation> = {}
       if (!totalUSD) return setAllocation(chartData)
       const tokenPrices = await calcTokenPrices()
@@ -99,8 +97,6 @@ const useAllocation = (type: TypeDistribute) => {
       return setAllocation(chartData)
     } catch (error) {
       notifyError(error)
-    } finally {
-      setLoading(false)
     }
   }, [calcTokenPrices, getDecimals, listToken, tokenProvider, totalUSD])
 

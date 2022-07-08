@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { useWallet } from '@sentre/senhub'
 import BN from 'bn.js'
 
-import { Col, Row, Spin } from 'antd'
+import { Col, Row } from 'antd'
 import HeroCard from './heroCard'
 
 import useTotalUSD from 'hooks/useTotalUSD'
@@ -13,7 +13,7 @@ import { useCgk } from 'hooks/useCgk'
 const Hero = () => {
   const [totalReceived, setTotalReceived] = useState(0)
   const [totalDistribution, setTotalDistribution] = useState(0)
-  const { totalUSD, loading } = useTotalUSD()
+  const { totalUSD } = useTotalUSD()
   const receipts = useSelector((state: AppState) => state.receipts)
   const distributors = useSelector((state: AppState) => state.distributors)
   const { getTotalBalance } = useCgk()
@@ -60,13 +60,11 @@ const Hero = () => {
   return (
     <Row gutter={[24, 24]}>
       <Col lg={8} md={12} xs={24}>
-        <Spin spinning={loading}>
-          <HeroCard
-            label="Total balance"
-            icon="wallet-outline"
-            value={totalUSD}
-          />
-        </Spin>
+        <HeroCard
+          label="Total balance"
+          icon="wallet-outline"
+          value={totalUSD}
+        />
       </Col>
       <Col lg={8} md={12} xs={24}>
         <HeroCard

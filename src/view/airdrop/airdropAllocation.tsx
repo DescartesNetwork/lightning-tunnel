@@ -1,4 +1,4 @@
-import { Card, Col, Row, Typography, Spin, Empty } from 'antd'
+import { Card, Col, Row, Typography, Empty } from 'antd'
 import DoughnutChart from 'components/charts/doughnutChart'
 import CustomizedLegend from 'components/charts/doughnutChart/customizedLegend'
 
@@ -14,33 +14,32 @@ const AirdropAllocation = ({
   loading,
 }: AirdropAllocationProps) => {
   return (
-    <Spin spinning={loading}>
-      <Card
-        className="card-lightning"
-        style={{ height: '100%' }}
-        bodyStyle={{ paddingBottom: 0 }}
-      >
-        <Row gutter={[24, 24]}>
-          <Col span={24}>
-            <Typography.Title level={5}>Airdrop allocation</Typography.Title>
-          </Col>
-          <Col span={24}>
-            {!Object.keys(airdropAllocation).length ? (
-              <Empty />
-            ) : (
-              <Row gutter={[8, 8]} align="middle">
-                <Col xs={14} sm={10}>
-                  <DoughnutChart data={airdropAllocation} />
-                </Col>
-                <Col xs={10} sm={14}>
-                  <CustomizedLegend data={airdropAllocation} />
-                </Col>
-              </Row>
-            )}
-          </Col>
-        </Row>
-      </Card>
-    </Spin>
+    <Card
+      loading={loading}
+      className="card-lightning"
+      style={{ height: '100%' }}
+      bodyStyle={{ paddingBottom: 0 }}
+    >
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <Typography.Title level={5}>Airdrop allocation</Typography.Title>
+        </Col>
+        <Col span={24}>
+          {!Object.keys(airdropAllocation).length ? (
+            <Empty />
+          ) : (
+            <Row gutter={[8, 8]} align="middle">
+              <Col xs={14} sm={10}>
+                <DoughnutChart data={airdropAllocation} />
+              </Col>
+              <Col xs={10} sm={14}>
+                <CustomizedLegend data={airdropAllocation} />
+              </Col>
+            </Row>
+          )}
+        </Col>
+      </Row>
+    </Card>
   )
 }
 

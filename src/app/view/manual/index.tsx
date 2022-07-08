@@ -77,7 +77,7 @@ const Manual = () => {
                 type="primary"
                 onClick={() => dispatch(onSelectStep(Step.three))}
                 block
-                disabled={disabled}
+                // disabled={disabled}
               >
                 Continue
               </Button>

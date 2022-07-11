@@ -12,7 +12,7 @@ import AddUnlockTime from '../components/addUnlockTime'
 import ConfirmTransfer from 'view/confirmTransfer'
 import DateOption from 'components/dateOption'
 import CardOption from 'components/cardOption'
-import SelectToken from 'components/selectTokens'
+import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import Header from 'components/header'
 
 import { ONE_DAY, SelectMethod, Step } from '../../../../constants'
@@ -33,7 +33,7 @@ import {
 import { useAppRouter } from 'hooks/useAppRoute'
 
 const SelectInputMethod = () => {
-  const [activeMintAddress, setActiveMintAddress] = useState('Select')
+  const [activeMintAddress, setActiveMintAddress] = useState(EMPTY_SELECT_VAL)
   const [isUnlimited, setIsUnlimited] = useState(false)
   const method = useSelector((state: AppState) => state.main.methodSelected)
   const advanced = useSelector(
@@ -98,7 +98,7 @@ const SelectInputMethod = () => {
   }, [distributeIn, expiration, isUnlimited, method, unlockTime])
 
   const disabled = useMemo(() => {
-    if (activeMintAddress === 'Select' || !method) return true
+    if (activeMintAddress === EMPTY_SELECT_VAL || !method) return true
     if (advanced)
       return (
         (!expiration && !isUnlimited) ||

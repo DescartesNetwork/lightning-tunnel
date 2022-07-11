@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Col, Row } from 'antd'
 import HeroCard from '../dashboard/hero/heroCard'
+import IonIcon from '@sentre/antd-ionicon'
 
 type StatisticVestingProps = {
   valueInUSD: number
@@ -22,18 +23,18 @@ const StatisticVesting = ({
         <HeroCard
           loading={!valueInUSD && loading}
           label="Total vesting"
-          icon="wallet-outline"
+          icon={<IonIcon className="card-hero-icon" name="receipt-outline" />}
           value={valueInUSD}
-          cardStyles={{ padding: '8px 24px' }}
         />
       </Col>
       <Col span={24}>
         <HeroCard
           loading={!numberOfCampaign && loading}
           label="Total campaigns"
-          icon="paper-plane-outline"
+          icon={
+            <IonIcon className="card-hero-icon" name="paper-plane-outline" />
+          }
           value={numberOfCampaign}
-          cardStyles={{ padding: '8px 24px' }}
           unit=""
         />
       </Col>
@@ -41,9 +42,8 @@ const StatisticVesting = ({
         <HeroCard
           loading={!recipientList && loading}
           label="Total recipients"
-          icon="people-outline"
+          icon={<IonIcon className="card-hero-icon" name="people-outline" />}
           value={recipientList}
-          cardStyles={{ padding: '8px 24px' }}
           unit=""
         />
       </Col>

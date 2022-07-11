@@ -1,14 +1,13 @@
-import { CSSProperties } from 'react'
+import { CSSProperties, ReactNode } from 'react'
 import { util } from '@sentre/senhub'
 
-import IonIcon from '@sentre/antd-ionicon'
-import { Card, Col, Row, Typography } from 'antd'
+import { Card, Col, Row, Space, Typography } from 'antd'
 
 import './heroCard.less'
 
 type HeroCardProps = {
   label: string
-  icon: string
+  icon: ReactNode
   value: string | number
   unit?: string
   loading?: boolean
@@ -32,17 +31,15 @@ const HeroCard = ({
   >
     <Row align="middle">
       <Col flex="auto">
-        <Typography.Text type="secondary">{label}</Typography.Text>
+        <Space direction="vertical">
+          <Typography.Text type="secondary">{label}</Typography.Text>
+          <Typography.Title level={4}>
+            {unit}
+            {util.numeric(value).format('0,0.[000]')}
+          </Typography.Title>
+        </Space>
       </Col>
-      <Col>
-        <IonIcon className="card-hero-icon" name={icon} />
-      </Col>
-      <Col span={24}>
-        <Typography.Title level={5}>
-          {unit}
-          {util.numeric(value).format('0,0.[000]')}
-        </Typography.Title>
-      </Col>
+      <Col>{icon}</Col>
     </Row>
   </Card>
 )

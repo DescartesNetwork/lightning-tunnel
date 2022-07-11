@@ -2,7 +2,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-import { Menu, MenuProps } from 'antd'
+import {
+  Avatar,
+  Col,
+  Layout,
+  Menu,
+  MenuProps,
+  Row,
+  Space,
+  Typography,
+} from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { useAppRouter } from 'hooks/useAppRoute'
@@ -15,6 +24,8 @@ import {
   setGlobalUnlockTime,
 } from 'model/recipients.controller'
 import { SelectMethod, Step, SIDE_BAR_ITEMS } from '../../constants'
+
+import LOGO from 'static/images/logo.svg'
 
 const LIST_MENU_ITEM = [
   {
@@ -34,11 +45,16 @@ const LIST_MENU_ITEM = [
   },
 ]
 
+const URL_GUIDE_LINE =
+  'https://academy.sentre.io/#/blogs/123246296205?category=dev'
+
 const SideBar = () => {
   const [sideBarKey, setSideBarKey] = useState(SIDE_BAR_ITEMS.Dashboard)
   const { pathname } = useLocation()
   const { appRoute, pushHistory } = useAppRouter()
   const dispatch = useDispatch<AppDispatch>()
+
+  const { Content, Footer } = Layout
 
   const onSelect: MenuProps['onClick'] = async (e) => {
     await dispatch(onSelectStep(Step.SelectMethod))
@@ -70,12 +86,36 @@ const SideBar = () => {
   }, [fetchDistributeType])
 
   return (
-    <Menu
-      selectedKeys={[sideBarKey]}
-      onClick={onSelect}
-      className="sidebar-content"
-      items={LIST_MENU_ITEM}
-    />
+    <Layout className="sidebar-layout">
+      <Content>
+        <Row>
+          <Col span={24} style={{ padding: '24px 16px' }}>
+            <Space>
+              <Avatar size={24} src={LOGO} shape="square" />
+              <Typography.Title level={5}>Lightning tunnel</Typography.Title>
+            </Space>
+          </Col>
+          <Col span={24}>
+            <Menu
+              selectedKeys={[sideBarKey]}
+              onClick={onSelect}
+              className="sidebar-content"
+              items={LIST_MENU_ITEM}
+            />
+          </Col>
+        </Row>
+      </Content>
+      <Footer className="sidebar_footer">
+        <Space
+          size={12}
+          style={{ cursor: 'pointer' }}
+          onClick={() => window.open(URL_GUIDE_LINE, '_blank')}
+        >
+          <IonIcon style={{ fontSize: 24 }} name="information-circle-outline" />
+          <Typography.Title level={5}>Guidelines</Typography.Title>
+        </Space>
+      </Footer>
+    </Layout>
   )
 }
 

@@ -4,6 +4,7 @@ import { getCID } from 'helper'
 
 import History, { HistoryRecord } from 'helper/history'
 import IPFS from 'helper/ipfs'
+import { DistributorState } from './distributor.controller'
 
 /**
  * Interface & Utility
@@ -27,13 +28,10 @@ const initialState: HistoryState = {
 
 export const getHistory = createAsyncThunk<
   HistoryState,
-  { walletAddress: string },
-  { state: any }
->(`${NAME}/getHistory`, async ({ walletAddress }, { getState }) => {
+  { walletAddress: string; distributors: DistributorState }
+>(`${NAME}/getHistory`, async ({ walletAddress, distributors }) => {
   if (!account.isAddress(walletAddress))
     throw new Error('Wallet is not connected')
-
-  const { distributors } = getState()
 
   let listHistory: HistoryRecord[] | undefined
 

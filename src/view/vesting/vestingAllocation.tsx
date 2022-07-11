@@ -17,6 +17,7 @@ const VestingAllocation = ({
     <Card
       className="card-lightning"
       bodyStyle={{ paddingBottom: 0 }}
+      style={{ height: '100%' }}
       loading={loading}
     >
       <Row gutter={[24, 24]}>

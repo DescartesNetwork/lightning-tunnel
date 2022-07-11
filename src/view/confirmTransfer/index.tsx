@@ -49,6 +49,7 @@ const ConfirmTransfer = () => {
     main: { mintSelected, typeDistribute },
     setting: { decimal: isDecimal },
     recipients: { recipientInfos, expirationTime },
+    distributors,
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -122,7 +123,7 @@ const ConfirmTransfer = () => {
       }
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
-      await dispatch(getHistory({ walletAddress }))
+      await dispatch(getHistory({ walletAddress, distributors }))
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)

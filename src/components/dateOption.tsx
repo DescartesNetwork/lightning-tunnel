@@ -1,7 +1,7 @@
+import moment from 'moment'
+
 import IonIcon from '@sentre/antd-ionicon'
 import { Col, DatePicker, Row, Typography, Switch } from 'antd'
-import moment from 'moment'
-import { useState } from 'react'
 
 type DateOptionProps = {
   placeholder: string
@@ -11,6 +11,7 @@ type DateOptionProps = {
   label: string
   value: number
   error: string
+  checked: boolean
 }
 
 const DateOption = ({
@@ -21,11 +22,10 @@ const DateOption = ({
   label,
   value,
   error,
+  checked,
 }: DateOptionProps) => {
-  const [disabled, setDisabled] = useState(false)
   const onSwitchChange = (isDisable: boolean) => {
     onChange(0) //clear time
-    setDisabled(isDisable)
     onSwitch(isDisable)
   }
   return (
@@ -38,10 +38,10 @@ const DateOption = ({
           <Col>
             <Row gutter={[8, 8]}>
               <Col xs={{ order: 2 }} lg={{ order: 1 }}>
-                <Switch onChange={onSwitchChange} />
+                <Typography.Text>{switchText}</Typography.Text>
               </Col>
               <Col xs={{ order: 1 }} lg={{ order: 2 }}>
-                <Typography.Text>{switchText}</Typography.Text>
+                <Switch checked={checked} onChange={onSwitchChange} />
               </Col>
             </Row>
           </Col>
@@ -53,7 +53,7 @@ const DateOption = ({
           suffixIcon={<IonIcon name="time-outline" />}
           className="date-option"
           onChange={(date) => onChange(date?.valueOf() || 0)}
-          disabled={disabled}
+          disabled={checked}
           clearIcon={null}
           value={value ? moment(value) : null}
           showTime={{ showSecond: false }}

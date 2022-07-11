@@ -5,10 +5,15 @@ import BN from 'bn.js'
 
 import { Col, Row } from 'antd'
 import HeroCard from './heroCard'
+import IonIcon from '@sentre/antd-ionicon'
+import Icon from '@ant-design/icons'
 
 import useTotalUSD from 'hooks/useTotalUSD'
 import { AppState } from 'model'
 import { useCgk } from 'hooks/useCgk'
+
+import { ReactComponent as ProfitIn } from 'static/images/profit_in.svg'
+import { ReactComponent as ProfitOut } from 'static/images/profit_out.svg'
 
 const Hero = () => {
   const [totalReceived, setTotalReceived] = useState(0)
@@ -62,22 +67,37 @@ const Hero = () => {
       <Col lg={8} md={12} xs={24}>
         <HeroCard
           label="Total balance"
-          icon="wallet-outline"
+          icon={<IonIcon className="card-hero-icon" name="wallet-outline" />}
           value={totalUSD}
+          cardStyles={{ padding: '16px 24px' }}
         />
       </Col>
       <Col lg={8} md={12} xs={24}>
         <HeroCard
           label="Total distribution"
-          icon="log-out-outline"
+          icon={
+            <Icon
+              className="card-hero-icon"
+              style={{ fontSize: 32 }}
+              component={ProfitOut}
+            />
+          }
           value={totalDistribution}
+          cardStyles={{ padding: '16px 24px' }}
         />
       </Col>
       <Col lg={8} md={12} xs={24}>
         <HeroCard
           label="Total received"
-          icon="log-in-outline"
+          icon={
+            <Icon
+              className="card-hero-icon"
+              style={{ fontSize: 32 }}
+              component={ProfitIn}
+            />
+          }
           value={totalReceived}
+          cardStyles={{ padding: '16px 24px' }}
         />
       </Col>
     </Row>

@@ -1,8 +1,7 @@
 import { Fragment, useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useWallet, rpc } from '@sentre/senhub'
+import { useWallet } from '@sentre/senhub'
 import { account } from '@senswap/sen-js'
-import { Connection } from '@solana/web3.js'
 
 import { AppDispatch } from 'model'
 import { getReceipts, upsetReceipt } from 'model/receipts.controller'
@@ -13,13 +12,12 @@ const {
 } = configs
 
 let watcherId = 0
-const connection = new Connection(rpc, 'confirmed')
 
 const ReceiptWatcher = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const {
     wallet: { address: walletAddress },
   } = useWallet()
-  const dispatch = useDispatch<AppDispatch>()
 
   const fetchData = useCallback(async () => {
     try {
@@ -34,18 +32,16 @@ const ReceiptWatcher = () => {
   }, [dispatch, walletAddress])
 
   const watchData = useCallback(async () => {
-    watcherId = connection.onProgramAccountChange(
+    watcherId = utility.program.provider.connection.onProgramAccountChange(
       utility.program.programId,
       (data) => {
-        try {
-          const receiptData = utility.parseReceiptData(data.accountInfo.data)
-          dispatch(
-            upsetReceipt({
-              address: data.accountId.toBase58(),
-              receipt: receiptData,
-            }),
-          ).unwrap()
-        } catch (error) {}
+        const receiptData = utility.parseReceiptData(data.accountInfo.data)
+        dispatch(
+          upsetReceipt({
+            address: data.accountId.toBase58(),
+            receipt: receiptData,
+          }),
+        )
       },
       'confirmed',
       [
@@ -60,7 +56,6 @@ const ReceiptWatcher = () => {
         },
       ],
     )
-    if (!watcherId) setTimeout(() => watchData(), 500)
   }, [dispatch, walletAddress])
 
   useEffect(() => {
@@ -69,6 +64,7 @@ const ReceiptWatcher = () => {
     return () => {
       ;(async () => {
         await utility.removeListener(watcherId)
+        watcherId = 0
       })()
     }
   }, [fetchData, watchData])

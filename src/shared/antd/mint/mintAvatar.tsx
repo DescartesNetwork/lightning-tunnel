@@ -8,6 +8,7 @@ import IonIcon from '@sentre/antd-ionicon'
 const DEFAULT_AVATARS: Array<string | undefined> = [undefined]
 
 export type MintAvatarProps = {
+  key?: string
   mintAddress: string
   size?: number
   icon?: ReactNode
@@ -23,6 +24,7 @@ export type MintAvatarProps = {
  * @returns name
  */
 const MintAvatar = ({
+  key,
   mintAddress,
   size = 24,
   icon = <IonIcon name="diamond-outline" />,

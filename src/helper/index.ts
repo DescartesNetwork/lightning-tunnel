@@ -1,4 +1,4 @@
-import { CID } from 'ipfs-core'
+import { CID } from 'multiformats/cid'
 import { util, DataLoader } from '@sentre/senhub'
 
 export const notifySuccess = (content: string, txId: string) => {

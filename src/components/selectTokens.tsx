@@ -1,41 +1,53 @@
-import { Select, Space, Typography } from 'antd'
-import IonIcon from '@sentre/antd-ionicon'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { Fragment, useCallback, useState } from 'react'
 
-const DEFAULT_VALUE = 'Select'
+import { Button, Modal, Space } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
+
+import { ListMint, MintAvatar, MintSymbol } from 'shared/antd/mint'
+
+export const EMPTY_SELECT_VAL = 'empty'
 
 const SelectToken = ({
-  tokens,
   activeMintAddress,
   onSelect,
 }: {
-  tokens: string[]
   activeMintAddress: string
   onSelect: (mintAddress: string) => void
 }) => {
+  const [visible, setVisible] = useState(false)
+
+  const onSelectMint = useCallback(
+    (mintAddress: string) => {
+      onSelect(mintAddress)
+      setVisible(false)
+    },
+    [onSelect],
+  )
   return (
-    <Select
-      onChange={onSelect}
-      value={activeMintAddress || DEFAULT_VALUE}
-      className="select-token"
-    >
-      <Select.Option value={DEFAULT_VALUE}>
+    <Fragment>
+      <Button
+        className="select-token"
+        type="text"
+        onClick={() => setVisible(true)}
+      >
         <Space>
-          <IonIcon style={{ fontSize: 25 }} name="help-outline" />
-          <Typography.Text style={{ fontSize: 16 }}>
-            Select a token
-          </Typography.Text>
+          <MintAvatar mintAddress={activeMintAddress} />
+          <MintSymbol mintAddress={activeMintAddress} />
+          <IonIcon name="chevron-down-outline" />
         </Space>
-      </Select.Option>
-      {tokens.map((tokenAddress) => (
-        <Select.Option key={tokenAddress}>
-          <Space>
-            <MintAvatar mintAddress={tokenAddress} />
-            <MintSymbol mintAddress={tokenAddress} />
-          </Space>
-        </Select.Option>
-      ))}
-    </Select>
+      </Button>
+      <Modal
+        visible={visible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+        closable={false}
+        centered
+        className="card-lightning mint-select-modal"
+        destroyOnClose
+      >
+        <ListMint onChange={onSelectMint} />
+      </Modal>
+    </Fragment>
   )
 }
 

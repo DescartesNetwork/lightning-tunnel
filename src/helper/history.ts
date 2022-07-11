@@ -1,7 +1,6 @@
 import { account } from '@senswap/sen-js'
 import configs from 'configs'
 import { PDB } from '@sentre/senhub'
-import LocalForage from 'localforage'
 
 const {
   manifest: { appId },
@@ -16,7 +15,7 @@ export type HistoryRecord = {
 }
 
 class History {
-  private db: LocalForage
+  private db: ReturnType<InstanceType<typeof PDB>['createInstance']>
   private key: string
 
   constructor(key: string, walletAddress: string) {

@@ -4,7 +4,7 @@ import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { useWallet } from '@sentre/senhub'
 import { account, utils } from '@senswap/sen-js'
 import { BN } from 'bn.js'
-import { CID } from 'ipfs-core'
+import { CID } from 'multiformats/cid'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'
@@ -49,6 +49,7 @@ const ConfirmTransfer = () => {
     main: { mintSelected, typeDistribute },
     setting: { decimal: isDecimal },
     recipients: { recipientInfos, expirationTime },
+    distributors,
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -91,9 +92,9 @@ const ConfirmTransfer = () => {
   }
 
   const onConfirm = async () => {
-    if (!treeData) return
-    setLoading(true)
     try {
+      if (!treeData) throw new Error('Invalid Merkle Data')
+      setLoading(true)
       const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
       const ipfs = new IPFS()
 
@@ -122,7 +123,7 @@ const ConfirmTransfer = () => {
       }
       const history = new History('history', walletAddress)
       await history.append(historyRecord)
-      await dispatch(getHistory({ walletAddress }))
+      await dispatch(getHistory({ walletAddress, distributors }))
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)

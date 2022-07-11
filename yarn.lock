@@ -1997,10 +1997,10 @@
   resolved "https://registry.yarnpkg.com/@sentre/react-lazyload/-/react-lazyload-3.2.2.tgz#f3d921327a2b14b9b3a9e906d01034f11387097a"
   integrity sha512-NKJhz9G8pModoZJaLMziRJtd582pFHbIydNXwRI72ECkjqbc7XIgBX+8kssrUtRxK2rW9VVQnGKDpmyZ8iSIyw==
 
-"@sentre/senhub@^3.0.37":
-  version "3.0.37"
-  resolved "https://registry.yarnpkg.com/@sentre/senhub/-/senhub-3.0.37.tgz#340367e8c3ade523b682c6b48a384fb7259da78c"
-  integrity sha512-e09i1qND/ulkSNpeNH+SHiRuShVxUFLmRLjN/5UpKhGyrSpsa8rysRueg4jf80s9f42mRcrRFA3PAEeQbS64DA==
+"@sentre/senhub@^3.0.38":
+  version "3.0.38"
+  resolved "https://registry.yarnpkg.com/@sentre/senhub/-/senhub-3.0.38.tgz#8cedfa7abe323cab207bf0176dd3a818e1b0124f"
+  integrity sha512-e/B1yZDaYsUSrsdgRw4kAH3U0JThZwpmf+ef3xGZf6BB1REZ0isN0CZOFlXa/l03NbBZNXH9Si8CFIabsenP2A==
   dependencies:
     "@dnd-kit/core" "^4.0.1"
     "@dnd-kit/sortable" "^5.0.0"
@@ -12715,10 +12715,10 @@ send@0.18.0:
     range-parser "~1.2.1"
     statuses "2.0.1"
 
-sentre-web3@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/sentre-web3/-/sentre-web3-1.2.2.tgz#51e5549764c30a75918337d69601153f3d957b41"
-  integrity sha512-q/M2F6D/8kv4hkjUGinyOOOTX3nGUoXgua93Ay6iwW6dU4VaAeILl/76rakLmoqYebfJhZGFAEJXNm66tqXmCw==
+sentre-web3@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/sentre-web3/-/sentre-web3-1.2.3.tgz#a3982b4215043bd6d5e1135e0f84789c33dfa167"
+  integrity sha512-Oiuh5WWhiENMLDsLvpGgq6cJkjlXEYVYprvG6VHbxlMV5RfDI4kY2NjXiVZQ5O+OUyjCQ+hSTB8lZ/02kHT4vQ==
   dependencies:
     "@project-serum/anchor" "^0.24.2"
     bn.js "^5.2.1"

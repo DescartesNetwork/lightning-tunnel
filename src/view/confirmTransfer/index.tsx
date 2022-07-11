@@ -4,7 +4,7 @@ import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { useWallet } from '@sentre/senhub'
 import { account, utils } from '@senswap/sen-js'
 import { BN } from 'bn.js'
-import { CID } from 'ipfs-core'
+import { CID } from 'multiformats/cid'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'

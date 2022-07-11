@@ -27,8 +27,8 @@ const SelectInputMethod = () => {
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
   const [unlockTime, setUnlockTime] = useState(globalUnlockTime)
   const [expirationTime, setExpirationTime] = useState(endDate)
-  const [isSendNow, setIsSendNow] = useState(false)
-  const [isUnlimited, setIsUnlimited] = useState(false)
+  const [isSendNow, setIsSendNow] = useState(true)
+  const [isUnlimited, setIsUnlimited] = useState(true)
   const dispatch = useDispatch()
   const { accounts } = useAccount()
   const { pushHistory } = useAppRouter()
@@ -141,6 +141,7 @@ const SelectInputMethod = () => {
                     placeholder="Select unlock time"
                     value={unlockTime}
                     error={validStartDate}
+                    checked={isSendNow}
                   />
                 </Col>
                 <Col xs={24} lg={12}>
@@ -152,6 +153,7 @@ const SelectInputMethod = () => {
                     placeholder="Select time"
                     value={expirationTime}
                     error={validEndDate}
+                    checked={isUnlimited}
                   />
                 </Col>
               </Row>

@@ -34,7 +34,7 @@ import { useAppRouter } from 'hooks/useAppRoute'
 
 const SelectInputMethod = () => {
   const [activeMintAddress, setActiveMintAddress] = useState('Select')
-  const [isUnlimited, setIsUnlimited] = useState(false)
+  const [isUnlimited, setIsUnlimited] = useState(true)
   const method = useSelector((state: AppState) => state.main.methodSelected)
   const advanced = useSelector(
     (state: AppState) => state.advancedMode.isAdvancedMode,
@@ -234,6 +234,7 @@ const SelectInputMethod = () => {
                     placeholder="Select time"
                     value={expiration}
                     error={validEndDate}
+                    checked={isUnlimited}
                   />
                 </Col>
               </Row>

@@ -46,22 +46,26 @@ export const getHistory = createAsyncThunk<
     ...distributors[address],
   }))
   const ipfs = new IPFS()
-  for (const distributeData of listDistributor) {
-    const { address, mint, total, metadata, authority } = distributeData
-    if (authority.toBase58() !== walletAddress) continue
-    listHistory = listHistory ? [...listHistory] : []
-    const cid = await getCID(metadata)
-    const treeData: Buffer = await ipfs.get(cid)
-    const historyRecord: HistoryRecord = {
-      distributorAddress: address,
-      mint: mint.toBase58(),
-      total: total.toString(),
-      time: '',
-      treeData,
-    }
+  await Promise.all(
+    listDistributor.map(async (distributeData) => {
+      try {
+        listHistory = listHistory?.length ? [...listHistory] : []
+        const { address, mint, total, metadata, authority } = distributeData
+        if (authority.toBase58() !== walletAddress) return
+        const cid = await getCID(metadata)
+        const treeData: Buffer = await ipfs.get(cid)
+        const historyRecord: HistoryRecord = {
+          distributorAddress: address,
+          mint: mint.toBase58(),
+          total: total.toString(),
+          time: '',
+          treeData,
+        }
+        listHistory.push(historyRecord)
+      } catch (error) {}
+    }),
+  )
 
-    listHistory.push(historyRecord)
-  }
   if (listHistory) history.set(listHistory)
   return { listHistory }
 })

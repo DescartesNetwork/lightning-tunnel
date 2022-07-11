@@ -16,7 +16,6 @@ const VestingAllocation = ({
   return (
     <Card
       className="card-lightning"
-      style={{ height: '100%' }}
       bodyStyle={{ paddingBottom: 0 }}
       loading={loading}
     >

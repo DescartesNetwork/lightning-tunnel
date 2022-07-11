@@ -2,7 +2,7 @@ import { Select, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 
-const DEFAULT_VALUE = 'Select'
+export const EMPTY_SELECT_VAL = 'empty'
 
 const SelectToken = ({
   tokens,
@@ -16,10 +16,10 @@ const SelectToken = ({
   return (
     <Select
       onChange={onSelect}
-      value={activeMintAddress || DEFAULT_VALUE}
+      value={activeMintAddress || EMPTY_SELECT_VAL}
       className="select-token"
     >
-      <Select.Option value={DEFAULT_VALUE}>
+      <Select.Option value={EMPTY_SELECT_VAL}>
         <Space>
           <IonIcon style={{ fontSize: 25 }} name="help-outline" />
           <Typography.Text style={{ fontSize: 16 }}>

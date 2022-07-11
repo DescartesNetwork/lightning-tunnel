@@ -13,8 +13,8 @@ const HistoryWatcher = () => {
   } = useWallet()
 
   useEffect(() => {
-    dispatch(getHistory({ walletAddress }))
-  }, [dispatch, distributors, walletAddress])
+    dispatch(getHistory({ walletAddress, distributors }))
+  }, [dispatch, walletAddress, distributors])
 
   return <Fragment />
 }

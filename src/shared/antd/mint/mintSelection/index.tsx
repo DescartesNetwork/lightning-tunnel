@@ -10,6 +10,7 @@ export type MintSelectionProps = {
   onChange?: (value: string) => void
   style?: CSSProperties
   disabled?: boolean
+  nativeSol?: boolean
 }
 
 const MintSelection = ({
@@ -17,6 +18,7 @@ const MintSelection = ({
   onChange = () => {},
   style = {},
   disabled = false,
+  nativeSol = false,
 }: MintSelectionProps) => {
   const [visible, setVisible] = useState(false)
 
@@ -51,7 +53,7 @@ const MintSelection = ({
         className="mint-select-modal"
         destroyOnClose
       >
-        <SearchMints onChange={onSelect} />
+        <SearchMints onChange={onSelect} nativeSol={nativeSol} value={value} />
       </Modal>
     </Fragment>
   )

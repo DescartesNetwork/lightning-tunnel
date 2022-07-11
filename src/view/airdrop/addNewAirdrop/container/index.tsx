@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useAccount } from '@sentre/senhub'
 
 import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
-import SelectToken from 'components/selectTokens'
+import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import Header from 'components/header'
 import Auto from './auto'
 import Manual from './manual'
@@ -14,44 +13,40 @@ import CardOption from 'components/cardOption'
 import { SelectMethod, Step } from '../../../../constants'
 import { AppState } from 'model'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'
-import { useSingleMints } from 'hooks/useSingleMints'
 import { onSelectStep } from 'model/steps.controller'
 import { setExpiration, setGlobalUnlockTime } from 'model/recipients.controller'
 import { useAppRouter } from 'hooks/useAppRoute'
 
 const SelectInputMethod = () => {
+  const dispatch = useDispatch()
   const { expirationTime: endDate, globalUnlockTime } = useSelector(
     (state: AppState) => state.recipients,
   )
-  const [method, setMethod] = useState<number>(SelectMethod.manual)
-  const [activeMintAddress, setActiveMintAddress] = useState('Select')
+  const [method, setMethod] = useState<SelectMethod>(SelectMethod.manual)
+  const [activeMintAddress, setActiveMintAddress] = useState(EMPTY_SELECT_VAL)
   const [unlockTime, setUnlockTime] = useState(globalUnlockTime)
   const [expirationTime, setExpirationTime] = useState(endDate)
-  const [isSendNow, setIsSendNow] = useState(false)
-  const [isUnlimited, setIsUnlimited] = useState(false)
-  const dispatch = useDispatch()
-  const { accounts } = useAccount()
+  const [unlockImmediately, setUnlockImmediately] = useState(true)
+  const [isUnlimited, setIsUnlimited] = useState(true)
   const { pushHistory } = useAppRouter()
 
-  const myMints = useMemo(
-    () => Object.values(accounts).map((acc) => acc.mint),
-    [accounts],
-  )
-  const singleMints = useSingleMints(myMints)
-
   const startTime = useMemo(() => {
-    return isSendNow ? 0 : unlockTime
-  }, [isSendNow, unlockTime])
+    return unlockImmediately ? 0 : unlockTime
+  }, [unlockImmediately, unlockTime])
 
   const endTime = useMemo(() => {
     return isUnlimited ? 0 : expirationTime
   }, [expirationTime, isUnlimited])
 
   const validStartDate = useMemo(() => {
-    if (expirationTime < globalUnlockTime && !isSendNow && expirationTime)
+    if (
+      expirationTime < globalUnlockTime &&
+      !unlockImmediately &&
+      expirationTime
+    )
       return 'Must be less than the expiration time.'
     return ''
-  }, [expirationTime, globalUnlockTime, isSendNow])
+  }, [expirationTime, globalUnlockTime, unlockImmediately])
 
   const validEndDate = useMemo(() => {
     if (expirationTime < Date.now() && !isUnlimited && expirationTime)
@@ -70,9 +65,9 @@ const SelectInputMethod = () => {
   }
 
   const disabled =
-    activeMintAddress === 'Select' ||
+    activeMintAddress === EMPTY_SELECT_VAL ||
     !method ||
-    (!unlockTime && !isSendNow) ||
+    (!unlockTime && !unlockImmediately) ||
     (!expirationTime && !isUnlimited) ||
     (expirationTime < globalUnlockTime && !isUnlimited) ||
     (expirationTime < Date.now() && !isUnlimited)
@@ -93,7 +88,6 @@ const SelectInputMethod = () => {
             <Col span={24}>
               <SelectToken
                 activeMintAddress={activeMintAddress}
-                tokens={singleMints}
                 onSelect={onSelectMint}
               />
             </Col>
@@ -135,12 +129,13 @@ const SelectInputMethod = () => {
                 <Col xs={24} lg={12}>
                   <DateOption
                     label="Unlock time"
-                    onSwitch={setIsSendNow}
+                    onSwitch={setUnlockImmediately}
                     switchText="Send immediately"
                     onChange={setUnlockTime}
                     placeholder="Select unlock time"
                     value={unlockTime}
                     error={validStartDate}
+                    checked={unlockImmediately}
                   />
                 </Col>
                 <Col xs={24} lg={12}>
@@ -152,6 +147,7 @@ const SelectInputMethod = () => {
                     placeholder="Select time"
                     value={expirationTime}
                     error={validEndDate}
+                    checked={isUnlimited}
                   />
                 </Col>
               </Row>

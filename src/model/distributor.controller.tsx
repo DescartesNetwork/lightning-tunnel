@@ -27,11 +27,10 @@ export const getDistributors = createAsyncThunk(
   async () => {
     const { account } = utility.program
     let bulk: DistributorState = {}
-
     const distributors = await account.distributor.all()
     for (const { publicKey, account: distributorData } of distributors) {
       const address = publicKey.toBase58()
-      bulk[address] = distributorData as any
+      bulk[address] = distributorData
     }
     return bulk
   },

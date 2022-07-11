@@ -1,3 +1,4 @@
+import IonIcon from '@sentre/antd-ionicon'
 import { Col, Row } from 'antd'
 import HeroCard from '../dashboard/hero/heroCard'
 
@@ -19,18 +20,20 @@ const TotalAirdrop = ({
       <Col span={24}>
         <HeroCard
           label="Total airdrop"
-          icon="wallet-outline"
+          icon={
+            <IonIcon className="card-hero-icon" name="cloud-download-outline" />
+          }
           value={valueInUSD}
-          cardStyles={{ padding: '8px 24px' }}
           loading={!valueInUSD && loading}
         />
       </Col>
       <Col span={24}>
         <HeroCard
           label="Total campaigns"
-          icon="paper-plane-outline"
+          icon={
+            <IonIcon className="card-hero-icon" name="paper-plane-outline" />
+          }
           value={numberOfCampaign}
-          cardStyles={{ padding: '8px 24px' }}
           unit=""
           loading={!numberOfCampaign && loading}
         />
@@ -39,9 +42,8 @@ const TotalAirdrop = ({
         <HeroCard
           loading={!recipientList && loading}
           label="Total recipients"
-          icon="people-outline"
+          icon={<IonIcon className="card-hero-icon" name="people-outline" />}
           value={recipientList}
-          cardStyles={{ padding: '8px 24px' }}
           unit=""
         />
       </Col>

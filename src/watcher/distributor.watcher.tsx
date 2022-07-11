@@ -1,7 +1,5 @@
 import { Fragment, useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { Connection } from '@solana/web3.js'
-import { rpc } from '@sentre/senhub'
 
 import { AppDispatch } from 'model'
 import { getDistributors, upsetDistributor } from 'model/distributor.controller'
@@ -12,26 +10,23 @@ const {
 } = configs
 
 let watcherId = 0
-const connection = new Connection(rpc, 'confirmed')
 
 const DistributorWatcher = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   const watchData = useCallback(async () => {
-    watcherId = connection.onProgramAccountChange(
+    watcherId = utility.program.provider.connection.onProgramAccountChange(
       utility.program.programId,
       (data) => {
-        try {
-          const distributorData = utility.parseDistributorData(
-            data.accountInfo.data,
-          )
-          dispatch(
-            upsetDistributor({
-              address: data.accountId.toBase58(),
-              distributorData,
-            }),
-          ).unwrap()
-        } catch (error) {}
+        const distributorData = utility.parseDistributorData(
+          data.accountInfo.data,
+        )
+        dispatch(
+          upsetDistributor({
+            address: data.accountId.toBase58(),
+            distributorData,
+          }),
+        )
       },
       'confirmed',
       [
@@ -40,12 +35,17 @@ const DistributorWatcher = () => {
         },
       ],
     )
-    if (!watcherId) setTimeout(() => watchData(), 500)
   }, [dispatch])
 
   useEffect(() => {
-    watchData()
     dispatch(getDistributors())
+    watchData()
+    return () => {
+      ;(async () => {
+        await utility.removeListener(watcherId)
+        watcherId = 0
+      })()
+    }
   }, [dispatch, watchData])
 
   return <Fragment />

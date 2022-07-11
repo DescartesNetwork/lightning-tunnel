@@ -1,6 +1,5 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useAccount } from '@sentre/senhub'
 
 import { Button, Card, Col, Radio, Row, Space, Switch, Typography } from 'antd'
 import Auto from './auto'
@@ -16,7 +15,6 @@ import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import Header from 'components/header'
 
 import { ONE_DAY, SelectMethod, Step } from '../../../../constants'
-import { useSingleMints } from 'hooks/useSingleMints'
 import { AppState } from 'model'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
@@ -55,14 +53,7 @@ const SelectInputMethod = () => {
     (state: AppState) => state.recipients.globalConfigs.distributeIn,
   )
   const dispatch = useDispatch()
-  const { accounts } = useAccount()
   const { pushHistory } = useAppRouter()
-
-  const myMints = useMemo(
-    () => Object.values(accounts).map((acc) => acc.mint),
-    [accounts],
-  )
-  const singleMints = useSingleMints(myMints)
 
   const onSelectMint = (mintAddress: string) => {
     setActiveMintAddress(mintAddress)
@@ -134,7 +125,6 @@ const SelectInputMethod = () => {
             <Col span={24}>
               <SelectToken
                 activeMintAddress={activeMintAddress}
-                tokens={singleMints}
                 onSelect={onSelectMint}
               />
             </Col>

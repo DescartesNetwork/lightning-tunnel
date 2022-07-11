@@ -54,7 +54,7 @@ const MintSymbol = ({
     deriveSymbols()
   }, [deriveSymbols])
 
-  return <span>{symbol}</span>
+  return <span>{symbol + ' '}</span>
 }
 
 export default MintSymbol

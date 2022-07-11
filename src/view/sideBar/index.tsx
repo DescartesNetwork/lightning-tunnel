@@ -45,6 +45,9 @@ const LIST_MENU_ITEM = [
   },
 ]
 
+const URL_GUIDE_LINE =
+  'https://academy.sentre.io/#/blogs/123246296205?category=dev'
+
 const SideBar = () => {
   const [sideBarKey, setSideBarKey] = useState(SIDE_BAR_ITEMS.Dashboard)
   const { pathname } = useLocation()
@@ -103,7 +106,11 @@ const SideBar = () => {
         </Row>
       </Content>
       <Footer className="sidebar_footer">
-        <Space size={12} style={{ cursor: 'pointer' }}>
+        <Space
+          size={12}
+          style={{ cursor: 'pointer' }}
+          onClick={() => window.open(URL_GUIDE_LINE, '_blank')}
+        >
           <IonIcon style={{ fontSize: 24 }} name="information-circle-outline" />
           <Typography.Title level={5}>Guidelines</Typography.Title>
         </Space>

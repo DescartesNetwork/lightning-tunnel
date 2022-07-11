@@ -91,9 +91,9 @@ const ConfirmTransfer = () => {
   }
 
   const onConfirm = async () => {
-    if (!treeData) return
-    setLoading(true)
     try {
+      if (!treeData) throw new Error('Invalid Merkle Data')
+      setLoading(true)
       const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
       const ipfs = new IPFS()
 

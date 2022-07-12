@@ -41,7 +41,11 @@ const DateOption = ({
                 <Typography.Text>{switchText}</Typography.Text>
               </Col>
               <Col xs={{ order: 1 }} lg={{ order: 2 }}>
-                <Switch checked={checked} onChange={onSwitchChange} />
+                <Switch
+                  size="small"
+                  checked={checked}
+                  onChange={onSwitchChange}
+                />
               </Col>
             </Row>
           </Col>

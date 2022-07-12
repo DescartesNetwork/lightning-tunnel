@@ -16,7 +16,7 @@ import IonIcon from '@sentre/antd-ionicon'
 
 import { useAppRouter } from 'hooks/useAppRoute'
 import { AppDispatch } from 'model'
-import { onSelectMethod, setTypeDistribute } from 'model/main.controller'
+import { onSelectMethod, setTge, setTypeDistribute } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
 import {
   removeRecipients,
@@ -62,6 +62,7 @@ const SideBar = () => {
     await dispatch(removeRecipients())
     await dispatch(setGlobalUnlockTime(0))
     await dispatch(setExpiration(0))
+    await dispatch(setTge(''))
     return pushHistory(`/${e.key}`)
   }
 

@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
+import BN from 'bn.js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -49,7 +50,7 @@ const UploadFile = () => {
 
   const {
     recipients: { recipientInfos },
-    main: { mintSelected },
+    main: { mintSelected, tge },
   } = useSelector((state: AppState) => state)
   const mintDecimals = useMintDecimals(mintSelected) || 0
 
@@ -69,7 +70,7 @@ const UploadFile = () => {
         }
 
         const address = recipientData[INDEX_ADDRESS]
-        const amount = utilsBN.decimalize(
+        let amount = utilsBN.decimalize(
           recipientData[INDEX_AMOUNT],
           mintDecimals,
         )
@@ -80,8 +81,20 @@ const UploadFile = () => {
           isDuplicate = true
           continue
         }
-
         const recipientInfo: RecipientInfo[] = []
+
+        if (tge) {
+          const amountTge = amount.mul(new BN(tge)).div(new BN(100))
+          amount = amount.sub(amountTge)
+
+          const recipient: RecipientInfo = {
+            address,
+            amount: utilsBN.undecimalize(amountTge, mintDecimals),
+            unlockTime: Date.now(),
+          }
+          recipientInfo.push(recipient)
+        }
+
         const amountVesting = recipientData.length - INDEX_FIRST_UNLOCK_TIME
         const listAmount = calcListAmount(amount, amountVesting)
         for (let i = INDEX_FIRST_UNLOCK_TIME; i < recipientData.length; i++) {
@@ -114,7 +127,7 @@ const UploadFile = () => {
       setLoading(false)
       return false
     },
-    [calcListAmount, dispatch, mintDecimals],
+    [calcListAmount, dispatch, mintDecimals, tge],
   )
 
   const remove = async () => {

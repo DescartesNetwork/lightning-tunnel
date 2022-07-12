@@ -64,7 +64,7 @@ const InputInfoTransfer = ({
   )
   const [nextUnlockTime, setNextUnlockTime] = useState(0)
   const {
-    main: { mintSelected, typeDistribute },
+    main: { mintSelected, typeDistribute, tge },
     recipients,
     setting: { decimal },
   } = useSelector((state: AppState) => state)
@@ -95,6 +95,7 @@ const InputInfoTransfer = ({
     const { recipientInfos } = recipients
     if (recipientInfos[walletAddress] && !isEdit) return setVisible(true)
 
+    /** Airdrop */
     if (typeDistribute === 'airdrop') {
       const recipient: RecipientInfo = {
         address: walletAddress,
@@ -103,12 +104,28 @@ const InputInfoTransfer = ({
       }
       nextRecipients.push(recipient)
     }
+
+    /** Vesting */
     if (typeDistribute === 'vesting') {
       const distributionAmount = Math.floor(
         (nextDistributeIn * 30) / nextFrequency,
       )
-      const decimalAmount = utilsBN.decimalize(amount, mintDecimals)
-      const actualAmount = calcListAmount(decimalAmount, distributionAmount)
+      let decimalAmount = utilsBN.decimalize(amount, mintDecimals)
+
+      if (tge) {
+        const amountTge = decimalAmount.mul(new BN(tge)).div(new BN(100))
+        decimalAmount = decimalAmount.sub(amountTge)
+
+        const recipient: RecipientInfo = {
+          address: walletAddress,
+          amount: utilsBN.undecimalize(amountTge, mintDecimals),
+          unlockTime: Date.now(),
+          configs,
+        }
+        nextRecipients.push(recipient)
+      }
+
+      const listAmount = calcListAmount(decimalAmount, distributionAmount)
       for (let i = 0; i < distributionAmount; i++) {
         let unlockTime = 0
         if (i === 0) unlockTime = nextUnlockTime
@@ -117,7 +134,7 @@ const InputInfoTransfer = ({
             nextFrequency * ONE_DAY + nextRecipients[i - 1].unlockTime
         const recipient: RecipientInfo = {
           address: walletAddress,
-          amount: utilsBN.undecimalize(actualAmount[i], mintDecimals),
+          amount: utilsBN.undecimalize(listAmount[i], mintDecimals),
           unlockTime,
           configs,
         }

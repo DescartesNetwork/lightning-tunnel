@@ -78,3 +78,22 @@
   background-color: #233333 !important;
   border: none !important;
 }
+
+.tge-input {
+  padding: 13px !important;
+  background: rgba(35, 51, 51, 0.6) !important;
+  border-radius: 0 !important;
+  width: 100% !important;
+  border: none !important;
+  height: 56px !important;
+  &::after {
+    position: absolute;
+    content: '%';
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+.lightning_tunnel-input-number-handler-wrap {
+  display: none !important;
+}

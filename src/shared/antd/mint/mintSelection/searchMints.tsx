@@ -21,13 +21,18 @@ export type SearchMintsProps = {
   visible?: boolean
   onClose?: () => void
   nativeSol?: boolean
+  hoverable?: boolean
+  cardItemClassName?: string
 }
 
 const SearchMints = ({
   value = '',
   onChange = () => {},
+  onClose = () => {},
   visible,
   nativeSol = false,
+  hoverable = true,
+  cardItemClassName,
 }: SearchMintsProps) => {
   const [keyword, setKeyword] = useState('')
   const [offset, setOffset] = useState(LIMIT)
@@ -38,8 +43,9 @@ const SearchMints = ({
     (mintAddress: string) => {
       onChange(mintAddress)
       addRecommendMint(mintAddress)
+      onClose()
     },
-    [onChange, addRecommendMint],
+    [onChange, addRecommendMint, onClose],
   )
 
   useEffect(() => {
@@ -106,7 +112,12 @@ const SearchMints = ({
               searchedMints.slice(0, offset).map((mintAddress, index) => (
                 <Col span={24} key={mintAddress + index}>
                   <LazyLoad height={60} overflow throttle={300}>
-                    <MintCard mintAddress={mintAddress} onClick={onSelect} />
+                    <MintCard
+                      mintAddress={mintAddress}
+                      onClick={onSelect}
+                      hoverable={hoverable}
+                      className={cardItemClassName}
+                    />
                   </LazyLoad>
                   {index === offset - AMOUNT_BEFORE_LOAD_MORE && (
                     <LoadMore

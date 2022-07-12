@@ -2,6 +2,7 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import { utilsBN } from 'sentre-web3'
+import BN from 'bn.js'
 
 import { Button, Col, Input, Row } from 'antd'
 import NumericInput from '@sentre/antd-numeric-input'
@@ -51,6 +52,7 @@ const AddMoreRecipient = ({
   const expirationTime = useSelector(
     (state: AppState) => state.recipients.expirationTime,
   )
+  const tge = useSelector((state: AppState) => state.main.tge)
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const dispatch = useDispatch<AppDispatch>()
   const { calcListAmount } = useCalculateAmount()
@@ -83,7 +85,19 @@ const AddMoreRecipient = ({
     const { walletAddress: address, amount } = formInput
 
     const nextRecipients: RecipientInfo[] = []
-    const decimalAmount = utilsBN.decimalize(amount, mintDecimals)
+    let decimalAmount = utilsBN.decimalize(amount, mintDecimals)
+
+    if (tge) {
+      const amountTge = decimalAmount.mul(new BN(tge)).div(new BN(100))
+      decimalAmount = decimalAmount.sub(amountTge)
+      const recipient: RecipientInfo = {
+        address,
+        amount: utilsBN.undecimalize(amountTge, mintDecimals),
+        unlockTime: Date.now(),
+      }
+      nextRecipients.push(recipient)
+    }
+
     const listAmount = calcListAmount(decimalAmount, nextUnlockTime.length)
     for (let i = 0; i < nextUnlockTime.length; i++) {
       const unlockTime = nextUnlockTime[i]

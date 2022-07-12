@@ -26,6 +26,7 @@ const DecimalsSwitch = () => {
       unCheckedChildren={decimals}
       disabled={disabled}
       checked={isDecimal}
+      size="small"
     />
   )
 }

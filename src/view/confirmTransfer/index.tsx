@@ -35,6 +35,7 @@ import {
 } from 'model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import configs from 'configs'
+import { setTge } from 'model/main.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -148,6 +149,7 @@ const ConfirmTransfer = () => {
     await dispatch(setExpiration(0))
     await dispatch(setAdvancedMode(false))
     await dispatch(setListUnlockTime([]))
+    await dispatch(setTge(''))
     return pushHistory(`/${typeDistribute}`)
   }, [dispatch, pushHistory, typeDistribute])
 

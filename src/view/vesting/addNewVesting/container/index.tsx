@@ -1,7 +1,17 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Button, Card, Col, Radio, Row, Space, Switch, Typography } from 'antd'
+import {
+  Button,
+  Card,
+  Col,
+  InputNumber,
+  Radio,
+  Row,
+  Space,
+  Switch,
+  Typography,
+} from 'antd'
 import Auto from './auto'
 import Manual from './manual'
 import UnlockTime from '../components/unlockTime'
@@ -11,12 +21,12 @@ import AddUnlockTime from '../components/addUnlockTime'
 import ConfirmTransfer from 'view/confirmTransfer'
 import DateOption from 'components/dateOption'
 import CardOption from 'components/cardOption'
-import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import Header from 'components/header'
+import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 
 import { ONE_DAY, SelectMethod, Step } from '../../../../constants'
 import { AppState } from 'model'
-import { onSelectedMint, onSelectMethod } from 'model/main.controller'
+import { onSelectedMint, onSelectMethod, setTge } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
 import {
   Configs,
@@ -52,6 +62,7 @@ const SelectInputMethod = () => {
   const distributeIn = useSelector(
     (state: AppState) => state.recipients.globalConfigs.distributeIn,
   )
+  const tge = useSelector((state: AppState) => state.main.tge)
   const dispatch = useDispatch()
   const { pushHistory } = useAppRouter()
 
@@ -121,26 +132,43 @@ const SelectInputMethod = () => {
           <Header label="Select token type and input method" />
         </Col>
         <Col span={24}>
-          <Row gutter={[24, 24]}>
-            <Col span={24}>
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
               <SelectToken
                 activeMintAddress={activeMintAddress}
                 onSelect={onSelectMint}
               />
             </Col>
+            <Col span={12}>
+              <InputNumber
+                onChange={(tge) => dispatch(setTge(tge))}
+                value={tge}
+                className="tge-input"
+                placeholder="Input TGE (Optional)"
+                type="number"
+                max="100"
+                min="0"
+              />
+            </Col>
             <Col span={24}>
-              <Row gutter={[12, 12]}>
+              <Row gutter={[16, 16]}>
                 <Col flex="auto">
                   <Typography.Text>
                     Choose transfer info input method
                   </Typography.Text>
                 </Col>
-                <Col>
-                  <Space>
-                    <Typography.Text>Advanced mode</Typography.Text>
-                    <Switch checked={advanced} onChange={onChangeAdvanced} />
-                  </Space>
-                </Col>
+                {method === SelectMethod.manual && (
+                  <Col>
+                    <Space>
+                      <Typography.Text>Advanced mode</Typography.Text>
+                      <Switch
+                        checked={advanced}
+                        size="small"
+                        onChange={onChangeAdvanced}
+                      />
+                    </Space>
+                  </Col>
+                )}
                 <Col span={24}>
                   <Radio.Group
                     onChange={(e) => dispatch(onSelectMethod(e.target.value))}
@@ -148,7 +176,7 @@ const SelectInputMethod = () => {
                     className="select-card"
                     value={method}
                   >
-                    <Row gutter={[12, 12]}>
+                    <Row gutter={[16, 16]}>
                       <Col xs={24} sm={12} md={12} lg={12}>
                         <Radio.Button value={SelectMethod.manual}>
                           <CardOption
@@ -159,10 +187,7 @@ const SelectInputMethod = () => {
                         </Radio.Button>
                       </Col>
                       <Col xs={24} sm={12} md={12} lg={12}>
-                        <Radio.Button
-                          disabled={advanced}
-                          value={SelectMethod.auto}
-                        >
+                        <Radio.Button value={SelectMethod.auto}>
                           <CardOption
                             label="Automatic"
                             description="Support bulk import with a CSV file."
@@ -175,7 +200,7 @@ const SelectInputMethod = () => {
                 </Col>
               </Row>
             </Col>
-            {advanced && (
+            {advanced && method === SelectMethod.manual && (
               <Col span={24}>
                 <AddUnlockTime
                   listUnlockTime={listUnlockTime}
@@ -187,7 +212,7 @@ const SelectInputMethod = () => {
             )}
             <Col span={24}>
               <Row gutter={[16, 16]}>
-                {method === SelectMethod.manual && !advanced && (
+                {!advanced && method === SelectMethod.manual && (
                   <Fragment>
                     <Col xs={24} md={12} xl={6}>
                       <UnlockTime

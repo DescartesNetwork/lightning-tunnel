@@ -16,6 +16,7 @@ export type MainState = {
   visible: boolean
   isTyping: boolean
   typeDistribute: TypeDistribute
+  tge: string
 }
 
 /**
@@ -29,6 +30,7 @@ const initialState: MainState = {
   visible: false,
   isTyping: false,
   typeDistribute: TypeDistribute.Airdrop,
+  tge: '',
 }
 
 /**
@@ -70,6 +72,13 @@ export const setTypeDistribute = createAsyncThunk(
   },
 )
 
+export const setTge = createAsyncThunk(
+  `${NAME}/setTge`,
+  async (tge: string) => {
+    return { tge }
+  },
+)
+
 /**
  * Usual procedure
  */
@@ -98,6 +107,10 @@ const slice = createSlice({
       )
       .addCase(
         setTypeDistribute.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setTge.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

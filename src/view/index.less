@@ -90,6 +90,7 @@
         font-size: 24px;
       }
       background-color: transparent !important;
+      border-color: #4f5b5c !important;
 
       .lightning_tunnel-table-row-indent
         + .lightning_tunnel-table-row-expand-icon {
@@ -151,6 +152,11 @@
 .select-existed-token {
   .lightning_tunnel-select-selector {
     background-color: transparent !important;
+    height: 32px !important;
+    padding: 0 12px !important;
+    .lightning_tunnel-select-selection-item {
+      line-height: 30px !important;
+    }
   }
 }
 // filter
@@ -165,14 +171,9 @@
 
 //switch
 .lightning_tunnel-switch {
-  height: 16px !important;
-  min-width: 22px !important;
-  line-height: 18px !important;
   &-checked {
     background: #42e6eb !important;
-    .lightning_tunnel-switch-handle {
-      left: calc(100% - 12px - 2px) !important;
-    }
+
     .lightning_tunnel-switch-handle {
       &::before {
         background-color: #233333 !important;
@@ -180,13 +181,8 @@
     }
   }
   .lightning_tunnel-switch-handle {
-    height: 12px !important;
-    width: 12px !important;
     &::before {
       background-color: #233333 !important;
     }
-  }
-  .lightning_tunnel-switch-inner {
-    margin: 0 18px 0px 7px !important;
   }
 }

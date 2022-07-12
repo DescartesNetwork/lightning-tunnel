@@ -23,6 +23,7 @@ const Content = () => {
           <Switch
             disabled
             onChange={(checked: boolean) => dispatch(setEncryption(checked))}
+            size="small"
           />
           <Typography.Text>Encrypt confidential information</Typography.Text>
         </Space>

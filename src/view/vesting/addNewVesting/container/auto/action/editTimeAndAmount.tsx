@@ -34,7 +34,7 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
   const disabled = useMemo(() => {
     for (const { amount, unlockTime } of nextRecipientInfos) {
       if (!unlockTime || !amount) return true
-      if (unlockTime > expirationTime) return true
+      if (unlockTime > expirationTime && expirationTime) return true
       if (!decimal && Number(amount) % 1 !== 0) return true
     }
     return false

@@ -1,7 +1,8 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row } from 'antd'
+import CommonModal from 'components/commonModal'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
@@ -13,6 +14,7 @@ import { onSelectMethod } from 'model/main.controller'
 import { removeRecipients } from 'model/recipients.controller'
 
 const Action = () => {
+  const [visible, setVisible] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
     main: { isTyping, mintSelected },
@@ -37,12 +39,18 @@ const Action = () => {
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(onSelectMethod(SelectMethod.manual))
     await dispatch(removeRecipients())
+    return setVisible(false)
   }, [dispatch])
 
   return (
     <Row gutter={[16, 16]}>
       <Col span={12}>
-        <Button type="ghost" size="large" onClick={onBack} block>
+        <Button
+          type="ghost"
+          size="large"
+          onClick={() => setVisible(true)}
+          block
+        >
           Back
         </Button>
       </Col>
@@ -57,6 +65,15 @@ const Action = () => {
           Continue
         </Button>
       </Col>
+      <CommonModal
+        visible={visible}
+        setVisible={setVisible}
+        onCancel={() => setVisible(false)}
+        title="Are you sure you want to go back?"
+        description="Your data will not be saved."
+        btnText="go back"
+        onConfirm={onBack}
+      />
     </Row>
   )
 }

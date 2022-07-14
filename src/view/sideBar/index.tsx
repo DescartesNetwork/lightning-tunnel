@@ -16,14 +16,18 @@ import IonIcon from '@sentre/antd-ionicon'
 
 import { useAppRouter } from 'hooks/useAppRoute'
 import { AppDispatch } from 'model'
-import { onSelectMethod, setTge, setTypeDistribute } from 'model/main.controller'
+import {
+  onSelectMethod,
+  setTGE,
+  setTypeDistribute,
+} from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
 import {
   removeRecipients,
   setExpiration,
   setGlobalUnlockTime,
 } from 'model/recipients.controller'
-import { SelectMethod, Step, SIDE_BAR_ITEMS } from '../../constants'
+import { Method, Step, SIDE_BAR_ITEMS } from '../../constants'
 
 import LOGO from 'static/images/logo.svg'
 
@@ -58,11 +62,11 @@ const SideBar = () => {
 
   const onSelect: MenuProps['onClick'] = async (e) => {
     await dispatch(onSelectStep(Step.SelectMethod))
-    await dispatch(onSelectMethod(SelectMethod.manual))
+    await dispatch(onSelectMethod(Method.manual))
     await dispatch(removeRecipients())
     await dispatch(setGlobalUnlockTime(0))
     await dispatch(setExpiration(0))
-    await dispatch(setTge(''))
+    await dispatch(setTGE(''))
     return pushHistory(`/${e.key}`)
   }
 

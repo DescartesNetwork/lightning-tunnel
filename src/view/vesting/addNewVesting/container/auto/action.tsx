@@ -10,7 +10,8 @@ import { RecipientFileType, Step } from '../../../../../constants'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import useFilteredVestingRecipient from 'hooks/vesting/useFilteredVestingRecipients'
-import { setTge } from 'model/main.controller'
+import { setTGE } from 'model/main.controller'
+import { setExpiration } from 'model/recipients.controller'
 
 const Action = () => {
   const [visible, setVisible] = useState(false)
@@ -29,7 +30,8 @@ const Action = () => {
 
   const onBack = useCallback(async () => {
     dispatch(onSelectStep(Step.SelectMethod))
-    dispatch(setTge(''))
+    dispatch(setTGE(''))
+    dispatch(setExpiration(0))
   }, [dispatch])
 
   return (

@@ -4,30 +4,22 @@ import { account } from '@senswap/sen-js'
 import { util } from '@sentre/senhub'
 import moment from 'moment'
 
-import { Col, Row, Space, Typography, Tooltip, Checkbox, Button } from 'antd'
+import { Col, Row, Typography, Tooltip, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import EditTimeAndAmount from './action/editTimeAndAmount'
 
 import { AppDispatch, AppState } from 'model'
 import { removeRecipient } from 'model/recipients.controller'
 import { VestingItem } from 'hooks/vesting/useFilteredVestingRecipients'
 import { FORMAT_DATE } from '../../../../../constants'
+import EditTimeAndAmount from '../../container/auto/action/editTimeAndAmount'
 
-type AccountInfoProps = {
+type RecipientCardProps = {
   vestingItem: VestingItem
-  selected?: boolean
   index: number
-  onChecked?: (checked: boolean, walletAddress: string) => void
 }
 
-const AccountInfo = ({
-  vestingItem,
-  selected = false,
-  onChecked = () => {},
-  index,
-}: AccountInfoProps) => {
+const RecipientCard = ({ vestingItem, index }: RecipientCardProps) => {
   const [visible, setVisible] = useState(false)
-  const selectedFile = useSelector((state: AppState) => state.file.selectedFile)
   const decimal = useSelector((state: AppState) => state.setting.decimal)
   const expirationTime = useSelector(
     (state: AppState) => state.recipients.expirationTime,
@@ -52,16 +44,7 @@ const AccountInfo = ({
       className="vesting-item"
     >
       <Col span={2}>
-        <Space>
-          {selected && (
-            <Checkbox
-              checked={selectedFile?.includes(vestingItem.address)}
-              onChange={(e) => onChecked(e.target.checked, vestingItem.address)}
-              className="lightning-checkbox"
-            />
-          )}
-          <Typography.Text type="secondary">#{index + 1}</Typography.Text>
-        </Space>
+        <Typography.Text type="secondary">#{index + 1}</Typography.Text>
       </Col>
       <Col span={5}>
         <Tooltip title={vestingItem.address}>
@@ -105,4 +88,4 @@ const AccountInfo = ({
   )
 }
 
-export default AccountInfo
+export default RecipientCard

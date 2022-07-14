@@ -9,7 +9,7 @@ import CommonModal from 'components/commonModal'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
-import { SelectMethod, Step } from '../../../../../constants'
+import { Method, Step } from '../../../../../constants'
 import useTotal from 'hooks/useTotal'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
@@ -38,7 +38,7 @@ const Manual = () => {
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectStep(Step.SelectMethod))
-    await dispatch(onSelectMethod(SelectMethod.manual))
+    await dispatch(onSelectMethod(Method.manual))
     await dispatch(removeRecipients())
   }, [dispatch])
 

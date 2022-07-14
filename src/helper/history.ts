@@ -16,11 +16,8 @@ export type HistoryRecord = {
 
 class History {
   private db: ReturnType<InstanceType<typeof PDB>['createInstance']>
-  private key: string
 
-  constructor(key: string, walletAddress: string) {
-    if (!key) throw new Error('Invalid key')
-    this.key = key
+  constructor(walletAddress: string) {
     if (!account.isAddress(walletAddress))
       throw new Error('Invalid wallet address')
     const db = new PDB(walletAddress).createInstance(appId)
@@ -28,28 +25,16 @@ class History {
     this.db = db
   }
 
-  set = async (history: HistoryRecord[]) => {
-    return await this.db.setItem(this.key, history)
+  set = async (key: string, history: HistoryRecord) => {
+    return await this.db.setItem(key, history)
   }
 
-  get = async (): Promise<HistoryRecord[]> => {
-    return (await this.db.getItem(this.key)) || ([] as HistoryRecord[])
+  get = async (key: string): Promise<HistoryRecord | HistoryRecord[]> => {
+    return await this.db.getItem(key)
   }
 
-  update = async (historyRecord: HistoryRecord) => {
-    const prevHistory = await this.get()
-    const index = prevHistory.findIndex(
-      (history) =>
-        history.distributorAddress === historyRecord.distributorAddress,
-    )
-    prevHistory[index] = historyRecord
-    return this.set(prevHistory)
-  }
-
-  append = async (history: HistoryRecord) => {
-    const prevHistory = await this.get()
-    const nextHistory = [history, ...prevHistory]
-    return this.set(nextHistory)
+  clear = async () => {
+    return await this.db.clear()
   }
 }
 

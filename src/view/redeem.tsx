@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { utils } from '@senswap/sen-js'
 import { useMint, useWallet } from '@sentre/senhub'
 import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
@@ -20,7 +21,6 @@ import REDEEM_IMG from 'static/images/redeem.svg'
 import REDEEM_SUCCESS from 'static/images/redeem_success.svg'
 import NOT_MEMBER from 'static/images/not_member.svg'
 
-import { useSelector } from 'react-redux'
 import { AppState } from 'model'
 
 const {

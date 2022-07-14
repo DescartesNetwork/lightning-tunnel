@@ -5,7 +5,7 @@ import { Button, Card, Col, Collapse, Row, Space, Spin, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import AccountInfoHeader from './accountInfoHeader'
 import AccountInfo from './accountInfo'
-import AddMoreRecipient from '../../components/addMoreRecipient'
+import AddMore from './action/addMore'
 import ModalDeleteFile from 'components/commonModal'
 import { WrapTotal } from 'components/cardTotal'
 
@@ -161,7 +161,7 @@ const FileDetails = ({ remove = () => {} }: { remove?: () => void }) => {
               className="auto-add-new"
             >
               <Collapse.Panel header={undefined} key={CollapseAddNew.activeKey}>
-                <AddMoreRecipient />
+                <AddMore />
               </Collapse.Panel>
             </Collapse>
           </Col>

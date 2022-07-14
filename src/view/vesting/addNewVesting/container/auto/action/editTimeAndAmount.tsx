@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useMemo, useState } from 'react'
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 
@@ -15,10 +15,23 @@ import {
 import IonIcon from '@sentre/antd-ionicon'
 import OverviewRecipient from './overViewRecipient'
 
-import { addAmountAndTime } from 'model/recipients.controller'
+import { addAmountAndTime, RecipientInfo } from 'model/recipients.controller'
 import { AppDispatch, AppState } from 'model'
 
-const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
+type EditTimeAndAmountProps = {
+  visible: boolean
+  setVisible: (visible: boolean) => void
+  walletAddress: string
+}
+
+const EditTimeAndAmount = ({
+  walletAddress,
+  setVisible,
+  visible,
+}: EditTimeAndAmountProps) => {
+  const [nextRecipientInfos, setNextRecipientInfos] = useState<RecipientInfo[]>(
+    [],
+  )
   const recipientInfo = useSelector(
     (state: AppState) => state.recipients.recipientInfos[walletAddress],
   )
@@ -26,8 +39,6 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
     (state: AppState) => state.recipients.expirationTime,
   )
   const decimal = useSelector((state: AppState) => state.setting.decimal)
-  const [visible, setVisible] = useState(false)
-  const [nextRecipientInfos, setNextRecipientInfos] = useState(recipientInfo)
   const dispatch = useDispatch<AppDispatch>()
   const DEFAULT_VALUE = { unlockTime: 0, amount: '', address: walletAddress }
 
@@ -58,7 +69,8 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
     return setNextRecipientInfos(data)
   }
 
-  const addMoreTimeAndAmounts = () => {
+  const addMoreTimeAndAmounts = (e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
     dispatch(addAmountAndTime({ walletAddress, nextRecipientInfos }))
     return setVisible(false)
   }
@@ -68,119 +80,124 @@ const EditTimeAndAmount = ({ walletAddress }: { walletAddress: string }) => {
     data.splice(index, 1)
     return setNextRecipientInfos(data)
   }
+  useEffect(() => {
+    setNextRecipientInfos(recipientInfo)
+  }, [recipientInfo])
 
   return (
-    <Fragment>
-      <Button
-        onClick={() => setVisible(true)}
-        icon={<IonIcon name="create-outline" />}
-        type="text"
-      />
-      <Modal
-        footer={null}
-        className="card-lightning"
-        style={{ paddingBottom: 0 }}
-        closeIcon={<IonIcon name="close-outline" />}
-        visible={visible}
-        onCancel={() => setVisible(false)}
-      >
-        <Row gutter={[32, 32]}>
-          <Col span={24}>
-            <Typography.Title level={4}>
-              Edit amount & unlock time
-            </Typography.Title>
-          </Col>
+    <Modal
+      footer={null}
+      className="card-lightning"
+      style={{ paddingBottom: 0 }}
+      closeIcon={<IonIcon name="close-outline" />}
+      visible={visible}
+      onCancel={(e) => {
+        e.stopPropagation()
+        return setVisible(false)
+      }}
+    >
+      <Row gutter={[32, 32]}>
+        <Col span={24}>
+          <Typography.Title level={4}>
+            Edit amount & unlock time
+          </Typography.Title>
+        </Col>
 
-          <Col span={24}>
-            <Row gutter={[16, 16]}>
-              {nextRecipientInfos.map(({ amount, unlockTime }, index) => (
-                <Col span={24} key={index}>
-                  <Row gutter={[16, 16]}>
-                    <Col span={11}>
-                      <Input
-                        name="amount"
-                        className="recipient-input"
-                        placeholder="Input amount"
-                        value={amount}
-                        onChange={(e) => onAmountChange(e, index)}
-                      />
+        <Col span={24}>
+          <Row gutter={[16, 16]}>
+            {nextRecipientInfos.map(({ amount, unlockTime }, index) => (
+              <Col span={24} key={index}>
+                <Row gutter={[16, 16]}>
+                  <Col span={11}>
+                    <Input
+                      name="amount"
+                      className="recipient-input"
+                      placeholder="Input amount"
+                      value={amount}
+                      onChange={(e) => onAmountChange(e, index)}
+                    />
+                  </Col>
+                  <Col span={11}>
+                    <DatePicker
+                      placeholder="Select unlock time"
+                      suffixIcon={<IonIcon name="time-outline" />}
+                      className={
+                        unlockTime > expirationTime && expirationTime
+                          ? 'date-option error'
+                          : 'date-option'
+                      }
+                      onChange={(date) =>
+                        onDateChange(date?.valueOf() || 0, index)
+                      }
+                      clearIcon={null}
+                      showTime={{ showSecond: false }}
+                      placement="bottomRight"
+                      value={unlockTime ? moment(unlockTime) : null}
+                      format={'MM-DD-YYYY HH:mm'}
+                    />
+                  </Col>
+                  <Col span={2}>
+                    <Button
+                      onClick={() => onRemove(index)}
+                      type="text"
+                      icon={<IonIcon name="remove-circle-outline" />}
+                    />
+                  </Col>
+                  {!decimal && Number(amount) % 1 !== 0 && (
+                    <Col span={24}>
+                      <Space size={12}>
+                        <IonIcon
+                          style={{ color: '#F9575E' }}
+                          name="warning-outline"
+                        />
+                        <Typography.Text style={{ color: '#F9575E' }}>
+                          Should be natural numbers
+                        </Typography.Text>
+                      </Space>
                     </Col>
-                    <Col span={11}>
-                      <DatePicker
-                        placeholder="Select unlock time"
-                        suffixIcon={<IonIcon name="time-outline" />}
-                        className={
-                          unlockTime > expirationTime && expirationTime
-                            ? 'date-option error'
-                            : 'date-option'
-                        }
-                        onChange={(date) =>
-                          onDateChange(date?.valueOf() || 0, index)
-                        }
-                        clearIcon={null}
-                        showTime={{ showSecond: false }}
-                        placement="bottomRight"
-                        value={unlockTime ? moment(unlockTime) : null}
-                        format={'MM-DD-YYYY HH:mm'}
-                      />
-                    </Col>
-                    <Col span={2}>
-                      <Button
-                        onClick={() => onRemove(index)}
-                        type="text"
-                        icon={<IonIcon name="remove-circle-outline" />}
-                      />
-                    </Col>
-                    {!decimal && Number(amount) % 1 !== 0 && (
-                      <Col span={24}>
-                        <Space size={12}>
-                          <IonIcon
-                            style={{ color: '#F9575E' }}
-                            name="warning-outline"
-                          />
-                          <Typography.Text style={{ color: '#F9575E' }}>
-                            Should be natural numbers
-                          </Typography.Text>
-                        </Space>
-                      </Col>
-                    )}
-                  </Row>
-                </Col>
-              ))}
-              <Col span={24}>
-                <Button
-                  icon={<IonIcon name="add-outline" />}
-                  size="large"
-                  type="dashed"
-                  block
-                  style={{ background: 'transparent' }}
-                  onClick={onAdd}
-                >
-                  Add more
-                </Button>
+                  )}
+                </Row>
               </Col>
-            </Row>
-          </Col>
-          <Col span={24}>
-            <OverviewRecipient walletAddress={walletAddress} />
-          </Col>
-          <Col span={24} style={{ textAlign: 'right' }}>
-            <Space>
-              <Button onClick={() => setVisible(false)} type="ghost">
-                Cancel
-              </Button>
+            ))}
+            <Col span={24}>
               <Button
-                disabled={disabled}
-                onClick={addMoreTimeAndAmounts}
-                type="primary"
+                icon={<IonIcon name="add-outline" />}
+                size="large"
+                type="dashed"
+                block
+                style={{ background: 'transparent' }}
+                onClick={onAdd}
               >
-                update
+                Add more
               </Button>
-            </Space>
-          </Col>
-        </Row>
-      </Modal>
-    </Fragment>
+            </Col>
+          </Row>
+        </Col>
+        <Col span={24}>
+          <OverviewRecipient walletAddress={walletAddress} />
+        </Col>
+        <Col span={24} style={{ textAlign: 'right' }}>
+          <Space>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation()
+                return setVisible(false)
+              }}
+              type="ghost"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={disabled}
+              onClick={addMoreTimeAndAmounts}
+              type="primary"
+            >
+              update
+            </Button>
+          </Space>
+        </Col>
+      </Row>
+    </Modal>
   )
 }
 

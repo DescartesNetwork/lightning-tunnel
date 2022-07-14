@@ -10,7 +10,7 @@ import ConfirmTransfer from '../../../confirmTransfer'
 import DateOption from '../../../../components/dateOption'
 import CardOption from 'components/cardOption'
 
-import { SelectMethod, Step } from '../../../../constants'
+import { Method, Step } from '../../../../constants'
 import { AppState } from 'model'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
@@ -22,7 +22,7 @@ const SelectInputMethod = () => {
   const { expirationTime: endDate, globalUnlockTime } = useSelector(
     (state: AppState) => state.recipients,
   )
-  const [method, setMethod] = useState<SelectMethod>(SelectMethod.manual)
+  const [method, setMethod] = useState<Method>(Method.manual)
   const [activeMintAddress, setActiveMintAddress] = useState(EMPTY_SELECT_VAL)
   const [unlockTime, setUnlockTime] = useState(globalUnlockTime)
   const [expirationTime, setExpirationTime] = useState(endDate)
@@ -103,20 +103,20 @@ const SelectInputMethod = () => {
                 >
                   <Row gutter={[12, 12]}>
                     <Col xs={24} sm={12} md={12} lg={12}>
-                      <Radio.Button value={SelectMethod.manual}>
+                      <Radio.Button value={Method.manual}>
                         <CardOption
                           label="Manual"
                           description="With a small number of recipients."
-                          active={method === SelectMethod.manual}
+                          active={method === Method.manual}
                         />
                       </Radio.Button>
                     </Col>
                     <Col xs={24} sm={12} md={12} lg={12}>
-                      <Radio.Button value={SelectMethod.auto}>
+                      <Radio.Button value={Method.auto}>
                         <CardOption
                           label="Automatic"
                           description="Support bulk import with a CSV file."
-                          active={method === SelectMethod.auto}
+                          active={method === Method.auto}
                         />
                       </Radio.Button>
                     </Col>
@@ -188,7 +188,7 @@ const Container = () => {
 
   if (step === Step.SelectMethod) return <SelectInputMethod />
   if (step === Step.AddRecipient)
-    return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
+    return methodSelected === Method.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />
 }
 

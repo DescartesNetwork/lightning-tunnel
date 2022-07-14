@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { SelectMethod } from '../constants'
+import { EMPTY_SELECT_VAL } from 'components/selectTokens'
+import { Method } from '../constants'
 
 /**
  * Interface & Utility
@@ -11,12 +12,13 @@ export enum TypeDistribute {
 }
 
 export type MainState = {
-  methodSelected: SelectMethod
+  methodSelected: Method
   mintSelected: string
   visible: boolean
   isTyping: boolean
   typeDistribute: TypeDistribute
-  tge: string
+  TGE: string
+  TGETime: number
 }
 
 /**
@@ -25,12 +27,13 @@ export type MainState = {
 
 const NAME = 'main'
 const initialState: MainState = {
-  methodSelected: SelectMethod.manual,
-  mintSelected: '',
+  methodSelected: Method.manual,
+  mintSelected: EMPTY_SELECT_VAL,
   visible: false,
   isTyping: false,
   typeDistribute: TypeDistribute.Airdrop,
-  tge: '',
+  TGE: '',
+  TGETime: 0,
 }
 
 /**
@@ -72,10 +75,17 @@ export const setTypeDistribute = createAsyncThunk(
   },
 )
 
-export const setTge = createAsyncThunk(
-  `${NAME}/setTge`,
-  async (tge: string) => {
-    return { tge }
+export const setTGE = createAsyncThunk(
+  `${NAME}/setTGE`,
+  async (TGE: string) => {
+    return { TGE }
+  },
+)
+
+export const setTGETime = createAsyncThunk(
+  `${NAME}/setTGETime`,
+  async (TGETime: number) => {
+    return { TGETime }
   },
 )
 
@@ -110,7 +120,11 @@ const slice = createSlice({
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(
-        setTge.fulfilled,
+        setTGE.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setTGETime.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

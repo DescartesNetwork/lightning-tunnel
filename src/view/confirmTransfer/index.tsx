@@ -19,10 +19,7 @@ import useRemainingBalance from 'hooks/useRemainingBalance'
 import { AppDispatch, AppState } from 'model'
 import { getHistory } from 'model/history.controller'
 import { onSelectStep } from 'model/steps.controller'
-import {
-  setAdvancedMode,
-  setListUnlockTime,
-} from 'model/advancedMode.controller'
+
 import { Step } from '../../constants'
 import History, { HistoryRecord } from 'helper/history'
 import { notifySuccess } from 'helper'
@@ -35,7 +32,7 @@ import {
 } from 'model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import configs from 'configs'
-import { setTge } from 'model/main.controller'
+import { setTGE } from 'model/main.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -122,8 +119,8 @@ const ConfirmTransfer = () => {
         distributorAddress,
         treeData,
       }
-      const history = new History('history', walletAddress)
-      await history.append(historyRecord)
+      const history = new History(walletAddress)
+      await history.set(distributorAddress, historyRecord)
       await dispatch(getHistory({ walletAddress, distributors }))
       setIsDone(true)
 
@@ -147,9 +144,7 @@ const ConfirmTransfer = () => {
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(setGlobalUnlockTime(0))
     await dispatch(setExpiration(0))
-    await dispatch(setAdvancedMode(false))
-    await dispatch(setListUnlockTime([]))
-    await dispatch(setTge(''))
+    await dispatch(setTGE(''))
     return pushHistory(`/${typeDistribute}`)
   }, [dispatch, pushHistory, typeDistribute])
 

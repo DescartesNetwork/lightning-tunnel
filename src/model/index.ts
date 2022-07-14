@@ -9,7 +9,6 @@ import receipts from 'model/receipts.controller'
 import file from 'model/file.controller'
 import history from 'model/history.controller'
 import distributors from 'model/distributor.controller'
-import advancedMode from 'model/advancedMode.controller'
 import listReceived from 'model/listReceived.controller'
 
 /**
@@ -27,7 +26,6 @@ const model = configureStore({
     history,
     distributors,
     recipients,
-    advancedMode,
     receipts,
     listReceived,
   },

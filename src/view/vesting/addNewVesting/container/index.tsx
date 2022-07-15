@@ -1,74 +1,50 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import parse from 'parse-duration'
 
-import {
-  Button,
-  Card,
-  Col,
-  InputNumber,
-  Radio,
-  Row,
-  Space,
-  Switch,
-  Typography,
-} from 'antd'
+import { Button, Card, Col, Radio, Row, Tooltip, Typography } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import Auto from './auto'
 import Manual from './manual'
-import UnlockTime from '../components/unlockTime'
+import CliffTime from '../components/cliffTime'
 import Frequency from '../components/frequency'
 import DistributeIn from '../components/distributeIn'
-import AddUnlockTime from '../components/addUnlockTime'
 import ConfirmTransfer from 'view/confirmTransfer'
 import DateOption from 'components/dateOption'
 import CardOption from 'components/cardOption'
+import TgeTime from './tge/tgeTime'
+import TgePercent from './tge/tgePercent'
+import MintInfo from 'components/mintInfo'
 import Header from 'components/header'
 import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 
-import { ONE_DAY, SelectMethod, Step } from '../../../../constants'
+import { Method, Step } from '../../../../constants'
 import { AppState } from 'model'
-import { onSelectedMint, onSelectMethod, setTge } from 'model/main.controller'
+import { onSelectedMint, onSelectMethod } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
-import {
-  Configs,
-  setExpiration,
-  setGlobalConfigs,
-  setGlobalUnlockTime,
-} from 'model/recipients.controller'
-import {
-  setAdvancedMode,
-  setListUnlockTime,
-} from 'model/advancedMode.controller'
 import { useAppRouter } from 'hooks/useAppRoute'
+import { setExpiration } from 'model/recipients.controller'
 
 const SelectInputMethod = () => {
   const [isUnlimited, setIsUnlimited] = useState(true)
-  const [activeMintAddress, setActiveMintAddress] = useState(EMPTY_SELECT_VAL)
   const method = useSelector((state: AppState) => state.main.methodSelected)
-  const advanced = useSelector(
-    (state: AppState) => state.advancedMode.isAdvancedMode,
-  )
-  const listUnlockTime = useSelector(
-    (state: AppState) => state.advancedMode.listUnlockTime,
-  )
+  const TGETime = useSelector((state: AppState) => state.main.TGETime)
+  const cliff = useSelector((state: AppState) => state.recipients.configs.cliff)
   const expiration = useSelector(
     (state: AppState) => state.recipients.expirationTime,
   )
-  const unlockTime = useSelector(
-    (state: AppState) => state.recipients.globalUnlockTime,
+  const mintSelected = useSelector((state: AppState) => state.main.mintSelected)
+  const distributeIn = useSelector(
+    (state: AppState) => state.recipients.configs.distributeIn,
   )
   const frequency = useSelector(
-    (state: AppState) => state.recipients.globalConfigs.frequency,
+    (state: AppState) => state.recipients.configs.frequency,
   )
-  const distributeIn = useSelector(
-    (state: AppState) => state.recipients.globalConfigs.distributeIn,
-  )
-  const tge = useSelector((state: AppState) => state.main.tge)
   const dispatch = useDispatch()
   const { pushHistory } = useAppRouter()
 
   const onSelectMint = (mintAddress: string) => {
-    setActiveMintAddress(mintAddress)
-    dispatch(onSelectedMint(mintAddress))
+    return dispatch(onSelectedMint(mintAddress))
   }
 
   const onContinue = () => {
@@ -81,48 +57,36 @@ const SelectInputMethod = () => {
     return dispatch(setExpiration(endTime))
   }
 
-  const onConfigChange = (configs: Partial<Configs>) => {
-    return dispatch(setGlobalConfigs({ configs }))
-  }
-
-  const onChangeAdvanced = (isAdvanced: boolean) => {
-    if (isAdvanced) dispatch(onSelectMethod(SelectMethod.manual))
-    return dispatch(setAdvancedMode(isAdvanced))
-  }
-
   const validEndDate = useMemo(() => {
     if (isUnlimited || !expiration) return ''
     if (expiration < Date.now()) return 'Must be greater than current time.'
-    const totalVestingTime = unlockTime + distributeIn * 30 * ONE_DAY
-    if (expiration < totalVestingTime && method === SelectMethod.manual)
+    const unlockTime = TGETime + parse(cliff)
+    const totalVestingTime = unlockTime + parse(distributeIn)
+    if (expiration < totalVestingTime && method === Method.manual)
       return 'Must be greater than the total vesting time.'
     return ''
-  }, [distributeIn, expiration, isUnlimited, method, unlockTime])
+  }, [TGETime, cliff, distributeIn, expiration, isUnlimited, method])
 
   const disabled = useMemo(() => {
-    if (activeMintAddress === EMPTY_SELECT_VAL || !method) return true
-    if (advanced)
+    if (mintSelected === EMPTY_SELECT_VAL || !method) return true
+    const unlockTime = TGETime + parse(cliff)
+    if (method === Method.manual)
       return (
-        (!expiration && !isUnlimited) ||
-        !listUnlockTime.length ||
-        listUnlockTime.includes(0)
-      )
-    if (method === SelectMethod.manual)
-      return (
-        !unlockTime ||
+        !TGETime ||
         (expiration < unlockTime && !isUnlimited) ||
-        (expiration - unlockTime < distributeIn * 30 * ONE_DAY && !isUnlimited)
+        (expiration - unlockTime < parse(distributeIn) && !isUnlimited) ||
+        parse(distributeIn) < parse(frequency)
       )
     return !expiration && !isUnlimited
   }, [
-    activeMintAddress,
-    advanced,
+    TGETime,
+    cliff,
     distributeIn,
     expiration,
+    frequency,
     isUnlimited,
     method,
-    unlockTime,
-    listUnlockTime,
+    mintSelected,
   ])
 
   return (
@@ -135,40 +99,20 @@ const SelectInputMethod = () => {
           <Row gutter={[16, 16]}>
             <Col span={12}>
               <SelectToken
-                activeMintAddress={activeMintAddress}
+                activeMintAddress={mintSelected}
                 onSelect={onSelectMint}
               />
             </Col>
             <Col span={12}>
-              <InputNumber
-                onChange={(tge) => dispatch(setTge(tge))}
-                value={tge}
-                className="tge-input"
-                placeholder="Input TGE (Optional)"
-                type="number"
-                max="100"
-                min="0"
-              />
+              <MintInfo mintAddress={mintSelected} />
             </Col>
             <Col span={24}>
               <Row gutter={[16, 16]}>
-                <Col flex="auto">
+                <Col span={24}>
                   <Typography.Text>
                     Choose transfer info input method
                   </Typography.Text>
                 </Col>
-                {method === SelectMethod.manual && (
-                  <Col>
-                    <Space>
-                      <Typography.Text>Advanced mode</Typography.Text>
-                      <Switch
-                        checked={advanced}
-                        size="small"
-                        onChange={onChangeAdvanced}
-                      />
-                    </Space>
-                  </Col>
-                )}
                 <Col span={24}>
                   <Radio.Group
                     onChange={(e) => dispatch(onSelectMethod(e.target.value))}
@@ -178,20 +122,20 @@ const SelectInputMethod = () => {
                   >
                     <Row gutter={[16, 16]}>
                       <Col xs={24} sm={12} md={12} lg={12}>
-                        <Radio.Button value={SelectMethod.manual}>
+                        <Radio.Button value={Method.manual}>
                           <CardOption
                             label="Manual"
                             description="With a small number of recipients."
-                            active={method === SelectMethod.manual}
+                            active={method === Method.manual}
                           />
                         </Radio.Button>
                       </Col>
                       <Col xs={24} sm={12} md={12} lg={12}>
-                        <Radio.Button value={SelectMethod.auto}>
+                        <Radio.Button value={Method.auto}>
                           <CardOption
                             label="Automatic"
                             description="Support bulk import with a CSV file."
-                            active={method === SelectMethod.auto}
+                            active={method === Method.auto}
                           />
                         </Radio.Button>
                       </Col>
@@ -200,47 +144,29 @@ const SelectInputMethod = () => {
                 </Col>
               </Row>
             </Col>
-            {advanced && method === SelectMethod.manual && (
-              <Col span={24}>
-                <AddUnlockTime
-                  listUnlockTime={listUnlockTime}
-                  setListUnlockTime={(value) =>
-                    dispatch(setListUnlockTime(value))
-                  }
-                />
-              </Col>
-            )}
+
             <Col span={24}>
               <Row gutter={[16, 16]}>
-                {!advanced && method === SelectMethod.manual && (
+                {method === Method.manual && (
                   <Fragment>
-                    <Col xs={24} md={12} xl={6}>
-                      <UnlockTime
-                        unlockTime={unlockTime}
-                        onChange={(value) =>
-                          dispatch(setGlobalUnlockTime(value))
-                        }
-                      />
+                    <Col xs={24} md={12} xl={8}>
+                      <TgePercent />
                     </Col>
-                    <Col xs={24} md={12} xl={6}>
-                      <Frequency
-                        frequency={frequency}
-                        onChange={(value) =>
-                          onConfigChange({ frequency: value })
-                        }
-                      />
+                    <Col xs={24} md={12} xl={8}>
+                      <TgeTime />
                     </Col>
-                    <Col xs={24} md={12} xl={6}>
-                      <DistributeIn
-                        distributeIn={distributeIn}
-                        onChange={(value) =>
-                          onConfigChange({ distributeIn: value })
-                        }
-                      />
+                    <Col xs={24} md={12} xl={8}>
+                      <CliffTime />
+                    </Col>
+                    <Col xs={24} md={12} xl={8}>
+                      <Frequency />
+                    </Col>
+                    <Col xs={24} md={12} xl={8}>
+                      <DistributeIn />
                     </Col>
                   </Fragment>
                 )}
-                <Col xs={24} md={12} xl={6}>
+                <Col xs={24} md={12} xl={8}>
                   <DateOption
                     label="Expiration time"
                     onSwitch={setIsUnlimited}
@@ -250,6 +176,11 @@ const SelectInputMethod = () => {
                     value={expiration}
                     error={validEndDate}
                     checked={isUnlimited}
+                    explain={
+                      <Tooltip title="Vesting expiration time, after this time users will not be able to claim the token and you can get it back.">
+                        <IonIcon name="information-circle-outline" />
+                      </Tooltip>
+                    }
                   />
                 </Col>
               </Row>
@@ -290,7 +221,7 @@ const Container = () => {
 
   if (step === Step.SelectMethod) return <SelectInputMethod />
   if (step === Step.AddRecipient)
-    return methodSelected === SelectMethod.auto ? <Auto /> : <Manual />
+    return methodSelected === Method.auto ? <Auto /> : <Manual />
   return <ConfirmTransfer />
 }
 

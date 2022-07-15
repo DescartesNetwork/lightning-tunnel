@@ -1,33 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ONE_DAY } from '../constants'
+import parse from 'parse-duration'
+
 import { DISTRIBUTE_IN_TIME } from 'view/vesting/addNewVesting/components/distributeIn'
 import { FREQUENCY } from 'view/vesting/addNewVesting/components/frequency'
+import { CLIFF_TIME } from 'view/vesting/addNewVesting/components/cliffTime'
 
 /**
  * Interface & Utility
  */
 
 export type Configs = {
-  frequency: number
-  distributeIn: number
-}
-
-export type Time = {
-  frequency: number
-  distributeIn: number
+  frequency: string
+  distributeIn: string
+  cliff: string
 }
 
 export type RecipientInfo = {
   address: string
   amount: string
   unlockTime: number
-  configs?: Configs
 }
 
 export type RecipientInfos = Record<string, Array<RecipientInfo>>
 
 export type TreeRecipientState = {
-  globalConfigs: Configs
+  configs: Configs
   recipientInfos: RecipientInfos
   expirationTime: number
   globalUnlockTime: number
@@ -42,9 +39,10 @@ const initialState: TreeRecipientState = {
   recipientInfos: {},
   expirationTime: 0,
   globalUnlockTime: 0,
-  globalConfigs: {
-    frequency: FREQUENCY.seven,
-    distributeIn: DISTRIBUTE_IN_TIME.three,
+  configs: {
+    frequency: FREQUENCY.one,
+    distributeIn: DISTRIBUTE_IN_TIME.six_months,
+    cliff: CLIFF_TIME.one_months,
   },
 }
 
@@ -79,11 +77,11 @@ export const setGlobalConfigs = createAsyncThunk<
   { state: any }
 >(`${NAME}/setGlobalConfigs`, async ({ configs }, { getState }) => {
   const {
-    recipients: { globalConfigs },
+    recipients: { configs: oldConfigs },
   } = getState()
 
-  const nextConfigs = { ...globalConfigs, ...configs }
-  return { globalConfigs: nextConfigs }
+  const nextConfigs = { ...oldConfigs, ...configs }
+  return { configs: nextConfigs }
 })
 
 export const setRecipient = createAsyncThunk<
@@ -126,7 +124,9 @@ export const editRecipient = createAsyncThunk<
     for (const { amount } of listRecipient) {
       oldAmount += Number(amount)
     }
-    const distributionAmount = Math.floor((distributeIn * 30) / frequency)
+    const distributionAmount = Math.floor(
+      parse(distributeIn) / parse(frequency),
+    )
     const singleAmount = Number(oldAmount) / distributionAmount
 
     for (let i = 0; i < distributionAmount; i++) {
@@ -134,7 +134,7 @@ export const editRecipient = createAsyncThunk<
       let actualAmount = singleAmount
       if (i === 0) nextUnlockTime = unlockTime
       if (i !== 0)
-        nextUnlockTime = frequency * ONE_DAY + newRecipient[i - 1].unlockTime
+        nextUnlockTime = parse(frequency) + newRecipient[i - 1].unlockTime
 
       if (i === distributionAmount - 1) {
         let restAmount = 0
@@ -148,7 +148,6 @@ export const editRecipient = createAsyncThunk<
         address: walletAddress,
         amount: actualAmount.toString(),
         unlockTime: nextUnlockTime,
-        configs,
       }
       newRecipient[i] = recipient
     }

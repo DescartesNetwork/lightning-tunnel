@@ -1,4 +1,4 @@
-export enum SelectMethod {
+export enum Method {
   auto = 1,
   manual = 2,
 }

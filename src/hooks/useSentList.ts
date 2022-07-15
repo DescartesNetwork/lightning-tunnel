@@ -33,7 +33,10 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   )
 
   const fetchHistory = useCallback(async () => {
-    const nextHistory: ItemSent[] = []
+    let nextHistory: ItemSent[] = []
+    const readyHistory: ItemSent[] = []
+    const otherHistory: ItemSent[] = []
+
     let newNumberOfRecipient = 0
     const listAddress: string[] = []
     try {
@@ -73,14 +76,21 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
           endTime &&
           listRemaining[treasurerAddress]
         ) {
-          nextHistory.unshift(itemSent)
+          readyHistory.unshift(itemSent)
           continue
         }
-        nextHistory.push(itemSent)
+        otherHistory.push(itemSent)
       }
     } catch (er) {
     } finally {
       setNumberOfRecipient(newNumberOfRecipient)
+
+      const sortHistory = otherHistory.sort((a, b) => {
+        const time_a = a.time ? new Date(a.time).getTime() : 0
+        const time_b = b.time ? new Date(b.time).getTime() : 0
+        return time_b - time_a
+      })
+      nextHistory = readyHistory.concat(sortHistory)
       return setSentList(nextHistory)
     }
   }, [distributors, listHistory, listRemaining, type])

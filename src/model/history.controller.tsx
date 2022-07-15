@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { account } from '@senswap/sen-js'
 import { getCID } from 'helper'
+import { isEmpty } from 'lodash'
 
 import History, { HistoryRecord } from 'helper/history'
 import IPFS from 'helper/ipfs'
@@ -35,9 +36,10 @@ export const getHistory = createAsyncThunk<
 
   let listHistory: HistoryRecord[] | undefined
 
-  const history = new History('history', walletAddress)
-  const localHistory = (await history.get()) as HistoryRecord[] | undefined
-  if (localHistory && localHistory.length) return { listHistory: localHistory }
+  const history = new History(walletAddress)
+  const history_v1 = (await history.get('history')) as HistoryRecord[]
+
+  if (history_v1) history.clear()
 
   const listDistributor = Object.keys(distributors).map((address) => ({
     address,
@@ -50,6 +52,11 @@ export const getHistory = createAsyncThunk<
         listHistory = listHistory?.length ? [...listHistory] : []
         const { address, mint, total, metadata, authority } = distributeData
         if (authority.toBase58() !== walletAddress) return
+        const historyLocal = (await history.get(address)) as HistoryRecord
+        if (!isEmpty(historyLocal)) {
+          listHistory.push(historyLocal)
+          return
+        }
         const cid = await getCID(metadata)
         const treeData: Buffer = await ipfs.get(cid)
         const historyRecord: HistoryRecord = {
@@ -59,13 +66,28 @@ export const getHistory = createAsyncThunk<
           time: '',
           treeData,
         }
+        history.set(address, historyRecord)
         listHistory.push(historyRecord)
       } catch (error) {}
     }),
   )
 
-  if (listHistory) history.set(listHistory)
   return { listHistory }
+})
+
+export const setHistory = createAsyncThunk<
+  HistoryState,
+  { historyRecord: HistoryRecord },
+  { state: any }
+>(`${NAME}/setHistory`, async ({ historyRecord }, { getState }) => {
+  const {
+    history: { listHistory },
+  } = getState()
+
+  const nextHistory = [...listHistory]
+  nextHistory.unshift(historyRecord)
+
+  return { listHistory: nextHistory }
 })
 
 /**
@@ -77,10 +99,15 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      getHistory.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        getHistory.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setHistory.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

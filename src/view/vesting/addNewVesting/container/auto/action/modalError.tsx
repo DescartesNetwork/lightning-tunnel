@@ -5,16 +5,10 @@ import { ReactNode } from 'react'
 type ModalErrorProps = {
   visible: boolean
   onClose: () => void
-  addresses?: string[]
   description: ReactNode
 }
 
-const ModalError = ({
-  visible,
-  description,
-  onClose,
-  addresses,
-}: ModalErrorProps) => {
+const ModalError = ({ visible, description, onClose }: ModalErrorProps) => {
   return (
     <Modal
       visible={visible}
@@ -34,16 +28,6 @@ const ModalError = ({
             <Space size={4} direction="vertical">
               <Typography.Title level={4}>Can't import file!</Typography.Title>
               {description}
-              {addresses &&
-                addresses.map((address) => (
-                  <Space key={address}>
-                    <IonIcon
-                      style={{ color: '#F9575E' }}
-                      name="close-circle-outline"
-                    />
-                    <Typography.Text>{address}</Typography.Text>
-                  </Space>
-                ))}
             </Space>
           </Space>
         </Col>

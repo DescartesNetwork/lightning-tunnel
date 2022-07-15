@@ -6,7 +6,7 @@ import CommonModal from 'components/commonModal'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
-import { RecipientFileType, SelectMethod, Step } from '../../../../../constants'
+import { RecipientFileType, Method, Step } from '../../../../../constants'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import useFilteredAirdropRecipient from 'hooks/airdrop/useFilteredAirdropRecipient'
@@ -37,7 +37,7 @@ const Action = () => {
 
   const onBack = useCallback(async () => {
     await dispatch(onSelectStep(Step.SelectMethod))
-    await dispatch(onSelectMethod(SelectMethod.manual))
+    await dispatch(onSelectMethod(Method.manual))
     await dispatch(removeRecipients())
     return setVisible(false)
   }, [dispatch])

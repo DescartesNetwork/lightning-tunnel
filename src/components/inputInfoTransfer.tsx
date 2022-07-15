@@ -1,23 +1,15 @@
-import {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useState,
-  useMemo,
-  Fragment,
-} from 'react'
+import { ChangeEvent, useCallback, useEffect, useState, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import { utilsBN } from 'sentre-web3'
 import BN from 'bn.js'
+import parse from 'parse-duration'
 
 import { Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import NumericInput from '@sentre/antd-numeric-input'
 import ModalMerge from './commonModal'
-import DistributionConfigDetail from 'view/vesting/addNewVesting/container/manual/distributionConfigDetail'
 import ActionButton from './actionButton'
-import UnlockTime from 'view/vesting/addNewVesting/components/unlockTime'
 
 import { AppDispatch, AppState } from 'model'
 import {
@@ -28,12 +20,6 @@ import {
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useCalculateAmount from 'hooks/useCalculateAmount'
 import { setIsTyping, TypeDistribute } from 'model/main.controller'
-import Frequency, {
-  FREQUENCY,
-} from 'view/vesting/addNewVesting/components/frequency'
-import DistributeIn, {
-  DISTRIBUTE_IN_TIME,
-} from 'view/vesting/addNewVesting/components/distributeIn'
 
 type InputInfoTransferProps = {
   walletAddress?: string
@@ -46,8 +32,6 @@ const DEFAULT_RECIPIENT = {
   amount: '',
 }
 
-const ONE_DAY = 24 * 60 * 60 * 1000
-
 const InputInfoTransfer = ({
   walletAddress,
   amount,
@@ -58,14 +42,14 @@ const InputInfoTransfer = ({
   const [walletError, setWalletError] = useState('')
   const [visible, setVisible] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
-  const [nextFrequency, setNextFrequency] = useState(FREQUENCY.seven)
-  const [nextDistributeIn, setNextDistributeIn] = useState(
-    DISTRIBUTE_IN_TIME.three,
-  )
-  const [nextUnlockTime, setNextUnlockTime] = useState(0)
   const {
-    main: { mintSelected, typeDistribute, tge },
-    recipients,
+    main: { mintSelected, typeDistribute },
+    recipients: {
+      recipientInfos,
+      configs: globalConfigs,
+      globalUnlockTime,
+      expirationTime,
+    },
     setting: { decimal },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch<AppDispatch>()
@@ -78,11 +62,6 @@ const InputInfoTransfer = ({
 
   const onAmount = (val: string) => setFormInput({ ...formInput, amount: val })
 
-  const configs = useMemo(
-    () => ({ distributeIn: nextDistributeIn, frequency: nextFrequency }),
-    [nextDistributeIn, nextFrequency],
-  )
-
   const addNewRecipient = async () => {
     const { walletAddress, amount } = formInput
     if (!account.isAddress(walletAddress))
@@ -91,56 +70,15 @@ const InputInfoTransfer = ({
     if (!decimal && Number(amount) % 1 !== 0)
       return setAmountError('Should be natural numbers')
     const nextRecipients: RecipientInfo[] = []
-
-    const { recipientInfos } = recipients
     if (recipientInfos[walletAddress] && !isEdit) return setVisible(true)
 
     /** Airdrop */
-    if (typeDistribute === 'airdrop') {
-      const recipient: RecipientInfo = {
-        address: walletAddress,
-        amount,
-        unlockTime: nextUnlockTime,
-      }
-      nextRecipients.push(recipient)
+    const recipient: RecipientInfo = {
+      address: walletAddress,
+      amount,
+      unlockTime: globalUnlockTime,
     }
-
-    /** Vesting */
-    if (typeDistribute === 'vesting') {
-      const distributionAmount = Math.floor(
-        (nextDistributeIn * 30) / nextFrequency,
-      )
-      let decimalAmount = utilsBN.decimalize(amount, mintDecimals)
-
-      if (tge) {
-        const amountTge = decimalAmount.mul(new BN(tge)).div(new BN(100))
-        decimalAmount = decimalAmount.sub(amountTge)
-
-        const recipient: RecipientInfo = {
-          address: walletAddress,
-          amount: utilsBN.undecimalize(amountTge, mintDecimals),
-          unlockTime: Date.now(),
-          configs,
-        }
-        nextRecipients.push(recipient)
-      }
-
-      const listAmount = calcListAmount(decimalAmount, distributionAmount)
-      for (let i = 0; i < distributionAmount; i++) {
-        let unlockTime = 0
-        if (i === 0) unlockTime = nextUnlockTime
-        if (i !== 0)
-          unlockTime =
-            nextFrequency * ONE_DAY + nextRecipients[i - 1].unlockTime
-        const recipient: RecipientInfo = {
-          address: walletAddress,
-          amount: utilsBN.undecimalize(listAmount[i], mintDecimals),
-          unlockTime,
-          configs,
-        }
-        nextRecipients.push(recipient)
-      }
-    }
+    nextRecipients.push(recipient)
 
     setWalletError('')
     setAmountError('')
@@ -151,7 +89,6 @@ const InputInfoTransfer = ({
 
   const onMerge = async () => {
     const { walletAddress, amount } = formInput
-    const { recipientInfos } = recipients
     const recipientData = recipientInfos[walletAddress]
     const amountRecipient = recipientData.length
 
@@ -214,46 +151,23 @@ const InputInfoTransfer = ({
       return setAmountError('Should be natural numbers')
   }, [amount, decimal])
 
-  const fetchUnlockTime = useCallback(() => {
-    const { globalUnlockTime, recipientInfos } = recipients
-    if (!account.isAddress(walletAddress))
-      return setNextUnlockTime(globalUnlockTime)
-    return setNextUnlockTime(recipientInfos[walletAddress][0].unlockTime)
-  }, [recipients, walletAddress])
-
-  const fetchConfigs = useCallback(() => {
-    const { globalConfigs, recipientInfos } = recipients
-    if (!account.isAddress(walletAddress)) {
-      setNextDistributeIn(globalConfigs.distributeIn)
-      return setNextFrequency(globalConfigs.frequency)
-    }
-    const itemConfig = recipientInfos[walletAddress][0].configs
-    if (!itemConfig) return
-    setNextDistributeIn(itemConfig.distributeIn)
-    return setNextFrequency(itemConfig.frequency)
-  }, [recipients, walletAddress])
-
   const walletAddrIndx = useMemo(() => {
     if (walletAddress && index !== undefined) return index + 1
-    return Object.keys(recipients.recipientInfos).length + 1
-  }, [index, recipients.recipientInfos, walletAddress])
+    return Object.keys(recipientInfos).length + 1
+  }, [index, recipientInfos, walletAddress])
 
   const disabledInput = walletAddress && !isEdit ? true : false
 
   const disabledSave = useMemo(() => {
-    const time = nextUnlockTime + nextDistributeIn * 30 * ONE_DAY
-    const expirationTime = recipients.expirationTime
+    const { distributeIn } = globalConfigs
+    const time = globalUnlockTime + parse(distributeIn)
+
     if (!expirationTime) return false //unlimited
     return (
-      (nextUnlockTime > expirationTime || time > expirationTime) &&
+      (globalUnlockTime > expirationTime || time > expirationTime) &&
       typeDistribute === TypeDistribute.Vesting
     )
-  }, [
-    nextDistributeIn,
-    nextUnlockTime,
-    recipients.expirationTime,
-    typeDistribute,
-  ])
+  }, [expirationTime, globalConfigs, globalUnlockTime, typeDistribute])
 
   useEffect(() => {
     recipientInfo()
@@ -266,11 +180,6 @@ const InputInfoTransfer = ({
   useEffect(() => {
     checkIsTyping()
   }, [checkIsTyping])
-
-  useEffect(() => {
-    fetchConfigs()
-    fetchUnlockTime()
-  }, [fetchConfigs, fetchUnlockTime])
 
   return (
     <Row gutter={[8, 8]} align="middle" justify="space-between">
@@ -321,42 +230,7 @@ const InputInfoTransfer = ({
           </Space>
         </Col>
       )}
-      {/* Only for Vesting */}
-      {typeDistribute === TypeDistribute.Vesting && (
-        <Fragment>
-          {isEdit ? (
-            <Col span={24}>
-              <Row gutter={[16, 16]}>
-                <Col xs={12} md={7}>
-                  <UnlockTime
-                    unlockTime={nextUnlockTime}
-                    onChange={setNextUnlockTime}
-                  />
-                </Col>
-                <Col xs={12} md={7}>
-                  <Frequency
-                    frequency={nextFrequency}
-                    onChange={setNextFrequency}
-                  />
-                </Col>
-                <Col xs={12} md={7}>
-                  <DistributeIn
-                    distributeIn={nextDistributeIn}
-                    onChange={setNextDistributeIn}
-                  />
-                </Col>
-              </Row>
-            </Col>
-          ) : (
-            <Col span={24}>
-              <DistributionConfigDetail
-                configs={configs}
-                unlockTime={nextUnlockTime}
-              />
-            </Col>
-          )}
-        </Fragment>
-      )}
+
       <ModalMerge
         title="Do you want to merge wallet addresses?"
         description="There are some wallet addresses that are the same."

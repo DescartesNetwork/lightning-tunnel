@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
-import BN from 'bn.js'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -15,26 +14,19 @@ import {
   addRecipients,
   removeRecipients,
   RecipientInfos,
-  RecipientInfo,
 } from 'model/recipients.controller'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'model/file.controller'
-import ModalErrorDuplicate from './action/modalError'
+import ModalError from './action/modalError'
 import { getFileCSV } from 'helper'
-import useCalculateAmount from '../../../../../hooks/useCalculateAmount'
-import { utilsBN } from 'sentre-web3'
 
-const INDEX_ADDRESS = 0
-const INDEX_AMOUNT = 1
-const INDEX_FIRST_UNLOCK_TIME = 2
 const MIN_FILE_LENGTH = 2
 
-const parse = (file: any): Promise<Array<string>> => {
+const parse = (file: any): Promise<Array<[string, string, string]>> => {
   return new Promise((resolve, reject) => {
     return Papa.parse(file, {
       skipEmptyLines: true,
       complete: ({ data }) => {
-        resolve(data as Array<string>)
+        resolve(data as Array<[string, string, string]>)
       },
     })
   })
@@ -43,24 +35,18 @@ const parse = (file: any): Promise<Array<string>> => {
 const UploadFile = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
-  const [listDuplicate, setListDuplicate] = useState<string[]>([])
   const [isWrongFormat, setIsWrongFormat] = useState(false)
   const [visible, setVisible] = useState(false)
-  const { calcListAmount } = useCalculateAmount()
 
   const {
     recipients: { recipientInfos },
-    main: { mintSelected, tge },
   } = useSelector((state: AppState) => state)
-  const mintDecimals = useMintDecimals(mintSelected) || 0
 
   const upload = useCallback(
     async (file: any) => {
       setLoading(true)
       const recipients = await parse(file)
       const recipientInfos: RecipientInfos = {}
-      const duplicates: string[] = []
-      let isDuplicate = false
 
       for (const recipientData of recipients) {
         //Check format file
@@ -68,58 +54,21 @@ const UploadFile = () => {
           setLoading(false)
           return setVisible(true)
         }
+        const [address, amount, time] = recipientData
+        const unlockTime = new Date(time).getTime()
+        const recipientInfo = {
+          address,
+          amount,
+          unlockTime,
+        }
 
-        const address = recipientData[INDEX_ADDRESS]
-        let amount = utilsBN.decimalize(
-          recipientData[INDEX_AMOUNT],
-          mintDecimals,
-        )
-
-        //Check duplicate Data
         if (recipientInfos[address]) {
-          duplicates.push(address)
-          isDuplicate = true
+          let data = [...recipientInfos[address]]
+          data.push(recipientInfo)
+          recipientInfos[address] = data
           continue
         }
-        const recipientInfo: RecipientInfo[] = []
-
-        if (tge) {
-          const amountTge = amount.mul(new BN(tge)).div(new BN(100))
-          amount = amount.sub(amountTge)
-
-          const recipient: RecipientInfo = {
-            address,
-            amount: utilsBN.undecimalize(amountTge, mintDecimals),
-            unlockTime: Date.now(),
-          }
-          recipientInfo.push(recipient)
-        }
-
-        const amountVesting = recipientData.length - INDEX_FIRST_UNLOCK_TIME
-        const listAmount = calcListAmount(amount, amountVesting)
-        for (let i = INDEX_FIRST_UNLOCK_TIME; i < recipientData.length; i++) {
-          const unlockTime = new Date(recipientData[i]).getTime()
-
-          //Check format date
-          if (!unlockTime) {
-            setIsWrongFormat(true)
-            setLoading(false)
-            return setVisible(true)
-          }
-          const actualAmount = listAmount[i - INDEX_FIRST_UNLOCK_TIME]
-          recipientInfo.push({
-            address,
-            amount: utilsBN.undecimalize(actualAmount, mintDecimals),
-            unlockTime,
-          })
-        }
-        recipientInfos[address] = recipientInfo
-      }
-
-      if (isDuplicate) {
-        setListDuplicate(duplicates)
-        setLoading(false)
-        return setVisible(true)
+        recipientInfos[address] = [recipientInfo]
       }
 
       dispatch(setFileName(file.name))
@@ -127,7 +76,7 @@ const UploadFile = () => {
       setLoading(false)
       return false
     },
-    [calcListAmount, dispatch, mintDecimals, tge],
+    [dispatch],
   )
 
   const remove = async () => {
@@ -149,17 +98,11 @@ const UploadFile = () => {
           <span style={{ color: '#42E6EB' }}>MM-DD-YYYY HH:mm.</span>
         </Typography.Text>
       )
-    if (listDuplicate.length)
-      return (
-        <Typography.Text>
-          There are some wrong wallet addresses:
-        </Typography.Text>
-      )
+
     return <Typography.Text>Wrong format file</Typography.Text>
-  }, [isWrongFormat, listDuplicate])
+  }, [isWrongFormat])
 
   const closeModalError = () => {
-    setListDuplicate([])
     setIsWrongFormat(false)
     return setVisible(false)
   }
@@ -204,10 +147,9 @@ const UploadFile = () => {
             Download sample
           </Button>
         </Col>
-        <ModalErrorDuplicate
+        <ModalError
           visible={visible}
           onClose={closeModalError}
-          addresses={listDuplicate}
           description={describeError}
         />
       </Row>

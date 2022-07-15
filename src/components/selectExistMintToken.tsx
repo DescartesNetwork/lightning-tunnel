@@ -3,7 +3,7 @@ import { CSSProperties } from 'react'
 import { Select, Space } from 'antd'
 
 import { ALL } from '../constants'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { MintAvatar, MintSymbol } from '@sen-use/components'
 
 type SelectExistMintTokenProps = {
   mintAddresses: string[]

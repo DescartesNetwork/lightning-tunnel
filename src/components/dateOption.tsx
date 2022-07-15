@@ -1,8 +1,10 @@
+import { ReactNode } from 'react'
 import moment from 'moment'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Col, DatePicker, Row, Typography, Switch, Space } from 'antd'
-import { ReactNode } from 'react'
+
+import { FORMAT_DATE } from '../constants'
 
 type DateOptionProps = {
   placeholder: string
@@ -68,7 +70,7 @@ const DateOption = ({
           value={value ? moment(value) : null}
           showTime={{ showSecond: false }}
           placement="bottomRight"
-          format={'MM-DD-YYYY HH:mm'}
+          format={FORMAT_DATE}
         />
       </Col>
       {error && (

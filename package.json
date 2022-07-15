@@ -4,6 +4,7 @@
   "dependencies": {
     "@project-serum/sol-wallet-adapter": "^0.2.6",
     "@reduxjs/toolkit": "^1.8.0",
+    "@sen-use/components": "^1.0.9",
     "@senswap/react-lazyload": "^3.2.2",
     "@senswap/sen-js": "^1.4.0",
     "@sentre/antd-ionicon": "^1.0.31",

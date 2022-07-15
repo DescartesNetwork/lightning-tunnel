@@ -5,7 +5,7 @@ import UnlockDateColumn from './unlockDateColumn'
 import ColumnTotal from './columnTotal'
 import ActionButton from './actionButton'
 
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { MintAvatar, MintSymbol } from '@sen-use/components'
 import { ItemSent } from 'hooks/useSentList'
 
 export const COLUMNS_AIRDROP = [

@@ -12,7 +12,7 @@ import IonIcon from '@sentre/antd-ionicon'
 import ButtonHome from 'components/buttonHome'
 
 import { notifySuccess, notifyError, getCID } from 'helper'
-import { MintSymbol } from 'shared/antd/mint'
+import { MintSymbol } from '@sen-use/components'
 import { useAppRouter } from 'hooks/useAppRoute'
 import IPFS from 'helper/ipfs'
 import configs from 'configs'

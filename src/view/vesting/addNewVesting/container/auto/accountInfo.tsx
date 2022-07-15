@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import { util } from '@sentre/senhub'
+
 import moment from 'moment'
 
 import { Col, Row, Space, Typography, Tooltip, Checkbox, Button } from 'antd'
@@ -58,19 +59,20 @@ const AccountInfo = ({
               checked={selectedFile?.includes(vestingItem.address)}
               onChange={(e) => onChecked(e.target.checked, vestingItem.address)}
               className="lightning-checkbox"
+              onClick={(e) => e.stopPropagation()}
             />
           )}
           <Typography.Text type="secondary">#{index + 1}</Typography.Text>
         </Space>
       </Col>
-      <Col span={5}>
+      <Col span={4}>
         <Tooltip title={vestingItem.address}>
           <Typography.Text style={{ color: isValidAddress ? '#F9575E' : '' }}>
             {util.shortenAddress(vestingItem.address)}
           </Typography.Text>
         </Tooltip>
       </Col>
-      <Col span={15} className={validateAmount ? 'recipient-input-error' : ''}>
+      <Col span={16} className={validateAmount ? 'recipient-input-error' : ''}>
         <Row gutter={[16, 8]}>
           {vestingItem.config.map(({ amount, unlockTime }, index) => {
             const invalidTime = unlockTime > expirationTime && expirationTime

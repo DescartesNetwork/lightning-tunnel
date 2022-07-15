@@ -4,7 +4,7 @@ import { utilsBN } from 'sentre-web3'
 import BN from 'bn.js'
 import parse from 'parse-duration'
 
-import { Button, Col, Input, Row } from 'antd'
+import { Button, Col, Input, Row, Space, Typography } from 'antd'
 import NumericInput from '@sentre/antd-numeric-input'
 import CommonModal from 'components/commonModal'
 
@@ -13,6 +13,8 @@ import { AppDispatch, AppState } from 'model'
 import { setRecipient, RecipientInfo } from 'model/recipients.controller'
 import useCalculateAmount from 'hooks/useCalculateAmount'
 import { setIsTyping } from 'model/main.controller'
+import { account } from '@senswap/sen-js'
+import IonIcon from '@sentre/antd-ionicon'
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
@@ -22,6 +24,8 @@ const DEFAULT_RECIPIENT = {
 const AddRecipient = () => {
   const [formInput, setFormInput] = useState(DEFAULT_RECIPIENT)
   const [visible, setVisible] = useState(false)
+  const [amountError, setAmountError] = useState('')
+  const [walletError, setWalletError] = useState('')
   const [replaceRecipient, setReplaceRecipient] = useState<RecipientInfo[]>([])
   const configs = useSelector((state: AppState) => state.recipients.configs)
   const TGE = useSelector((state: AppState) => state.main.TGE)
@@ -31,6 +35,7 @@ const AddRecipient = () => {
     (state: AppState) => state.recipients.recipientInfos,
   )
   const cliff = useSelector((state: AppState) => state.recipients.configs.cliff)
+  const decimal = useSelector((state: AppState) => state.setting.decimal)
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const dispatch = useDispatch<AppDispatch>()
   const { calcListAmount } = useCalculateAmount()
@@ -42,6 +47,13 @@ const AddRecipient = () => {
 
   const setNewRecipient = () => {
     const { walletAddress: address, amount } = formInput
+
+    if (!account.isAddress(address))
+      return setWalletError('Wrong wallet address')
+    if (!amount) return setAmountError('Amount cannot be empty')
+    if (!decimal && Number(amount) % 1 !== 0)
+      return setAmountError('Should be natural numbers')
+
     const { distributeIn, frequency } = configs
     let decimalAmount = utilsBN.decimalize(amount, mintDecimals)
     const distributionAmount = Math.floor(
@@ -80,6 +92,8 @@ const AddRecipient = () => {
       setReplaceRecipient(nextRecipients)
       return setVisible(true)
     }
+    setWalletError('')
+    setAmountError('')
     setFormInput(DEFAULT_RECIPIENT)
     return dispatch(setRecipient({ walletAddress: address, nextRecipients }))
   }
@@ -88,6 +102,8 @@ const AddRecipient = () => {
     setVisible(false)
     const { walletAddress } = formInput
     setFormInput(DEFAULT_RECIPIENT)
+    setWalletError('')
+    setAmountError('')
     return dispatch(
       setRecipient({
         walletAddress,
@@ -142,6 +158,16 @@ const AddRecipient = () => {
           ok
         </Button>
       </Col>
+      {(walletError || amountError) && (
+        <Col span={24}>
+          <Space>
+            <IonIcon style={{ color: '#f2323f' }} name="warning-outline" />
+            <Typography.Text type="danger">
+              {walletError || amountError}
+            </Typography.Text>
+          </Space>
+        </Col>
+      )}
       <CommonModal
         btnText="Replace"
         description={'Do you want replace this recipient'}

@@ -17,6 +17,7 @@ import OverviewRecipient from './overViewRecipient'
 
 import { addAmountAndTime, RecipientInfo } from 'model/recipients.controller'
 import { AppDispatch, AppState } from 'model'
+import { FORMAT_DATE } from '../../../../../../constants'
 
 type EditTimeAndAmountProps = {
   visible: boolean
@@ -133,7 +134,7 @@ const EditTimeAndAmount = ({
                       showTime={{ showSecond: false }}
                       placement="bottomRight"
                       value={unlockTime ? moment(unlockTime) : null}
-                      format={'MM-DD-YYYY HH:mm'}
+                      format={FORMAT_DATE}
                     />
                   </Col>
                   <Col span={2}>

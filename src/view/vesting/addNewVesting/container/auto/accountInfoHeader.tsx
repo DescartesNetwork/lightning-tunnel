@@ -22,13 +22,13 @@ const AccountInfoHeader = ({
           <Typography.Text type="secondary">No.</Typography.Text>
         </Space>
       </Col>
-      <Col span={5}>
+      <Col span={4}>
         <Typography.Text type="secondary">Wallet address</Typography.Text>
       </Col>
-      <Col span={12}>
+      <Col span={16}>
         <Typography.Text type="secondary">Amount & Unlock time</Typography.Text>
       </Col>
-      <Col span={5} />
+      <Col span={2} />
     </Row>
   )
 }

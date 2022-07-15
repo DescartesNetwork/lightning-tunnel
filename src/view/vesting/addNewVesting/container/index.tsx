@@ -97,13 +97,13 @@ const SelectInputMethod = () => {
         </Col>
         <Col span={24}>
           <Row gutter={[16, 16]}>
-            <Col span={12}>
+            <Col xs={24} md={24} xl={12}>
               <SelectToken
                 activeMintAddress={mintSelected}
                 onSelect={onSelectMint}
               />
             </Col>
-            <Col span={12}>
+            <Col xs={24} md={24} xl={12}>
               <MintInfo mintAddress={mintSelected} />
             </Col>
             <Col span={24}>

@@ -72,8 +72,22 @@ export const getHistory = createAsyncThunk<
     }),
   )
 
-
   return { listHistory }
+})
+
+export const setHistory = createAsyncThunk<
+  HistoryState,
+  { historyRecord: HistoryRecord },
+  { state: any }
+>(`${NAME}/setHistory`, async ({ historyRecord }, { getState }) => {
+  const {
+    history: { listHistory },
+  } = getState()
+
+  const nextHistory = [...listHistory]
+  nextHistory.unshift(historyRecord)
+
+  return { listHistory: nextHistory }
 })
 
 /**
@@ -85,10 +99,15 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      getHistory.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        getHistory.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setHistory.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

@@ -17,6 +17,7 @@ import IonIcon from '@sentre/antd-ionicon'
 import { useAppRouter } from 'hooks/useAppRoute'
 import { AppDispatch } from 'model'
 import {
+  onSelectedMint,
   onSelectMethod,
   setTGE,
   setTypeDistribute,
@@ -28,6 +29,7 @@ import {
   setGlobalUnlockTime,
 } from 'model/recipients.controller'
 import { Method, Step, SIDE_BAR_ITEMS } from '../../constants'
+import { EMPTY_SELECT_VAL } from 'components/selectTokens'
 
 import LOGO from 'static/images/logo.svg'
 
@@ -67,6 +69,7 @@ const SideBar = () => {
     await dispatch(setGlobalUnlockTime(0))
     await dispatch(setExpiration(0))
     await dispatch(setTGE(''))
+    await dispatch(onSelectedMint(EMPTY_SELECT_VAL))
     return pushHistory(`/${e.key}`)
   }
 

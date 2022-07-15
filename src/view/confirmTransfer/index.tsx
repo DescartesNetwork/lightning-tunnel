@@ -17,12 +17,11 @@ import { useAppRouter } from 'hooks/useAppRoute'
 import useTotal from 'hooks/useTotal'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import { AppDispatch, AppState } from 'model'
-import { getHistory } from 'model/history.controller'
+import { setHistory } from 'model/history.controller'
 import { onSelectStep } from 'model/steps.controller'
-
 import { Step } from '../../constants'
 import History, { HistoryRecord } from 'helper/history'
-import { notifySuccess } from 'helper'
+import { toUnitTime, notifySuccess } from 'helper'
 import IPFS from 'helper/ipfs'
 import {
   RecipientInfo,
@@ -31,8 +30,9 @@ import {
   setGlobalUnlockTime,
 } from 'model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
+import { onSelectedMint, setTGE, setTGETime } from 'model/main.controller'
+import { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import configs from 'configs'
-import { setTGE } from 'model/main.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -47,7 +47,6 @@ const ConfirmTransfer = () => {
     main: { mintSelected, typeDistribute },
     setting: { decimal: isDecimal },
     recipients: { recipientInfos, expirationTime },
-    distributors,
   } = useSelector((state: AppState) => state)
   const {
     wallet: { address: walletAddress },
@@ -66,13 +65,14 @@ const ConfirmTransfer = () => {
     }
     const balanceTree: Leaf[] = listRecipient.map(
       ({ amount, address, unlockTime }, index) => {
+        const unitTime = toUnitTime(unlockTime)
         const actualAmount = isDecimal
           ? utils.decimalize(amount, mintDecimals).toString()
           : amount
         return {
           authority: account.fromAddress(address),
           amount: new BN(actualAmount),
-          startedAt: new BN(unlockTime / 1000),
+          startedAt: new BN(unitTime / 1000),
           salt: MerkleDistributor.salt(
             `${appId}/${typeDistribute}/${index.toString()}`,
           ),
@@ -121,7 +121,7 @@ const ConfirmTransfer = () => {
       }
       const history = new History(walletAddress)
       await history.set(distributorAddress, historyRecord)
-      await dispatch(getHistory({ walletAddress, distributors }))
+      await dispatch(setHistory({ historyRecord }))
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)
@@ -145,6 +145,8 @@ const ConfirmTransfer = () => {
     await dispatch(setGlobalUnlockTime(0))
     await dispatch(setExpiration(0))
     await dispatch(setTGE(''))
+    await dispatch(setTGETime(0))
+    await dispatch(onSelectedMint(EMPTY_SELECT_VAL))
     return pushHistory(`/${typeDistribute}`)
   }, [dispatch, pushHistory, typeDistribute])
 

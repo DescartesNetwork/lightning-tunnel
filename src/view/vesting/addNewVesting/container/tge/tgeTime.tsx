@@ -41,6 +41,7 @@ const TgeTime = () => {
           value={TGETime ? moment(TGETime) : null}
           showTime={{ showSecond: false }}
           placement="bottomRight"
+          format={'MM-DD-YYYY HH:mm'}
         />
       </Col>
       {error && (

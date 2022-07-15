@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Button, Card, Col, Radio, Row, Space, Typography } from 'antd'
+import { Button, Card, Col, Radio, Row, Space, Tooltip, Typography } from 'antd'
 import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import Header from 'components/header'
 import Auto from './auto'
@@ -9,6 +9,7 @@ import Manual from './manual'
 import ConfirmTransfer from '../../../confirmTransfer'
 import DateOption from '../../../../components/dateOption'
 import CardOption from 'components/cardOption'
+import MintInfo from 'components/mintInfo'
 
 import { Method, Step } from '../../../../constants'
 import { AppState } from 'model'
@@ -16,14 +17,15 @@ import { onSelectedMint, onSelectMethod } from 'model/main.controller'
 import { onSelectStep } from 'model/steps.controller'
 import { setExpiration, setGlobalUnlockTime } from 'model/recipients.controller'
 import { useAppRouter } from 'hooks/useAppRoute'
+import IonIcon from '@sentre/antd-ionicon'
 
 const SelectInputMethod = () => {
   const dispatch = useDispatch()
   const { expirationTime: endDate, globalUnlockTime } = useSelector(
     (state: AppState) => state.recipients,
   )
+  const mintSelected = useSelector((state: AppState) => state.main.mintSelected)
   const [method, setMethod] = useState<Method>(Method.manual)
-  const [activeMintAddress, setActiveMintAddress] = useState(EMPTY_SELECT_VAL)
   const [unlockTime, setUnlockTime] = useState(globalUnlockTime)
   const [expirationTime, setExpirationTime] = useState(endDate)
   const [unlockImmediately, setUnlockImmediately] = useState(true)
@@ -60,12 +62,11 @@ const SelectInputMethod = () => {
   }
 
   const onSelectMint = (mintAddress: string) => {
-    setActiveMintAddress(mintAddress)
     dispatch(onSelectedMint(mintAddress))
   }
 
   const disabled =
-    activeMintAddress === EMPTY_SELECT_VAL ||
+    mintSelected === EMPTY_SELECT_VAL ||
     !method ||
     (!unlockTime && !unlockImmediately) ||
     (!expirationTime && !isUnlimited) ||
@@ -85,11 +86,14 @@ const SelectInputMethod = () => {
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]}>
-            <Col span={24}>
+            <Col xs={24} md={24} xl={12}>
               <SelectToken
-                activeMintAddress={activeMintAddress}
+                activeMintAddress={mintSelected}
                 onSelect={onSelectMint}
               />
+            </Col>
+            <Col xs={24} md={24} xl={12}>
+              <MintInfo mintAddress={mintSelected} />
             </Col>
             <Col span={24}>
               <Space size={12} direction="vertical" style={{ width: '100%' }}>
@@ -101,7 +105,7 @@ const SelectInputMethod = () => {
                   style={{ width: '100%' }}
                   className="select-card"
                 >
-                  <Row gutter={[12, 12]}>
+                  <Row gutter={[16, 16]}>
                     <Col xs={24} sm={12} md={12} lg={12}>
                       <Radio.Button value={Method.manual}>
                         <CardOption
@@ -148,6 +152,11 @@ const SelectInputMethod = () => {
                     value={expirationTime}
                     error={validEndDate}
                     checked={isUnlimited}
+                    explain={
+                      <Tooltip title="Vesting expiration time, after this time users will not be able to claim the token and you can get it back.">
+                        <IonIcon name="information-circle-outline" />
+                      </Tooltip>
+                    }
                   />
                 </Col>
               </Row>

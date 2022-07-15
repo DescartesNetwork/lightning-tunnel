@@ -1,7 +1,8 @@
 import moment from 'moment'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Col, DatePicker, Row, Typography, Switch } from 'antd'
+import { Col, DatePicker, Row, Typography, Switch, Space } from 'antd'
+import { ReactNode } from 'react'
 
 type DateOptionProps = {
   placeholder: string
@@ -12,6 +13,7 @@ type DateOptionProps = {
   value: number
   error: string
   checked: boolean
+  explain?: ReactNode
 }
 
 const DateOption = ({
@@ -23,6 +25,7 @@ const DateOption = ({
   value,
   error,
   checked,
+  explain,
 }: DateOptionProps) => {
   const onSwitchChange = (isDisable: boolean) => {
     onChange(0) //clear time
@@ -33,7 +36,10 @@ const DateOption = ({
       <Col span={24}>
         <Row>
           <Col flex="auto">
-            <Typography.Text className="caption">{label}</Typography.Text>
+            <Space align="baseline">
+              <Typography.Text className="caption">{label}</Typography.Text>
+              {explain}
+            </Space>
           </Col>
           <Col>
             <Row gutter={[8, 8]}>
@@ -62,6 +68,7 @@ const DateOption = ({
           value={value ? moment(value) : null}
           showTime={{ showSecond: false }}
           placement="bottomRight"
+          format={'MM-DD-YYYY HH:mm'}
         />
       </Col>
       {error && (

@@ -69,13 +69,11 @@ const AddMore = () => {
     return dispatch(setIsTyping(false))
   }, [dispatch, formInput.amount, formInput.walletAddress])
 
-  const disabled = useMemo(() => {
-    const { walletAddress, amount } = formInput
-    if (!account.isAddress(walletAddress) || !amount) return true
-    if (!unlockTime || (unlockTime > expirationTime && expirationTime))
-      return true
-    return false
-  }, [expirationTime, formInput, unlockTime])
+  const error = useMemo(() => {
+    if (unlockTime > expirationTime && expirationTime)
+      return 'Unlock time must be less than the expiration time.'
+    return ''
+  }, [expirationTime, unlockTime])
 
   useEffect(() => {
     checkIsTyping()
@@ -107,6 +105,7 @@ const AddMore = () => {
           showTime={{ showSecond: false }}
           value={unlockTime ? moment(unlockTime) : null}
           placement="bottomRight"
+          format={'MM-DD-YYYY HH:mm'}
         />
       </Col>
       <Col xs={24} md={5} xl={4}>
@@ -126,17 +125,17 @@ const AddMore = () => {
           size="small"
           style={{ padding: 0, color: '#42E6EB' }}
           onClick={setNewRecipient}
-          disabled={disabled}
+          disabled={!!error || !unlockTime}
         >
           ok
         </Button>
       </Col>
-      {(walletError || amountError) && (
+      {(walletError || amountError || error) && (
         <Col span={24}>
           <Space>
             <IonIcon style={{ color: '#f2323f' }} name="warning-outline" />
             <Typography.Text type="danger">
-              {walletError || amountError}
+              {walletError || amountError || error}
             </Typography.Text>
           </Space>
         </Col>

@@ -57,3 +57,9 @@ export const fetchMulCGK = async (
   }
   return result
 }
+
+export const toUnitTime = (time: number) => {
+  const unitDate = new Date(time).toUTCString()
+  const unitTime = new Date(unitDate).getTime()
+  return unitTime
+}

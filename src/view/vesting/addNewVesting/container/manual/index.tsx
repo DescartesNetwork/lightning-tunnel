@@ -5,6 +5,8 @@ import { Button, Card, Col, Row } from 'antd'
 import Header from '../../../../../components/header'
 import CardTotal from 'components/cardTotal'
 import CommonModal from 'components/commonModal'
+import AddRecipient from '../../components/addRecipient'
+import DisplayRecipient from '../../components/displayRecipient'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
@@ -14,12 +16,10 @@ import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import {
   removeRecipients,
+  setExpiration,
   setGlobalUnlockTime,
 } from 'model/recipients.controller'
-
 import { onSelectMethod } from 'model/main.controller'
-import AddRecipient from '../../components/addRecipient'
-import DisplayRecipient from '../../components/displayRecipient'
 
 const Manual = () => {
   const [visible, setVisible] = useState(false)
@@ -34,8 +34,9 @@ const Manual = () => {
   const onBack = useCallback(async () => {
     await dispatch(removeRecipients())
     await dispatch(setGlobalUnlockTime(0))
-    dispatch(onSelectStep(Step.SelectMethod))
-    dispatch(onSelectMethod(Method.manual))
+    await dispatch(setExpiration(0))
+    await dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(onSelectMethod(Method.manual))
   }, [dispatch])
 
   const disabled =

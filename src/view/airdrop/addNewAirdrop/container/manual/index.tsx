@@ -13,7 +13,12 @@ import { Method, Step } from '../../../../../constants'
 import useTotal from 'hooks/useTotal'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
-import { RecipientInfo, removeRecipients } from 'model/recipients.controller'
+import {
+  RecipientInfo,
+  removeRecipients,
+  setExpiration,
+  setGlobalUnlockTime,
+} from 'model/recipients.controller'
 import { onSelectMethod } from 'model/main.controller'
 
 const Manual = () => {
@@ -37,6 +42,8 @@ const Manual = () => {
   const { amountError } = useValidateAmount()
 
   const onBack = useCallback(async () => {
+    await dispatch(setGlobalUnlockTime(0))
+    await dispatch(setExpiration(0))
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(onSelectMethod(Method.manual))
     await dispatch(removeRecipients())

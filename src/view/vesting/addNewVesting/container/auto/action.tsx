@@ -11,7 +11,7 @@ import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import useFilteredVestingRecipient from 'hooks/vesting/useFilteredVestingRecipients'
 import { setTGE } from 'model/main.controller'
-import { setExpiration } from 'model/recipients.controller'
+import { removeRecipients, setExpiration } from 'model/recipients.controller'
 
 const Action = () => {
   const [visible, setVisible] = useState(false)
@@ -32,6 +32,7 @@ const Action = () => {
     dispatch(onSelectStep(Step.SelectMethod))
     dispatch(setTGE(''))
     dispatch(setExpiration(0))
+    dispatch(removeRecipients())
   }, [dispatch])
 
   return (

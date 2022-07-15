@@ -2,7 +2,8 @@ import { Fragment, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import parse from 'parse-duration'
 
-import { Button, Card, Col, Radio, Row, Typography } from 'antd'
+import { Button, Card, Col, Radio, Row, Tooltip, Typography } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import Auto from './auto'
 import Manual from './manual'
 import CliffTime from '../components/cliffTime'
@@ -175,6 +176,11 @@ const SelectInputMethod = () => {
                     value={expiration}
                     error={validEndDate}
                     checked={isUnlimited}
+                    explain={
+                      <Tooltip title="Vesting expiration time, after this time users will not be able to claim the token and you can get it back.">
+                        <IonIcon name="information-circle-outline" />
+                      </Tooltip>
+                    }
                   />
                 </Col>
               </Row>

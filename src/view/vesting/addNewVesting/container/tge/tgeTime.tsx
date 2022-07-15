@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment'
 
@@ -6,7 +7,7 @@ import IonIcon from '@sentre/antd-ionicon'
 
 import { AppDispatch, AppState } from 'model'
 import { setTGETime } from 'model/main.controller'
-import { useMemo } from 'react'
+import { FORMAT_DATE } from '../../../../../constants'
 
 const TgeTime = () => {
   const TGETime = useSelector((state: AppState) => state.main.TGETime)
@@ -41,7 +42,7 @@ const TgeTime = () => {
           value={TGETime ? moment(TGETime) : null}
           showTime={{ showSecond: false }}
           placement="bottomRight"
-          format={'MM-DD-YYYY HH:mm'}
+          format={FORMAT_DATE}
         />
       </Col>
       {error && (

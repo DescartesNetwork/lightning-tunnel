@@ -9,7 +9,7 @@ import ColumAction from './columAction'
 import ColumnExpiration from './columnExpiration'
 
 import { ColumnsType } from 'antd/lib/table'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { MintAvatar, MintSymbol } from '@sen-use/components'
 import { ReceiveItem } from 'model/listReceived.controller'
 
 import './index.less'

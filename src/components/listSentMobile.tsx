@@ -9,7 +9,7 @@ import ColumnTotal from '../view/airdrop/history/columns/columnTotal'
 import ActionButton from '../view/airdrop/history/columns/actionButton'
 import RowSpaceBetween from 'components/rowSpaceBetween'
 import UnlockDateColumn from '../view/airdrop/history/columns/unlockDateColumn'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { MintAvatar, MintSymbol } from '@sen-use/components'
 
 import { ItemSent } from 'hooks/useSentList'
 

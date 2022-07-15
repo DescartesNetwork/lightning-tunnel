@@ -46,14 +46,14 @@ const RecipientCard = ({ vestingItem, index }: RecipientCardProps) => {
       <Col span={2}>
         <Typography.Text type="secondary">#{index + 1}</Typography.Text>
       </Col>
-      <Col span={5}>
+      <Col span={4}>
         <Tooltip title={vestingItem.address}>
           <Typography.Text style={{ color: isValidAddress ? '#F9575E' : '' }}>
             {util.shortenAddress(vestingItem.address)}
           </Typography.Text>
         </Tooltip>
       </Col>
-      <Col span={15} className={validateAmount ? 'recipient-input-error' : ''}>
+      <Col span={16} className={validateAmount ? 'recipient-input-error' : ''}>
         <Row gutter={[16, 8]}>
           {vestingItem.config.map(({ amount, unlockTime }, index) => {
             const invalidTime = unlockTime > expirationTime && expirationTime

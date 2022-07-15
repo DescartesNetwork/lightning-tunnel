@@ -10,6 +10,7 @@ import NumericInput from '@sentre/antd-numeric-input'
 import { AppDispatch, AppState } from 'model'
 import { setRecipient, RecipientInfo } from 'model/recipients.controller'
 import { setIsTyping } from 'model/main.controller'
+import { FORMAT_DATE } from '../../../../../../constants'
 
 const DEFAULT_RECIPIENT = {
   walletAddress: '',
@@ -105,7 +106,7 @@ const AddMore = () => {
           showTime={{ showSecond: false }}
           value={unlockTime ? moment(unlockTime) : null}
           placement="bottomRight"
-          format={'MM-DD-YYYY HH:mm'}
+          format={FORMAT_DATE}
         />
       </Col>
       <Col xs={24} md={5} xl={4}>

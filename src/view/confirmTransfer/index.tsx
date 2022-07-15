@@ -9,7 +9,7 @@ import { CID } from 'multiformats/cid'
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'
 import ModalShare from 'components/modalShare'
-import { MintSymbol } from 'shared/antd/mint'
+import { MintSymbol } from '@sen-use/components'
 import ButtonHome from 'components/buttonHome'
 import { WrapTotal } from 'components/cardTotal'
 

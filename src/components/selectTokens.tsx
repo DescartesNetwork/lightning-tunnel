@@ -1,9 +1,9 @@
 import { Fragment, useCallback, useState } from 'react'
 
-import { Button, Modal, Space } from 'antd'
+import { Button, Modal, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
-import { ListMint, MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { ListMint, MintAvatar, MintSymbol } from '@sen-use/components'
 
 export const EMPTY_SELECT_VAL = 'empty'
 
@@ -30,11 +30,18 @@ const SelectToken = ({
         type="text"
         onClick={() => setVisible(true)}
       >
-        <Space>
-          <MintAvatar mintAddress={activeMintAddress} />
-          <MintSymbol mintAddress={activeMintAddress} />
-          <IonIcon name="chevron-down-outline" />
-        </Space>
+        {activeMintAddress !== EMPTY_SELECT_VAL ? (
+          <Space>
+            <MintAvatar mintAddress={activeMintAddress} />
+            <MintSymbol mintAddress={activeMintAddress} />
+            <IonIcon name="chevron-down-outline" />
+          </Space>
+        ) : (
+          <Space>
+            <MintAvatar mintAddress={activeMintAddress} />
+            <Typography.Text>Select a token</Typography.Text>
+          </Space>
+        )}
       </Button>
       <Modal
         visible={visible}

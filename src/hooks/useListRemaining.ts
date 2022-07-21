@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Connection, PublicKey, AccountInfo } from '@solana/web3.js'
+import { getMultipleAccounts } from '@sen-use/web3'
 import { rpc } from '@sentre/senhub'
 
 import configs from 'configs'
@@ -40,13 +41,17 @@ const useListRemaining = () => {
     if (!Object.values(associatedAddresses).length) return
     const { splt } = window.sentre
     const listRemaining: Record<string, number> = {}
-    const accountInfos = (await connection.getMultipleAccountsInfo(
+    const accountInfos = await getMultipleAccounts(
+      connection,
       Object.values(associatedAddresses),
-    )) as AccountInfo<Buffer>[]
+    )
+
 
     for (const accountInfo of accountInfos) {
       if (!accountInfo) continue
-      const { amount, owner } = await splt.parseAccountData(accountInfo.data)
+      const { amount, owner } = await splt.parseAccountData(
+        accountInfo.account.data,
+      )
       listRemaining[owner] = Number(amount)
     }
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Connection, PublicKey, AccountInfo } from '@solana/web3.js'
+import { Connection, PublicKey } from '@solana/web3.js'
 import { getMultipleAccounts } from '@sen-use/web3'
 import { rpc } from '@sentre/senhub'
 
@@ -45,8 +45,6 @@ const useListRemaining = () => {
       connection,
       Object.values(associatedAddresses),
     )
-
-
     for (const accountInfo of accountInfos) {
       if (!accountInfo) continue
       const { amount, owner } = await splt.parseAccountData(

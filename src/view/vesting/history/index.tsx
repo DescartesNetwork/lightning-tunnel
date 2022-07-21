@@ -8,7 +8,7 @@ import ListSentMobile from 'components/listSentMobile'
 
 import useSentList, { ItemSent } from 'hooks/useSentList'
 import { TypeDistribute } from 'model/main.controller'
-import { COLUMNS_AIRDROP } from './columns'
+import { HISTORY_COLUMNS } from 'components/historyColumns'
 
 const DEFAULT_AMOUNT = 4
 
@@ -50,7 +50,7 @@ const History = () => {
             <Table
               dataSource={filteredSentToken.slice(0, amountAirdrop)}
               pagination={false}
-              columns={COLUMNS_AIRDROP}
+              columns={HISTORY_COLUMNS}
               rowKey={(record) => record.distributorAddress}
             />
           </Col>

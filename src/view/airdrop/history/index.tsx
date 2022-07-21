@@ -5,8 +5,8 @@ import { Button, Card, Col, Row, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import FilterSentList from 'components/filterSentList'
 import ListSentMobile from '../../../components/listSentMobile'
+import { HISTORY_COLUMNS } from 'components/historyColumns'
 
-import { COLUMNS_AIRDROP } from './columns'
 import { TypeDistribute } from 'model/main.controller'
 import useSentList, { ItemSent } from 'hooks/useSentList'
 
@@ -50,7 +50,7 @@ const History = () => {
             <Table
               dataSource={filteredListHistory.slice(0, amountAirdrop)}
               pagination={false}
-              columns={COLUMNS_AIRDROP}
+              columns={HISTORY_COLUMNS}
               rowKey={(record) => record.distributorAddress}
             />
           </Col>

@@ -109,8 +109,8 @@ const SelectInputMethod = () => {
                     <Col xs={24} sm={12} md={12} lg={12}>
                       <Radio.Button value={Method.manual}>
                         <CardOption
-                          label="Manual"
-                          description="With a small number of recipients."
+                          label="Automatic"
+                          description="Auto infer by convenient parameters."
                           active={method === Method.manual}
                         />
                       </Radio.Button>
@@ -118,7 +118,7 @@ const SelectInputMethod = () => {
                     <Col xs={24} sm={12} md={12} lg={12}>
                       <Radio.Button value={Method.auto}>
                         <CardOption
-                          label="Automatic"
+                          label="Manual"
                           description="Support bulk import with a CSV file."
                           active={method === Method.auto}
                         />

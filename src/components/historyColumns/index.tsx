@@ -8,7 +8,7 @@ import ActionButton from './actionButton'
 import { MintAvatar, MintSymbol } from '@sen-use/components'
 import { ItemSent } from 'hooks/useSentList'
 
-export const COLUMNS_AIRDROP = [
+export const HISTORY_COLUMNS = [
   {
     title: 'CREATED DATE',
     dataIndex: 'time',
@@ -45,10 +45,11 @@ export const COLUMNS_AIRDROP = [
   {
     title: 'ACTION',
     dataIndex: 'distributorAddress',
-    render: (distributorAddress: string, { remaining }: ItemSent) => (
+    render: (distributorAddress: string, { remaining, treeData }: ItemSent) => (
       <ActionButton
-        distributorAddress={distributorAddress}
         remaining={remaining}
+        distributorAddress={distributorAddress}
+        treeData={treeData}
       />
     ),
   },

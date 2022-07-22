@@ -2,14 +2,13 @@ import { Fragment } from 'react'
 import moment from 'moment'
 
 import { Col, Empty, Row, Space, Typography } from 'antd'
-
 import ExpandCard from 'components/expandCard'
 import RowBetweenNodeTitle from 'components/rowBetweenNodeTitle'
-import ColumnTotal from '../view/airdrop/history/columns/columnTotal'
-import ActionButton from '../view/airdrop/history/columns/actionButton'
 import RowSpaceBetween from 'components/rowSpaceBetween'
-import UnlockDateColumn from '../view/airdrop/history/columns/unlockDateColumn'
 import { MintAvatar, MintSymbol } from '@sen-use/components'
+import ColumnTotal from './historyColumns/columnTotal'
+import ActionButton from './historyColumns/actionButton'
+import UnlockDateColumn from './historyColumns/unlockDateColumn'
 
 import { ItemSent } from 'hooks/useSentList'
 
@@ -57,6 +56,7 @@ const ListSentMobile = ({ listSent }: ListSentMobileProps) => {
                     }
                   >
                     <ActionButton
+                      treeData={treeData}
                       remaining={remaining}
                       distributorAddress={distributorAddress}
                     />

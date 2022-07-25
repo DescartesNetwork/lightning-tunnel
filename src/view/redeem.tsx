@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { utils } from '@senswap/sen-js'
-import { rpc, useMint, useWallet } from '@sentre/senhub'
+import { useMint, useWallet } from '@sentre/senhub'
 import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
 import { BN } from 'bn.js'
 import { utilsBN } from 'sentre-web3'
@@ -16,14 +16,12 @@ import { MintSymbol } from '@sen-use/components'
 import { useAppRouter } from 'hooks/useAppRoute'
 import IPFS from 'helper/ipfs'
 import configs from 'configs'
-import { Airdrop } from 'sdk-airdrop'
 
 import REDEEM_IMG from 'static/images/redeem.svg'
 import REDEEM_SUCCESS from 'static/images/redeem_success.svg'
 import NOT_MEMBER from 'static/images/not_member.svg'
 
 import { AppState } from 'model'
-import SafeWallet from 'helper/safeWallet'
 
 const {
   sol: { utility, taxman, fee },
@@ -142,12 +140,6 @@ const Redeem = () => {
     }
   }, [distributor, getDecimals])
 
-  const testLib = useCallback(async () => {
-    const airDrop = new Airdrop(new SafeWallet(), rpc)
-    const data = await airDrop.getRedeemListByAddress({ walletAddress })
-    console.log(data)
-  }, [walletAddress])
-
   useEffect(() => {
     fetchDecimals()
   }, [fetchDecimals])
@@ -159,10 +151,6 @@ const Redeem = () => {
   useEffect(() => {
     fetchRecipientData()
   }, [fetchRecipientData])
-
-  useEffect(() => {
-    testLib()
-  }, [testLib])
 
   const img = useMemo(() => {
     if (!isMember) return NOT_MEMBER

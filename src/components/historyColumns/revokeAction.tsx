@@ -186,7 +186,16 @@ const RevokeAction = ({
       <Modal
         visible={visible}
         onCancel={() => setVisible(false)}
-        footer={null}
+        footer={
+          <Space>
+            <Button type="ghost" onClick={() => setVisible(false)}>
+              Cancel
+            </Button>
+            <Button onClick={onRevoke} loading={loading} type="primary">
+              confirm
+            </Button>
+          </Space>
+        }
         closeIcon={<IonIcon name="close-outline" />}
         className="card-lightning"
         style={{ paddingBottom: 0 }}
@@ -213,16 +222,6 @@ const RevokeAction = ({
               columns={COLUMN}
               rowKey={(record) => record.authority}
             />
-          </Col>
-          <Col span={24} style={{ textAlign: 'right' }}>
-            <Space>
-              <Button type="ghost" onClick={() => setVisible(false)}>
-                Cancel
-              </Button>
-              <Button onClick={onRevoke} loading={loading} type="primary">
-                confirm
-              </Button>
-            </Space>
           </Col>
         </Row>
       </Modal>

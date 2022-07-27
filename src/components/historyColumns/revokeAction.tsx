@@ -157,7 +157,6 @@ const RevokeAction = ({
   }
 
   const csvData = useMemo(() => {
-    console.log("12");
     const data = Object.values(filterUnclaimed).map((unclaimed) => {
       const { amount, authority } = unclaimed
       const actualAmount = utilsBN.undecimalize(amount, decimal)

@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
-import { useMint } from '@sentre/senhub'
+import { tokenProvider, useGetMintDecimals } from '@sentre/senhub'
 import { utilsBN } from 'sentre-web3'
 import BN from 'bn.js'
 
 import { fetchMulCGK } from 'helper'
 
 export const useCgk = () => {
-  const { tokenProvider, getDecimals } = useMint()
+  const getDecimals = useGetMintDecimals()
 
   const getTotalBalance = useCallback(
     async (mintBalances: { mint: string; amount: BN | bigint }[]) => {
@@ -28,15 +28,19 @@ export const useCgk = () => {
       const tokenPrices = await fetchMulCGK(tickets)
       // Calculate Total Balance
       let total = 0
-      for (const { mint, amount, ticket } of filteredMintBalances) {
-        const decimals = await getDecimals(mint)
+      for (const {
+        mint: mintAddress,
+        amount,
+        ticket,
+      } of filteredMintBalances) {
+        const decimals = (await getDecimals({ mintAddress })) || 0
         const amountBalance = Number(utilsBN.undecimalize(amount, decimals))
         const price = tokenPrices[ticket] || 0
         total += amountBalance * price
       }
       return total
     },
-    [getDecimals, tokenProvider],
+    [getDecimals],
   )
 
   return { getTotalBalance }

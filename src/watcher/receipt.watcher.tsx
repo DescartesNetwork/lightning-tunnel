@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 import { account } from '@senswap/sen-js'
 
 import { AppDispatch } from 'model'
@@ -15,9 +15,7 @@ let watcherId = 0
 
 const ReceiptWatcher = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
 
   const fetchData = useCallback(async () => {
     try {

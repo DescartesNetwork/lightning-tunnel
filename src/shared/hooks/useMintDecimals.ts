@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useMint } from '@sentre/senhub'
+import { useGetMintDecimals } from '@sentre/senhub'
 
 /**
  * Get token decimals from multiple resources. This hook needs MintProvider for working.
@@ -9,11 +9,11 @@ import { useMint } from '@sentre/senhub'
  */
 const useMintDecimals = (mintAddress: string) => {
   const [decimals, setDecimals] = useState<number | undefined>(undefined)
-  const { getDecimals } = useMint()
+  const getDecimals = useGetMintDecimals()
 
   const fetchDecimals = useCallback(async () => {
     try {
-      const decimals = await getDecimals(mintAddress)
+      const decimals = (await getDecimals({ mintAddress })) || 0
       return setDecimals(decimals)
     } catch (er: any) {
       return setDecimals(undefined)

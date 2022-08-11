@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js'
+import { web3 } from '@project-serum/anchor'
 import BN from 'bn.js'
 
 // Bugfix performance
@@ -31,7 +31,7 @@ const isPlain = (val: any): boolean => {
     Array.isArray(val) ||
     isPlainObject(val) ||
     typeof val === 'bigint' ||
-    val instanceof PublicKey ||
+    val instanceof web3.PublicKey ||
     val instanceof BN ||
     Buffer.isBuffer(val)
   )

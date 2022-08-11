@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 import BN from 'bn.js'
 
 import { Col, Row } from 'antd'
@@ -22,9 +22,7 @@ const Hero = () => {
   const receipts = useSelector((state: AppState) => state.receipts)
   const distributors = useSelector((state: AppState) => state.distributors)
   const { getTotalBalance } = useCgk()
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
 
   const fetchTotalReceived = useCallback(async () => {
     const listReceipt = Object.values(receipts)

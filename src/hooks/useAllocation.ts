@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useMint } from '@sentre/senhub'
+import { tokenProvider, useGetMintDecimals } from '@sentre/senhub'
 import { utilsBN } from 'sentre-web3'
 import BN from 'bn.js'
 
@@ -12,7 +12,7 @@ import { useCgk } from './useCgk'
 const useAllocation = (type: TypeDistribute) => {
   const [allocation, setAllocation] = useState<Record<string, Allocation>>({})
   const [totalUSD, setTotalUSD] = useState(0)
-  const { getDecimals, tokenProvider } = useMint()
+  const getDecimals = useGetMintDecimals()
   const { listHistory, numberOfRecipient, loading } = useSentList({ type })
   const { getTotalBalance } = useCgk()
 
@@ -48,19 +48,22 @@ const useAllocation = (type: TypeDistribute) => {
     }
     const tokenPrices = await fetchMulCGK(tickets)
     return tokenPrices
-  }, [listToken, tokenProvider])
+  }, [listToken])
 
   const fetchAllocation = useCallback(async () => {
     try {
       const chartData: Record<string, Allocation> = {}
       if (!totalUSD) return setAllocation(chartData)
       const tokenPrices = await calcTokenPrices()
-      for (const mint in listToken) {
-        const tokenInfo = await tokenProvider.findByAddress(mint)
+      for (const mintAddress in listToken) {
+        const tokenInfo = await tokenProvider.findByAddress(mintAddress)
         const ticket = tokenInfo?.extensions?.coingeckoId
         if (!ticket) continue
-        const decimal = await getDecimals(mint)
-        const amountToken = utilsBN.undecimalize(listToken[mint], decimal)
+        const decimal = (await getDecimals({ mintAddress })) || 0
+        const amountToken = utilsBN.undecimalize(
+          listToken[mintAddress],
+          decimal,
+        )
         const usdValue = tokenPrices[ticket] * Number(amountToken)
         const ratio = (usdValue / totalUSD) * 100
         if (ratio < 2) {
@@ -86,7 +89,7 @@ const useAllocation = (type: TypeDistribute) => {
           }
           continue
         } // group the tokens have small percent
-        chartData[mint] = {
+        chartData[mintAddress] = {
           name: `${tokenInfo?.name}`,
           symbol: `${tokenInfo?.symbol}`,
           amountToken,
@@ -98,7 +101,7 @@ const useAllocation = (type: TypeDistribute) => {
     } catch (error) {
       notifyError(error)
     }
-  }, [calcTokenPrices, getDecimals, listToken, tokenProvider, totalUSD])
+  }, [calcTokenPrices, getDecimals, listToken, totalUSD])
 
   useEffect(() => {
     calcTotalUSD()

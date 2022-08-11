@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useAccount } from '@sentre/senhub'
+import { useAccounts } from '@sentre/senhub'
 import { useCgk } from './useCgk'
 
 const useTotalUSD = () => {
   const [totalUSD, setTotalUSD] = useState(0)
   const [loading, setLoading] = useState(true)
-  const { accounts } = useAccount()
+  const accounts = useAccounts()
   const { getTotalBalance } = useCgk()
 
   const clcTotalUSD = useCallback(async () => {

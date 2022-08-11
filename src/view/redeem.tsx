@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { utils } from '@senswap/sen-js'
-import { useMint, useWallet } from '@sentre/senhub'
+import { useGetMintDecimals, useWalletAddress } from '@sentre/senhub'
 import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
 import { BN } from 'bn.js'
 import { utilsBN } from 'sentre-web3'
@@ -38,11 +38,8 @@ const Redeem = () => {
   const [amountTaken, setAmountTaken] = useState('')
   const receipts = useSelector((state: AppState) => state.receipts)
 
-  const { getDecimals } = useMint()
-
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const getDecimals = useGetMintDecimals()
+  const walletAddress = useWalletAddress()
   const { pushHistory } = useAppRouter()
   const params = useParams<{ distributorAddress: string }>()
   const distributorAddress = params.distributorAddress
@@ -133,7 +130,7 @@ const Redeem = () => {
     if (!distributor) return
     const mintAddress = distributor.mint.toBase58()
     try {
-      const decimals = await getDecimals(mintAddress)
+      const decimals = (await getDecimals({ mintAddress })) || 0
       return setDecimals(decimals)
     } catch (er: any) {
       return setDecimals(0)

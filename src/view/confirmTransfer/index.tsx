@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 import { account, utils } from '@senswap/sen-js'
 import { BN } from 'bn.js'
 import { CID } from 'multiformats/cid'
@@ -48,9 +48,7 @@ const ConfirmTransfer = () => {
     setting: { decimal: isDecimal },
     recipients: { recipientInfos, expirationTime },
   } = useSelector((state: AppState) => state)
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
   const dispatch = useDispatch<AppDispatch>()
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total } = useTotal()

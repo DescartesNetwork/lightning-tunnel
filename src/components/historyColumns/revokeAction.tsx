@@ -4,9 +4,19 @@ import { MerkleDistributor, FeeOptions } from '@sentre/utility'
 import { utilsBN } from 'sentre-web3'
 import { util } from '@sentre/senhub'
 import { shortenAddress } from '@sentre/senhub/dist/shared/util'
+import { CSVLink } from 'react-csv'
 import BN from 'bn.js'
 
-import { Button, Col, Modal, Row, Space, Table, Typography } from 'antd'
+import {
+  Button,
+  Col,
+  Modal,
+  Row,
+  Space,
+  Table,
+  Tooltip,
+  Typography,
+} from 'antd'
 import useReceipts from 'hooks/useReceipts'
 import IonIcon from '@sentre/antd-ionicon'
 
@@ -24,6 +34,11 @@ type Unclaimed = {
   authority: string
   mintAddress: string
 }
+
+const CSV_HEADER = [
+  { label: 'Wallet address', key: 'authority' },
+  { label: 'Amount', key: 'amount' },
+]
 
 const ColumnAmount = ({
   amount,
@@ -75,6 +90,7 @@ const RevokeAction = ({
   const mint = useSelector(
     (state: AppState) => state.distributors[distributorAddress].mint,
   )
+  const decimal = useMintDecimals(mint.toBase58()) || 0
 
   const getUnclaimedList = useCallback(() => {
     if (!treeData) return 0
@@ -140,6 +156,19 @@ const RevokeAction = ({
     }
   }
 
+  const csvData = useMemo(() => {
+    const data = Object.values(filterUnclaimed).map((unclaimed) => {
+      const { amount, authority } = unclaimed
+      const actualAmount = utilsBN.undecimalize(amount, decimal)
+      return {
+        authority,
+        amount: actualAmount,
+      }
+    }, [])
+
+    return data
+  }, [decimal, filterUnclaimed])
+
   useEffect(() => {
     getUnclaimedList()
   }, [getUnclaimedList])
@@ -157,14 +186,34 @@ const RevokeAction = ({
       <Modal
         visible={visible}
         onCancel={() => setVisible(false)}
-        footer={null}
+        footer={
+          <Space>
+            <Button type="ghost" onClick={() => setVisible(false)}>
+              Cancel
+            </Button>
+            <Button onClick={onRevoke} loading={loading} type="primary">
+              confirm
+            </Button>
+          </Space>
+        }
         closeIcon={<IonIcon name="close-outline" />}
         className="card-lightning"
         style={{ paddingBottom: 0 }}
       >
-        <Row gutter={[32, 32]}>
+        <Row gutter={[32, 32]} style={{ height: 400 }} className="scrollbar">
           <Col span={24}>
-            <Typography.Title level={5}>Revoke</Typography.Title>
+            <Space>
+              <Typography.Title level={5}>Revoke</Typography.Title>
+              <CSVLink
+                filename="unclaimed_list"
+                headers={CSV_HEADER}
+                data={csvData}
+              >
+                <Tooltip title="Download unclaimed list">
+                  <IonIcon style={{ fontSize: 20 }} name="download-outline" />
+                </Tooltip>
+              </CSVLink>
+            </Space>
           </Col>
           <Col span={24}>
             <Table
@@ -173,16 +222,6 @@ const RevokeAction = ({
               columns={COLUMN}
               rowKey={(record) => record.authority}
             />
-          </Col>
-          <Col span={24} style={{ textAlign: 'right' }}>
-            <Space>
-              <Button type="ghost" onClick={() => setVisible(false)}>
-                Cancel
-              </Button>
-              <Button onClick={onRevoke} loading={loading} type="primary">
-                confirm
-              </Button>
-            </Space>
           </Col>
         </Row>
       </Modal>

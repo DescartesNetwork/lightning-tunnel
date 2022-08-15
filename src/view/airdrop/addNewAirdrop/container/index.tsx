@@ -109,8 +109,8 @@ const SelectInputMethod = () => {
                     <Col xs={24} sm={12} md={12} lg={12}>
                       <Radio.Button value={Method.manual}>
                         <CardOption
-                          label="Automatic"
-                          description="Auto infer by convenient parameters."
+                          label="Manual"
+                          description="Input each wallet address and airdrop amount by hand."
                           active={method === Method.manual}
                         />
                       </Radio.Button>
@@ -118,8 +118,8 @@ const SelectInputMethod = () => {
                     <Col xs={24} sm={12} md={12} lg={12}>
                       <Radio.Button value={Method.auto}>
                         <CardOption
-                          label="Manual"
-                          description="Support bulk import with a CSV file."
+                          label="Automatic"
+                          description="Upload a CSV or TXT file containing wallet addresses and airdrop amount."
                           active={method === Method.auto}
                         />
                       </Radio.Button>

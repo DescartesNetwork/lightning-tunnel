@@ -33,7 +33,7 @@
     "web3.storage": "4.2.0"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "REACT_APP_HMR=$PWD/src/bootstrap.app.tsx craco start",
     "build": "npm run build:production",
     "build:production": "craco build",
     "build:staging": "env-cmd -f .env.staging craco build",

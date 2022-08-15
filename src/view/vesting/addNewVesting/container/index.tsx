@@ -93,7 +93,7 @@ const SelectInputMethod = () => {
     <Card className="card-lightning" bordered={false}>
       <Row gutter={[32, 32]} align="middle">
         <Col span={24}>
-          <Header label="Select token type and input method" />
+          <Header label="Choose vesting schedule calculation mode" />
         </Col>
         <Col span={24}>
           <Row gutter={[16, 16]}>
@@ -125,7 +125,7 @@ const SelectInputMethod = () => {
                         <Radio.Button value={Method.manual}>
                           <CardOption
                             label="Automatic"
-                            description="Auto infer by convenient parameters."
+                            description="Input your vesting campaign details. Lightning Tunnel will do the calculation!"
                             active={method === Method.manual}
                           />
                         </Radio.Button>
@@ -134,7 +134,7 @@ const SelectInputMethod = () => {
                         <Radio.Button value={Method.auto}>
                           <CardOption
                             label="Manual"
-                            description="Support bulk import with a CSV file."
+                            description="Upload a CSV or TXT file containing wallet addresses and self-calculated vesting schedule."
                             active={method === Method.auto}
                           />
                         </Radio.Button>

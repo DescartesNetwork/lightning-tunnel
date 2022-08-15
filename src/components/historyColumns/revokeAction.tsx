@@ -200,7 +200,7 @@ const RevokeAction = ({
         className="card-lightning"
         style={{ paddingBottom: 0 }}
       >
-        <Row gutter={[32, 32]} style={{ height: 400 }} className="scrollbar">
+        <Row gutter={[32, 32]} style={{ maxHeight: 400 }} className="scrollbar">
           <Col span={24}>
             <Space>
               <Typography.Title level={5}>Revoke</Typography.Title>

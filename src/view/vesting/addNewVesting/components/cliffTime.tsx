@@ -53,7 +53,7 @@ const CliffTime = () => {
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
-        <Typography.Text className="caption">Cliff Time</Typography.Text>
+        <Typography.Text className="caption">Cliff</Typography.Text>
       </Col>
       <Col span={24}>
         <Select

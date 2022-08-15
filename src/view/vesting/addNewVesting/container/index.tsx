@@ -93,7 +93,7 @@ const SelectInputMethod = () => {
     <Card className="card-lightning" bordered={false}>
       <Row gutter={[32, 32]} align="middle">
         <Col span={24}>
-          <Header label="Choose vesting schedule calculation mode" />
+          <Header label="Select token type and input method" />
         </Col>
         <Col span={24}>
           <Row gutter={[16, 16]}>
@@ -110,7 +110,7 @@ const SelectInputMethod = () => {
               <Row gutter={[16, 16]}>
                 <Col span={24}>
                   <Typography.Text>
-                    Choose transfer info input method
+                    Choose vesting schedule calculation mode
                   </Typography.Text>
                 </Col>
                 <Col span={24}>

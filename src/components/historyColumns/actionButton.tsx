@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useUI } from '@sentre/senhub'
 
 import { Button, Space } from 'antd'
 import ModalShare from 'components/modalShare'
@@ -23,16 +22,11 @@ const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
     distributorAddress,
     remaining,
   )
-  const {
-    ui: { width },
-  } = useUI()
-
-  const isMobile = width < 768
 
   const redeemLink = `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`
 
   return (
-    <Space size={isMobile ? 16 : 24}>
+    <Space>
       <Button
         onClick={() => setVisible(true)}
         type="text"

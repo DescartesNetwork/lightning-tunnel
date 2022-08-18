@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { utilsBN } from '@sen-use/web3'
 import { BN } from '@project-serum/anchor'
-import { useMintDecimals } from '@sentre/senhub'
+import { useMintDecimals, util } from '@sentre/senhub'
 
 import { Typography } from 'antd'
 
@@ -30,7 +30,9 @@ const ColumnRemaining = ({ distributorAddress }: ColumnRemainingProps) => {
 
   return (
     <Typography.Text>
-      {utilsBN.undecimalize(remaining, decimal)}
+      {util
+        .numeric(utilsBN.undecimalize(remaining, decimal))
+        .format('0,0.[0000]')}
     </Typography.Text>
   )
 }

@@ -1,6 +1,6 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { MerkleDistributor, FeeOptions } from '@sentre/utility'
+import { FeeOptions } from '@sentre/utility'
 import { utilsBN } from 'sentre-web3'
 import { util } from '@sentre/senhub'
 import { shortenAddress } from '@sentre/senhub/dist/shared/util'
@@ -17,13 +17,13 @@ import {
   Tooltip,
   Typography,
 } from 'antd'
-import useReceipts from 'hooks/useReceipts'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { AppState } from 'model'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { notifyError, notifySuccess } from 'helper'
 import configs from 'configs'
+import { useUnclaimedList } from 'hooks/useUnclaimedList'
 
 const {
   sol: { utility, fee, taxman },
@@ -74,52 +74,20 @@ const COLUMN = [
 
 const RevokeAction = ({
   distributorAddress,
-  treeData,
   disabled,
   setDisabled,
 }: {
   distributorAddress: string
-  treeData: Buffer
   disabled: boolean
   setDisabled: (val: boolean) => void
 }) => {
-  const [unclaimed, setUnclaimed] = useState<Unclaimed[]>([])
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-  const receipts = useReceipts({ distributorAddress })
   const mint = useSelector(
     (state: AppState) => state.distributors[distributorAddress].mint,
   )
   const decimal = useMintDecimals(mint.toBase58()) || 0
-
-  const getUnclaimedList = useCallback(() => {
-    if (!treeData) return 0
-    const parseData = JSON.parse(JSON.stringify(treeData)).data
-    const merkleDistributor = MerkleDistributor.fromBuffer(
-      Buffer.from(parseData || treeData),
-    )
-    const listUnclaimed: Unclaimed[] = []
-    const recipients = merkleDistributor.receipients
-    for (const { authority, amount, salt } of recipients) {
-      if (!receipts[authority.toBase58()]) {
-        listUnclaimed.push({
-          authority: authority.toBase58(),
-          amount,
-          mintAddress: mint.toBase58(),
-        })
-        continue
-      }
-
-      const receiptSalt = Buffer.from(receipts[authority.toBase58()].salt)
-      if (Buffer.compare(receiptSalt, salt) !== 0)
-        listUnclaimed.push({
-          authority: authority.toBase58(),
-          amount,
-          mintAddress: mint.toBase58(),
-        })
-    }
-    return setUnclaimed(listUnclaimed)
-  }, [mint, receipts, treeData])
+  const { unclaimed } = useUnclaimedList(distributorAddress)
 
   const filterUnclaimed = useMemo(() => {
     const data: Record<string, Unclaimed> = {}
@@ -168,10 +136,6 @@ const RevokeAction = ({
 
     return data
   }, [decimal, filterUnclaimed])
-
-  useEffect(() => {
-    getUnclaimedList()
-  }, [getUnclaimedList])
 
   return (
     <Fragment>

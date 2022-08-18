@@ -14,15 +14,10 @@ const {
 
 type ActionButtonProps = {
   distributorAddress: string
-  treeData: Buffer
   remaining: number
 }
 
-const ActionButton = ({
-  distributorAddress,
-  treeData,
-  remaining,
-}: ActionButtonProps) => {
+const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
   const [visible, setVisible] = useState(false)
   const { isRevoke, disabled, setDisabled } = useCanRevoke(
     distributorAddress,
@@ -50,7 +45,6 @@ const ActionButton = ({
         <RevokeAction
           disabled={disabled}
           setDisabled={setDisabled}
-          treeData={treeData}
           distributorAddress={distributorAddress}
         />
       )}

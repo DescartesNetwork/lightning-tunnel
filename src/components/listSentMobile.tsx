@@ -56,7 +56,6 @@ const ListSentMobile = ({ listSent }: ListSentMobileProps) => {
                     }
                   >
                     <ActionButton
-                      treeData={treeData}
                       remaining={remaining}
                       distributorAddress={distributorAddress}
                     />

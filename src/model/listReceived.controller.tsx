@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { Leaf, MerkleDistributor } from '@sentre/utility'
 
-import { getCID } from 'helper'
-import IPFS from 'helper/ipfs'
+import { ipfs } from 'helper/ipfs'
 import { DistributorState } from './distributor.controller'
 import configs from 'configs'
 
@@ -50,15 +49,13 @@ export const fetchListReceived = createAsyncThunk<
     address,
     ...distributors[address],
   }))
-  const ipfs = new IPFS()
   const walletAddress = await window.sentre.wallet.getAddress()
   if (!walletAddress) throw new Error('Please connect wallet first!')
 
   await Promise.all(
     listDistributor.map(async ({ metadata, mint, authority, address }) => {
       try {
-        const cid = await getCID(metadata)
-        const data: number[] = await ipfs.get(cid)
+        const data = await ipfs.methods.treeData.get(metadata)
         const merkleDistributor = MerkleDistributor.fromBuffer(
           Buffer.from(data),
         )

@@ -11,10 +11,10 @@ import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import ButtonHome from 'components/buttonHome'
 
-import { notifySuccess, notifyError, getCID } from 'helper'
+import { notifySuccess, notifyError } from 'helper'
 import { MintSymbol } from '@sen-use/components'
 import { useAppRouter } from 'hooks/useAppRoute'
-import IPFS from 'helper/ipfs'
+import { ipfs } from 'helper/ipfs'
 import configs from 'configs'
 
 import REDEEM_IMG from 'static/images/redeem.svg'
@@ -51,15 +51,13 @@ const Redeem = () => {
 
   const getMerkleDistributor = useCallback(async () => {
     if (!distributorAddress) return
-    const ipfs = new IPFS()
     setLoadingCard(true)
     try {
       const distributor = await utility.program.account.distributor.fetch(
         distributorAddress,
       )
       setDistributor(distributor)
-      const cid = await getCID(distributor.metadata)
-      const data: number[] = await ipfs.get(cid)
+      const data = await ipfs.methods.treeData.get(distributor.metadata)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)

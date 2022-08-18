@@ -31,9 +31,6 @@ class SafeWallet implements AnchorWallet {
   }
 
   get publicKey() {
-    console.warn(
-      'This is an async getter for interface consistency. Please do not fully rely on this function.',
-    )
     return this._publicKey
   }
 }

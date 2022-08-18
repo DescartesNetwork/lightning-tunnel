@@ -1,10 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { account } from '@senswap/sen-js'
-import { getCID } from 'helper'
 import { isEmpty } from 'lodash'
 
 import History, { HistoryRecord } from 'helper/history'
-import IPFS from 'helper/ipfs'
+import { ipfs } from 'helper/ipfs'
 import { DistributorState } from './distributor.controller'
 
 /**
@@ -45,7 +44,6 @@ export const getHistory = createAsyncThunk<
     address,
     ...distributors[address],
   }))
-  const ipfs = new IPFS()
   await Promise.all(
     listDistributor.map(async (distributeData) => {
       try {
@@ -57,8 +55,7 @@ export const getHistory = createAsyncThunk<
           listHistory.push(historyLocal)
           return
         }
-        const cid = await getCID(metadata)
-        const treeData: Buffer = await ipfs.get(cid)
+        const treeData = await ipfs.methods.treeData.get(metadata)
         const historyRecord: HistoryRecord = {
           distributorAddress: address,
           mint: mint.toBase58(),

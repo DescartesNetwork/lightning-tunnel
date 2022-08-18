@@ -4,6 +4,7 @@ import { Space, Typography } from 'antd'
 import UnlockDateColumn from './unlockDateColumn'
 import ColumnTotal from './columnTotal'
 import ActionButton from './actionButton'
+import ColumnRemaining from './columnRemaining'
 
 import { MintAvatar, MintSymbol } from '@sen-use/components'
 import { ItemSent } from 'hooks/useSentList'
@@ -35,10 +36,18 @@ export const HISTORY_COLUMNS = [
   },
 
   {
-    title: 'AMOUNT',
+    title: 'TOTAL',
     dataIndex: 'total',
     render: (total: string, { mint }: ItemSent) => (
       <ColumnTotal total={total} mint={mint} />
+    ),
+  },
+
+  {
+    title: 'REMAINING',
+    dataIndex: 'distributorAddress',
+    render: (distributorAddress: string) => (
+      <ColumnRemaining distributorAddress={distributorAddress} />
     ),
   },
 
@@ -49,7 +58,6 @@ export const HISTORY_COLUMNS = [
       <ActionButton
         remaining={remaining}
         distributorAddress={distributorAddress}
-        treeData={treeData}
       />
     ),
   },

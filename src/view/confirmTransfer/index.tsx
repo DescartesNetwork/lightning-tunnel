@@ -22,7 +22,7 @@ import { onSelectStep } from 'model/steps.controller'
 import { Step } from '../../constants'
 import History, { HistoryRecord } from 'helper/history'
 import { toUnitTime, notifySuccess } from 'helper'
-import IPFS from 'helper/ipfs'
+import { ipfs } from 'helper/ipfs'
 import {
   RecipientInfo,
   removeRecipients,
@@ -92,9 +92,8 @@ const ConfirmTransfer = () => {
       if (!treeData) throw new Error('Invalid Merkle Data')
       setLoading(true)
       const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
-      const ipfs = new IPFS()
 
-      const cid = await ipfs.set(treeData.toJSON().data)
+      const { cid } = await ipfs.methods.treeData.set(treeData)
       const {
         multihash: { digest },
       } = CID.parse(cid)

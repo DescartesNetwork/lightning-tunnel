@@ -5,9 +5,9 @@ import { BN } from 'bn.js'
 
 import { Button } from 'antd'
 
-import { getCID, notifyError, notifySuccess } from 'helper'
+import { notifyError, notifySuccess } from 'helper'
 import { AppState } from 'model'
-import IPFS from 'helper/ipfs'
+import { ipfs } from 'helper/ipfs'
 import configs from 'configs'
 import useStatus from 'hooks/useStatus'
 import { State } from '../../../constants'
@@ -66,10 +66,8 @@ const ColumAction = ({
 
   const getMerkleDistributor = useCallback(async () => {
     if (!distributorAddress) return
-    const ipfs = new IPFS()
     try {
-      const cid = await getCID(metadata)
-      const data: number[] = await ipfs.get(cid)
+      const data = await ipfs.methods.treeData.get(metadata)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)

@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import moment from 'moment'
-import { util } from '@sentre/senhub/dist'
+import { util } from '@sentre/senhub'
 
 import { Col, Empty, Row, Space, Typography } from 'antd'
 

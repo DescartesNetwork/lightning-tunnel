@@ -9,19 +9,18 @@ import { utilsBN } from '@sen-use/web3'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import ButtonHome from 'components/buttonHome'
+import { MintSymbol } from '@sen-use/components'
 
 import { notifySuccess, notifyError } from 'helper'
-import { MintSymbol } from '@sen-use/components'
 import { useAppRouter } from 'hooks/useAppRoute'
+import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
+import { AppState } from 'model'
 import { ipfs } from 'helper/ipfs'
 import configs from 'configs'
 
 import REDEEM_IMG from 'static/images/redeem.svg'
 import REDEEM_SUCCESS from 'static/images/redeem_success.svg'
 import NOT_MEMBER from 'static/images/not_member.svg'
-
-import { AppState } from 'model'
 
 const {
   sol: { utility, taxman, fee },
@@ -41,6 +40,7 @@ const Redeem = () => {
   const getDecimals = useGetMintDecimals()
   const walletAddress = useWalletAddress()
   const { pushHistory } = useAppRouter()
+  const { onPushAndClear } = useRedirectAndClear()
   const params = useParams<{ distributorAddress: string }>()
   const distributorAddress = params.distributorAddress
 
@@ -205,7 +205,14 @@ const Redeem = () => {
             </Col>
             <Col span={24}>
               {!isValid ? (
-                <ButtonHome onBack={() => pushHistory('')} />
+                <Button
+                  size="large"
+                  type="primary"
+                  block
+                  onClick={() => onPushAndClear('')}
+                >
+                  Home
+                </Button>
               ) : (
                 <Button type="primary" onClick={onRedeem} loading={loading}>
                   Redeem

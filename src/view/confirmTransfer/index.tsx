@@ -1,19 +1,16 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { useWalletAddress } from '@sentre/senhub'
 import { account, utils } from '@senswap/sen-js'
 import { BN } from 'bn.js'
-import { CID } from 'multiformats/cid'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'
 import ModalShare from 'components/modalShare'
 import { MintSymbol } from '@sen-use/components'
-import ButtonHome from 'components/buttonHome'
 import { WrapTotal } from 'components/cardTotal'
 
-import { useAppRouter } from 'hooks/useAppRoute'
 import useTotal from 'hooks/useTotal'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import { AppDispatch, AppState } from 'model'
@@ -23,16 +20,10 @@ import { Step } from '../../constants'
 import History, { HistoryRecord } from 'helper/history'
 import { toUnitTime, notifySuccess } from 'helper'
 import { ipfs } from 'helper/ipfs'
-import {
-  RecipientInfo,
-  removeRecipients,
-  setExpiration,
-  setGlobalUnlockTime,
-} from 'model/recipients.controller'
+import { RecipientInfo } from 'model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
-import { onSelectedMint, setTGE, setTGETime } from 'model/main.controller'
-import { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import configs from 'configs'
+import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
 
 const {
   sol: { utility, fee, taxman },
@@ -53,7 +44,7 @@ const ConfirmTransfer = () => {
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
-  const { pushHistory } = useAppRouter()
+  const { onPushAndClear } = useRedirectAndClear()
 
   const treeData = useMemo(() => {
     if (!recipientInfos || !mintDecimals) return
@@ -93,10 +84,7 @@ const ConfirmTransfer = () => {
       setLoading(true)
       const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
 
-      const { cid } = await ipfs.methods.treeData.set(treeData)
-      const {
-        multihash: { digest },
-      } = CID.parse(cid)
+      const { digest } = await ipfs.methods.treeData.set(treeData)
 
       const metadata = Buffer.from(digest)
 
@@ -135,18 +123,6 @@ const ConfirmTransfer = () => {
     }
   }
 
-  const backToDashboard = useCallback(async () => {
-    await dispatch(onSelectStep(Step.SelectMethod))
-    await dispatch(removeRecipients())
-    await dispatch(onSelectStep(Step.SelectMethod))
-    await dispatch(setGlobalUnlockTime(0))
-    await dispatch(setExpiration(0))
-    await dispatch(setTGE(''))
-    await dispatch(setTGETime(0))
-    await dispatch(onSelectedMint(EMPTY_SELECT_VAL))
-    return pushHistory(`/${typeDistribute}`)
-  }, [dispatch, pushHistory, typeDistribute])
-
   return (
     <Card bordered={false} className="card-lightning">
       <Row gutter={[32, 32]}>
@@ -181,7 +157,14 @@ const ConfirmTransfer = () => {
         </Col>
         <Col span={24}>
           {isDone ? (
-            <ButtonHome onBack={backToDashboard} />
+            <Button
+              size="large"
+              type="primary"
+              block
+              onClick={() => onPushAndClear(`/${typeDistribute}`)}
+            >
+              Home
+            </Button>
           ) : (
             <Row gutter={[8, 8]}>
               <Col span={12}>

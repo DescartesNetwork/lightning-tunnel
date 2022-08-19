@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Card, Col, Row } from 'antd'
-import Header from '../../../../../components/header'
-import InputInfoTransfer from '../../../../../components/inputInfoTransfer'
+import Header from 'components/header'
 import CardTotal from 'components/cardTotal'
 import CommonModal from 'components/commonModal'
+import InputInfoTransfer from 'view/airdrop/components/inputInfoTransfer'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'

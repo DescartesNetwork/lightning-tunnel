@@ -2,24 +2,25 @@ import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
+import { utilsBN } from '@sen-use/web3'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import FileDetails from './fileDetails'
 import ModalMerge from 'components/commonModal'
 
-import iconUpload from 'static/images/icon-upload.svg'
 import { AppState } from 'model'
-import exampleCSV from 'static/base/example.csv'
+import { getFileCSV } from 'helper'
 import {
   addRecipients,
   removeRecipients,
   RecipientInfos,
 } from 'model/recipients.controller'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'model/file.controller'
-import { getFileCSV } from 'helper'
-import { utilsBN } from '@sen-use/web3'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
+
+import iconUpload from 'static/images/icon-upload.svg'
+import exampleCSV from 'static/base/example.csv'
 
 const parse = (file: any): Promise<Array<[string, string]>> => {
   return new Promise((resolve, reject) => {

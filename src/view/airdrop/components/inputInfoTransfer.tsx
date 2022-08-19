@@ -2,14 +2,14 @@ import { ChangeEvent, useCallback, useEffect, useState, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import { utilsBN } from '@sen-use/web3'
-import BN from 'bn.js'
 import parse from 'parse-duration'
+import BN from 'bn.js'
 
 import { Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import NumericInput from '@sentre/antd-numeric-input'
-import ModalMerge from './commonModal'
-import ActionButton from './actionButton'
+import ModalMerge from 'components/commonModal'
+import ActionButton from 'components/actionButton'
 
 import { AppDispatch, AppState } from 'model'
 import {

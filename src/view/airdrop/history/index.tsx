@@ -16,9 +16,7 @@ const History = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const { loading, listHistory } = useSentList({ type: TypeDistribute.Airdrop })
   const [filteredListHistory, setFilteredListHistory] = useState<ItemSent[]>([])
-  const {
-    ui: { width },
-  } = useUI()
+  const width = useUI().ui.width
 
   const isMobile = width < 768
 

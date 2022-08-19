@@ -31,6 +31,7 @@ const isPlain = (val: any): boolean => {
     isPlainObject(val) ||
     typeof val === 'bigint' ||
     val instanceof web3.PublicKey ||
+    val instanceof Uint8Array ||
     val instanceof BN ||
     Buffer.isBuffer(val)
   )

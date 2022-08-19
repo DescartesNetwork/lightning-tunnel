@@ -21,6 +21,7 @@ import { useAppRouter } from 'hooks/useAppRoute'
 import BG from 'static/images/background-LT.png'
 
 import './index.less'
+import MetadatasWatcher from 'watcher/metadatas.watcher'
 
 const { Content } = Layout
 
@@ -100,6 +101,7 @@ const View = () => {
         <ReceiptWatcher />
         <HistoryWatcher />
         <ListReceivedWatcher />
+        <MetadatasWatcher />
       </Layout>
     </Layout>
   )

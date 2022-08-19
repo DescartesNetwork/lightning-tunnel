@@ -1,15 +1,13 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { BN } from 'bn.js'
 
 import { Button } from 'antd'
 
 import { notifyError, notifySuccess } from 'helper'
-import { AppState } from 'model'
-import { ipfs } from 'helper/ipfs'
 import configs from 'configs'
 import useStatus from 'hooks/useStatus'
+import { useGetMetadata } from 'hooks/metadata/useGetMetadata'
 import { State } from '../../../constants'
 
 type ColumActionProps = {
@@ -27,8 +25,6 @@ const ColumAction = ({
   receiptAddress,
 }: ColumActionProps) => {
   const [merkle, setMerkle] = useState<MerkleDistributor>()
-  const distributors = useSelector((state: AppState) => state.distributors)
-  const { metadata } = distributors[distributorAddress]
   const [loading, setLoading] = useState(false)
   const startedAt = recipientData.startedAt.toNumber()
   const { status } = useStatus({
@@ -36,6 +32,7 @@ const ColumAction = ({
     startedAt,
     distributor: distributorAddress,
   })
+  const getMetaData = useGetMetadata()
 
   const onClaim = async () => {
     if (!merkle) return
@@ -67,14 +64,14 @@ const ColumAction = ({
   const getMerkleDistributor = useCallback(async () => {
     if (!distributorAddress) return
     try {
-      const data = await ipfs.methods.treeData.get(metadata)
+      const { data } = getMetaData(distributorAddress)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)
     } catch (error) {
       notifyError(error)
     }
-  }, [distributorAddress, metadata])
+  }, [distributorAddress, getMetaData])
 
   useEffect(() => {
     getMerkleDistributor()

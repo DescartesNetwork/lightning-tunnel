@@ -14,8 +14,8 @@ import { MintSymbol } from '@sen-use/components'
 import { notifySuccess, notifyError } from 'helper'
 import { useAppRouter } from 'hooks/useAppRoute'
 import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
+import { useGetMetadata } from 'hooks/metadata/useGetMetadata'
 import { AppState } from 'model'
-import { ipfs } from 'helper/ipfs'
 import configs from 'configs'
 
 import REDEEM_IMG from 'static/images/redeem.svg'
@@ -41,6 +41,7 @@ const Redeem = () => {
   const walletAddress = useWalletAddress()
   const { pushHistory } = useAppRouter()
   const { onPushAndClear } = useRedirectAndClear()
+  const getMetaData = useGetMetadata()
   const params = useParams<{ distributorAddress: string }>()
   const distributorAddress = params.distributorAddress
 
@@ -57,7 +58,7 @@ const Redeem = () => {
         distributorAddress,
       )
       setDistributor(distributor)
-      const data = await ipfs.methods.treeData.get(distributor.metadata)
+      const { data } = getMetaData(distributorAddress)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)
@@ -66,7 +67,7 @@ const Redeem = () => {
     } finally {
       setLoadingCard(false)
     }
-  }, [distributorAddress])
+  }, [distributorAddress, getMetaData])
 
   const recipientData = useMemo(() => {
     if (!merkle) return

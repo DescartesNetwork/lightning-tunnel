@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { account } from '@senswap/sen-js'
 import { isEmpty } from 'lodash'
+import { ipfs } from 'helper/ipfs'
 
 import History, { HistoryRecord } from 'helper/history'
-import { ipfs } from 'helper/ipfs'
 import { DistributorState } from './distributor.controller'
 
 /**
@@ -28,49 +28,55 @@ const initialState: HistoryState = {
 
 export const getHistory = createAsyncThunk<
   HistoryState,
-  { walletAddress: string; distributors: DistributorState }
->(`${NAME}/getHistory`, async ({ walletAddress, distributors }) => {
-  if (!account.isAddress(walletAddress))
-    throw new Error('Wallet is not connected')
+  { walletAddress: string; distributors: DistributorState },
+  { state: any }
+>(
+  `${NAME}/getHistory`,
+  async ({ walletAddress, distributors }, { getState }) => {
+    const { metadatas } = getState()
+    if (!account.isAddress(walletAddress))
+      throw new Error('Wallet is not connected')
 
-  let listHistory: HistoryRecord[] | undefined
+    let listHistory: HistoryRecord[] | undefined
 
-  const history = new History(walletAddress)
-  const history_v1 = (await history.get('history')) as HistoryRecord[]
+    const history = new History(walletAddress)
+    const history_v1 = (await history.get('history')) as HistoryRecord[]
 
-  if (history_v1) history.clear()
+    if (history_v1) history.clear()
 
-  const listDistributor = Object.keys(distributors).map((address) => ({
-    address,
-    ...distributors[address],
-  }))
-  await Promise.all(
-    listDistributor.map(async (distributeData) => {
-      try {
-        listHistory = listHistory?.length ? [...listHistory] : []
-        const { address, mint, total, metadata, authority } = distributeData
-        if (authority.toBase58() !== walletAddress) return
-        const historyLocal = (await history.get(address)) as HistoryRecord
-        if (!isEmpty(historyLocal)) {
-          listHistory.push(historyLocal)
-          return
-        }
-        const treeData = await ipfs.methods.treeData.get(metadata)
-        const historyRecord: HistoryRecord = {
-          distributorAddress: address,
-          mint: mint.toBase58(),
-          total: total.toString(),
-          time: '',
-          treeData,
-        }
-        history.set(address, historyRecord)
-        listHistory.push(historyRecord)
-      } catch (error) {}
-    }),
-  )
+    const listDistributor = Object.keys(distributors).map((address) => ({
+      address,
+      ...distributors[address],
+    }))
+    await Promise.all(
+      listDistributor.map(async (distributeData) => {
+        try {
+          listHistory = listHistory?.length ? [...listHistory] : []
+          const { address, mint, total, metadata, authority } = distributeData
+          if (authority.toBase58() !== walletAddress) return
+          const historyLocal = (await history.get(address)) as HistoryRecord
+          if (!isEmpty(historyLocal)) {
+            listHistory.push(historyLocal)
+            return
+          }
+          const cid = ipfs.decodeCID(metadata)
+          const treeData = metadatas[cid]
+          const historyRecord: HistoryRecord = {
+            distributorAddress: address,
+            mint: mint.toBase58(),
+            total: total.toString(),
+            time: '',
+            treeData,
+          }
+          history.set(address, historyRecord)
+          listHistory.push(historyRecord)
+        } catch (error) {}
+      }),
+    )
 
-  return { listHistory }
-})
+    return { listHistory }
+  },
+)
 
 export const setHistory = createAsyncThunk<
   HistoryState,

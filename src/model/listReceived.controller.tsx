@@ -42,8 +42,11 @@ const initialState: ListReceivedState = {
 
 export const fetchListReceived = createAsyncThunk<
   ListReceivedState,
-  { distributors: DistributorState }
->(`${NAME}/fetchListReceived`, async ({ distributors }) => {
+  { distributors: DistributorState },
+  { state: any }
+>(`${NAME}/fetchListReceived`, async ({ distributors }, { getState }) => {
+  const { metadatas } = getState()
+
   let bulk: Record<string, ReceiveItem> | undefined
   const listDistributor = Object.keys(distributors).map((address) => ({
     address,
@@ -55,9 +58,10 @@ export const fetchListReceived = createAsyncThunk<
   await Promise.all(
     listDistributor.map(async ({ metadata, mint, authority, address }) => {
       try {
-        const data = await ipfs.methods.treeData.get(metadata)
+        const cid = ipfs.decodeCID(metadata)
+        const bufTreeData = metadatas[cid]
         const merkleDistributor = MerkleDistributor.fromBuffer(
-          Buffer.from(data),
+          Buffer.from(bufTreeData),
         )
         const recipients = merkleDistributor.receipients
         const mintAddress = mint.toBase58()

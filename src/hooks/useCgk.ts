@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { tokenProvider, useGetMintDecimals } from '@sentre/senhub'
-import { utilsBN } from 'sentre-web3'
+import { utilsBN } from '@sen-use/web3'
 import BN from 'bn.js'
 
 import { fetchMulCGK } from 'helper'

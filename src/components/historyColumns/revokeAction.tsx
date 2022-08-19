@@ -1,7 +1,7 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { FeeOptions } from '@sentre/utility'
-import { utilsBN } from 'sentre-web3'
+import { utilsBN } from '@sen-use/web3'
 import { util } from '@sentre/senhub'
 import { shortenAddress } from '@sentre/senhub/dist/shared/util'
 import { CSVLink } from 'react-csv'

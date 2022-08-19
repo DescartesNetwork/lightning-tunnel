@@ -8,16 +8,21 @@ import ColumnRemaining from './columnRemaining'
 
 import { MintAvatar, MintSymbol } from '@sen-use/components'
 import { ItemSent } from 'hooks/useSentList'
+import ColumnCreatedAt from './columnCreatedAt'
 
 export const HISTORY_COLUMNS = [
   {
     title: 'CREATED DATE',
     dataIndex: 'time',
-    render: (time: string) => (
-      <Typography.Text>
-        {time ? moment(time).format('MMM DD, YYYY HH:mm') : '--'}
-      </Typography.Text>
-    ),
+    render: (time: string, { distributorAddress }: ItemSent) => {
+      if (time)
+        return (
+          <Typography.Text>
+            {moment(time).format('MMM DD, YYYY HH:mm')}
+          </Typography.Text>
+        )
+      return <ColumnCreatedAt distributorAddress={distributorAddress} />
+    },
   },
   {
     title: 'UNLOCK DATE',

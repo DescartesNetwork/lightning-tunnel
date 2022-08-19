@@ -42,11 +42,10 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     try {
       const airdropSalt_v1 = MerkleDistributor.salt('0')
       const airdropSalt_v2 = MerkleDistributor.salt(`${appId}/${type}/0`)
-
       if (!listHistory) return
       for (const historyItem of listHistory) {
         const { treeData, distributorAddress } = historyItem
-        if (!treeData || !distributors[distributorAddress]) continue
+        if (!treeData.length || !distributors[distributorAddress]) continue
         const parseData = JSON.parse(JSON.stringify(treeData)).data
         const merkleDistributor = MerkleDistributor.fromBuffer(
           Buffer.from(parseData || treeData),
@@ -56,7 +55,6 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
         const x2 = Buffer.compare(airdropSalt_v2, salt)
 
         if (x1 !== 0 && x2 !== 0) continue
-
         for (const { authority } of merkleDistributor.receipients) {
           if (!listAddress.includes(authority.toBase58()))
             listAddress.push(authority.toBase58())

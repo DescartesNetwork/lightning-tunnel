@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
-import { utilsBN } from 'sentre-web3'
+import { utilsBN } from '@sen-use/web3'
 import BN from 'bn.js'
 
 import { AppState } from 'model'

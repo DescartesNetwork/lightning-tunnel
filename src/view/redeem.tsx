@@ -5,7 +5,7 @@ import { utils } from '@senswap/sen-js'
 import { useGetMintDecimals, useWalletAddress } from '@sentre/senhub'
 import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
 import { BN } from 'bn.js'
-import { utilsBN } from 'sentre-web3'
+import { utilsBN } from '@sen-use/web3'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'

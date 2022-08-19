@@ -19,7 +19,7 @@ import {
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { setFileName } from 'model/file.controller'
 import { getFileCSV } from 'helper'
-import { utilsBN } from 'sentre-web3'
+import { utilsBN } from '@sen-use/web3'
 
 const parse = (file: any): Promise<Array<[string, string]>> => {
   return new Promise((resolve, reject) => {

@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { utilsBN } from 'sentre-web3'
+import { utilsBN } from '@sen-use/web3'
 import BN from 'bn.js'
 import parse from 'parse-duration'
 

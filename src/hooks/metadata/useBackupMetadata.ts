@@ -6,6 +6,8 @@ import { web3 } from '@project-serum/anchor'
 import { ipfs } from 'model/metadatas.controller'
 import { AppState } from 'model'
 
+const MEMO_PROGRAMS = 'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo'
+
 export const useBackupMetadata = () => {
   const metadatas = useSelector((state: AppState) => state.metadatas)
   const walletAddress = useWalletAddress()
@@ -20,9 +22,7 @@ export const useBackupMetadata = () => {
           isWritable: true,
         },
       ],
-      programId: new web3.PublicKey(
-        'Memo1UhkJRfHyvLMcVucJwxXeuD728EqVDDwQDxFMNo',
-      ),
+      programId: new web3.PublicKey(MEMO_PROGRAMS),
       data: Buffer.from(cid),
     })
     return ix

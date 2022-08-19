@@ -36,23 +36,44 @@ const initialState: MetadataState = {}
  * Actions
  */
 
-export const getMetaData = createAsyncThunk<MetadataState, { cid: string }>(
-  `${NAME}/getMetaData`,
-  async ({ cid }) => {
-    const metadata = await ipfs.methods.metadata.get(cid)
-    // Convert from version 1 to version 2
-    if (!metadata.checked || metadata.createAt) {
-      return {
-        [cid]: {
-          checked: false,
-          createAt: 0,
-          data: metadata as any,
-        },
-      }
+export const getMetaData = createAsyncThunk<
+  MetadataState,
+  { cid: string },
+  { state: any }
+>(`${NAME}/getMetaData`, async ({ cid }, { getState }) => {
+  // Check metadata cache
+  const { metadatas } = getState()
+  if (metadatas[cid]) return { [cid]: metadatas[cid] }
+  // Fetch metadata
+  const metadata = await ipfs.methods.metadata.get(cid)
+  // Convert from version 1 to version 2
+  if (!metadata.checked || metadata.createAt) {
+    return {
+      [cid]: {
+        checked: false,
+        createAt: 0,
+        data: metadata as any,
+      },
     }
-    return { [cid]: metadata }
+  }
+  return { [cid]: metadata }
+})
+
+export const initMetadatas = createAsyncThunk(
+  `${NAME}/initMetadatas`,
+  async (bulk: MetadataState) => {
+    return bulk
   },
 )
+
+export const getMetadatas = createAsyncThunk<
+  MetadataState,
+  void,
+  { state: any }
+>(`${NAME}/getMetadatas`, async (_, { getState }) => {
+  const { metadatas } = getState()
+  return metadatas
+})
 
 /**
  * Usual procedure
@@ -63,10 +84,15 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      getMetaData.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        getMetaData.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        initMetadatas.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

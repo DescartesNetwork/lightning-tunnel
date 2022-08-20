@@ -15,34 +15,34 @@ export const useHistory = () => {
 
   const fetchHistory = useCallback(async () => {
     let listHistory: HistoryRecord[] | undefined
-
     const listDistributor = Object.keys(distributors).map((address) => ({
       address,
       ...distributors[address],
     }))
-    await Promise.all(
-      listDistributor.map(async (distributeData) => {
-        try {
-          listHistory = listHistory?.length ? [...listHistory] : []
-          const { address, mint, total, metadata, authority } = distributeData
-          if (authority.toBase58() !== walletAddress) return
-          const cid = ipfs.decodeCID(metadata)
-          const treeData = metadatas[cid].data
-          const time = metadatas[cid].createAt
-          const historyRecord: HistoryRecord = {
-            distributorAddress: address,
-            mint: mint.toBase58(),
-            total: total.toString(),
-            time: time ? time.toString() : '',
-            treeData,
-          }
 
-          listHistory.push(historyRecord)
-        } catch (error) {}
-      }),
+    if (!listDistributor.length) return // check loading
+    const myDistribute = listDistributor.filter(
+      ({ authority }) => authority.toBase58() === walletAddress,
     )
+    if (!myDistribute.length) return setHistory([]) // avoid undefined
 
-    setHistory(listHistory)
+    for (const distributeData of myDistribute) {
+      listHistory = listHistory?.length ? [...listHistory] : []
+      const { address, mint, total, metadata } = distributeData
+      const cid = ipfs.decodeCID(metadata)
+      const treeData = metadatas[cid].data
+      const time = metadatas[cid].createAt
+      const historyRecord: HistoryRecord = {
+        distributorAddress: address,
+        mint: mint.toBase58(),
+        total: total.toString(),
+        time: time ? time.toString() : '',
+        treeData,
+      }
+
+      listHistory.push(historyRecord)
+    }
+    return setHistory(listHistory)
   }, [distributors, metadatas, walletAddress])
 
   useEffect(() => {

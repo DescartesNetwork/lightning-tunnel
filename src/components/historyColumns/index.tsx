@@ -5,10 +5,10 @@ import UnlockDateColumn from './unlockDateColumn'
 import ColumnTotal from './columnTotal'
 import ActionButton from './actionButton'
 import ColumnRemaining from './columnRemaining'
+import ColumnCreatedAt from './columnCreatedAt'
 
 import { MintAvatar, MintSymbol } from '@sen-use/components'
 import { ItemSent } from 'hooks/useSentList'
-import ColumnCreatedAt from './columnCreatedAt'
 
 export const HISTORY_COLUMNS = [
   {

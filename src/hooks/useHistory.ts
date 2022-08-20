@@ -28,16 +28,17 @@ export const useHistory = () => {
 
     for (const distributeData of myDistribute) {
       listHistory = listHistory?.length ? [...listHistory] : []
-      const { address, mint, total, metadata } = distributeData
-      const cid = ipfs.decodeCID(metadata)
-      const treeData = metadatas[cid].data
-      const time = metadatas[cid].createAt
+      const { address, mint, total, metadata: digest } = distributeData
+      const cid = ipfs.decodeCID(digest)
+      const metadata = metadatas[cid]
+      if (!metadata) continue
+      const time = metadata.createAt
       const historyRecord: HistoryRecord = {
         distributorAddress: address,
         mint: mint.toBase58(),
         total: total.toString(),
         time: time ? time.toString() : '',
-        treeData,
+        treeData: metadata.data,
       }
 
       listHistory.push(historyRecord)

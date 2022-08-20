@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 
 import { AppState } from 'model'
-import { ipfs } from 'helper/ipfs'
+import { ipfs } from 'model/metadatas.controller'
 
 export const useGetMetadata = () => {
   const distributors = useSelector((state: AppState) => state.distributors)

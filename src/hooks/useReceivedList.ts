@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
 import { Leaf, MerkleDistributor } from '@sentre/utility'
 
-import { ipfs } from 'helper/ipfs'
 import { AppState } from 'model'
 import configs from 'configs'
+import { ipfs } from 'model/metadatas.controller'
 
 const {
   sol: { utility },

@@ -8,6 +8,7 @@ import { AppState } from 'model'
 import useListRemaining from 'hooks/useListRemaining'
 
 import { TypeDistribute } from 'model/main.controller'
+import { useHistory } from './useHistory'
 
 const {
   manifest: { appId },
@@ -24,12 +25,12 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   const [sentList, setSentList] = useState<ItemSent[]>([])
   const [numberOfRecipient, setNumberOfRecipient] = useState(0)
   const distributors = useSelector((state: AppState) => state.distributors)
-  const { listHistory } = useSelector((state: AppState) => state.history)
   const { listRemaining } = useListRemaining()
+  const history = useHistory()
 
   const loading = useMemo(
-    () => (listHistory === undefined ? true : false),
-    [listHistory],
+    () => (history === undefined ? true : false),
+    [history],
   )
 
   const fetchHistory = useCallback(async () => {
@@ -42,13 +43,12 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     try {
       const airdropSalt_v1 = MerkleDistributor.salt('0')
       const airdropSalt_v2 = MerkleDistributor.salt(`${appId}/${type}/0`)
-      if (!listHistory) return
-      for (const historyItem of listHistory) {
+      if (!history) return
+      for (const historyItem of history) {
         const { treeData, distributorAddress } = historyItem
         if (!treeData.length || !distributors[distributorAddress]) continue
-        const parseData = JSON.parse(JSON.stringify(treeData)).data
         const merkleDistributor = MerkleDistributor.fromBuffer(
-          Buffer.from(parseData || treeData),
+          Buffer.from(treeData),
         )
         const salt = merkleDistributor.receipients[0].salt
         const x1 = Buffer.compare(airdropSalt_v1, salt)
@@ -84,14 +84,14 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
       setNumberOfRecipient(newNumberOfRecipient)
 
       const sortHistory = otherHistory.sort((a, b) => {
-        const time_a = a.time ? new Date(a.time).getTime() : 0
-        const time_b = b.time ? new Date(b.time).getTime() : 0
+        const time_a = a.time ? Number(a.time) : 0
+        const time_b = b.time ? Number(b.time) : 0
         return time_b - time_a
       })
       nextHistory = readyHistory.concat(sortHistory)
       return setSentList(nextHistory)
     }
-  }, [distributors, listHistory, listRemaining, type])
+  }, [distributors, history, listRemaining, type])
 
   useEffect(() => {
     fetchHistory()

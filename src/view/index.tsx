@@ -11,17 +11,15 @@ import Vesting from './vesting'
 import Airdrop from './airdrop'
 import AddNewAirdrop from './airdrop/addNewAirdrop'
 import AddNewVesting from './vesting/addNewVesting'
-import HistoryWatcher from 'watcher/history.watcher'
 import DistributorWatcher from 'watcher/distributor.watcher'
 import ReceiptWatcher from 'watcher/receipt.watcher'
-import ListReceivedWatcher from 'watcher/listReceived.watcher'
+import MetadatasWatcher from 'watcher/metadatas.watcher'
 
 import { useAppRouter } from 'hooks/useAppRoute'
 
 import BG from 'static/images/background-LT.png'
 
 import './index.less'
-import MetadatasWatcher from 'watcher/metadatas.watcher'
 
 const { Content } = Layout
 
@@ -99,8 +97,6 @@ const View = () => {
         </Content>
         <DistributorWatcher />
         <ReceiptWatcher />
-        <HistoryWatcher />
-        <ListReceivedWatcher />
         <MetadatasWatcher />
       </Layout>
     </Layout>

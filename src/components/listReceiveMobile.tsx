@@ -13,7 +13,7 @@ import ColumnAmount from 'view/dashboard/columns/columnTotal'
 import ColumnStatus from 'view/dashboard/columns/columnStatus'
 import { MintAvatar, MintSymbol } from '@sen-use/components'
 
-import { ReceiveItem } from 'model/listReceived.controller'
+import { ReceiveItem } from 'hooks/useReceivedList'
 
 type ListReceiveMobileProps = { listReceive: ReceiveItem[] }
 const ListReceiveMobile = ({ listReceive }: ListReceiveMobileProps) => {

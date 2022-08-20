@@ -48,7 +48,6 @@ const ColumAction = ({
     try {
       setLoading(true)
       const ixBackup = await backupMetadata()
-      console.log('ixBackup', ixBackup)
       const feeOptions: FeeOptions = {
         fee: new BN(fee),
         feeCollectorAddress: taxman,

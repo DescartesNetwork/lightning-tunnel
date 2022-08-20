@@ -16,18 +16,21 @@ export const useGetBackupMetadata = () => {
     )
     // Parse transactions
     for (const transaction of transactions) {
-      const instructions = transaction.transaction.message.instructions
-      for (const instruction of instructions) {
-        const { parsed, program } = instruction as {
-          parsed: string
-          program: string
-        }
-        if (program !== 'spl-memo') continue
-        try {
+      try {
+        const instructions = transaction.transaction.message.instructions
+        for (const instruction of instructions) {
+          const { parsed, program } = instruction as {
+            parsed: string
+            program: string
+          }
+          if (program !== 'spl-memo') continue
+
           const backupMetadata = await ipfs.methods.backupMetadata.get(parsed)
           // TODO: verify metadata
           return backupMetadata
-        } catch (error) {}
+        }
+      } catch (error) {
+        // Nothing
       }
     }
     return {}

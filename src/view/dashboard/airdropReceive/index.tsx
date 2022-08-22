@@ -96,7 +96,7 @@ const AirdropReceive = () => {
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  listReceive={listAirdrop}
+                  receivedList={listAirdrop}
                   onFilter={setFilteredListAirdrop}
                 />
               </Space>

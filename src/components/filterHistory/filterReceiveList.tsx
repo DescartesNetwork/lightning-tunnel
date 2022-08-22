@@ -22,7 +22,6 @@ type FilterReceiveListMobileProps = {
   mintAddresses: string[]
   onConfirm: (selected: ConfirmParamsType) => void
 }
-
 const FilterReceiveListMobile = ({
   mintAddresses,
   onConfirm,
@@ -80,24 +79,28 @@ const FilterReceiveListMobile = ({
 }
 
 type FilterReceiveListProps = {
-  listReceive: ReceiveItem[]
+  receivedList: ReceiveItem[]
   onFilter: (data: ReceiveItem[]) => void
 }
-const FilterReceiveList = ({ onFilter }: FilterReceiveListProps) => {
+const FilterReceiveList = ({
+  onFilter,
+  receivedList,
+}: FilterReceiveListProps) => {
   const [mintKey, setMintKey] = useState(ALL)
   const [statusKey, setStatusKey] = useState(ALL)
   const {
     ui: { infix },
   } = useUI()
-  const { filterReceiveList, getReceiveMints } = useFilterReceiceList()
+  const { filterReceiveList, getReceiveMints } =
+    useFilterReceiceList(receivedList)
   const receiveMints = getReceiveMints()
 
   const onChange = useCallback(async () => {
-    const senList = await filterReceiveList({
+    const received = await filterReceiveList({
       mintAddress: mintKey,
       status: statusKey,
     })
-    onFilter(senList)
+    onFilter(received)
   }, [filterReceiveList, mintKey, onFilter, statusKey])
 
   useEffect(() => {

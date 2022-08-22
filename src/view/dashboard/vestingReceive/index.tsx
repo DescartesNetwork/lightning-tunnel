@@ -148,7 +148,7 @@ const VestingReceive = () => {
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  listReceive={listVesting}
+                  receivedList={listVesting}
                   onFilter={setFilteredListVesting}
                 />
               </Space>

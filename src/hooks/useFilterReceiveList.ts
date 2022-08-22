@@ -3,20 +3,19 @@ import { util } from '@sentre/senhub'
 
 import { ALL } from '../constants'
 import useStatus from './useStatus'
-import { ReceiveItem, useReceivedList } from './useReceivedList'
+import { ReceiveItem } from './useReceivedList'
 
 type FilterArguments = { mintAddress?: string; status?: string }
 
-export const useFilterReceiceList = () => {
+export const useFilterReceiceList = (receivedList: ReceiveItem[]) => {
   const [loading, setLoading] = useState(false)
   const { fetchAirdropStatus } = useStatus()
-  const receivedList = useReceivedList()
 
   const getReceiveMints = useCallback(() => {
     if (!receivedList) return []
     let mints: string[] = []
-    for (const mintHistory in receivedList) {
-      const { mintAddress } = receivedList[mintHistory]
+    for (const receivedItem of receivedList) {
+      const { mintAddress } = receivedItem
       if (!mints.includes(mintAddress)) mints.push(mintAddress)
     }
     return mints
@@ -34,7 +33,7 @@ export const useFilterReceiceList = () => {
 
       const mintCheck =
         util.isAddress(receiveMintAddr) && mintAddress !== ALL
-          ? [mintAddress].includes(mintAddress)
+          ? mintAddress === receiveMintAddr
           : true
 
       const state = await fetchAirdropStatus({
@@ -54,8 +53,7 @@ export const useFilterReceiceList = () => {
       try {
         setLoading(true)
         let filteredData: ReceiveItem[] = []
-        for (const mintReceived in receivedList) {
-          const itemReceived = receivedList[mintReceived]
+        for (const itemReceived of receivedList) {
           const state = await validReceiveItem(itemReceived, {
             mintAddress,
             status,

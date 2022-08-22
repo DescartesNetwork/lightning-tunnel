@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import { account, DEFAULT_EMPTY_ADDRESS, utils } from '@senswap/sen-js'
-import { useAccounts, useWalletAddress, useWalletBalance } from '@sentre/senhub'
-
-import useMintDecimals from './useMintDecimals'
+import {
+  useAccounts,
+  useMintDecimals,
+  useWalletAddress,
+  useWalletBalance,
+} from '@sentre/senhub'
 
 export type AccountBalanceReturn = {
   amount: bigint
@@ -47,7 +50,7 @@ const useAccountBalance = (accountAddress: string) => {
   const walletAddress = useWalletAddress()
   const lamports = useWalletBalance()
   const { amount, mint: mintAddress } = accounts[accountAddress] || {}
-  const decimals = useMintDecimals(mintAddress) || 0
+  const decimals = useMintDecimals({ mintAddress }) || 0
 
   if (!account.isAddress(walletAddress) || !account.isAddress(accountAddress))
     return buildResult()

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Papa from 'papaparse'
 import fileDownload from 'js-file-download'
 import { utilsBN } from '@sen-use/web3'
+import { useMintDecimals } from '@sentre/senhub'
 
 import { Space, Typography, Upload, Image, Spin, Row, Col, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -17,7 +18,6 @@ import {
   RecipientInfos,
 } from 'model/recipients.controller'
 import { setFileName } from 'model/file.controller'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 import iconUpload from 'static/images/icon-upload.svg'
 import exampleCSV from 'static/base/example.csv'
@@ -42,7 +42,7 @@ const UploadFile = () => {
     recipients: { recipientInfos, globalUnlockTime },
     main: { mintSelected },
   } = useSelector((state: AppState) => state)
-  const mintDecimals = useMintDecimals(mintSelected) || 0
+  const mintDecimals = useMintDecimals({ mintAddress: mintSelected }) || 0
 
   const upload = useCallback(
     async (file: any) => {

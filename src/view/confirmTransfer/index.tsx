@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { account, utils } from '@senswap/sen-js'
-import { BN } from 'bn.js'
+import { useMintDecimals } from '@sentre/senhub'
+import { BN } from '@project-serum/anchor'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'
@@ -17,7 +18,6 @@ import { onSelectStep } from 'model/steps.controller'
 import { Step } from '../../constants'
 import { toUnitTime, notifySuccess } from 'helper'
 import { RecipientInfo } from 'model/recipients.controller'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import configs from 'configs'
 import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
 import { ipfs } from 'model/metadatas.controller'
@@ -37,7 +37,7 @@ const ConfirmTransfer = () => {
     recipients: { recipientInfos, expirationTime },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch<AppDispatch>()
-  const mintDecimals = useMintDecimals(mintSelected) || 0
+  const mintDecimals = useMintDecimals({ mintAddress: mintSelected }) || 0
   const { total } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
   const { onPushAndClear } = useRedirectAndClear()

@@ -1,25 +1,55 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { Button, Card, Col, Row, Typography } from 'antd'
+import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import FilterReceiveList from 'components/filterHistory/filterReceiveList'
-import ReceivedHistories from 'components/listHistory/listReceiveMobile'
+import LoadMetadata from '../loadMetadata'
 
 import { State } from '../../../constants'
 import useStatus from 'hooks/useStatus'
 import { ReceiveItem, useReceivedList } from 'hooks/useReceivedList'
+import { MerkleDistributor } from '@sentre/utility'
+import { TypeDistribute } from 'model/main.controller'
+import configs from 'configs'
+
+const {
+  manifest: { appId },
+} = configs
 
 const DEFAULT_AMOUNT = 4
 
 const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
-  const { getReceivedAirdops, loading } = useReceivedList()
+  const listReceived = useReceivedList()
   const [filteredListAirdrop, setFilteredListAirdrop] = useState<ReceiveItem[]>(
     [],
   )
+
   const { fetchAirdropStatus } = useStatus()
-  const receivedAirdrops = getReceivedAirdops()
+
+  const loading = useMemo(
+    () => (listReceived === undefined ? true : false),
+    [listReceived],
+  )
+
+  const receivedAirdrops = useMemo(() => {
+    const airdropReceive: ReceiveItem[] = []
+    for (const address in listReceived) {
+      const { recipientData, index } = listReceived[address]
+      const { salt } = recipientData
+      const airdropSalt_v2 = MerkleDistributor.salt(
+        `${appId}/${TypeDistribute.Airdrop}/${index}`,
+      )
+      const airdropSalt_v1 = MerkleDistributor.salt(index.toString())
+      if (
+        Buffer.compare(airdropSalt_v2, salt) === 0 ||
+        Buffer.compare(airdropSalt_v1, salt) === 0
+      )
+        airdropReceive.push(listReceived[address])
+    }
+
+    return airdropReceive
+  }, [listReceived])
 
   const filterAirdrops = useCallback(async () => {
     if (!receivedAirdrops.length) return setListAirdrop([])
@@ -61,10 +91,13 @@ const AirdropReceive = () => {
               <Typography.Title level={5}>Airdrop receive</Typography.Title>
             </Col>
             <Col>
-              <FilterReceiveList
-                listReceive={listAirdrop}
-                onFilter={setFilteredListAirdrop}
-              />
+              <Space>
+                <LoadMetadata />
+                <FilterReceiveList
+                  listReceive={listAirdrop}
+                  onFilter={setFilteredListAirdrop}
+                />
+              </Space>
             </Col>
           </Row>
         </Col>

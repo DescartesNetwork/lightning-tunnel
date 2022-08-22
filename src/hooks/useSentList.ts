@@ -1,93 +1,94 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { HistoryRecord } from 'helper/history'
 import configs from 'configs'
 import { AppState } from 'model'
 import useListRemaining from 'hooks/useListRemaining'
 
 import { TypeDistribute } from 'model/main.controller'
-import { useHistory } from './useHistory'
+
 import { useGetMerkle } from './useGetMerkle'
+import { useWalletAddress } from '@sentre/senhub/dist'
 
 const {
   sol: { utility },
 } = configs
 
-const CURRENT_TIME = Date.now()
-
-export type ItemSent = HistoryRecord & {
+export type ItemSent = {
   remaining: number
+  time: number
+  mint: string
+  total: string | number
+  distributorAddress: string
+  treeData: Buffer
 }
 
 const useSentList = ({ type }: { type: TypeDistribute }) => {
-  const [sentList, setSentList] = useState<ItemSent[]>([])
-  const [numberOfRecipient, setNumberOfRecipient] = useState(0)
   const distributors = useSelector((state: AppState) => state.distributors)
+  const [sentList, setSentList] = useState<ItemSent[]>([])
+  const [totalRecipients, setTotalRecipients] = useState<number>()
   const { listRemaining } = useListRemaining()
-  const history = useHistory()
-  const getMerkle = useGetMerkle()
 
-  const loading = useMemo(() => {
-    return history === undefined ? true : false
-  }, [history])
+  const getMerkle = useGetMerkle()
+  const walletAddress = useWalletAddress()
 
   const fetchHistory = useCallback(async () => {
-    let nextHistory: ItemSent[] = []
-    const readyHistory: ItemSent[] = []
-    const otherHistory: ItemSent[] = []
+    let history: ItemSent[] = []
+    const mapReceiptAuth = new Map<string, boolean>()
 
-    let newNumberOfRecipient = 0
-    const listAddress: string[] = []
-    try {
-      if (!history) return
-      for (const historyItem of history) {
-        const { distributorAddress } = historyItem
-        const merkle = await getMerkle(distributorAddress)
-        if (merkle.type !== type) continue
-
+    await Promise.all(
+      Object.keys(distributors).map(async (distributor) => {
+        const distributorData = distributors[distributor]
+        // Filter own distributorData
+        if (distributorData.authority.toBase58() !== walletAddress) return
+        // Filter distributor type
+        const merkle = await getMerkle(distributor)
+        if (merkle.type !== type) return
+        // Count total recipients
         for (const { authority } of merkle.root.receipients) {
-          if (!listAddress.includes(authority.toBase58()))
-            listAddress.push(authority.toBase58())
+          if (!mapReceiptAuth.has(authority.toBase58()))
+            mapReceiptAuth.set(authority.toBase58(), true)
         }
-        newNumberOfRecipient = listAddress.length
-
-        const endedAt = distributors[distributorAddress].endedAt
-        const endTime = endedAt.toNumber() * 1000
+        // Build another data
         const treasurerAddress = await utility.deriveTreasurerAddress(
-          distributorAddress,
+          distributor,
         )
+
         const remaining = listRemaining[treasurerAddress]
-        const itemSent = { ...historyItem, remaining }
+        const time = merkle.metadata.createAt * 1000
 
-        if (
-          endTime < CURRENT_TIME &&
-          endTime &&
-          listRemaining[treasurerAddress]
-        ) {
-          readyHistory.unshift(itemSent)
-          continue
+        const itemSent: ItemSent = {
+          distributorAddress: distributor,
+          mint: distributorData.mint.toBase58(),
+          total: distributorData.total.toString(),
+          time,
+          treeData: merkle.metadata.data,
+          remaining,
         }
-        otherHistory.push(itemSent)
-      }
-    } catch (er) {
-    } finally {
-      setNumberOfRecipient(newNumberOfRecipient)
 
-      const sortHistory = otherHistory.sort((a, b) => {
-        const time_a = a.time ? Number(a.time) : 0
-        const time_b = b.time ? Number(b.time) : 0
-        return time_b - time_a
-      })
-      nextHistory = readyHistory.concat(sortHistory)
-      return setSentList(nextHistory)
-    }
-  }, [distributors, getMerkle, history, listRemaining, type])
+        history.push(itemSent)
+      }),
+    )
+
+    history = history.sort((a, b) => {
+      if (a.time > b.time) return -1
+      return 0
+    })
+
+    setTotalRecipients(mapReceiptAuth.size)
+    return setSentList(history)
+  }, [distributors, getMerkle, listRemaining, type, walletAddress])
 
   useEffect(() => {
-    fetchHistory()
+    const timeout = setTimeout(() => fetchHistory(), 500)
+    return () => clearTimeout(timeout)
   }, [fetchHistory])
-  return { listHistory: sentList, loading, numberOfRecipient }
+
+  return {
+    listHistory: sentList,
+    loading: totalRecipients === undefined,
+    numberOfRecipient: totalRecipients || 0,
+  }
 }
 
 export default useSentList

@@ -1,27 +1,54 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import isEqual from 'react-fast-compare'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Button, Card, Col, Row, Typography } from 'antd'
+import { Button, Card, Col, Row, Space, Typography } from 'antd'
+import LoadMetadata from '../loadMetadata'
 import FilterReceiveList from 'components/filterHistory/filterReceiveList'
 import ReceivedHistories from 'components/listHistory/listReceiveMobile'
 
 import { State } from '../../../constants'
 import useStatus from 'hooks/useStatus'
 import { useReceivedList, ReceiveItem } from 'hooks/useReceivedList'
+import { MerkleDistributor } from '@sentre/utility'
+import { TypeDistribute } from 'model/main.controller'
+
+import configs from 'configs'
+
+const {
+  manifest: { appId },
+} = configs
 
 const DEFAULT_AMOUNT = 4
 
 const VestingReceive = () => {
   const [amountVesting, setAmountVesting] = useState(DEFAULT_AMOUNT)
   const [listVesting, setListVesting] = useState<ReceiveItem[]>([])
-  const { getReceivedVesting, loading } = useReceivedList()
+  const listReceived = useReceivedList()
   const [filteredListVesting, setFilteredListVesting] = useState<ReceiveItem[]>(
     [],
   )
   const { fetchAirdropStatus } = useStatus()
 
-  const receivedVestings = getReceivedVesting()
+  const loading = useMemo(
+    () => (listReceived === undefined ? true : false),
+    [listReceived],
+  )
+
+  const receivedVestings = useMemo(() => {
+    let vestingReceive: ReceiveItem[] = []
+    for (const address in listReceived) {
+      const { index, recipientData, children } = listReceived[address]
+      const { salt } = recipientData
+      const vestingSalt = MerkleDistributor.salt(
+        `${appId}/${TypeDistribute.Vesting}/${index}`,
+      )
+      if (Buffer.compare(vestingSalt, salt) !== 0) continue
+      if (!children) continue
+      vestingReceive = vestingReceive.concat(children)
+    }
+    return vestingReceive
+  }, [listReceived])
 
   const getIndexPriorityItem = useCallback(
     async (listVesting: ReceiveItem[]) => {
@@ -118,10 +145,13 @@ const VestingReceive = () => {
               <Typography.Title level={5}>Vesting receive</Typography.Title>
             </Col>
             <Col>
-              <FilterReceiveList
-                listReceive={listVesting}
-                onFilter={setFilteredListVesting}
-              />
+              <Space>
+                <LoadMetadata />
+                <FilterReceiveList
+                  listReceive={listVesting}
+                  onFilter={setFilteredListVesting}
+                />
+              </Space>
             </Col>
           </Row>
         </Col>

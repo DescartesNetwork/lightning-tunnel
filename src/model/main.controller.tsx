@@ -19,6 +19,7 @@ export type MainState = {
   typeDistribute: TypeDistribute
   TGE: string
   TGETime: number
+  metadataLoading: boolean
 }
 
 /**
@@ -34,6 +35,7 @@ const initialState: MainState = {
   typeDistribute: TypeDistribute.Airdrop,
   TGE: '',
   TGETime: 0,
+  metadataLoading: true,
 }
 
 /**
@@ -65,6 +67,13 @@ export const setIsTyping = createAsyncThunk(
   `${NAME}/setIsTyping`,
   async (isTyping: boolean) => {
     return { isTyping }
+  },
+)
+
+export const setMetadataLoading = createAsyncThunk(
+  `${NAME}/setMetadataLoading`,
+  async (metadataLoading: boolean) => {
+    return { metadataLoading }
   },
 )
 
@@ -113,6 +122,10 @@ const slice = createSlice({
       )
       .addCase(
         setIsTyping.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setMetadataLoading.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

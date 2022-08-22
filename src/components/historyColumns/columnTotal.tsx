@@ -1,17 +1,15 @@
 import { utils } from '@senswap/sen-js'
-import { util } from '@sentre/senhub'
+import { util, useMintDecimals } from '@sentre/senhub'
 
 import { Typography } from 'antd'
 
-import useMintDecimals from 'shared/hooks/useMintDecimals'
-
 type ColumnTotalProps = {
   total: string
-  mint: string
+  mintAddress: string
 }
 
-const ColumnTotal = ({ total, mint }: ColumnTotalProps) => {
-  const decimal = useMintDecimals(mint) || 0
+const ColumnTotal = ({ total, mintAddress }: ColumnTotalProps) => {
+  const decimal = useMintDecimals({ mintAddress }) || 0
   return (
     <Typography.Text>
       {util

@@ -22,6 +22,19 @@ const initialState: DistributorState = {}
  * Actions
  */
 
+export const getDistributor = createAsyncThunk<
+  DistributorState,
+  { address: string },
+  { state: any }
+>(`${NAME}/getDistributor`, async ({ address }, { getState }) => {
+  const { distributors } = getState()
+  if (distributors[address]) return { [address]: distributors[address] }
+
+  const { account } = utility.program
+  const distributorData = await account.distributor.fetch(address)
+  return { [address]: distributorData }
+})
+
 export const getDistributors = createAsyncThunk(
   `${NAME}/getDistributors`,
   async () => {
@@ -55,6 +68,10 @@ const slice = createSlice({
     void builder
       .addCase(
         getDistributors.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        getDistributor.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

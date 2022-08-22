@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { MerkleDistributor } from '@sentre/utility'
 
 import { HistoryRecord } from 'helper/history'
 import configs from 'configs'
@@ -9,9 +8,9 @@ import useListRemaining from 'hooks/useListRemaining'
 
 import { TypeDistribute } from 'model/main.controller'
 import { useHistory } from './useHistory'
+import { useGetMerkle } from './useGetMerkle'
 
 const {
-  manifest: { appId },
   sol: { utility },
 } = configs
 
@@ -27,6 +26,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   const distributors = useSelector((state: AppState) => state.distributors)
   const { listRemaining } = useListRemaining()
   const history = useHistory()
+  const getMerkle = useGetMerkle()
 
   const loading = useMemo(
     () => (history === undefined ? true : false),
@@ -41,21 +41,13 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     let newNumberOfRecipient = 0
     const listAddress: string[] = []
     try {
-      const airdropSalt_v1 = MerkleDistributor.salt('0')
-      const airdropSalt_v2 = MerkleDistributor.salt(`${appId}/${type}/0`)
       if (!history) return
       for (const historyItem of history) {
-        const { treeData, distributorAddress } = historyItem
-        if (!treeData.length || !distributors[distributorAddress]) continue
-        const merkleDistributor = MerkleDistributor.fromBuffer(
-          Buffer.from(treeData),
-        )
-        const salt = merkleDistributor.receipients[0].salt
-        const x1 = Buffer.compare(airdropSalt_v1, salt)
-        const x2 = Buffer.compare(airdropSalt_v2, salt)
+        const { distributorAddress } = historyItem
+        const merkle = await getMerkle(distributorAddress)
+        if (merkle.type !== type) continue
 
-        if (x1 !== 0 && x2 !== 0) continue
-        for (const { authority } of merkleDistributor.receipients) {
+        for (const { authority } of merkle.root.receipients) {
           if (!listAddress.includes(authority.toBase58()))
             listAddress.push(authority.toBase58())
         }
@@ -91,7 +83,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
       nextHistory = readyHistory.concat(sortHistory)
       return setSentList(nextHistory)
     }
-  }, [distributors, history, listRemaining, type])
+  }, [distributors, getMerkle, history, listRemaining, type])
 
   useEffect(() => {
     fetchHistory()

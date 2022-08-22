@@ -82,6 +82,7 @@ const SideBar = () => {
 
   const fetchDistributeType = useCallback(() => {
     if (sideBarKey === SIDE_BAR_ITEMS.Dashboard) return
+    // @ts-ignore
     return dispatch(setTypeDistribute(sideBarKey))
   }, [dispatch, sideBarKey])
 

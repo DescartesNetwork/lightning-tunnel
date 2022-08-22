@@ -70,7 +70,7 @@ export const setIsTyping = createAsyncThunk(
 
 export const setTypeDistribute = createAsyncThunk(
   `${NAME}/setTypeDistribute`,
-  async (type: string) => {
+  async (type: TypeDistribute) => {
     return { typeDistribute: type }
   },
 )

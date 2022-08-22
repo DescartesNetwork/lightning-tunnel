@@ -23,7 +23,7 @@ const Airdrop = () => {
 
   const addNewAirdrop = () => {
     pushHistory('/airdrop/add-new')
-    return dispatch(setTypeDistribute('airdrop'))
+    return dispatch(setTypeDistribute(TypeDistribute.Airdrop))
   }
 
   return (

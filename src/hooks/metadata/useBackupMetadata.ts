@@ -15,6 +15,7 @@ export const useBackupMetadata = () => {
   const backupMetadata = useCallback(async () => {
     const metadatas = await dispatch(getMetadatas()).unwrap()
     const { cid } = await ipfs.methods.backupMetadata.set(metadatas)
+
     const ix = new web3.TransactionInstruction({
       keys: [
         {

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { IPFS } from '@sen-use/app'
+import { IPFS } from 'helper/ipfs'
 
 /**
  * IPFS configs

@@ -9,6 +9,7 @@ export const notifySuccess = (content: string, txId: string) => {
 }
 
 export const notifyError = (er: any) => {
+  console.log('er', er)
   return window.notify({
     type: 'error',
     description: er.message,

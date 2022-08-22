@@ -9,5 +9,5 @@ declare module '*.csv' {
 }
 
 interface Window {
-  senUtility: import('@sentre/utility').default
+  senUtility: import('@sentre/utility').Utility
 }

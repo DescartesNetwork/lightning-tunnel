@@ -12,7 +12,7 @@
     "@senswap/sen-js": "^1.4.0",
     "@sentre/antd-ionicon": "^1.0.31",
     "@sentre/antd-numeric-input": "^1.0.25",
-    "@sentre/senhub": "^3.2.8",
+    "@sentre/senhub": "^3.2.15",
     "@sentre/utility": "^1.0.3",
     "antd": "^4.20.2",
     "bn.js": "^5.2.0",

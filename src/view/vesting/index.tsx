@@ -24,7 +24,7 @@ const Vesting = () => {
 
   const addNewVesting = () => {
     pushHistory('/vesting/add-new')
-    return dispatch(setTypeDistribute('vesting'))
+    return dispatch(setTypeDistribute(TypeDistribute.Vesting))
   }
 
   return (

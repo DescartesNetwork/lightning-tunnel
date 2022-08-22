@@ -8,7 +8,7 @@ import useListRemaining from 'hooks/useListRemaining'
 import { TypeDistribute } from 'model/main.controller'
 
 import { useGetMerkle } from './useGetMerkle'
-import { useWalletAddress } from '@sentre/senhub/dist'
+import { useWalletAddress } from '@sentre/senhub'
 
 const {
   sol: { utility },

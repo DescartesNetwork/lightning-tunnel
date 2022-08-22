@@ -1,9 +1,9 @@
 import { CSSProperties } from 'react'
 
 import { Select, Space } from 'antd'
+import { MintAvatar, MintSymbol } from '@sen-use/app'
 
 import { ALL } from '../constants'
-import { MintAvatar, MintSymbol } from '@sen-use/components'
 
 type SelectExistMintTokenProps = {
   mintAddresses: string[]

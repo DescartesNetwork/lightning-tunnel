@@ -6,7 +6,7 @@ import { numeric, shortenAddress } from '@sentre/senhub/dist/shared/util'
 import { Button, Col, Row, Space, Tooltip, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 import { EMPTY_SELECT_VAL } from './selectTokens'
 

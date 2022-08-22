@@ -8,7 +8,7 @@ import { BN } from 'bn.js'
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'
 import ModalShare from 'components/modalShare'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 import { WrapTotal } from 'components/cardTotal'
 
 import useTotal from 'hooks/useTotal'

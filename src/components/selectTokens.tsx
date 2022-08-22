@@ -2,8 +2,7 @@ import { Fragment, useCallback, useState } from 'react'
 
 import { Button, Modal, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-
-import { ListMint, MintAvatar, MintSymbol } from '@sen-use/components'
+import { ListMint, MintAvatar, MintSymbol } from '@sen-use/app'
 
 export const EMPTY_SELECT_VAL = 'empty'
 

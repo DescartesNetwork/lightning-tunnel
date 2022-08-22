@@ -9,7 +9,7 @@ import { utilsBN } from '@sen-use/web3'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 
 import { notifySuccess, notifyError } from 'helper'
 import { useAppRouter } from 'hooks/useAppRoute'

@@ -7,7 +7,7 @@ import ActionButton from './actionButton'
 import ColumnRemaining from './columnRemaining'
 import ColumnCreatedAt from './columnCreatedAt'
 
-import { MintAvatar, MintSymbol } from '@sen-use/components'
+import { MintAvatar, MintSymbol } from '@sen-use/app'
 import { ItemSent } from 'hooks/useSentList'
 
 export const HISTORY_COLUMNS = [

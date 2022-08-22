@@ -4,7 +4,7 @@ import moment from 'moment'
 import { util, useUI } from '@sentre/senhub'
 
 import { Card, Col, Row, Space, Typography } from 'antd'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 
 import { AppState } from 'model'
 import useTotal from 'hooks/useTotal'

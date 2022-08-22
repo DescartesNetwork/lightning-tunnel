@@ -11,7 +11,7 @@ import ColumAction from 'view/dashboard/columns/columAction'
 import ColumnExpiration from 'view/dashboard/columns/columnExpiration'
 import ColumnAmount from 'view/dashboard/columns/columnTotal'
 import ColumnStatus from 'view/dashboard/columns/columnStatus'
-import { MintAvatar, MintSymbol } from '@sen-use/components'
+import { MintAvatar, MintSymbol } from '@sen-use/app'
 
 import { ReceiveItem } from 'hooks/useReceivedList'
 

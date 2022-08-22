@@ -85,6 +85,20 @@ const VestingReceive = () => {
     return setListVesting(nextListReceived)
   }, [getAirdropByAddress, getIndexPriorityItem, listReceived])
 
+  const sortedData = listVesting.sort((a, b) => {
+    const { distributorAddress, receiptAddress, recipientData } = a
+    const status = fetchAirdropStatus({
+      distributor: distributorAddress,
+      receipt: receiptAddress,
+      startedAt: recipientData.startedAt.toNumber(),
+    })
+
+    console.log(status, 'status')
+    if (status === State.ready) return -1
+
+    return 0
+  })
+
   useEffect(() => {
     formatData()
   }, [formatData])
@@ -101,7 +115,7 @@ const VestingReceive = () => {
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  receivedList={listVesting}
+                  receivedList={sortedData}
                   onFilter={setFilteredListVesting}
                 />
               </Space>
@@ -110,7 +124,7 @@ const VestingReceive = () => {
         </Col>
         <Col span={24}>
           <ReceivedHistories
-            receivedList={listVesting.slice(0, amountVesting)}
+            receivedList={sortedData.slice(0, amountVesting)}
           />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
@@ -118,7 +132,7 @@ const VestingReceive = () => {
             onClick={() => setAmountVesting(amountVesting + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountVesting >= listVesting.length}
+            disabled={amountVesting >= sortedData.length}
           >
             VIEW MORE
           </Button>

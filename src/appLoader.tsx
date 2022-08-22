@@ -1,9 +1,10 @@
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getAnchorProvider } from '@sen-use/web3'
 import { rpc, useWalletAddress } from '@sentre/senhub'
 
 import configs from 'configs'
 import { Utility } from '@sentre/utility'
+import { AppWatcher } from 'watcher'
 
 const {
   sol: { utilityProgram },
@@ -22,5 +23,5 @@ export const AppLoader: React.FC = ({ children }) => {
   }, [address, loaded])
 
   if (!loaded) return null
-  return <Fragment>{children}</Fragment>
+  return <AppWatcher>{children}</AppWatcher>
 }

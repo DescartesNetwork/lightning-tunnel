@@ -15,7 +15,10 @@ import metadatas from 'model/metadatas.controller'
  */
 const model = configureStore({
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware(bigintSerializationMiddleware),
+    getDefaultMiddleware({
+      ...bigintSerializationMiddleware,
+      serializableCheck: false,
+    }),
   devTools: devTools(process.env.REACT_APP_ID as string),
   reducer: {
     main,

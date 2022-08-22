@@ -1,5 +1,5 @@
 import { Col, Row, Typography } from 'antd'
-import Container from './container'
+import AirdropForm from './airdropForm'
 
 import './index.less'
 
@@ -10,7 +10,7 @@ const AddNewAirdrop = () => {
         <Typography.Title level={2}>Add new Airdrop</Typography.Title>
       </Col>
       <Col span={24}>
-        <Container />
+        <AirdropForm />
       </Col>
     </Row>
   )

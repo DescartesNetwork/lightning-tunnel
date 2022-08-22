@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
 
 import { HistoryRecord } from 'helper/history'
-import { ipfs } from 'helper/ipfs'
 import { AppState } from 'model'
+import { ipfs } from 'model/metadatas.controller'
 
 export const useHistory = () => {
   const [history, setHistory] = useState<HistoryRecord[]>()

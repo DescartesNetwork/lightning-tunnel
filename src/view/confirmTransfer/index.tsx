@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
-import { useWalletAddress } from '@sentre/senhub'
 import { account, utils } from '@senswap/sen-js'
 import { BN } from 'bn.js'
 
@@ -16,7 +15,6 @@ import useRemainingBalance from 'hooks/useRemainingBalance'
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
 import { Step } from '../../constants'
-import History, { HistoryRecord } from 'helper/history'
 import { toUnitTime, notifySuccess } from 'helper'
 import { RecipientInfo } from 'model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
@@ -38,7 +36,6 @@ const ConfirmTransfer = () => {
     setting: { decimal: isDecimal },
     recipients: { recipientInfos, expirationTime },
   } = useSelector((state: AppState) => state)
-  const walletAddress = useWalletAddress()
   const dispatch = useDispatch<AppDispatch>()
   const mintDecimals = useMintDecimals(mintSelected) || 0
   const { total } = useTotal()
@@ -100,15 +97,6 @@ const ConfirmTransfer = () => {
         feeOptions,
       })
 
-      const historyRecord: HistoryRecord = {
-        total: merkleDistributor.getTotal().toString(),
-        time: new Date().toString(),
-        mint: mintSelected,
-        distributorAddress,
-        treeData,
-      }
-      const history = new History(walletAddress)
-      await history.set(distributorAddress, historyRecord)
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)

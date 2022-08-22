@@ -47,7 +47,7 @@ export const getMetaData = createAsyncThunk<
   // Fetch metadata
   const metadata = await ipfs.methods.metadata.get(cid)
   // Convert from version 1 to version 2
-  if (!metadata.checked || metadata.createAt) {
+  if (metadata.checked === undefined || metadata.createAt === undefined) {
     return {
       [cid]: {
         checked: false,

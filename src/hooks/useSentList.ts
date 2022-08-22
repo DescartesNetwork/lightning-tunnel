@@ -28,10 +28,9 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   const history = useHistory()
   const getMerkle = useGetMerkle()
 
-  const loading = useMemo(
-    () => (history === undefined ? true : false),
-    [history],
-  )
+  const loading = useMemo(() => {
+    return history === undefined ? true : false
+  }, [history])
 
   const fetchHistory = useCallback(async () => {
     let nextHistory: ItemSent[] = []
@@ -88,7 +87,6 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   useEffect(() => {
     fetchHistory()
   }, [fetchHistory])
-
   return { listHistory: sentList, loading, numberOfRecipient }
 }
 

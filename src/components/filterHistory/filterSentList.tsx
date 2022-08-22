@@ -1,14 +1,15 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
-import { account } from '@senswap/sen-js'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { useUI } from '@sentre/senhub'
 
 import { Button, Col, Modal, Row, Space, Typography } from 'antd'
-import SelectExistMintToken from './selectExistMintToken'
-import SelectTokenByTime from './selectTokenByTime'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { ItemSent } from 'hooks/useSentList'
-import { ALL, ONE_DAY } from '../constants'
+import { ALL } from '../../constants'
+import FilterSelection from './filterSelection'
+import { useFilterSentList } from 'hooks/useFilterSentList'
+
+const TIME_OPTIONS = [7, 30, 90]
 
 type ConfirmParamsType = { mintKey: string; timeKey: string }
 type FilterSentListMobileProps = {
@@ -50,15 +51,20 @@ const FilterSentListMobile = ({
               <Typography.Text type="secondary">
                 Filter by token
               </Typography.Text>
-              <SelectExistMintToken
-                mintAddresses={mintAddressess}
+              <FilterSelection
+                options={mintAddressess}
                 onChange={setMintKey}
                 style={{ width: '100%' }}
               />
             </Space>
           </Col>
           <Col span={24}>
-            <SelectTokenByTime onChange={setTimeKey} value={timeKey} />
+            <FilterSelection
+              defaultValue="All time"
+              options={TIME_OPTIONS}
+              onChange={setTimeKey}
+              value={timeKey}
+            />
           </Col>
           <Col span={24}>
             <Button type="primary" onClick={onClick} block>
@@ -72,62 +78,31 @@ const FilterSentListMobile = ({
 }
 
 type FilterSentListProps = {
-  listSent: ItemSent[]
   onFilter: (data: ItemSent[]) => void
 }
-const FilterSentList = ({ listSent, onFilter }: FilterSentListProps) => {
+const FilterSentList = ({ onFilter }: FilterSentListProps) => {
   const [mintKey, setMintKey] = useState(ALL)
   const [timeKey, setTimeKey] = useState(ALL)
   const {
     ui: { infix },
   } = useUI()
+  const { filterSentList, sentMints } = useFilterSentList()
 
-  const isMobile = infix === 'xs'
-
-  const listMintAddr = useMemo(() => {
-    if (!listSent.length) return []
-    let mints: string[] = []
-    for (const item of listSent) {
-      const { mint: mintAddress } = item
-      if (!mints.includes(mintAddress)) mints.push(mintAddress)
-    }
-    return mints
-  }, [listSent])
-
-  const validSentItem = useCallback(
-    (itemSent: ItemSent) => {
-      const { time, mint: mintAddress } = itemSent
-      const createAt = Number(new Date(time))
-
-      const mintCheck =
-        account.isAddress(mintAddress) && mintKey !== ALL
-          ? [mintKey].includes(mintAddress)
-          : true
-
-      const timeCheck =
-        !!createAt && timeKey !== ALL
-          ? Date.now() - createAt < Number(timeKey) * ONE_DAY
-          : true
-
-      return mintCheck && timeCheck
-    },
-    [mintKey, timeKey],
-  )
-
-  const filteredListSent = useMemo(() => {
-    const filteredData = listSent.filter((itemSent) => validSentItem(itemSent))
-    if (!filteredData.length) return []
-    return filteredData
-  }, [validSentItem, listSent])
+  const onChange = useCallback(() => {
+    const senList = filterSentList({ mintAddress: mintKey, time: timeKey })
+    onFilter(senList)
+  }, [filterSentList, mintKey, onFilter, timeKey])
 
   useEffect(() => {
-    onFilter(filteredListSent)
-  }, [filteredListSent, onFilter])
+    onChange()
+  }, [onChange])
+
+  const isMobile = infix === 'xs'
 
   if (isMobile)
     return (
       <FilterSentListMobile
-        mintAddressess={listMintAddr}
+        mintAddressess={sentMints}
         onConfirm={({ mintKey, timeKey }) => {
           setMintKey(mintKey)
           setTimeKey(timeKey)
@@ -137,11 +112,12 @@ const FilterSentList = ({ listSent, onFilter }: FilterSentListProps) => {
 
   return (
     <Space>
-      <SelectExistMintToken
-        mintAddresses={listMintAddr}
-        onChange={setMintKey}
+      <FilterSelection options={sentMints} onChange={setMintKey} />
+      <FilterSelection
+        options={TIME_OPTIONS}
+        defaultValue="All time"
+        onChange={setTimeKey}
       />
-      <SelectTokenByTime onChange={setTimeKey} />
     </Space>
   )
 }

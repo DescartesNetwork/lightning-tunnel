@@ -1,59 +1,27 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import isEqual from 'react-fast-compare'
-import { useUI } from '@sentre/senhub'
-import { MerkleDistributor } from '@sentre/utility'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Button, Card, Col, Row, Table, Typography } from 'antd'
-import FilterReceiveList from 'components/filterReceiveList'
-import ListReceiveMobile from 'components/listReceiveMobile'
+import { Button, Card, Col, Row, Typography } from 'antd'
+import FilterReceiveList from 'components/filterHistory/filterReceiveList'
+import ReceivedHistories from 'components/listHistory/listReceiveMobile'
 
-import { TypeDistribute } from 'model/main.controller'
 import { State } from '../../../constants'
-import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
 import { useReceivedList, ReceiveItem } from 'hooks/useReceivedList'
-import configs from 'configs'
 
 const DEFAULT_AMOUNT = 4
-
-const {
-  manifest: { appId },
-} = configs
 
 const VestingReceive = () => {
   const [amountVesting, setAmountVesting] = useState(DEFAULT_AMOUNT)
   const [listVesting, setListVesting] = useState<ReceiveItem[]>([])
-  // const { listReceived } = useSelector((state: AppState) => state.listReceived)
-  const listReceived = useReceivedList()
+  const { getReceivedVesting, loading } = useReceivedList()
   const [filteredListVesting, setFilteredListVesting] = useState<ReceiveItem[]>(
     [],
   )
-  const {
-    ui: { width },
-  } = useUI()
   const { fetchAirdropStatus } = useStatus()
-  const isMobile = width < 768
 
-  const loading = useMemo(
-    () => (listReceived === undefined ? true : false),
-    [listReceived],
-  )
-
-  const receiveList = useMemo(() => {
-    let vestingReceive: ReceiveItem[] = []
-    for (const address in listReceived) {
-      const { index, recipientData, children } = listReceived[address]
-      const { salt } = recipientData
-      const vestingSalt = MerkleDistributor.salt(
-        `${appId}/${TypeDistribute.Vesting}/${index}`,
-      )
-      if (Buffer.compare(vestingSalt, salt) !== 0) continue
-      if (!children) continue
-      vestingReceive = vestingReceive.concat(children)
-    }
-    return vestingReceive
-  }, [listReceived])
+  const receivedVestings = getReceivedVesting()
 
   const getIndexPriorityItem = useCallback(
     async (listVesting: ReceiveItem[]) => {
@@ -82,12 +50,12 @@ const VestingReceive = () => {
   )
 
   const filterVesting = useCallback(async () => {
-    if (!receiveList.length) return setListVesting([])
+    if (!receivedVestings.length) return setListVesting([])
     const vestings: Record<string, ReceiveItem[]> = {}
     let filteredVesting: ReceiveItem[] = []
     const readyList: ReceiveItem[] = []
     const otherList: ReceiveItem[] = []
-    for (const vesting of receiveList) {
+    for (const vesting of receivedVestings) {
       const { distributorAddress } = vesting
       if (vestings[distributorAddress]) {
         const data = [...vestings[distributorAddress]]
@@ -135,7 +103,7 @@ const VestingReceive = () => {
     filteredVesting = readyList.concat(otherList)
 
     return setListVesting(filteredVesting)
-  }, [fetchAirdropStatus, getIndexPriorityItem, receiveList])
+  }, [fetchAirdropStatus, getIndexPriorityItem, receivedVestings])
 
   useEffect(() => {
     filterVesting()
@@ -158,18 +126,9 @@ const VestingReceive = () => {
           </Row>
         </Col>
         <Col span={24}>
-          {isMobile ? (
-            <ListReceiveMobile
-              listReceive={filteredListVesting.slice(0, amountVesting)}
-            />
-          ) : (
-            <Table
-              dataSource={filteredListVesting.slice(0, amountVesting)}
-              pagination={false}
-              columns={COLUMNS_RECEIVE}
-              rowKey={(record) => record.receiptAddress}
-            />
-          )}
+          <ReceivedHistories
+            receivedList={filteredListVesting.slice(0, amountVesting)}
+          />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
           <Button

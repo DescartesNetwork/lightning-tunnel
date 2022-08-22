@@ -7,7 +7,7 @@ if (
   throw new Error('Please add REACT_APP_ID, REACT_APP_URL in .env!')
 
 /**
- * Contructor
+ * Constructor
  */
 
 type Conf = {

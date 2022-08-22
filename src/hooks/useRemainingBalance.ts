@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
-import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
+
 import useTotal from './useTotal'
+
+import { useAccountBalanceByMintAddress } from 'shared/hooks/useAccountBalance'
 
 const useRemainingBalance = (mintAddress: string) => {
   const { balance } = useAccountBalanceByMintAddress(mintAddress)

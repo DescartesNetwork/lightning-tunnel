@@ -6,12 +6,12 @@ import CommonModal from 'components/commonModal'
 
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
+import { onSelectMethod } from 'model/main.controller'
+import { removeRecipients } from 'model/recipients.controller'
 import { RecipientFileType, Method, Step } from '../../../../../constants'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import useFilteredAirdropRecipient from 'hooks/airdrop/useFilteredAirdropRecipient'
-import { onSelectMethod } from 'model/main.controller'
-import { removeRecipients } from 'model/recipients.controller'
 
 const Action = () => {
   const [visible, setVisible] = useState(false)

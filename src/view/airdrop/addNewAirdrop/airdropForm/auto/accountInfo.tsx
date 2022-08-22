@@ -13,8 +13,8 @@ import {
   Button,
   Input,
 } from 'antd'
-import NumericInput from '@sentre/antd-numeric-input'
 import IonIcon from '@sentre/antd-ionicon'
+import NumericInput from '@sentre/antd-numeric-input'
 
 import { AppDispatch, AppState } from 'model'
 import {

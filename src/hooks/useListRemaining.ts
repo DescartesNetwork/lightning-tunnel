@@ -14,7 +14,7 @@ const {
 
 const connection = new Connection(rpc)
 
-const useListRemaining = () => {
+export const useListRemaining = () => {
   const [associatedAddresses, setAssociatedAddresses] = useState<
     Record<string, PublicKey>
   >({})
@@ -66,5 +66,3 @@ const useListRemaining = () => {
 
   return { listRemaining }
 }
-
-export default useListRemaining

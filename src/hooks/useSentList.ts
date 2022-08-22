@@ -1,14 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useWalletAddress } from '@sentre/senhub'
 
 import configs from 'configs'
 import { AppState } from 'model'
-import useListRemaining from 'hooks/useListRemaining'
-
+import { useListRemaining } from 'hooks/useListRemaining'
 import { TypeDistribute } from 'model/main.controller'
-
 import { useGetMerkle } from './useGetMerkle'
-import { useWalletAddress } from '@sentre/senhub/dist'
 
 const {
   sol: { utility },

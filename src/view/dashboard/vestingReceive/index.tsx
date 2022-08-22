@@ -121,8 +121,6 @@ const VestingReceive = () => {
     return setListVesting(filteredVesting)
   }, [fetchAirdropStatus, getIndexPriorityItem, receivedVestings])
 
-  console.log(listVesting, 'listVesting')
-
   useEffect(() => {
     filterVesting()
   }, [filterVesting])

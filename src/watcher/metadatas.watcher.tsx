@@ -6,11 +6,7 @@ import { getMetaData, initMetadatas, ipfs } from 'model/metadatas.controller'
 import { useGetBackupMetadata } from 'hooks/metadata/useGetBackupMetadata'
 import { setMetadataLoading } from 'model/main.controller'
 
-const MetadatasWatcher = ({
-  updateStatus,
-}: {
-  updateStatus: (status: boolean) => void
-}) => {
+const MetadatasWatcher = () => {
   const dispatch = useDispatch<AppDispatch>()
   const [initialized, setInitialized] = useState(false)
   const distributors = useSelector((state: AppState) => state.distributors)
@@ -34,9 +30,8 @@ const MetadatasWatcher = ({
   const init = useCallback(async () => {
     const backupMetadata = await getBackupMetadata()
     dispatch(initMetadatas(backupMetadata))
-    updateStatus(false)
     return setInitialized(true)
-  }, [dispatch, getBackupMetadata, updateStatus])
+  }, [dispatch, getBackupMetadata])
 
   useEffect(() => {
     init()

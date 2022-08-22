@@ -13,11 +13,7 @@ const {
 
 let watcherId = 0
 
-const ReceiptWatcher = ({
-  updateStatus,
-}: {
-  updateStatus: (status: boolean) => void
-}) => {
+const ReceiptWatcher = () => {
   const dispatch = useDispatch<AppDispatch>()
   const walletAddress = useWalletAddress()
 
@@ -30,10 +26,8 @@ const ReceiptWatcher = ({
         type: 'error',
         description: 'Cannot fetch data of receipts',
       })
-    } finally {
-      updateStatus(false)
     }
-  }, [dispatch, updateStatus, walletAddress])
+  }, [dispatch, walletAddress])
 
   useEffect(() => {
     fetchData()

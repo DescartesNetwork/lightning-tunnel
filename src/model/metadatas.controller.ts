@@ -73,9 +73,7 @@ export const initMetadatas = createAsyncThunk(
       try {
         const data = Buffer.from(bulk[addr].data)
         filteredBulk[addr] = { ...bulk[addr], data }
-      } catch (error) {
-        console.log('error metadata====>', addr, bulk[addr].data)
-      }
+      } catch (error) {}
     }
     return filteredBulk
   },

@@ -11,11 +11,7 @@ const {
 
 let watcherId = 0
 
-const DistributorWatcher = ({
-  updateStatus,
-}: {
-  updateStatus: (status: boolean) => void
-}) => {
+const DistributorWatcher = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   const watchData = useCallback(async () => {
@@ -43,8 +39,7 @@ const DistributorWatcher = ({
 
   const initDistributors = useCallback(async () => {
     await dispatch(getDistributors())
-    updateStatus(false)
-  }, [dispatch, updateStatus])
+  }, [dispatch])
   useEffect(() => {
     initDistributors()
   }, [initDistributors])

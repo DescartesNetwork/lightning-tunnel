@@ -14,16 +14,15 @@ import { WrapTotal } from 'components/cardTotal'
 import useTotal from 'hooks/useTotal'
 import useRemainingBalance from 'hooks/useRemainingBalance'
 import { AppDispatch, AppState } from 'model'
-import { setHistory } from 'model/history.controller'
 import { onSelectStep } from 'model/steps.controller'
 import { Step } from '../../constants'
 import History, { HistoryRecord } from 'helper/history'
 import { toUnitTime, notifySuccess } from 'helper'
-import { ipfs } from 'helper/ipfs'
 import { RecipientInfo } from 'model/recipients.controller'
 import useMintDecimals from 'shared/hooks/useMintDecimals'
 import configs from 'configs'
 import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
+import { ipfs } from 'model/metadatas.controller'
 
 const {
   sol: { utility, fee, taxman },
@@ -84,7 +83,11 @@ const ConfirmTransfer = () => {
       setLoading(true)
       const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
 
-      const { digest } = await ipfs.methods.treeData.set(treeData)
+      const { digest } = await ipfs.methods.metadata.set({
+        checked: false,
+        createAt: Math.floor(Date.now() / 1000),
+        data: treeData,
+      })
 
       const metadata = Buffer.from(digest)
 
@@ -106,7 +109,6 @@ const ConfirmTransfer = () => {
       }
       const history = new History(walletAddress)
       await history.set(distributorAddress, historyRecord)
-      await dispatch(setHistory({ historyRecord }))
       setIsDone(true)
 
       notifySuccess('Airdrop', txId)

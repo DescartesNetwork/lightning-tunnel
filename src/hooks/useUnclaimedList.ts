@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux'
 import { MerkleDistributor } from '@sentre/utility'
 import { BN } from '@project-serum/anchor'
 
-import { ipfs } from 'helper/ipfs'
 import { AppState } from 'model'
 import useReceipts from './useReceipts'
+import { useGetMetadata } from './metadata/useGetMetadata'
 
 type Unclaimed = {
   amount: BN
@@ -15,17 +15,17 @@ type Unclaimed = {
 
 export const useUnclaimedList = (distributorAddress: string) => {
   const [unclaimed, setUnclaimed] = useState<Unclaimed[]>([])
-  const { mint, metadata } = useSelector(
+  const { mint } = useSelector(
     (state: AppState) => state.distributors[distributorAddress],
   )
   const receipts = useReceipts({ distributorAddress })
+  const getMetaData = useGetMetadata()
 
   const getUnclaimedList = useCallback(async () => {
     try {
-      const treeData = await ipfs.methods.treeData.get(metadata)
-
+      const { data: bufTreeData } = getMetaData(distributorAddress)
       const merkleDistributor = MerkleDistributor.fromBuffer(
-        Buffer.from(treeData),
+        Buffer.from(bufTreeData),
       )
       const listUnclaimed: Unclaimed[] = []
       const recipients = merkleDistributor.receipients
@@ -49,7 +49,7 @@ export const useUnclaimedList = (distributorAddress: string) => {
       }
       return setUnclaimed(listUnclaimed)
     } catch (error) {}
-  }, [metadata, mint, receipts])
+  }, [distributorAddress, getMetaData, mint, receipts])
 
   useEffect(() => {
     getUnclaimedList()

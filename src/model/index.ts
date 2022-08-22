@@ -7,9 +7,7 @@ import setting from 'model/setting.controller'
 import recipients from 'model/recipients.controller'
 import receipts from 'model/receipts.controller'
 import file from 'model/file.controller'
-import history from 'model/history.controller'
 import distributors from 'model/distributor.controller'
-import listReceived from 'model/listReceived.controller'
 import metadatas from 'model/metadatas.controller'
 
 /**
@@ -24,11 +22,9 @@ const model = configureStore({
     steps,
     setting,
     file,
-    history,
     distributors,
     recipients,
     receipts,
-    listReceived,
     metadatas,
   },
 })

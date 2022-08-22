@@ -6,10 +6,10 @@ import { Button, Col, Modal, Row, Space, Typography } from 'antd'
 import SelectExistMintToken from './selectExistMintToken'
 import IonIcon from '@sentre/antd-ionicon'
 
-import { ReceiveItem } from 'model/listReceived.controller'
 import SelectTokenByStatus from './selectTokenByStatus'
 import useStatus from 'hooks/useStatus'
 import { ALL } from '../constants'
+import { ReceiveItem } from 'hooks/useReceivedList'
 
 type ConfirmParamsType = { mintKey: string; statusKey: string }
 

@@ -1,5 +1,4 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { BN } from 'bn.js'
 import { getAnchorProvider } from '@sen-use/web3'
@@ -8,10 +7,9 @@ import { rpc, useWalletAddress } from '@sentre/senhub'
 import { Button } from 'antd'
 
 import { notifyError, notifySuccess } from 'helper'
-import { AppState } from 'model'
-import { ipfs } from 'helper/ipfs'
 import configs from 'configs'
 import useStatus from 'hooks/useStatus'
+import { useGetMetadata } from 'hooks/metadata/useGetMetadata'
 import { State } from '../../../constants'
 import { useBackupMetadata } from 'hooks/metadata/useBackupMetadata'
 
@@ -30,8 +28,6 @@ const ColumAction = ({
   receiptAddress,
 }: ColumActionProps) => {
   const [merkle, setMerkle] = useState<MerkleDistributor>()
-  const distributors = useSelector((state: AppState) => state.distributors)
-  const { metadata } = distributors[distributorAddress]
   const [loading, setLoading] = useState(false)
   const startedAt = recipientData.startedAt.toNumber()
   const { status } = useStatus({
@@ -39,6 +35,7 @@ const ColumAction = ({
     startedAt,
     distributor: distributorAddress,
   })
+  const getMetaData = useGetMetadata()
   const backupMetadata = useBackupMetadata()
   const walletAddress = useWalletAddress()
 
@@ -51,7 +48,6 @@ const ColumAction = ({
     try {
       setLoading(true)
       const ixBackup = await backupMetadata()
-      console.log('ixBackup', ixBackup)
       const feeOptions: FeeOptions = {
         fee: new BN(fee),
         feeCollectorAddress: taxman,
@@ -81,14 +77,14 @@ const ColumAction = ({
   const getMerkleDistributor = useCallback(async () => {
     if (!distributorAddress) return
     try {
-      const data = await ipfs.methods.treeData.get(metadata)
+      const { data } = getMetaData(distributorAddress)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)
     } catch (error) {
       notifyError(error)
     }
-  }, [distributorAddress, metadata])
+  }, [distributorAddress, getMetaData])
 
   useEffect(() => {
     getMerkleDistributor()

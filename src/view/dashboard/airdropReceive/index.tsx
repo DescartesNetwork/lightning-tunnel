@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useUI } from '@sentre/senhub'
 import { MerkleDistributor } from '@sentre/utility'
 
@@ -12,9 +11,8 @@ import { State } from '../../../constants'
 import { TypeDistribute } from 'model/main.controller'
 import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
-import { AppState } from 'model'
-import { ReceiveItem } from 'model/listReceived.controller'
 import configs from 'configs'
+import { ReceiveItem, useReceivedList } from 'hooks/useReceivedList'
 
 const DEFAULT_AMOUNT = 4
 
@@ -25,7 +23,8 @@ const {
 const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
-  const { listReceived } = useSelector((state: AppState) => state.listReceived)
+  const listReceived = useReceivedList()
+
   const [filteredListAirdrop, setFilteredListAirdrop] = useState<ReceiveItem[]>(
     [],
   )

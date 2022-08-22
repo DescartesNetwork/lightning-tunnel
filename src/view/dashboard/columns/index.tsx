@@ -7,10 +7,10 @@ import ColumnAmount from './columnTotal'
 import ColumnStatus from './columnStatus'
 import ColumAction from './columAction'
 import ColumnExpiration from './columnExpiration'
+import { MintAvatar, MintSymbol } from '@sen-use/components'
 
 import { ColumnsType } from 'antd/lib/table'
-import { MintAvatar, MintSymbol } from '@sen-use/components'
-import { ReceiveItem } from 'model/listReceived.controller'
+import { ReceiveItem } from 'hooks/useReceivedList'
 
 import './index.less'
 

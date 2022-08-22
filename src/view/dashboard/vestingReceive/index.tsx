@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import isEqual from 'react-fast-compare'
 import { useUI } from '@sentre/senhub'
 import { MerkleDistributor } from '@sentre/utility'
@@ -13,8 +12,7 @@ import { TypeDistribute } from 'model/main.controller'
 import { State } from '../../../constants'
 import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
-import { AppState } from 'model'
-import { ReceiveItem } from 'model/listReceived.controller'
+import { useReceivedList, ReceiveItem } from 'hooks/useReceivedList'
 import configs from 'configs'
 
 const DEFAULT_AMOUNT = 4
@@ -26,7 +24,8 @@ const {
 const VestingReceive = () => {
   const [amountVesting, setAmountVesting] = useState(DEFAULT_AMOUNT)
   const [listVesting, setListVesting] = useState<ReceiveItem[]>([])
-  const { listReceived } = useSelector((state: AppState) => state.listReceived)
+  // const { listReceived } = useSelector((state: AppState) => state.listReceived)
+  const listReceived = useReceivedList()
   const [filteredListVesting, setFilteredListVesting] = useState<ReceiveItem[]>(
     [],
   )

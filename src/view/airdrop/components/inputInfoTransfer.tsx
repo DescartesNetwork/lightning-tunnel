@@ -2,8 +2,9 @@ import { ChangeEvent, useCallback, useEffect, useState, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import { utilsBN } from '@sen-use/web3'
+import { useMintDecimals } from '@sentre/senhub'
 import parse from 'parse-duration'
-import BN from 'bn.js'
+import { BN } from '@project-serum/anchor'
 
 import { Col, Input, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -17,7 +18,6 @@ import {
   RecipientInfo,
   removeRecipient,
 } from 'model/recipients.controller'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import useCalculateAmount from 'hooks/useCalculateAmount'
 import { setIsTyping, TypeDistribute } from 'model/main.controller'
 
@@ -53,7 +53,7 @@ const InputInfoTransfer = ({
     setting: { decimal },
   } = useSelector((state: AppState) => state)
   const dispatch = useDispatch<AppDispatch>()
-  const mintDecimals = useMintDecimals(mintSelected) || 0
+  const mintDecimals = useMintDecimals({ mintAddress: mintSelected }) || 0
   const { calcListAmount } = useCalculateAmount()
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {

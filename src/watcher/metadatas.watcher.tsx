@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from 'model'
 import { getMetaData, initMetadatas, ipfs } from 'model/metadatas.controller'
 import { useGetBackupMetadata } from 'hooks/metadata/useGetBackupMetadata'
+import { setMetadataLoading } from 'model/main.controller'
 
 const MetadatasWatcher = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -17,6 +18,7 @@ const MetadatasWatcher = () => {
       const cid = ipfs.decodeCID(metadata)
       dispatch(getMetaData({ cid }))
     }
+    return dispatch(setMetadataLoading(false))
   }, [dispatch, distributors, initialized])
 
   useEffect(() => {

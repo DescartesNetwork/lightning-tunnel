@@ -2,10 +2,10 @@ import { Fragment, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { FeeOptions } from '@sentre/utility'
 import { utilsBN } from '@sen-use/web3'
-import { util } from '@sentre/senhub'
+import { util, useMintDecimals } from '@sentre/senhub'
 import { shortenAddress } from '@sentre/senhub/dist/shared/util'
 import { CSVLink } from 'react-csv'
-import BN from 'bn.js'
+import { BN } from '@project-serum/anchor'
 
 import {
   Button,
@@ -20,7 +20,6 @@ import {
 import IonIcon from '@sentre/antd-ionicon'
 
 import { AppState } from 'model'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { notifyError, notifySuccess } from 'helper'
 import configs from 'configs'
 import { useUnclaimedList } from 'hooks/useUnclaimedList'
@@ -47,7 +46,7 @@ const ColumnAmount = ({
   amount: BN
   mintAddress: string
 }) => {
-  const decimal = useMintDecimals(mintAddress) || 0
+  const decimal = useMintDecimals({ mintAddress }) || 0
   return (
     <Typography.Text>
       {util.numeric(utilsBN.undecimalize(amount, decimal)).format('0,0.[0000]')}
@@ -86,7 +85,7 @@ const RevokeAction = ({
   const mint = useSelector(
     (state: AppState) => state.distributors[distributorAddress].mint,
   )
-  const decimal = useMintDecimals(mint.toBase58()) || 0
+  const decimal = useMintDecimals({ mintAddress: mint.toBase58() }) || 0
   const { unclaimed } = useUnclaimedList(distributorAddress)
 
   const filterUnclaimed = useMemo(() => {

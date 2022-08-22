@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
-import BN from 'bn.js'
+import { BN } from '@project-serum/anchor'
 
 import { Col, Row } from 'antd'
 import HeroCard from './heroCard'

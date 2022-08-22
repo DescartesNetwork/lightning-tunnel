@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { tokenProvider, useGetMintDecimals } from '@sentre/senhub'
 import { utilsBN } from '@sen-use/web3'
-import BN from 'bn.js'
+import { BN } from '@project-serum/anchor'
 
 import { Allocation } from '../constants'
 import { TypeDistribute } from 'model/main.controller'

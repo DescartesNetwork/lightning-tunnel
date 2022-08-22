@@ -4,9 +4,10 @@ import { useUI } from '@sentre/senhub'
 import { MerkleDistributor } from '@sentre/utility'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Button, Card, Col, Row, Table, Typography } from 'antd'
+import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
 import FilterReceiveList from 'components/filterReceiveList'
 import ListReceiveMobile from 'components/listReceiveMobile'
+import LoadMetadata from '../loadMetadata'
 
 import { TypeDistribute } from 'model/main.controller'
 import { State } from '../../../constants'
@@ -150,10 +151,13 @@ const VestingReceive = () => {
               <Typography.Title level={5}>Vesting receive</Typography.Title>
             </Col>
             <Col>
-              <FilterReceiveList
-                listReceive={listVesting}
-                onFilter={setFilteredListVesting}
-              />
+              <Space>
+                <LoadMetadata />
+                <FilterReceiveList
+                  listReceive={listVesting}
+                  onFilter={setFilteredListVesting}
+                />
+              </Space>
             </Col>
           </Row>
         </Col>

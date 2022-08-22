@@ -1,6 +1,6 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
-import { BN } from 'bn.js'
+import { BN } from '@project-serum/anchor'
 import { getAnchorProvider } from '@sen-use/web3'
 import { rpc, useWalletAddress } from '@sentre/senhub'
 

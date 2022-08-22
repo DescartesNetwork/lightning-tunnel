@@ -1,10 +1,8 @@
 import { utils } from '@senswap/sen-js'
-import { util } from '@sentre/senhub'
+import { useMintDecimals, util } from '@sentre/senhub'
+import { BN } from '@project-serum/anchor'
 
 import { Typography } from 'antd'
-import BN from 'bn.js'
-
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 
 type ColumnAmountProps = {
   amount: BN
@@ -12,7 +10,7 @@ type ColumnAmountProps = {
 }
 
 const ColumnAmount = ({ amount, mintAddress }: ColumnAmountProps) => {
-  const decimal = useMintDecimals(mintAddress) || 0
+  const decimal = useMintDecimals({ mintAddress }) || 0
   return (
     <Typography.Text>
       {util

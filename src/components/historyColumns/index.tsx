@@ -44,7 +44,7 @@ export const HISTORY_COLUMNS = [
     title: 'TOTAL',
     dataIndex: 'total',
     render: (total: string, { mint }: ItemSent) => (
-      <ColumnTotal total={total} mint={mint} />
+      <ColumnTotal total={total} mintAddress={mint} />
     ),
   },
 

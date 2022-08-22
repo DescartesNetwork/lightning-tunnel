@@ -16,7 +16,7 @@ const useStatus = (props?: PropsUseStatus) => {
   const receipts = useSelector((state: AppState) => state.receipts)
 
   const fetchAirdropStatus = useCallback(
-    async (props: PropsUseStatus) => {
+    (props: PropsUseStatus) => {
       const CURRENT_TIME = Date.now()
       const { receipt, startedAt, distributor } = props
       const receiptData = receipts[receipt]

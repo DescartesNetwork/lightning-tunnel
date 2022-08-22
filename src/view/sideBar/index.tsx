@@ -51,8 +51,7 @@ const LIST_MENU_ITEM = [
   },
 ]
 
-const URL_GUIDE_LINE =
-  'https://academy.sentre.io/#/blogs/123246296205?category=dev'
+const URL_GUIDE_LINE = 'https://academy.sentre.io/lightning-tunnel-version-2/'
 
 const SideBar = () => {
   const [sideBarKey, setSideBarKey] = useState(SIDE_BAR_ITEMS.Dashboard)

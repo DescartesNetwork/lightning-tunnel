@@ -27,7 +27,7 @@ export type ReceiveItem = {
 export type ReceivedList = Record<string, ReceiveItem>
 
 export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
-  const [receivedList, setReceivedList] = useState<ReceivedList>()
+  const [receivedList, setReceivedList] = useState<ReceiveItem[]>()
   const distributors = useSelector((state: AppState) => state.distributors)
   const metadatas = useSelector((state: AppState) => state.metadatas)
   const walletAddress = useWalletAddress()
@@ -35,7 +35,9 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
 
   const fetchReceivedList = useCallback(async () => {
     if (isEmpty(distributors) || isEmpty(metadatas)) return
-    let bulk: ReceivedList | undefined
+    console.log('11')
+
+    const bulk: ReceiveItem[] = []
 
     const listDistributor = Object.keys(distributors).map((address) => ({
       address,
@@ -49,7 +51,7 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
             const cid = ipfs.decodeCID(digest)
             const metadata = metadatas[cid]
 
-            if (!metadata) return (bulk = bulk ? { ...bulk } : {}) // clone data to avoid undefined
+            if (!metadata) return
 
             const merkle = await getMerkle(address)
             if (merkle.type !== type) return
@@ -59,7 +61,6 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
             const sender = authority.toBase58()
 
             for (let i = 0; i < recipients.length; i++) {
-              bulk = bulk ? { ...bulk } : {}
               const { authority, salt } = recipients[i]
               if (walletAddress === authority.toBase58()) {
                 const receiptAddress = await utility.deriveReceiptAddress(
@@ -74,16 +75,7 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
                   recipientData: recipients[i],
                   index: i,
                 }
-                if (bulk?.[address]) {
-                  const { children } = bulk[address]
-                  let listChildren: ReceiveItem[] = []
-                  if (!children) listChildren = [{ ...bulk[address] }] //add current data to children if vesting
-                  if (children) listChildren = [...children]
-                  listChildren.push(receiveItem)
-                  bulk[address].children = listChildren
-                  continue
-                }
-                bulk[address] = receiveItem
+                bulk.push(receiveItem)
               }
             }
           } catch (error) {}

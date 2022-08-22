@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import isEqual from 'react-fast-compare'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Space, Typography } from 'antd'
@@ -10,7 +9,6 @@ import ReceivedHistories from 'components/listHistory/listReceiveMobile'
 import { State } from '../../../constants'
 import useStatus from 'hooks/useStatus'
 import { useReceivedList, ReceiveItem } from 'hooks/useReceivedList'
-
 import { TypeDistribute } from 'model/main.controller'
 
 const DEFAULT_AMOUNT = 4
@@ -29,23 +27,13 @@ const VestingReceive = () => {
     [listReceived],
   )
 
-  const receivedVestings = useMemo(() => {
-    let vestingReceive: ReceiveItem[] = []
-    for (const address in listReceived) {
-      const { children } = listReceived[address]
-      if (!children) continue
-      vestingReceive = vestingReceive.concat(children)
-    }
-    return vestingReceive
-  }, [listReceived])
-
   const getIndexPriorityItem = useCallback(
     async (listVesting: ReceiveItem[]) => {
       const listStatus = []
       for (const vesting of listVesting) {
         const { receiptAddress, distributorAddress, recipientData } = vesting
         const { startedAt } = recipientData
-        const status = await fetchAirdropStatus({
+        const status = fetchAirdropStatus({
           receipt: receiptAddress,
           startedAt: startedAt.toNumber(),
           distributor: distributorAddress,
@@ -65,65 +53,55 @@ const VestingReceive = () => {
     [fetchAirdropStatus],
   )
 
-  const filterVesting = useCallback(async () => {
-    if (!receivedVestings.length) return setListVesting([])
-    const vestings: Record<string, ReceiveItem[]> = {}
-    let filteredVesting: ReceiveItem[] = []
-    const readyList: ReceiveItem[] = []
-    const otherList: ReceiveItem[] = []
-    for (const vesting of receivedVestings) {
-      const { distributorAddress } = vesting
-      if (vestings[distributorAddress]) {
-        const data = [...vestings[distributorAddress]]
-        data.push(vesting)
-        vestings[distributorAddress] = data
-        continue
-      }
-      vestings[distributorAddress] = [vesting]
+  const getAirdropByAddress = useCallback(
+    (address: string) => {
+      if (!listReceived) return []
+      return listReceived.filter(
+        ({ distributorAddress }) => distributorAddress === address,
+      )
+    },
+
+    [listReceived],
+  )
+
+  const formatData = useCallback(async () => {
+    if (!listReceived) return
+    const nextListReceived: ReceiveItem[] = []
+    const mapVesting = new Map<string, ReceiveItem[]>()
+    for (const { distributorAddress } of listReceived) {
+      const data = getAirdropByAddress(distributorAddress)
+      mapVesting.set(distributorAddress, data)
     }
 
-    for (const address in vestings) {
-      const nextVestingData = vestings[address]
-      if (nextVestingData.length === 1) filteredVesting.push(nextVestingData[0])
-      else {
-        const index = await getIndexPriorityItem(nextVestingData)
-        let vestingItem = nextVestingData[index]
-        const listChildren: ReceiveItem[] = []
+    //Format data by status priority
+    mapVesting.forEach(async (value: ReceiveItem[]) => {
+      const index = await getIndexPriorityItem(value)
+      const parentData = value[index]
+      const children = value.filter(({ index }) => index !== parentData.index)
+      const receiveRecord: ReceiveItem = { ...parentData, children }
+      nextListReceived.push(receiveRecord)
+    })
 
-        for (const vestingData of nextVestingData) {
-          if (isEqual(vestingData, vestingItem)) continue
-          listChildren.push(vestingData)
-        }
-        vestingItem = { ...vestingItem, children: listChildren }
-        const { distributorAddress, recipientData, receiptAddress } =
-          vestingItem
-        const { startedAt } = recipientData
-        const status = await fetchAirdropStatus({
-          distributor: distributorAddress,
-          receipt: receiptAddress,
-          startedAt: startedAt.toNumber(),
-        })
-        if (status === State.ready) {
-          readyList.push(vestingItem)
-          continue
-        }
+    return setListVesting(nextListReceived)
+  }, [getAirdropByAddress, getIndexPriorityItem, listReceived])
 
-        otherList.push(vestingItem)
-      }
-    }
+  const sortedData = listVesting.sort((a, b) => {
+    const { distributorAddress, receiptAddress, recipientData } = a
+    const status = fetchAirdropStatus({
+      distributor: distributorAddress,
+      receipt: receiptAddress,
+      startedAt: recipientData.startedAt.toNumber(),
+    })
 
-    readyList.sort(
-      (a, b) =>
-        Number(b.recipientData.startedAt) - Number(a.recipientData.startedAt),
-    )
-    filteredVesting = readyList.concat(otherList)
+    console.log(status, 'status')
+    if (status === State.ready) return -1
 
-    return setListVesting(filteredVesting)
-  }, [fetchAirdropStatus, getIndexPriorityItem, receivedVestings])
+    return 0
+  })
 
   useEffect(() => {
-    filterVesting()
-  }, [filterVesting])
+    formatData()
+  }, [formatData])
 
   return (
     <Card loading={loading} className="card-lightning">
@@ -137,7 +115,7 @@ const VestingReceive = () => {
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  receivedList={listVesting}
+                  receivedList={sortedData}
                   onFilter={setFilteredListVesting}
                 />
               </Space>
@@ -146,7 +124,7 @@ const VestingReceive = () => {
         </Col>
         <Col span={24}>
           <ReceivedHistories
-            receivedList={filteredListVesting.slice(0, amountVesting)}
+            receivedList={sortedData.slice(0, amountVesting)}
           />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
@@ -154,7 +132,7 @@ const VestingReceive = () => {
             onClick={() => setAmountVesting(amountVesting + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountVesting >= filteredListVesting.length}
+            disabled={amountVesting >= sortedData.length}
           >
             VIEW MORE
           </Button>

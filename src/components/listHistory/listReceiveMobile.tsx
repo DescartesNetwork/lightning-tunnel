@@ -118,7 +118,7 @@ const ReceivedHistories = ({ receivedList }: ReceivedHistoriesProps) => {
       dataSource={receivedList}
       pagination={false}
       columns={COLUMNS_RECEIVE}
-      rowKey={(record) => record.distributorAddress}
+      rowKey={(record) => record.distributorAddress + record.index}
     />
   )
 }

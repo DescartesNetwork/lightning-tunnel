@@ -9,10 +9,11 @@ import { AppLoader } from 'appLoader'
 import model from 'model'
 import configs from 'configs'
 
+import BG from 'static/images/background-LT.png'
+
 import 'static/styles/light.less'
 import 'static/styles/dark.less'
 import 'static/styles/index.less'
-import BG from 'static/images/background-LT.png'
 
 const {
   manifest: { appId },
@@ -43,10 +44,6 @@ export const Background = () => {
 }
 
 export const Page = () => {
-  useEffect(() => {
-    console.log('123')
-  }, [])
-
   return (
     <UIProvider appId={appId} antd={{ prefixCls: appId }}>
       <Background />

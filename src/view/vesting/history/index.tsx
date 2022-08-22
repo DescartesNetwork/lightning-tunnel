@@ -1,26 +1,19 @@
 import { useState } from 'react'
-import { useUI } from '@sentre/senhub'
 
-import { Button, Card, Col, Row, Table, Typography } from 'antd'
+import { Button, Card, Col, Row, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import FilterSentList from 'components/filterSentList'
-import ListSentMobile from 'components/listSentMobile'
+import FilterSentList from 'components/filterHistory/filterSentList'
 
 import useSentList, { ItemSent } from 'hooks/useSentList'
 import { TypeDistribute } from 'model/main.controller'
-import { HISTORY_COLUMNS } from 'components/historyColumns'
+import SentHistories from 'components/listHistory/sentHistories'
 
 const DEFAULT_AMOUNT = 4
 
 const History = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-  const { loading, listHistory } = useSentList({ type: TypeDistribute.Vesting })
+  const { loading } = useSentList({ type: TypeDistribute.Vesting })
   const [filteredSentToken, setFilteredSentToken] = useState<ItemSent[]>([])
-  const {
-    ui: { width },
-  } = useUI()
-
-  const isMobile = width < 768
 
   return (
     <Card loading={loading} className="card-lightning">
@@ -32,29 +25,15 @@ const History = () => {
             </Col>
             <Col>
               <FilterSentList
-                listSent={listHistory}
                 onFilter={setFilteredSentToken}
+                type={TypeDistribute.Vesting}
               />
             </Col>
           </Row>
         </Col>
-
-        {isMobile ? (
-          <Col span={24}>
-            <ListSentMobile
-              listSent={filteredSentToken.slice(0, amountAirdrop)}
-            />
-          </Col>
-        ) : (
-          <Col span={24}>
-            <Table
-              dataSource={filteredSentToken.slice(0, amountAirdrop)}
-              pagination={false}
-              columns={HISTORY_COLUMNS}
-              rowKey={(record) => record.distributorAddress}
-            />
-          </Col>
-        )}
+        <Col span={24}>
+          <SentHistories sentList={filteredSentToken.slice(0, amountAirdrop)} />
+        </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
           <Button
             onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}

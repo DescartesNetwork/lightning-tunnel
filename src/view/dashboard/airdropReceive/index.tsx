@@ -1,25 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useUI } from '@sentre/senhub'
-import { MerkleDistributor } from '@sentre/utility'
 
-import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
+import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import FilterReceiveList from 'components/filterReceiveList'
-import ListReceiveMobile from 'components/listReceiveMobile'
 import LoadMetadata from '../loadMetadata'
+import FilterReceiveList from 'components/filterHistory/filterReceiveList'
+import ReceivedHistories from 'components/listHistory/listReceiveMobile'
 
 import { State } from '../../../constants'
-import { TypeDistribute } from 'model/main.controller'
-import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
-import configs from 'configs'
 import { ReceiveItem, useReceivedList } from 'hooks/useReceivedList'
-
-const DEFAULT_AMOUNT = 4
+import { MerkleDistributor } from '@sentre/utility'
+import { TypeDistribute } from 'model/main.controller'
+import configs from 'configs'
 
 const {
   manifest: { appId },
 } = configs
+
+const DEFAULT_AMOUNT = 4
 
 const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
@@ -29,19 +27,14 @@ const AirdropReceive = () => {
     [],
   )
 
-  const {
-    ui: { width },
-  } = useUI()
   const { fetchAirdropStatus } = useStatus()
-
-  const isMobile = width < 768
 
   const loading = useMemo(
     () => (listReceived === undefined ? true : false),
     [listReceived],
   )
 
-  const receiveList = useMemo(() => {
+  const receivedAirdrops = useMemo(() => {
     const airdropReceive: ReceiveItem[] = []
     for (const address in listReceived) {
       const { recipientData, index } = listReceived[address]
@@ -61,11 +54,11 @@ const AirdropReceive = () => {
   }, [listReceived])
 
   const filterAirdrops = useCallback(async () => {
-    if (!receiveList.length) return setListAirdrop([])
+    if (!receivedAirdrops.length) return setListAirdrop([])
     let nextAirdrops: ReceiveItem[] = []
     const readyList: ReceiveItem[] = []
     const otherList: ReceiveItem[] = []
-    for (const airdrop of receiveList) {
+    for (const airdrop of receivedAirdrops) {
       const { receiptAddress, distributorAddress, recipientData } = airdrop
       const { startedAt } = recipientData
       const status = await fetchAirdropStatus({
@@ -85,7 +78,7 @@ const AirdropReceive = () => {
     )
     nextAirdrops = readyList.concat(otherList)
     return setListAirdrop(nextAirdrops)
-  }, [receiveList, fetchAirdropStatus])
+  }, [receivedAirdrops, fetchAirdropStatus])
 
   useEffect(() => {
     filterAirdrops()
@@ -103,7 +96,7 @@ const AirdropReceive = () => {
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  listReceive={listAirdrop}
+                  receivedList={listAirdrop}
                   onFilter={setFilteredListAirdrop}
                 />
               </Space>
@@ -111,18 +104,9 @@ const AirdropReceive = () => {
           </Row>
         </Col>
         <Col span={24}>
-          {isMobile ? (
-            <ListReceiveMobile
-              listReceive={filteredListAirdrop.slice(0, amountAirdrop)}
-            />
-          ) : (
-            <Table
-              dataSource={filteredListAirdrop.slice(0, amountAirdrop)}
-              pagination={false}
-              columns={COLUMNS_RECEIVE}
-              rowKey={(record) => record.receiptAddress}
-            />
-          )}
+          <ReceivedHistories
+            receivedList={filteredListAirdrop.slice(0, amountAirdrop)}
+          />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
           <Button

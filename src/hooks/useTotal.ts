@@ -2,10 +2,10 @@ import { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 import { utilsBN } from '@sen-use/web3'
-import BN from 'bn.js'
+import { useMintDecimals } from '@sentre/senhub'
+import { BN } from '@project-serum/anchor'
 
 import { AppState } from 'model'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { RecipientInfo } from 'model/recipients.controller'
 
 const useTotal = () => {
@@ -14,7 +14,7 @@ const useTotal = () => {
     recipients: { recipientInfos, expirationTime },
     setting: { decimal: isDecimal },
   } = useSelector((state: AppState) => state)
-  const mintDecimals = useMintDecimals(mintSelected) || 0
+  const mintDecimals = useMintDecimals({ mintAddress: mintSelected }) || 0
 
   const checkUnLockTime = useCallback(
     (recipientData: RecipientInfo[]) => {

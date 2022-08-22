@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { utils } from '@senswap/sen-js'
 import { useGetMintDecimals, useWalletAddress } from '@sentre/senhub'
 import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
-import { BN } from 'bn.js'
+import { BN } from '@project-serum/anchor'
 import { utilsBN } from '@sen-use/web3'
 
 import { Image, Space, Typography, Row, Col, Button, Card } from 'antd'

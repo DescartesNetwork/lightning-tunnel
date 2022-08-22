@@ -56,7 +56,6 @@ export const getMetaData = createAsyncThunk<
       },
     }
   }
-  console.log('metadata', metadata)
   return { [cid]: metadata }
 })
 

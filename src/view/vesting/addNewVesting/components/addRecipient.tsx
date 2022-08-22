@@ -1,14 +1,14 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { utilsBN } from '@sen-use/web3'
-import BN from 'bn.js'
+import { useMintDecimals } from '@sentre/senhub'
+import { BN } from '@project-serum/anchor'
 import parse from 'parse-duration'
 
 import { Button, Col, Input, Row, Space, Typography } from 'antd'
 import NumericInput from '@sentre/antd-numeric-input'
 import CommonModal from 'components/commonModal'
 
-import useMintDecimals from 'shared/hooks/useMintDecimals'
 import { AppDispatch, AppState } from 'model'
 import { setRecipient, RecipientInfo } from 'model/recipients.controller'
 import useCalculateAmount from 'hooks/useCalculateAmount'
@@ -36,7 +36,7 @@ const AddRecipient = () => {
   )
   const cliff = useSelector((state: AppState) => state.recipients.configs.cliff)
   const decimal = useSelector((state: AppState) => state.setting.decimal)
-  const mintDecimals = useMintDecimals(mintSelected) || 0
+  const mintDecimals = useMintDecimals({ mintAddress: mintSelected }) || 0
   const dispatch = useDispatch<AppDispatch>()
   const { calcListAmount } = useCalculateAmount()
 

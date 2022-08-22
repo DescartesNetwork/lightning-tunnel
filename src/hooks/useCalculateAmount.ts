@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import BN from 'bn.js'
+import { BN } from '@project-serum/anchor'
 
 const useCalculateAmount = () => {
   const calcListAmount = useCallback(

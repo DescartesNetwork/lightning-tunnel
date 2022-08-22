@@ -2,10 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useUI } from '@sentre/senhub'
 import { MerkleDistributor } from '@sentre/utility'
 
-import { Button, Card, Col, Row, Table, Typography } from 'antd'
+import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import FilterReceiveList from 'components/filterReceiveList'
 import ListReceiveMobile from 'components/listReceiveMobile'
+import LoadMetadata from '../loadMetadata'
 
 import { State } from '../../../constants'
 import { TypeDistribute } from 'model/main.controller'
@@ -24,10 +25,10 @@ const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
   const listReceived = useReceivedList()
-
   const [filteredListAirdrop, setFilteredListAirdrop] = useState<ReceiveItem[]>(
     [],
   )
+
   const {
     ui: { width },
   } = useUI()
@@ -99,10 +100,13 @@ const AirdropReceive = () => {
               <Typography.Title level={5}>Airdrop receive</Typography.Title>
             </Col>
             <Col>
-              <FilterReceiveList
-                listReceive={listAirdrop}
-                onFilter={setFilteredListAirdrop}
-              />
+              <Space>
+                <LoadMetadata />
+                <FilterReceiveList
+                  listReceive={listAirdrop}
+                  onFilter={setFilteredListAirdrop}
+                />
+              </Space>
             </Col>
           </Row>
         </Col>

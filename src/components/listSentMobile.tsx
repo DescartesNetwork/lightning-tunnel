@@ -48,7 +48,7 @@ const ListSentMobile = ({ listSent }: ListSentMobileProps) => {
                         <Space size={6}>
                           <ColumnTotal
                             total={total.toString()}
-                            mint={mintAddress}
+                            mintAddress={mintAddress}
                           />
                           <MintSymbol mintAddress={mintAddress} />
                         </Space>

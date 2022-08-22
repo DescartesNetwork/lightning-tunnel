@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
 import { Leaf, MerkleDistributor } from '@sentre/utility'
@@ -7,11 +7,9 @@ import { isEmpty } from 'lodash'
 import { AppState } from 'model'
 import configs from 'configs'
 import { ipfs } from 'model/metadatas.controller'
-import { TypeDistribute } from 'model/main.controller'
 
 const {
   sol: { utility },
-  manifest: { appId },
 } = configs
 
 export type ReceiveItem = {
@@ -92,51 +90,9 @@ export const useReceivedList = () => {
     return setReceivedList(bulk)
   }, [distributors, metadatas, walletAddress])
 
-  // loading
-  const loading = useMemo(
-    () => (receivedList === undefined ? true : false),
-    [receivedList],
-  )
-
-  // list vesting
-  const getReceivedVesting = useCallback(() => {
-    let vestingReceive: ReceiveItem[] = []
-    for (const address in receivedList) {
-      const { index, recipientData, children } = receivedList[address]
-      const { salt } = recipientData
-      const vestingSalt = MerkleDistributor.salt(
-        `${appId}/${TypeDistribute.Vesting}/${index}`,
-      )
-      if (Buffer.compare(vestingSalt, salt) !== 0) continue
-      if (!children) continue
-      vestingReceive = vestingReceive.concat(children)
-    }
-    return vestingReceive
-  }, [receivedList])
-
-  // list air drop
-  const getReceivedAirdops = useCallback(() => {
-    const airdropReceive: ReceiveItem[] = []
-    for (const address in receivedList) {
-      const { recipientData, index } = receivedList[address]
-      const { salt } = recipientData
-      const airdropSalt_v2 = MerkleDistributor.salt(
-        `${appId}/${TypeDistribute.Airdrop}/${index}`,
-      )
-      const airdropSalt_v1 = MerkleDistributor.salt(index.toString())
-      if (
-        Buffer.compare(airdropSalt_v2, salt) === 0 ||
-        Buffer.compare(airdropSalt_v1, salt) === 0
-      )
-        airdropReceive.push(receivedList[address])
-    }
-
-    return airdropReceive
-  }, [receivedList])
-
   useEffect(() => {
     fetchReceivedList()
   }, [fetchReceivedList])
 
-  return { receivedList, loading, getReceivedVesting, getReceivedAirdops }
+  return receivedList
 }

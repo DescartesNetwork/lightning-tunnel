@@ -10,17 +10,17 @@ type FilterArguments = { mintAddress?: string; status?: string }
 export const useFilterReceiceList = () => {
   const [loading, setLoading] = useState(false)
   const { fetchAirdropStatus } = useStatus()
-  const { receivedList: listReceived } = useReceivedList()
+  const receivedList = useReceivedList()
 
   const getReceiveMints = useCallback(() => {
-    if (!listReceived) return []
+    if (!receivedList) return []
     let mints: string[] = []
-    for (const mintHistory in listReceived) {
-      const { mintAddress } = listReceived[mintHistory]
+    for (const mintHistory in receivedList) {
+      const { mintAddress } = receivedList[mintHistory]
       if (!mints.includes(mintAddress)) mints.push(mintAddress)
     }
     return mints
-  }, [listReceived])
+  }, [receivedList])
 
   const validReceiveItem = useCallback(
     async (itemReceived: ReceiveItem, args: FilterArguments) => {
@@ -54,8 +54,8 @@ export const useFilterReceiceList = () => {
       try {
         setLoading(true)
         let filteredData: ReceiveItem[] = []
-        for (const mintReceived in listReceived) {
-          const itemReceived = listReceived[mintReceived]
+        for (const mintReceived in receivedList) {
+          const itemReceived = receivedList[mintReceived]
           const state = await validReceiveItem(itemReceived, {
             mintAddress,
             status,
@@ -69,7 +69,7 @@ export const useFilterReceiceList = () => {
         setLoading(false)
       }
     },
-    [listReceived, validReceiveItem],
+    [receivedList, validReceiveItem],
   )
 
   return { filterReceiveList, loading, getReceiveMints }

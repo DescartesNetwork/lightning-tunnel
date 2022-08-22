@@ -27,9 +27,9 @@ export const useGetBackupMetadata = () => {
           return new Promise(async (resolve) => {
             // Rove IPFS
             try {
-              fetch(
-                'https://ipfs.rove.to/ipfs/bafybeig5driamixotu35mnjainl5twntjdpj4ff7hl4os3ou4nolhewfdy/file',
-              ).then((data) => data.json().then((val) => resolve(val)))
+              fetch(`https://ipfs.rove.to/ipfs/${parsed}/file`).then((data) =>
+                data.json().then((val) => resolve(val)),
+              )
             } catch (error) {}
             // Web3 IPFS
             ipfs.methods.backupMetadata

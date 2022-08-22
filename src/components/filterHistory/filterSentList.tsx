@@ -8,6 +8,7 @@ import { ItemSent } from 'hooks/useSentList'
 import { ALL } from '../../constants'
 import FilterSelection from './filterSelection'
 import { useFilterSentList } from 'hooks/useFilterSentList'
+import { TypeDistribute } from 'model/main.controller'
 
 const TIME_OPTIONS = [7, 30, 90]
 
@@ -79,14 +80,15 @@ const FilterSentListMobile = ({
 
 type FilterSentListProps = {
   onFilter: (data: ItemSent[]) => void
+  type: TypeDistribute
 }
-const FilterSentList = ({ onFilter }: FilterSentListProps) => {
+const FilterSentList = ({ onFilter, type }: FilterSentListProps) => {
   const [mintKey, setMintKey] = useState(ALL)
   const [timeKey, setTimeKey] = useState(ALL)
   const {
     ui: { infix },
   } = useUI()
-  const { filterSentList, sentMints } = useFilterSentList()
+  const { filterSentList, sentMints } = useFilterSentList(type)
 
   const onChange = useCallback(() => {
     const senList = filterSentList({ mintAddress: mintKey, time: timeKey })

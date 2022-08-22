@@ -1,18 +1,14 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { util } from '@sentre/senhub'
 
 import useSentList, { ItemSent } from 'hooks/useSentList'
 import { ALL, ONE_DAY } from '../constants'
-import { AppState } from 'model'
+import { TypeDistribute } from 'model/main.controller'
 
 type FilterArguments = { mintAddress?: string; time?: string }
 
-export const useFilterSentList = () => {
-  const typeDistribute = useSelector(
-    (state: AppState) => state.main.typeDistribute,
-  )
-  const { listHistory } = useSentList({ type: typeDistribute })
+export const useFilterSentList = (type: TypeDistribute) => {
+  const { listHistory } = useSentList({ type })
   const [loading, setLoading] = useState(false)
 
   const sentMints = useMemo(() => {

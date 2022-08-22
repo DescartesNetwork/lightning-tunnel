@@ -24,7 +24,10 @@ const History = () => {
               <Typography.Title level={5}>History</Typography.Title>
             </Col>
             <Col>
-              <FilterSentList onFilter={setFilteredListHistory} />
+              <FilterSentList
+                onFilter={setFilteredListHistory}
+                type={TypeDistribute.Airdrop}
+              />
             </Col>
           </Row>
         </Col>

@@ -13,7 +13,11 @@ const {
 
 let watcherId = 0
 
-const ReceiptWatcher = () => {
+const ReceiptWatcher = ({
+  updateStatus,
+}: {
+  updateStatus: (status: boolean) => void
+}) => {
   const dispatch = useDispatch<AppDispatch>()
   const walletAddress = useWalletAddress()
 
@@ -26,8 +30,14 @@ const ReceiptWatcher = () => {
         type: 'error',
         description: 'Cannot fetch data of receipts',
       })
+    } finally {
+      updateStatus(false)
     }
-  }, [dispatch, walletAddress])
+  }, [dispatch, updateStatus, walletAddress])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const watchData = useCallback(async () => {
     watcherId = utility.program.provider.connection.onProgramAccountChange(
@@ -58,14 +68,17 @@ const ReceiptWatcher = () => {
 
   useEffect(() => {
     watchData()
-    fetchData()
     return () => {
       ;(async () => {
-        await utility.removeListener(watcherId)
-        watcherId = 0
+        if (!!watcherId) {
+          await utility.program.provider.connection.removeProgramAccountChangeListener(
+            watcherId,
+          )
+          watcherId = 0
+        }
       })()
     }
-  }, [fetchData, watchData])
+  }, [watchData])
 
   return <Fragment />
 }

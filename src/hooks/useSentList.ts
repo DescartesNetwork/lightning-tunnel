@@ -62,7 +62,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
           mint: distributorData.mint.toBase58(),
           total: distributorData.total.toString(),
           time,
-          treeData: merkle.metadata.data,
+          treeData: Buffer.from(merkle.metadata.data),
           remaining,
         }
 
@@ -84,7 +84,6 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     return () => clearTimeout(timeout)
   }, [fetchHistory])
 
-  console.log('call')
   return {
     listHistory: sentList,
     loading: totalRecipients === undefined,

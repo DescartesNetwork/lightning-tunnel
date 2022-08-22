@@ -13,18 +13,22 @@ const {
 } = configs
 
 function parseMerkleType(merkle: MerkleDistributor): TypeDistribute | null {
-  const types = [TypeDistribute.Airdrop, TypeDistribute.Vesting]
-  for (const type of types) {
-    const airdropSalt_v1 = MerkleDistributor.salt('0')
-    const airdropSalt_v2 = MerkleDistributor.salt(`${appId}/${type}/0`)
-    const salt = merkle.receipients[0].salt
-    const x1 = Buffer.compare(airdropSalt_v1, salt)
-    const x2 = Buffer.compare(airdropSalt_v2, salt)
+  try {
+    const types = [TypeDistribute.Airdrop, TypeDistribute.Vesting]
+    for (const type of types) {
+      const airdropSalt_v1 = MerkleDistributor.salt('0')
+      const airdropSalt_v2 = MerkleDistributor.salt(`${appId}/${type}/0`)
+      const salt = merkle.receipients[0].salt
+      const x1 = Buffer.compare(airdropSalt_v1, salt)
+      const x2 = Buffer.compare(airdropSalt_v2, salt)
 
-    if (x1 !== 0 && x2 !== 0) continue
-    return type
+      if (x1 !== 0 && x2 !== 0) continue
+      return type
+    }
+    return null
+  } catch (error) {
+    return null
   }
-  return null
 }
 
 export const useGetMerkle = () => {
@@ -42,7 +46,11 @@ export const useGetMerkle = () => {
         getMetaData({ cid: cidString }),
       ).unwrap()
       // Build result data
-      const root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
+      let root = MerkleDistributor.fromBuffer(Buffer.from([]))
+      try {
+        root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
+      } catch (error) {}
+
       return {
         root,
         type: parseMerkleType(root),

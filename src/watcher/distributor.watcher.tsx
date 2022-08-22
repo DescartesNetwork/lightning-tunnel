@@ -11,7 +11,11 @@ const {
 
 let watcherId = 0
 
-const DistributorWatcher = () => {
+const DistributorWatcher = ({
+  updateStatus,
+}: {
+  updateStatus: (status: boolean) => void
+}) => {
   const dispatch = useDispatch<AppDispatch>()
 
   const watchData = useCallback(async () => {
@@ -37,13 +41,24 @@ const DistributorWatcher = () => {
     )
   }, [dispatch])
 
+  const initDistributors = useCallback(async () => {
+    await dispatch(getDistributors())
+    updateStatus(false)
+  }, [dispatch, updateStatus])
   useEffect(() => {
-    dispatch(getDistributors())
+    initDistributors()
+  }, [initDistributors])
+
+  useEffect(() => {
     watchData()
     return () => {
       ;(async () => {
-        await utility.removeListener(watcherId)
-        watcherId = 0
+        if (!!watcherId) {
+          await utility.program.provider.connection.removeProgramAccountChangeListener(
+            watcherId,
+          )
+          watcherId = 0
+        }
       })()
     }
   }, [dispatch, watchData])

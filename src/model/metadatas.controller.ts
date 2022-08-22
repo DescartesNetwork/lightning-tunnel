@@ -43,26 +43,41 @@ export const getMetaData = createAsyncThunk<
 >(`${NAME}/getMetaData`, async ({ cid }, { getState }) => {
   // Check metadata cache
   const { metadatas } = getState()
-  if (metadatas[cid]) return { [cid]: metadatas[cid] }
+  const cache = metadatas[cid]
+  if (cache) return { [cid]: cache }
   // Fetch metadata
-  const metadata = await ipfs.methods.metadata.get(cid)
+  let metadata: MetaData = Buffer.from([]) as any
+  try {
+    metadata = await ipfs.methods.metadata.get(cid)
+  } catch (error) {}
+
   // Convert from version 1 to version 2
   if (metadata.checked === undefined || metadata.createAt === undefined) {
     return {
       [cid]: {
         checked: false,
         createAt: 0,
-        data: metadata as any,
+        data: Buffer.from(metadata as any),
       },
     }
   }
-  return { [cid]: metadata }
+  return { [cid]: { ...metadata, data: Buffer.from(metadata.data) } }
 })
 
 export const initMetadatas = createAsyncThunk(
   `${NAME}/initMetadatas`,
   async (bulk: MetadataState) => {
-    return bulk
+    // TODO: filter
+    const filteredBulk: MetadataState = {}
+    for (const addr in bulk) {
+      try {
+        const data = Buffer.from(bulk[addr].data)
+        filteredBulk[addr] = { ...bulk[addr], data }
+      } catch (error) {
+        console.log('error metadata====>', addr, bulk[addr].data)
+      }
+    }
+    return filteredBulk
   },
 )
 

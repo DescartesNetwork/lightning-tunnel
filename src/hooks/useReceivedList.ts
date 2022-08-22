@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
 import { Leaf, MerkleDistributor } from '@sentre/utility'
+import { isEmpty } from 'lodash'
 
 import { AppState } from 'model'
 import configs from 'configs'
@@ -30,6 +31,7 @@ export const useReceivedList = () => {
   const walletAddress = useWalletAddress()
 
   const fetchReceivedList = useCallback(async () => {
+    if (isEmpty(distributors) || isEmpty(metadatas)) return
     let bulk: ReceivedList | undefined
 
     const listDistributor = Object.keys(distributors).map((address) => ({
@@ -85,7 +87,7 @@ export const useReceivedList = () => {
         },
       ),
     )
-    setReceivedList(bulk)
+    return setReceivedList(bulk)
   }, [distributors, metadatas, walletAddress])
 
   useEffect(() => {

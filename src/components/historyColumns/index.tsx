@@ -14,7 +14,7 @@ export const HISTORY_COLUMNS = [
   {
     title: 'CREATED DATE',
     dataIndex: 'time',
-    render: (time: string, { distributorAddress }: ItemSent) => {
+    render: (time: number, { distributorAddress }: ItemSent) => {
       if (time)
         return (
           <Typography.Text>

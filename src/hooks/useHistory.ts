@@ -24,6 +24,7 @@ export const useHistory = () => {
     const myDistribute = listDistributor.filter(
       ({ authority }) => authority.toBase58() === walletAddress,
     )
+
     if (!myDistribute.length) return setHistory([]) // avoid undefined
 
     for (const distributeData of myDistribute) {
@@ -32,12 +33,12 @@ export const useHistory = () => {
       const cid = ipfs.decodeCID(digest)
       const metadata = metadatas[cid]
       if (!metadata) continue
-      const time = metadata.createAt
+      const time = metadata.createAt * 1000
       const historyRecord: HistoryRecord = {
         distributorAddress: address,
         mint: mint.toBase58(),
         total: total.toString(),
-        time: time ? time.toString() : '',
+        time: time ? time : 0,
         treeData: metadata.data,
       }
 

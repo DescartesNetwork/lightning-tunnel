@@ -7,7 +7,7 @@ const {
 } = configs
 
 export type HistoryRecord = {
-  time: string
+  time: number
   mint: string
   total: string | number
   distributorAddress: string

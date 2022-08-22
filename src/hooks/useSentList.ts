@@ -62,7 +62,7 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
           mint: distributorData.mint.toBase58(),
           total: distributorData.total.toString(),
           time,
-          treeData: merkle.metadata.data,
+          treeData: Buffer.from(merkle.metadata.data),
           remaining,
         }
 

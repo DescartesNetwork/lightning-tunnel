@@ -24,7 +24,7 @@ export type ReceiveItem = {
   children?: ReceiveItem[]
 }
 
-type ReceivedList = Record<string, ReceiveItem>
+export type ReceivedList = Record<string, ReceiveItem>
 
 export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
   const [receivedList, setReceivedList] = useState<ReceivedList>()

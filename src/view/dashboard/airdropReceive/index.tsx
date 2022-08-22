@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useUI } from '@sentre/senhub'
 
-import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
+import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import FilterReceiveList from 'components/filterReceiveList'
-import ListReceiveMobile from 'components/listReceiveMobile'
 import LoadMetadata from '../loadMetadata'
+import FilterReceiveList from 'components/filterHistory/filterReceiveList'
+import ReceivedHistories from 'components/listHistory/listReceiveMobile'
 
 import { State } from '../../../constants'
-import { TypeDistribute } from 'model/main.controller'
-import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
 import { ReceiveItem, useReceivedList } from 'hooks/useReceivedList'
+import { TypeDistribute } from 'model/main.controller'
 
 const DEFAULT_AMOUNT = 4
 
@@ -23,12 +21,7 @@ const AirdropReceive = () => {
     [],
   )
 
-  const {
-    ui: { width },
-  } = useUI()
   const { fetchAirdropStatus } = useStatus()
-
-  const isMobile = width < 768
 
   const loading = useMemo(
     () => (listReceived === undefined ? true : false),
@@ -81,7 +74,7 @@ const AirdropReceive = () => {
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  listReceive={listAirdrop}
+                  receivedList={listAirdrop}
                   onFilter={setFilteredListAirdrop}
                 />
               </Space>
@@ -89,18 +82,9 @@ const AirdropReceive = () => {
           </Row>
         </Col>
         <Col span={24}>
-          {isMobile ? (
-            <ListReceiveMobile
-              listReceive={filteredListAirdrop.slice(0, amountAirdrop)}
-            />
-          ) : (
-            <Table
-              dataSource={filteredListAirdrop.slice(0, amountAirdrop)}
-              pagination={false}
-              columns={COLUMNS_RECEIVE}
-              rowKey={(record) => record.receiptAddress}
-            />
-          )}
+          <ReceivedHistories
+            receivedList={filteredListAirdrop.slice(0, amountAirdrop)}
+          />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
           <Button

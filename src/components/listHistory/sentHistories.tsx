@@ -1,24 +1,25 @@
 import { Fragment } from 'react'
 import moment from 'moment'
+import { useUI } from '@sentre/senhub'
 
-import { Col, Empty, Row, Space, Typography } from 'antd'
-import ExpandCard from 'components/expandCard'
-import RowBetweenNodeTitle from 'components/rowBetweenNodeTitle'
+import { Col, Empty, Row, Space, Table, Typography } from 'antd'
+import ExpandCard from 'components/listHistory/expandCard'
 import RowSpaceBetween from 'components/rowSpaceBetween'
 import { MintAvatar, MintSymbol } from '@sen-use/app'
-import ColumnTotal from './historyColumns/columnTotal'
-import ActionButton from './historyColumns/actionButton'
-import UnlockDateColumn from './historyColumns/unlockDateColumn'
+import ColumnTotal from '../historyColumns/columnTotal'
+import ActionButton from '../historyColumns/actionButton'
+import UnlockDateColumn from '../historyColumns/unlockDateColumn'
 
 import { ItemSent } from 'hooks/useSentList'
+import { HISTORY_COLUMNS } from 'components/historyColumns'
 
-type ListSentMobileProps = { listSent: ItemSent[] }
-const ListSentMobile = ({ listSent }: ListSentMobileProps) => {
-  if (!listSent.length) return <Empty />
+type SentHistoriesMobileProps = { sentList: ItemSent[] }
+const SentHistoriesMobile = ({ sentList }: SentHistoriesMobileProps) => {
+  if (!sentList.length) return <Empty />
 
   return (
     <Fragment>
-      {listSent.map((itemSent, idx) => {
+      {sentList.map((itemSent, idx) => {
         const {
           distributorAddress,
           mint: mintAddress,
@@ -41,8 +42,8 @@ const ListSentMobile = ({ listSent }: ListSentMobileProps) => {
             cardHeader={
               <Row gutter={[12, 12]}>
                 <Col span={24}>
-                  <RowBetweenNodeTitle
-                    title={
+                  <Row align="middle" gutter={[24, 24]}>
+                    <Col flex="auto">
                       <Space>
                         <MintAvatar mintAddress={mintAddress} />
                         <Space size={6}>
@@ -53,13 +54,14 @@ const ListSentMobile = ({ listSent }: ListSentMobileProps) => {
                           <MintSymbol mintAddress={mintAddress} />
                         </Space>
                       </Space>
-                    }
-                  >
-                    <ActionButton
-                      remaining={remaining}
-                      distributorAddress={distributorAddress}
-                    />
-                  </RowBetweenNodeTitle>
+                    </Col>
+                    <Col>
+                      <ActionButton
+                        remaining={remaining}
+                        distributorAddress={distributorAddress}
+                      />
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             }
@@ -90,4 +92,20 @@ const ListSentMobile = ({ listSent }: ListSentMobileProps) => {
   )
 }
 
-export default ListSentMobile
+type SentHistoriesProps = { sentList: ItemSent[] }
+const SentHistories = ({ sentList }: SentHistoriesProps) => {
+  const width = useUI().ui.width
+
+  if (width < 768) return <SentHistoriesMobile sentList={sentList} />
+
+  return (
+    <Table
+      dataSource={sentList}
+      pagination={false}
+      columns={HISTORY_COLUMNS}
+      rowKey={(record) => record.distributorAddress}
+    />
+  )
+}
+
+export default SentHistories

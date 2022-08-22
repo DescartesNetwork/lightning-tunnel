@@ -2,9 +2,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
 
-import { HistoryRecord } from 'helper/history'
 import { AppState } from 'model'
 import { ipfs } from 'model/metadatas.controller'
+
+export type HistoryRecord = {
+  time: number
+  mint: string
+  total: string | number
+  distributorAddress: string
+  treeData: Buffer
+}
 
 export const useHistory = () => {
   const [history, setHistory] = useState<HistoryRecord[]>()
@@ -38,12 +45,12 @@ export const useHistory = () => {
         distributorAddress: address,
         mint: mint.toBase58(),
         total: total.toString(),
-        time: time ? time : 0,
+        time,
         treeData: metadata.data,
       }
-
       listHistory.push(historyRecord)
     }
+
     return setHistory(listHistory)
   }, [distributors, metadatas, walletAddress])
 

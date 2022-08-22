@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { utils, web3 } from '@project-serum/anchor'
+import { net } from '@sentre/senhub'
+
 import moment from 'moment'
 
 import { Typography } from 'antd'
@@ -18,6 +20,7 @@ const ColumnCreatedAt = ({
   )
 
   const fetchFromSolscan = useCallback(async () => {
+    if (net !== 'mainnet') return []
     const treasurerAddress = await configs.sol.utility.deriveTreasurerAddress(
       distributorAddress,
     )
@@ -42,6 +45,8 @@ const ColumnCreatedAt = ({
       return setCreatedAt(transactions[transactions.length - 1].blockTime || 0)
 
     const backupTrans = await fetchFromSolscan()
+    if (!backupTrans.length) return setCreatedAt(0)
+
     return setCreatedAt(backupTrans[backupTrans.length - 1].blockTime || 0)
   }, [distributorAddress, fetchFromSolscan])
 

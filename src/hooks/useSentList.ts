@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { HistoryRecord } from 'helper/history'
 import configs from 'configs'
 import { AppState } from 'model'
 import useListRemaining from 'hooks/useListRemaining'
 
 import { TypeDistribute } from 'model/main.controller'
-import { useHistory } from './useHistory'
+import { useHistory, HistoryRecord } from './useHistory'
 import { useGetMerkle } from './useGetMerkle'
 
 const {

@@ -46,6 +46,7 @@ export const useGetMerkle = () => {
       return {
         root,
         type: parseMerkleType(root),
+        metadata,
       }
     },
     [dispatch],

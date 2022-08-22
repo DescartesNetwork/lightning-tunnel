@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useUI } from '@sentre/senhub'
-import { MerkleDistributor } from '@sentre/utility'
 
 import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -12,19 +11,14 @@ import { State } from '../../../constants'
 import { TypeDistribute } from 'model/main.controller'
 import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
-import configs from 'configs'
 import { ReceiveItem, useReceivedList } from 'hooks/useReceivedList'
 
 const DEFAULT_AMOUNT = 4
 
-const {
-  manifest: { appId },
-} = configs
-
 const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
-  const listReceived = useReceivedList()
+  const listReceived = useReceivedList({ type: TypeDistribute.Airdrop })
   const [filteredListAirdrop, setFilteredListAirdrop] = useState<ReceiveItem[]>(
     [],
   )
@@ -41,26 +35,10 @@ const AirdropReceive = () => {
     [listReceived],
   )
 
-  const receiveList = useMemo(() => {
-    const airdropReceive: ReceiveItem[] = []
-    for (const address in listReceived) {
-      const { recipientData, index } = listReceived[address]
-      const { salt } = recipientData
-      const airdropSalt_v2 = MerkleDistributor.salt(
-        `${appId}/${TypeDistribute.Airdrop}/${index}`,
-      )
-      const airdropSalt_v1 = MerkleDistributor.salt(index.toString())
-      if (
-        Buffer.compare(airdropSalt_v2, salt) === 0 ||
-        Buffer.compare(airdropSalt_v1, salt) === 0
-      )
-        airdropReceive.push(listReceived[address])
-    }
-
-    return airdropReceive
-  }, [listReceived])
-
   const filterAirdrops = useCallback(async () => {
+    if (!listReceived) return
+    const receiveList = Object.values(listReceived)
+
     if (!receiveList.length) return setListAirdrop([])
     let nextAirdrops: ReceiveItem[] = []
     const readyList: ReceiveItem[] = []
@@ -85,7 +63,7 @@ const AirdropReceive = () => {
     )
     nextAirdrops = readyList.concat(otherList)
     return setListAirdrop(nextAirdrops)
-  }, [receiveList, fetchAirdropStatus])
+  }, [fetchAirdropStatus, listReceived])
 
   useEffect(() => {
     filterAirdrops()

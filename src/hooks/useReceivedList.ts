@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
-import { Leaf, MerkleDistributor } from '@sentre/utility'
+import { Leaf } from '@sentre/utility'
 import { isEmpty } from 'lodash'
 
 import { AppState } from 'model'
 import configs from 'configs'
 import { ipfs } from 'model/metadatas.controller'
+import { useGetMerkle } from './useGetMerkle'
+import { TypeDistribute } from 'model/main.controller'
 
 const {
   sol: { utility },
@@ -24,11 +26,12 @@ export type ReceiveItem = {
 
 type ReceivedList = Record<string, ReceiveItem>
 
-export const useReceivedList = () => {
+export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
   const [receivedList, setReceivedList] = useState<ReceivedList>()
   const distributors = useSelector((state: AppState) => state.distributors)
   const metadatas = useSelector((state: AppState) => state.metadatas)
   const walletAddress = useWalletAddress()
+  const getMerkle = useGetMerkle()
 
   const fetchReceivedList = useCallback(async () => {
     if (isEmpty(distributors) || isEmpty(metadatas)) return
@@ -48,10 +51,10 @@ export const useReceivedList = () => {
 
             if (!metadata) return (bulk = bulk ? { ...bulk } : {}) // clone data to avoid undefined
 
-            const merkleDistributor = MerkleDistributor.fromBuffer(
-              Buffer.from(metadata.data),
-            )
-            const recipients = merkleDistributor.receipients
+            const merkle = await getMerkle(address)
+            if (merkle.type !== type) return
+
+            const recipients = merkle.root.receipients
             const mintAddress = mint.toBase58()
             const sender = authority.toBase58()
 
@@ -88,7 +91,7 @@ export const useReceivedList = () => {
       ),
     )
     return setReceivedList(bulk)
-  }, [distributors, metadatas, walletAddress])
+  }, [distributors, getMerkle, metadatas, type, walletAddress])
 
   useEffect(() => {
     fetchReceivedList()

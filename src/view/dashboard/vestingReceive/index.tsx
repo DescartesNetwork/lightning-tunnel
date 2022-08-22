@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import isEqual from 'react-fast-compare'
 import { useUI } from '@sentre/senhub'
-import { MerkleDistributor } from '@sentre/utility'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Space, Table, Typography } from 'antd'
@@ -14,19 +13,13 @@ import { State } from '../../../constants'
 import { COLUMNS_RECEIVE } from '../columns'
 import useStatus from 'hooks/useStatus'
 import { useReceivedList, ReceiveItem } from 'hooks/useReceivedList'
-import configs from 'configs'
 
 const DEFAULT_AMOUNT = 4
-
-const {
-  manifest: { appId },
-} = configs
 
 const VestingReceive = () => {
   const [amountVesting, setAmountVesting] = useState(DEFAULT_AMOUNT)
   const [listVesting, setListVesting] = useState<ReceiveItem[]>([])
-  // const { listReceived } = useSelector((state: AppState) => state.listReceived)
-  const listReceived = useReceivedList()
+  const listReceived = useReceivedList({ type: TypeDistribute.Vesting })
   const [filteredListVesting, setFilteredListVesting] = useState<ReceiveItem[]>(
     [],
   )
@@ -41,15 +34,12 @@ const VestingReceive = () => {
     [listReceived],
   )
 
+  console.log(listReceived, 'listReceived')
+
   const receiveList = useMemo(() => {
     let vestingReceive: ReceiveItem[] = []
     for (const address in listReceived) {
-      const { index, recipientData, children } = listReceived[address]
-      const { salt } = recipientData
-      const vestingSalt = MerkleDistributor.salt(
-        `${appId}/${TypeDistribute.Vesting}/${index}`,
-      )
-      if (Buffer.compare(vestingSalt, salt) !== 0) continue
+      const { children } = listReceived[address]
       if (!children) continue
       vestingReceive = vestingReceive.concat(children)
     }
@@ -88,6 +78,7 @@ const VestingReceive = () => {
     let filteredVesting: ReceiveItem[] = []
     const readyList: ReceiveItem[] = []
     const otherList: ReceiveItem[] = []
+
     for (const vesting of receiveList) {
       const { distributorAddress } = vesting
       if (vestings[distributorAddress]) {
@@ -137,6 +128,8 @@ const VestingReceive = () => {
 
     return setListVesting(filteredVesting)
   }, [fetchAirdropStatus, getIndexPriorityItem, receiveList])
+
+  console.log(listVesting, 'listVesting')
 
   useEffect(() => {
     filterVesting()

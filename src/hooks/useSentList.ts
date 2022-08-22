@@ -84,7 +84,6 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     return () => clearTimeout(timeout)
   }, [fetchHistory])
 
-  console.log('call')
   return {
     listHistory: sentList,
     loading: totalRecipients === undefined,

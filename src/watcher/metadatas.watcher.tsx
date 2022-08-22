@@ -34,7 +34,8 @@ const MetadatasWatcher = () => {
   }, [dispatch, getBackupMetadata])
 
   useEffect(() => {
-    init()
+    const timeout = setTimeout(() => init(), 300)
+    return () => clearTimeout(timeout)
   }, [init])
 
   return <Fragment />

@@ -2,6 +2,7 @@ import { rpc } from '@sentre/senhub'
 import { useCallback } from 'react'
 import { web3 } from '@project-serum/anchor'
 import { SolanaExplorer } from '@sen-use/web3'
+import axios from 'axios'
 
 import configs from 'configs'
 import { ipfs, MetadataState } from 'model/metadatas.controller'
@@ -27,10 +28,18 @@ export const useGetBackupMetadata = () => {
           return new Promise(async (resolve) => {
             // Rove IPFS
             try {
-              fetch(
-                'https://ipfs.rove.to/ipfs/bafybeig5driamixotu35mnjainl5twntjdpj4ff7hl4os3ou4nolhewfdy/file',
-              ).then((data) => data.json().then((val) => resolve(val)))
-            } catch (error) {}
+              const url = `https://ipfs.rove.to/ipfs/${parsed}/file`
+              axios
+                .get(url, {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    accept: 'application/json',
+                  },
+                })
+                .then((data) => resolve(data.data))
+            } catch (error) {
+              // Nothing
+            }
             // Web3 IPFS
             ipfs.methods.backupMetadata
               .get(parsed)

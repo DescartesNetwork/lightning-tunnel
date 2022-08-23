@@ -89,7 +89,9 @@ const ConfirmTransfer = () => {
       })
       const metadata = Buffer.from(digest)
       // Don't need await backupMetadata
-      backupMetadata()
+      try {
+        backupMetadata()
+      } catch (error) {}
 
       const { txId, distributorAddress } = await utility.initializeDistributor({
         tokenAddress: mintSelected,
@@ -101,7 +103,6 @@ const ConfirmTransfer = () => {
       })
 
       setIsDone(true)
-
       notifySuccess('Airdrop', txId)
       return setRedeemLink(
         `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`,

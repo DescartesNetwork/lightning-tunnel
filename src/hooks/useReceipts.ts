@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useDebounce } from 'react-use'
 import { ReceiptData } from '@sentre/utility'
 

@@ -15,8 +15,8 @@ type Unclaimed = {
 
 export const useUnclaimedList = (distributorAddress: string) => {
   const [unclaimed, setUnclaimed] = useState<Unclaimed[]>([])
-  const { mint } = useSelector(
-    (state: AppState) => state.distributors[distributorAddress],
+  const mint = useSelector(
+    (state: AppState) => state.distributors[distributorAddress].mint,
   )
   const receipts = useReceipts({ distributorAddress })
   const getMetaData = useGetMetadata()

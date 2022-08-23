@@ -25,9 +25,9 @@ function parseMerkleType(merkle: MerkleDistributor): TypeDistribute | null {
       if (x1 !== 0 && x2 !== 0) continue
       return type
     }
-    return null
+    return TypeDistribute.Airdrop
   } catch (error) {
-    return null
+    return TypeDistribute.Airdrop
   }
 }
 

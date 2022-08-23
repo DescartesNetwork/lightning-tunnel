@@ -24,7 +24,6 @@ const ActionButton = ({ distributorAddress, remaining }: ActionButtonProps) => {
   )
 
   const redeemLink = `${window.location.origin}/app/${appId}/redeem/${distributorAddress}?autoInstall=true`
-
   return (
     <Space>
       <Button

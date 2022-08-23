@@ -7,9 +7,14 @@ import {
   setExpiration,
   setGlobalUnlockTime,
 } from 'model/recipients.controller'
-import { onSelectedMint, setTGE, setTGETime } from 'model/main.controller'
+import {
+  onSelectedMint,
+  onSelectMethod,
+  setTGE,
+  setTGETime,
+} from 'model/main.controller'
 import { useAppRouter } from 'hooks/useAppRoute'
-import { Step } from '../constants'
+import { Method, Step } from '../constants'
 import { EMPTY_SELECT_VAL } from 'components/selectTokens'
 
 export const useRedirectAndClear = () => {
@@ -18,8 +23,8 @@ export const useRedirectAndClear = () => {
 
   const onPushAndClear = async (url: string) => {
     await dispatch(onSelectStep(Step.SelectMethod))
+    await dispatch(onSelectMethod(Method.manual))
     await dispatch(removeRecipients())
-    await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(setGlobalUnlockTime(0))
     await dispatch(setExpiration(0))
     await dispatch(setTGE(''))

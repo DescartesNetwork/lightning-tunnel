@@ -16,20 +16,9 @@ import IonIcon from '@sentre/antd-ionicon'
 
 import { useAppRouter } from 'hooks/useAppRoute'
 import { AppDispatch } from 'model'
-import {
-  onSelectedMint,
-  onSelectMethod,
-  setTGE,
-  setTypeDistribute,
-} from 'model/main.controller'
-import { onSelectStep } from 'model/steps.controller'
-import {
-  removeRecipients,
-  setExpiration,
-  setGlobalUnlockTime,
-} from 'model/recipients.controller'
-import { Method, Step, SIDE_BAR_ITEMS } from '../../constants'
-import { EMPTY_SELECT_VAL } from 'components/selectTokens'
+import { setTypeDistribute } from 'model/main.controller'
+import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
+import { SIDE_BAR_ITEMS } from '../../constants'
 
 import LOGO from 'static/images/logo.svg'
 
@@ -56,20 +45,14 @@ const URL_GUIDE_LINE = 'https://academy.sentre.io/lightning-tunnel-version-2/'
 const SideBar = () => {
   const [sideBarKey, setSideBarKey] = useState(SIDE_BAR_ITEMS.Dashboard)
   const { pathname } = useLocation()
-  const { appRoute, pushHistory } = useAppRouter()
+  const { appRoute } = useAppRouter()
+  const { onPushAndClear } = useRedirectAndClear()
   const dispatch = useDispatch<AppDispatch>()
 
   const { Content, Footer } = Layout
 
   const onSelect: MenuProps['onClick'] = async (e) => {
-    await dispatch(onSelectStep(Step.SelectMethod))
-    await dispatch(onSelectMethod(Method.manual))
-    await dispatch(removeRecipients())
-    await dispatch(setGlobalUnlockTime(0))
-    await dispatch(setExpiration(0))
-    await dispatch(setTGE(''))
-    await dispatch(onSelectedMint(EMPTY_SELECT_VAL))
-    return pushHistory(`/${e.key}`)
+    return onPushAndClear(`/${e.key}`)
   }
 
   const getDefaultSideBarItem = useCallback(() => {

@@ -47,7 +47,9 @@ const AirdropReceive = () => {
             <Col flex="auto">
               <Space>
                 <Typography.Title level={5}>Airdrop receive</Typography.Title>
-                {filteredListAirdrop.length}
+                <Typography.Text className="amount-airdrop">
+                  {filteredListAirdrop.length}
+                </Typography.Text>
               </Space>
             </Col>
             <Col>

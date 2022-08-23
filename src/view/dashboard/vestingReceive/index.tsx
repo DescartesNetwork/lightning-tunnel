@@ -60,7 +60,6 @@ const VestingReceive = () => {
         ({ distributorAddress }) => distributorAddress === address,
       )
     },
-
     [listReceived],
   )
 
@@ -72,6 +71,8 @@ const VestingReceive = () => {
       const data = getAirdropByAddress(distributorAddress)
       mapVesting.set(distributorAddress, data)
     }
+
+    //Format data by status priority
     mapVesting.forEach(async (value: ReceiveItem[]) => {
       const index = await getIndexPriorityItem(value)
       const parentData = value[index]
@@ -107,7 +108,12 @@ const VestingReceive = () => {
         <Col span={24}>
           <Row>
             <Col flex="auto">
-              <Typography.Title level={5}>Vesting receive</Typography.Title>
+              <Space>
+                <Typography.Title level={5}>Vesting receive</Typography.Title>
+                <Typography.Text className="amount-airdrop">
+                  {filteredListVesting.length}
+                </Typography.Text>
+              </Space>
             </Col>
             <Col>
               <Space>

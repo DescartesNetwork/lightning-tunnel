@@ -2,7 +2,6 @@ import { useState } from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import { util } from '@sentre/senhub'
 
-import { numeric, shortenAddress } from '@sentre/senhub/dist/shared/util'
 import { Button, Col, Row, Space, Tooltip, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
@@ -34,7 +33,7 @@ const MintInfo = ({ mintAddress }: MintInfoProps) => {
           </Typography.Text>
           {balance ? (
             <Typography.Text>
-              {numeric(balance).format('0.0,[0000]')}{' '}
+              {util.numeric(balance).format('0.0,[0000]')}{' '}
               <MintSymbol mintAddress={mintAddress} />
             </Typography.Text>
           ) : (
@@ -49,7 +48,9 @@ const MintInfo = ({ mintAddress }: MintInfoProps) => {
           </Typography.Text>
           {mintAddress !== EMPTY_SELECT_VAL ? (
             <Space>
-              <Typography.Text>{shortenAddress(mintAddress)}</Typography.Text>
+              <Typography.Text>
+                {util.shortenAddress(mintAddress)}
+              </Typography.Text>
               <Tooltip title="Copied" visible={copied}>
                 <CopyToClipboard text={mintAddress}>
                   <Button

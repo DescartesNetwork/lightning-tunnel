@@ -11,6 +11,7 @@ import { MintAvatar, MintSymbol } from '@sen-use/app'
 
 import { ColumnsType } from 'antd/lib/table'
 import { ReceiveItem } from 'hooks/useReceivedList'
+import { FORMAT_DATE } from '../../../constants'
 
 import './index.less'
 
@@ -21,7 +22,7 @@ export const COLUMNS_RECEIVE: ColumnsType<any> = [
     render: ({ startedAt }: Leaf) => (
       <Typography.Text>
         {startedAt.toNumber()
-          ? moment(startedAt.toNumber() * 1000).format('MMM DD, YYYY HH:mm')
+          ? moment(startedAt.toNumber() * 1000).format(FORMAT_DATE)
           : 'Immediately'}
       </Typography.Text>
     ),

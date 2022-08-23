@@ -31,13 +31,6 @@ const SentHistoriesMobile = ({ sentList }: SentHistoriesMobileProps) => {
 
         return (
           <ExpandCard
-            style={{
-              border: '1px solid transparent',
-              borderImageSlice: '0 0 1 0',
-              borderImageWidth: 1,
-              borderImageSource:
-                'linear-gradient(90deg,transparent, #4F5B5C, transparent)',
-            }}
             cardId={`card_airdrop_${distributorAddress}`}
             cardHeader={
               <Row gutter={[12, 12]}>

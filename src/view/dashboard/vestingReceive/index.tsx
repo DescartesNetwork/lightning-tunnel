@@ -4,7 +4,7 @@ import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import LoadMetadata from '../loadMetadata'
 import FilterReceiveList from 'components/filterHistory/filterReceiveList'
-import ReceivedHistories from 'components/listHistory/receivedHistories'
+import ReceivedList from 'components/listHistory/receivedList'
 
 import { State } from '../../../constants'
 import useStatus from 'hooks/useStatus'
@@ -127,7 +127,8 @@ const VestingReceive = () => {
           </Row>
         </Col>
         <Col span={24}>
-          <ReceivedHistories
+          <ReceivedList
+            type={TypeDistribute.Vesting}
             receivedList={sortedVesting.slice(0, amountVesting)}
           />
         </Col>

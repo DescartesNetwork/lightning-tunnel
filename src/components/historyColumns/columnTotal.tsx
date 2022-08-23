@@ -1,7 +1,5 @@
-import { utils } from '@senswap/sen-js'
-import { util, useMintDecimals } from '@sentre/senhub'
-
-import { Typography } from 'antd'
+import { MintAmount } from '@sen-use/app'
+import { BN } from '@project-serum/anchor'
 
 type ColumnTotalProps = {
   total: string
@@ -9,14 +7,7 @@ type ColumnTotalProps = {
 }
 
 const ColumnTotal = ({ total, mintAddress }: ColumnTotalProps) => {
-  const decimal = useMintDecimals({ mintAddress }) || 0
-  return (
-    <Typography.Text>
-      {util
-        .numeric(utils.undecimalize(BigInt(total), decimal))
-        .format('0,0.[0000]')}
-    </Typography.Text>
-  )
+  return <MintAmount amount={new BN(total)} mintAddress={mintAddress} />
 }
 
 export default ColumnTotal

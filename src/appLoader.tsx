@@ -5,6 +5,7 @@ import { rpc, useWalletAddress } from '@sentre/senhub'
 import configs from 'configs'
 import { Utility } from '@sentre/utility'
 import { AppWatcher } from 'watcher'
+import { HistoryWatcher } from 'hooks/useSentList'
 
 const {
   sol: { utilityProgram },
@@ -23,5 +24,10 @@ export const AppLoader: React.FC = ({ children }) => {
   }, [address, loaded])
 
   if (!loaded) return null
-  return <AppWatcher>{children}</AppWatcher>
+  return (
+    <AppWatcher>
+      <HistoryWatcher />
+      {children}
+    </AppWatcher>
+  )
 }

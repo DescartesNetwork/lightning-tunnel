@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { utils, web3 } from '@project-serum/anchor'
 import { net } from '@sentre/senhub'
 
@@ -7,7 +7,8 @@ import moment from 'moment'
 
 import { Typography } from 'antd'
 import configs from 'configs'
-import { AppState } from 'model'
+import { AppDispatch, AppState } from 'model'
+import { ipfs, setMetadata } from 'model/metadatas.controller'
 
 const ColumnCreatedAt = ({
   distributorAddress,
@@ -15,9 +16,10 @@ const ColumnCreatedAt = ({
   distributorAddress: string
 }) => {
   const [createdAt, setCreatedAt] = useState(0)
-  const mint = useSelector(
-    (state: AppState) => state.distributors[distributorAddress].mint,
+  const { mint, metadata: digest } = useSelector(
+    (state: AppState) => state.distributors[distributorAddress],
   )
+  const dispatch = useDispatch<AppDispatch>()
 
   const fetchFromSolscan = useCallback(async () => {
     if (net !== 'mainnet') return []
@@ -42,17 +44,26 @@ const ColumnCreatedAt = ({
       )
 
     if (transactions.length)
-      return setCreatedAt(transactions[transactions.length - 1].blockTime || 0)
+      return setCreatedAt(transactions.pop()?.blockTime || 0)
 
     const backupTrans = await fetchFromSolscan()
     if (!backupTrans.length) return setCreatedAt(0)
-
-    return setCreatedAt(backupTrans[backupTrans.length - 1].blockTime || 0)
+    return setCreatedAt(backupTrans.pop().blockTime || 0)
   }, [distributorAddress, fetchFromSolscan])
+
+  const updateMetadata = useCallback(() => {
+    if (!createdAt) return
+    const cid = ipfs.decodeCID(digest)
+    return dispatch(setMetadata({ createAt: createdAt, cid }))
+  }, [createdAt, digest, dispatch])
 
   useEffect(() => {
     fetchCreatedAt()
   }, [fetchCreatedAt])
+
+  useEffect(() => {
+    updateMetadata()
+  }, [updateMetadata])
 
   return (
     <Typography.Text>

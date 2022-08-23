@@ -6,7 +6,7 @@ import { Typography } from 'antd'
 
 const UnlockDateColumn = ({ treeData }: { treeData?: Buffer }) => {
   const startedAt = useMemo(() => {
-    if (!treeData) return 0
+    if (!treeData || !treeData.length) return 0
     const parseData = JSON.parse(JSON.stringify(treeData)).data
     const merkleDistributor = MerkleDistributor.fromBuffer(
       Buffer.from(parseData || treeData),

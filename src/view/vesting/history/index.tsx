@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Button, Card, Col, Row, Typography } from 'antd'
+import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import FilterSentList from 'components/filterHistory/filterSentList'
 
@@ -21,7 +21,12 @@ const History = () => {
         <Col span={24}>
           <Row>
             <Col flex="auto">
-              <Typography.Title level={5}>History</Typography.Title>
+              <Space>
+                <Typography.Title level={5}>History</Typography.Title>
+                <Typography.Text className="amount-airdrop">
+                  {filteredSentToken.length}
+                </Typography.Text>
+              </Space>
             </Col>
             <Col>
               <FilterSentList

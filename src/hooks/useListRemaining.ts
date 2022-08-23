@@ -1,9 +1,6 @@
-import { web3 } from '@project-serum/anchor'
-
 import { useCallback } from 'react'
-import { Connection } from '@solana/web3.js'
+import { web3 } from '@project-serum/anchor'
 import { getMultipleAccounts } from '@sen-use/web3'
-import { rpc } from '@sentre/senhub'
 
 import configs from 'configs'
 import { DistributorState } from 'model/distributor.controller'
@@ -11,8 +8,6 @@ import { DistributorState } from 'model/distributor.controller'
 const {
   sol: { utility },
 } = configs
-
-const connection = new Connection(rpc)
 
 export const useGetAllRemaining = () => {
   const getAllTokenAccounts = useCallback(
@@ -41,7 +36,7 @@ export const useGetAllRemaining = () => {
       const { splt } = window.sentre
       const listRemaining: Record<string, number> = {}
       const accountInfos = await getMultipleAccounts(
-        connection,
+        splt.connection,
         allTokenAccounts,
       )
       // Parser account data

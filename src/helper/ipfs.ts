@@ -89,7 +89,6 @@ export class IPFS<
     cache = true,
   ): Promise<any> {
     const cid = this.decodeCID(digest)
-
     return DataLoader.load(`ipfs:${cid}`, async () => {
       return new Promise((resolve, reject) => {
         let instance = setTimeout(async () => {
@@ -110,6 +109,7 @@ export class IPFS<
           }
           // API support
           for (const url of CLUSTER) {
+            if (!cid.startsWith('baf')) continue
             try {
               axios
                 .get(url.replace('{CID_STRING}', cid), {

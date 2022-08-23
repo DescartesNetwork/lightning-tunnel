@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useDebounce } from 'react-use'
 import { ReceiptData } from '@sentre/utility'
 
 import configs from 'configs'
@@ -29,10 +30,7 @@ const useReceipts = ({
 
     return setReceipts(bulk)
   }, [distributorAddress])
-
-  useEffect(() => {
-    getReceipts()
-  }, [getReceipts])
+  useDebounce(getReceipts, 1000, [getReceipts])
 
   return receipts
 }

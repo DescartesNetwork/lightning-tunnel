@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import moment from 'moment'
-import { useUI, util } from '@sentre/senhub'
+import { useInfix, Infix, util } from '@sentre/senhub'
 
 import { Col, Empty, Row, Space, Table, Typography } from 'antd'
 import ExpandCard from 'components/listHistory/expandCard'
@@ -108,10 +108,10 @@ const ReceivedHistoriesMobile = ({
 
 type ReceivedHistoriesProps = { receivedList: ReceiveItem[] }
 const ReceivedHistories = ({ receivedList }: ReceivedHistoriesProps) => {
-  const width = useUI().ui.width
+  const infix = useInfix()
+  const isMobile = infix < Infix.md
 
-  if (width < 768)
-    return <ReceivedHistoriesMobile receivedList={receivedList} />
+  if (isMobile) return <ReceivedHistoriesMobile receivedList={receivedList} />
 
   return (
     <Table

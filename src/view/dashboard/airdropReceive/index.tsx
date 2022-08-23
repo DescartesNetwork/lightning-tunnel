@@ -4,7 +4,7 @@ import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import LoadMetadata from '../loadMetadata'
 import FilterReceiveList from 'components/filterHistory/filterReceiveList'
-import ReceivedHistories from 'components/listHistory/listReceiveMobile'
+import ReceivedHistories from 'components/listHistory/receivedHistories'
 
 import { State } from '../../../constants'
 import useStatus from 'hooks/useStatus'

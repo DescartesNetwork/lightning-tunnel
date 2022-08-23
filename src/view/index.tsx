@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
-import { useUI } from '@sentre/senhub'
+import { Infix, useInfix } from '@sentre/senhub'
 
 import { Button, Col, Drawer, Layout, Row } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -21,10 +21,9 @@ const { Content } = Layout
 const View = () => {
   const [visible, setVisible] = useState(false)
   const { appRoute } = useAppRouter()
+  const infix = useInfix()
 
-  const width = useUI().ui.width
-
-  const isMobile = width < 992
+  const isMobile = infix < Infix.lg
   const drawerVisible = isMobile ? visible : true
   const desktopCln = !isMobile ? 'sidebar' : 'sidebar mobile'
   const drawerWidth = isMobile ? 350 : 231

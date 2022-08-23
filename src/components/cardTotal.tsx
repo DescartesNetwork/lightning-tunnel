@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
-import { util, useUI } from '@sentre/senhub'
+import { util, useInfix, Infix } from '@sentre/senhub'
 
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from '@sen-use/app'
@@ -14,11 +14,9 @@ import { TypeDistribute } from 'model/main.controller'
 import { FORMAT_DATE } from '../constants'
 
 const Content = ({ label, value }: { label: string; value: ReactNode }) => {
-  const {
-    ui: { width },
-  } = useUI()
+  const infix = useInfix()
 
-  const isMobile = width < 1200
+  const isMobile = infix < Infix.xl
   return (
     <Row gutter={[4, 4]}>
       <Col

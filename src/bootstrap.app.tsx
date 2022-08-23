@@ -1,6 +1,6 @@
 import { memo, useEffect } from 'react'
 import { Provider } from 'react-redux'
-import { UIProvider, useUI } from '@sentre/senhub'
+import { AntdProvider, useSetBackground } from '@sentre/senhub'
 
 import View from 'view'
 import AnimationBackground from 'components/animationBackground'
@@ -30,7 +30,7 @@ export const Layout = memo(() => {
 })
 
 export const Background = () => {
-  const { setBackground } = useUI()
+  const setBackground = useSetBackground()
 
   useEffect(() => {
     setBackground({ light: BG, dark: BG })
@@ -45,9 +45,9 @@ export const Background = () => {
 
 export const Page = () => {
   return (
-    <UIProvider appId={appId} antd={{ prefixCls: appId }}>
+    <AntdProvider appId={appId} prefixCls={appId}>
       <Background />
-    </UIProvider>
+    </AntdProvider>
   )
 }
 

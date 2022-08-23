@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 import { FeeOptions } from '@sentre/utility'
 import { utilsBN } from '@sen-use/web3'
 import { util, useMintDecimals } from '@sentre/senhub'
-import { shortenAddress } from '@sentre/senhub/dist/shared/util'
 import { CSVLink } from 'react-csv'
 import { BN } from '@project-serum/anchor'
 
@@ -59,7 +58,7 @@ const COLUMN = [
     title: 'WALLET ADDRESS',
     dataIndex: 'authority',
     render: (authority: string) => (
-      <Typography.Text>{shortenAddress(authority)}</Typography.Text>
+      <Typography.Text>{util.shortenAddress(authority)}</Typography.Text>
     ),
   },
   {

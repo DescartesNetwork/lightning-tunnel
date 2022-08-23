@@ -1,20 +1,14 @@
-import { CSSProperties, Fragment, ReactNode, useState } from 'react'
+import { ReactNode, useState } from 'react'
 
-import { Button, Card, Col, Collapse, Row } from 'antd'
+import { Button, Col, Collapse, Row } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 type ExpandCardProps = {
   cardId: string
   children?: ReactNode
-  cardHeader?: ReactNode
-  style?: CSSProperties
+  cardHeader: ReactNode
 }
-const ExpandCard = ({
-  cardId,
-  children = <Fragment />,
-  cardHeader = <Fragment />,
-  style,
-}: ExpandCardProps) => {
+const ExpandCard = ({ cardId, children, cardHeader }: ExpandCardProps) => {
   const [activeKey, setActiveKey] = useState<string | undefined>()
   const iconName = activeKey ? 'chevron-up-outline' : 'chevron-down-outline'
 
@@ -24,22 +18,18 @@ const ExpandCard = ({
   }
 
   return (
-    <Card
-      bordered={false}
-      bodyStyle={{ padding: '16px 0' }}
-      style={{ ...style, background: 'unset', borderRadius: 0 }}
-    >
-      <Row gutter={[16, 16]}>
-        <Col span={24}>{cardHeader}</Col>
-        <Col span={24}>
-          <Row justify="center">
-            <Col span={24} className="expand-card-collapse">
-              <Collapse activeKey={activeKey} bordered={false}>
-                <Collapse.Panel header={false} key={cardId} showArrow={false}>
-                  {children}
-                </Collapse.Panel>
-              </Collapse>
-            </Col>
+    <Row gutter={[16, 16]} className="expand-card">
+      <Col span={24}>{cardHeader}</Col>
+      <Col span={24}>
+        <Row justify="center">
+          <Col span={24} className="expand-card-collapse">
+            <Collapse activeKey={activeKey} bordered={false}>
+              <Collapse.Panel header={false} key={cardId} showArrow={false}>
+                {children}
+              </Collapse.Panel>
+            </Collapse>
+          </Col>
+          {children && (
             <Col>
               <Button
                 type="text"
@@ -48,10 +38,10 @@ const ExpandCard = ({
                 onClick={onActive}
               />
             </Col>
-          </Row>
-        </Col>
-      </Row>
-    </Card>
+          )}
+        </Row>
+      </Col>
+    </Row>
   )
 }
 

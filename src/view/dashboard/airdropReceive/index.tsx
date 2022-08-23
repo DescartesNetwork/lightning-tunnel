@@ -4,7 +4,7 @@ import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import LoadMetadata from '../loadMetadata'
 import FilterReceiveList from 'components/filterHistory/filterReceiveList'
-import ReceivedHistories from 'components/listHistory/receivedHistories'
+import ReceivedList from 'components/listHistory/receivedList'
 
 import { State } from '../../../constants'
 import useStatus from 'hooks/useStatus'
@@ -64,7 +64,8 @@ const AirdropReceive = () => {
           </Row>
         </Col>
         <Col span={24}>
-          <ReceivedHistories
+          <ReceivedList
+            type={TypeDistribute.Airdrop}
             receivedList={sortedData.slice(0, amountAirdrop)}
           />
         </Col>

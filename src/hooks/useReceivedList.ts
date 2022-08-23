@@ -35,7 +35,6 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
 
   const fetchReceivedList = useCallback(async () => {
     if (isEmpty(distributors) || isEmpty(metadatas)) return
-    console.log('11')
 
     const bulk: ReceiveItem[] = []
 

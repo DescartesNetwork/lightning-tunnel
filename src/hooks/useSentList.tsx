@@ -42,7 +42,7 @@ const useGlobalHistory = createGlobalState<{
   listHistory: ItemSent[]
   numberOfRecipient: number
 }>({
-  loading: false,
+  loading: true,
   listHistory: [],
   numberOfRecipient: 0,
 })
@@ -51,65 +51,69 @@ export const HistoryWatcher = () => {
   const distributors = useSelector((state: AppState) => state.distributors)
   const [filteredDistributors, setFilteredDistributors] =
     useState<DistributorState>({})
-  const [globalHistory, setGlobalHistory] = useGlobalHistory()
+  const [, setGlobalHistory] = useGlobalHistory()
   const getAllRemaining = useGetAllRemaining()
   const getMerkle = useGetMerkle()
   const walletAddress = useWalletAddress()
 
   const filterDistributors = useCallback(() => {
     const newDistributorState: DistributorState = {}
-    if (globalHistory.loading) return
     for (const addr in distributors) {
       const distributorData = distributors[addr]
       if (distributorData.authority.toBase58() !== walletAddress) continue
-      if (globalHistory.listHistory.find((e) => e.distributorAddress === addr))
-        continue
       newDistributorState[addr] = distributorData
     }
     if (Object.keys(newDistributorState).length) {
-      setGlobalHistory({ ...globalHistory, loading: true })
-      setFilteredDistributors(newDistributorState)
+      return setFilteredDistributors(newDistributorState)
     }
-  }, [distributors, globalHistory, setGlobalHistory, walletAddress])
+  }, [distributors, walletAddress])
   useDebounce(filterDistributors, 1000, [filterDistributors])
 
   const fetchHistory = useCallback(async () => {
-    if (!Object.keys(filteredDistributors).length) return
+    if (!Object.keys(filteredDistributors).length)
+      return setGlobalHistory({
+        listHistory: [],
+        loading: false,
+        numberOfRecipient: 0,
+      })
+
     let history: ItemSent[] = []
     const mapReceiptAuth = new Map<string, boolean>()
     const allRemaining = await getAllRemaining(filteredDistributors)
+
     await Promise.all(
       Object.keys(filteredDistributors).map(async (distributor, index) => {
-        const distributorData = filteredDistributors[distributor]
-        // Filter own distributorData
-        if (distributorData.authority.toBase58() !== walletAddress) return
-        // Filter distributor type
-        const merkle = await getMerkle(distributor)
-        if (!merkle.type) return
-        // Count total recipients
-        for (const { authority } of merkle.root.receipients) {
-          if (!mapReceiptAuth.has(authority.toBase58()))
-            mapReceiptAuth.set(authority.toBase58(), true)
-        }
-        // Build another data
-        const remaining = allRemaining[index].amount
+        try {
+          const distributorData = filteredDistributors[distributor]
+          // Filter distributor type
+          var merkle = await getMerkle(distributor)
+          // Count total recipients
+          for (const { authority } of merkle.root.receipients) {
+            if (!mapReceiptAuth.has(authority.toBase58()))
+              mapReceiptAuth.set(authority.toBase58(), true)
+          }
+          // Build another data
+          const remaining = allRemaining[index].amount
 
-        const itemSent: ItemSent = {
-          distributorAddress: distributor,
-          mint: distributorData.mint.toBase58(),
-          total: distributorData.total.toString(),
-          time: merkle.metadata.createAt * 1000,
-          treeData: Buffer.from(merkle.metadata.data),
-          remaining,
-          type: merkle.type,
-        }
+          const itemSent: ItemSent = {
+            distributorAddress: distributor,
+            mint: distributorData.mint.toBase58(),
+            total: distributorData.total.toString(),
+            time: merkle.metadata.createAt * 1000,
+            treeData: Buffer.from(merkle.metadata.data),
+            remaining,
+            type: merkle.type,
+          }
 
-        history.push(itemSent)
+          history.push(itemSent)
+        } catch (error) {
+          console.error('error history', error)
+        }
       }),
     )
 
     history = history.sort((a, b) => {
-      if (a.time > b.time || !b.time) return -1
+      if (a.time > b.time) return -1
       return 0
     })
 
@@ -118,14 +122,8 @@ export const HistoryWatcher = () => {
       loading: false,
       numberOfRecipient: mapReceiptAuth.size,
     })
-  }, [
-    filteredDistributors,
-    getAllRemaining,
-    getMerkle,
-    setGlobalHistory,
-    walletAddress,
-  ])
-  useDebounce(fetchHistory, 300, [fetchHistory])
+  }, [filteredDistributors, getAllRemaining, getMerkle, setGlobalHistory])
+  useDebounce(fetchHistory, 1000, [fetchHistory])
 
   return <Fragment />
 }

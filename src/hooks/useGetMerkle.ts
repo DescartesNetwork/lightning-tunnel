@@ -12,7 +12,7 @@ const {
   manifest: { appId },
 } = configs
 
-function parseMerkleType(merkle: MerkleDistributor): TypeDistribute | null {
+function parseMerkleType(merkle: MerkleDistributor): TypeDistribute {
   try {
     const types = [TypeDistribute.Airdrop, TypeDistribute.Vesting]
     for (const type of types) {

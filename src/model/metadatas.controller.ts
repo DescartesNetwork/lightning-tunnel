@@ -44,12 +44,15 @@ export const getMetaData = createAsyncThunk<
   // Check metadata cache
   const { metadatas } = getState()
   const cache = metadatas[cid]
+
   if (cache) return { [cid]: cache }
   // Fetch metadata
   let metadata: MetaData = Buffer.from([]) as any
   try {
     metadata = await ipfs.methods.metadata.get(cid)
-  } catch (error) {}
+  } catch (error) {
+    metadata = Buffer.from([]) as any
+  }
 
   // Convert from version 1 to version 2
   if (metadata.checked === undefined || metadata.createAt === undefined) {

@@ -124,10 +124,11 @@ export class IPFS<
             } catch (error) {}
           }
           // Web3 store get
-          const re = await this.provider.get(cid)
-          const file = ((await re?.files()) || [])[0]
-          const reader = new FileReader()
           try {
+            const re = await this.provider.get(cid)
+            const file = ((await re?.files()) || [])[0]
+            const reader = new FileReader()
+
             if (!file) throw new Error('Cannot read empty file')
             reader.onload = async () => {
               const contents = reader.result?.toString()

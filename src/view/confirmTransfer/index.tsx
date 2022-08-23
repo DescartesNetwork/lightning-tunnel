@@ -20,7 +20,7 @@ import { toUnitTime, notifySuccess } from 'helper'
 import { RecipientInfo } from 'model/recipients.controller'
 import configs from 'configs'
 import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
-import { ipfs } from 'model/metadatas.controller'
+import { getMetaData, ipfs } from 'model/metadatas.controller'
 import { useBackupMetadata } from 'hooks/metadata/useBackupMetadata'
 
 const {
@@ -87,9 +87,11 @@ const ConfirmTransfer = () => {
         createAt: Math.floor(Date.now() / 1000),
         data: treeData,
       })
+
       const metadata = Buffer.from(digest)
       // Don't need await backupMetadata
       try {
+        await dispatch(getMetaData({ cid: ipfs.decodeCID(digest) }))
         backupMetadata()
       } catch (error) {}
 

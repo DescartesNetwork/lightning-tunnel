@@ -2,15 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
 
-import configs from 'configs'
 import { AppState } from 'model'
-import { useListRemaining } from 'hooks/useListRemaining'
+import { useGetAllRemaining } from 'hooks/useListRemaining'
 import { TypeDistribute } from 'model/main.controller'
 import { useGetMerkle } from './useGetMerkle'
-
-const {
-  sol: { utility },
-} = configs
 
 export type ItemSent = {
   remaining: number
@@ -23,19 +18,26 @@ export type ItemSent = {
 
 const useSentList = ({ type }: { type: TypeDistribute }) => {
   const distributors = useSelector((state: AppState) => state.distributors)
-  const [sentList, setSentList] = useState<ItemSent[]>([])
-  const [totalRecipients, setTotalRecipients] = useState<number>()
-  const { listRemaining } = useListRemaining()
+  const [sentList, setSentList] = useState<{
+    loading: boolean
+    listHistory: ItemSent[]
+    numberOfRecipient: number
+  }>({
+    loading: true,
+    listHistory: [],
+    numberOfRecipient: 0,
+  })
 
+  const getAllRemaining = useGetAllRemaining()
   const getMerkle = useGetMerkle()
   const walletAddress = useWalletAddress()
 
   const fetchHistory = useCallback(async () => {
     let history: ItemSent[] = []
     const mapReceiptAuth = new Map<string, boolean>()
-
+    const allRemaining = await getAllRemaining(distributors)
     await Promise.all(
-      Object.keys(distributors).map(async (distributor) => {
+      Object.keys(distributors).map(async (distributor, index) => {
         const distributorData = distributors[distributor]
         // Filter own distributorData
         if (distributorData.authority.toBase58() !== walletAddress) return
@@ -48,18 +50,13 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
             mapReceiptAuth.set(authority.toBase58(), true)
         }
         // Build another data
-        const treasurerAddress = await utility.deriveTreasurerAddress(
-          distributor,
-        )
-
-        const remaining = listRemaining[treasurerAddress]
-        const time = merkle.metadata.createAt * 1000
+        const remaining = allRemaining[index].amount
 
         const itemSent: ItemSent = {
           distributorAddress: distributor,
           mint: distributorData.mint.toBase58(),
           total: distributorData.total.toString(),
-          time,
+          time: merkle.metadata.createAt * 1000,
           treeData: Buffer.from(merkle.metadata.data),
           remaining,
         }
@@ -69,24 +66,23 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
     )
 
     history = history.sort((a, b) => {
-      if (a.time > b.time) return -1
+      if (a.time > b.time || !b.time) return -1
       return 0
     })
 
-    setTotalRecipients(mapReceiptAuth.size)
-    return setSentList(history)
-  }, [distributors, getMerkle, listRemaining, type, walletAddress])
+    return setSentList({
+      listHistory: history,
+      loading: false,
+      numberOfRecipient: mapReceiptAuth.size,
+    })
+  }, [distributors, getAllRemaining, getMerkle, type, walletAddress])
 
   useEffect(() => {
-    const timeout = setTimeout(() => fetchHistory(), 500)
+    const timeout = setTimeout(() => fetchHistory(), 1000)
     return () => clearTimeout(timeout)
   }, [fetchHistory])
 
-  return {
-    listHistory: sentList,
-    loading: totalRecipients === undefined,
-    numberOfRecipient: totalRecipients || 0,
-  }
+  return sentList
 }
 
 export default useSentList

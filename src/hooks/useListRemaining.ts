@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { Connection, PublicKey } from '@solana/web3.js'
+import { web3 } from '@project-serum/anchor'
+
+import { useCallback } from 'react'
+import { Connection } from '@solana/web3.js'
 import { getMultipleAccounts } from '@sen-use/web3'
 import { rpc } from '@sentre/senhub'
 
 import configs from 'configs'
-import { AppState } from 'model'
-import { account } from '@senswap/sen-js'
+import { DistributorState } from 'model/distributor.controller'
 
 const {
   sol: { utility },
@@ -14,55 +14,57 @@ const {
 
 const connection = new Connection(rpc)
 
-export const useListRemaining = () => {
-  const [associatedAddresses, setAssociatedAddresses] = useState<
-    Record<string, PublicKey>
-  >({})
-  const [listRemaining, setListRemaining] = useState<Record<string, number>>({})
-  const distributors = useSelector((state: AppState) => state.distributors)
-
-  const fetchListTreasuryAssociated = useCallback(async () => {
-    const { splt } = window.sentre
-    const bulk: Record<string, PublicKey> = {}
-    for (const address in distributors) {
-      if (!distributors[address]) continue
-      const { mint } = distributors[address]
-      const treasurerAddress = await utility.deriveTreasurerAddress(address)
-      const associatedAddress = await splt.deriveAssociatedAddress(
-        treasurerAddress,
-        mint.toBase58(),
+export const useGetAllRemaining = () => {
+  const getAllTokenAccounts = useCallback(
+    async (distributors: DistributorState) => {
+      const { splt } = window.sentre
+      return Promise.all(
+        Object.keys(distributors).map(async (address) => {
+          const { mint } = distributors[address]
+          const treasurerAddress = await utility.deriveTreasurerAddress(address)
+          const associatedAddress = await splt.deriveAssociatedAddress(
+            treasurerAddress,
+            mint.toBase58(),
+          )
+          return new web3.PublicKey(associatedAddress)
+        }),
       )
-      bulk[treasurerAddress] = account.fromAddress(associatedAddress)
-    }
-    return setAssociatedAddresses(bulk)
-  }, [distributors])
+    },
+    [],
+  )
 
-  const getAllRemaining = useCallback(async () => {
-    if (!Object.values(associatedAddresses).length) return
-    const { splt } = window.sentre
-    const listRemaining: Record<string, number> = {}
-    const accountInfos = await getMultipleAccounts(
-      connection,
-      Object.values(associatedAddresses),
-    )
-    for (const accountInfo of accountInfos) {
-      if (!accountInfo) continue
-      const { amount, owner } = await splt.parseAccountData(
-        accountInfo.account.data,
+  const getAllRemaining = useCallback(
+    async (distributors: DistributorState) => {
+      const allTokenAccounts = await getAllTokenAccounts(distributors)
+      if (!Object.values(allTokenAccounts).length) return []
+      // Fetch account data
+      const { splt } = window.sentre
+      const listRemaining: Record<string, number> = {}
+      const accountInfos = await getMultipleAccounts(
+        connection,
+        allTokenAccounts,
       )
-      listRemaining[owner] = Number(amount)
-    }
+      // Parser account data
+      for (const accountInfo of accountInfos) {
+        if (!accountInfo) continue
+        const { amount, owner } = await splt.parseAccountData(
+          accountInfo.account.data,
+        )
+        listRemaining[owner] = Number(amount)
+      }
+      // Build result
+      return Promise.all(
+        accountInfos.map(async (accountInfo) => {
+          if (!accountInfo) return { amount: 0 }
+          const { amount } = await splt.parseAccountData(
+            accountInfo.account.data,
+          )
+          return { amount: Number(amount.toString()) }
+        }),
+      )
+    },
+    [getAllTokenAccounts],
+  )
 
-    return setListRemaining(listRemaining)
-  }, [associatedAddresses])
-
-  useEffect(() => {
-    fetchListTreasuryAssociated()
-  }, [fetchListTreasuryAssociated])
-
-  useEffect(() => {
-    getAllRemaining()
-  }, [getAllRemaining])
-
-  return { listRemaining }
+  return getAllRemaining
 }

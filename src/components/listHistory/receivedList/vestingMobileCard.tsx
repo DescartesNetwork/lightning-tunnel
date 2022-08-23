@@ -27,7 +27,7 @@ const VestingMobileCard = ({ receiveItem }: VestingMobileCardProps) => {
     <ExpandCard
       cardId={receiptAddress}
       cardHeader={
-        <Row gutter={[12, 12]}>
+        <Row gutter={[8, 8]}>
           <Col span={24}>
             <Row align="middle" gutter={[24, 24]}>
               <Col flex="auto">
@@ -75,7 +75,7 @@ const VestingMobileCard = ({ receiveItem }: VestingMobileCardProps) => {
       }
       key={receiptAddress}
     >
-      <Row gutter={[12, 12]}>
+      <Row gutter={[8, 8]}>
         {children?.map((receiveItem) => (
           <Col span={24} key={receiveItem.receiptAddress}>
             <ExpandBody receiveItem={receiveItem} />

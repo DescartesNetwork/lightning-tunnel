@@ -28,7 +28,7 @@ const AirdropMobileCard = ({ receiveItem }: AirdropMobileCardProps) => {
     <ExpandCard
       cardId={receiptAddress}
       cardHeader={
-        <Row gutter={[12, 12]}>
+        <Row gutter={[8, 8]}>
           <Col span={24}>
             <Row align="middle" gutter={[24, 24]}>
               <Col flex="auto">

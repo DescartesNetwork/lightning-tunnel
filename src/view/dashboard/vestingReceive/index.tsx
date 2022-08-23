@@ -65,15 +65,13 @@ const VestingReceive = () => {
   )
 
   const formatData = useCallback(async () => {
-    if (!listReceived) return
+    if (!listReceived) return setListVesting([])
     const nextListReceived: ReceiveItem[] = []
     const mapVesting = new Map<string, ReceiveItem[]>()
     for (const { distributorAddress } of listReceived) {
       const data = getAirdropByAddress(distributorAddress)
       mapVesting.set(distributorAddress, data)
     }
-
-    //Format data by status priority
     mapVesting.forEach(async (value: ReceiveItem[]) => {
       const index = await getIndexPriorityItem(value)
       const parentData = value[index]
@@ -82,10 +80,11 @@ const VestingReceive = () => {
       nextListReceived.push(receiveRecord)
     })
 
+    await Promise.all(nextListReceived)
     return setListVesting(nextListReceived)
   }, [getAirdropByAddress, getIndexPriorityItem, listReceived])
 
-  const sortedData = listVesting.sort((a, b) => {
+  const sortedVesting = filteredListVesting.sort((a, b) => {
     const { distributorAddress, receiptAddress, recipientData } = a
     const status = fetchAirdropStatus({
       distributor: distributorAddress,
@@ -93,7 +92,6 @@ const VestingReceive = () => {
       startedAt: recipientData.startedAt.toNumber(),
     })
 
-    console.log(status, 'status')
     if (status === State.ready) return -1
 
     return 0
@@ -115,7 +113,7 @@ const VestingReceive = () => {
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  receivedList={sortedData}
+                  receivedList={listVesting}
                   onFilter={setFilteredListVesting}
                 />
               </Space>
@@ -124,7 +122,7 @@ const VestingReceive = () => {
         </Col>
         <Col span={24}>
           <ReceivedHistories
-            receivedList={sortedData.slice(0, amountVesting)}
+            receivedList={sortedVesting.slice(0, amountVesting)}
           />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
@@ -132,7 +130,7 @@ const VestingReceive = () => {
             onClick={() => setAmountVesting(amountVesting + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountVesting >= sortedData.length}
+            disabled={amountVesting >= sortedVesting.length}
           >
             VIEW MORE
           </Button>

@@ -21,6 +21,7 @@ import { RecipientInfo } from 'model/recipients.controller'
 import configs from 'configs'
 import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
 import { ipfs } from 'model/metadatas.controller'
+import { useBackupMetadata } from 'hooks/metadata/useBackupMetadata'
 
 const {
   sol: { utility, fee, taxman },
@@ -41,6 +42,7 @@ const ConfirmTransfer = () => {
   const { total } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
   const { onPushAndClear } = useRedirectAndClear()
+  const backupMetadata = useBackupMetadata()
 
   const treeData = useMemo(() => {
     if (!recipientInfos || !mintDecimals) return
@@ -85,8 +87,9 @@ const ConfirmTransfer = () => {
         createAt: Math.floor(Date.now() / 1000),
         data: treeData,
       })
-
       const metadata = Buffer.from(digest)
+      // Don't need await backupMetadata
+      backupMetadata()
 
       const { txId, distributorAddress } = await utility.initializeDistributor({
         tokenAddress: mintSelected,

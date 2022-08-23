@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { Button, Card, Col, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -15,12 +15,10 @@ const DEFAULT_AMOUNT = 4
 
 const AirdropReceive = () => {
   const [amountAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-  const [listAirdrop, setListAirdrop] = useState<ReceiveItem[]>([])
   const listReceived = useReceivedList({ type: TypeDistribute.Airdrop })
   const [filteredListAirdrop, setFilteredListAirdrop] = useState<ReceiveItem[]>(
     [],
   )
-
   const { fetchAirdropStatus } = useStatus()
 
   const loading = useMemo(
@@ -28,39 +26,18 @@ const AirdropReceive = () => {
     [listReceived],
   )
 
-  const filterAirdrops = useCallback(async () => {
-    if (!listReceived) return
-    const receiveList = Object.values(listReceived)
+  const sortedData = filteredListAirdrop.sort((a, b) => {
+    const { distributorAddress, receiptAddress, recipientData } = a
+    const status = fetchAirdropStatus({
+      distributor: distributorAddress,
+      receipt: receiptAddress,
+      startedAt: recipientData.startedAt.toNumber(),
+    })
 
-    if (!receiveList.length) return setListAirdrop([])
-    let nextAirdrops: ReceiveItem[] = []
-    const readyList: ReceiveItem[] = []
-    const otherList: ReceiveItem[] = []
-    for (const airdrop of receiveList) {
-      const { receiptAddress, distributorAddress, recipientData } = airdrop
-      const { startedAt } = recipientData
-      const status = await fetchAirdropStatus({
-        distributor: distributorAddress,
-        receipt: receiptAddress,
-        startedAt: startedAt.toNumber(),
-      })
-      if (status === State.ready) {
-        readyList.push(airdrop)
-        continue
-      }
-      otherList.push(airdrop)
-    }
-    readyList.sort(
-      (a, b) =>
-        Number(b.recipientData.startedAt) - Number(a.recipientData.startedAt),
-    )
-    nextAirdrops = readyList.concat(otherList)
-    return setListAirdrop(nextAirdrops)
-  }, [fetchAirdropStatus, listReceived])
+    if (status === State.ready) return -1
 
-  useEffect(() => {
-    filterAirdrops()
-  }, [filterAirdrops])
+    return 0
+  })
 
   return (
     <Card loading={loading} className="card-lightning">
@@ -68,13 +45,16 @@ const AirdropReceive = () => {
         <Col span={24}>
           <Row>
             <Col flex="auto">
-              <Typography.Title level={5}>Airdrop receive</Typography.Title>
+              <Space>
+                <Typography.Title level={5}>Airdrop receive</Typography.Title>
+                {filteredListAirdrop.length}
+              </Space>
             </Col>
             <Col>
               <Space>
                 <LoadMetadata />
                 <FilterReceiveList
-                  receivedList={listAirdrop}
+                  receivedList={listReceived || []}
                   onFilter={setFilteredListAirdrop}
                 />
               </Space>
@@ -83,7 +63,7 @@ const AirdropReceive = () => {
         </Col>
         <Col span={24}>
           <ReceivedHistories
-            receivedList={filteredListAirdrop.slice(0, amountAirdrop)}
+            receivedList={sortedData.slice(0, amountAirdrop)}
           />
         </Col>
         <Col span={24} style={{ textAlign: 'center' }}>
@@ -91,7 +71,7 @@ const AirdropReceive = () => {
             onClick={() => setAmountAirdrop(amountAirdrop + DEFAULT_AMOUNT)}
             type="ghost"
             icon={<IonIcon name="arrow-down-outline" />}
-            disabled={amountAirdrop >= filteredListAirdrop.length}
+            disabled={amountAirdrop >= sortedData.length}
           >
             VIEW MORE
           </Button>

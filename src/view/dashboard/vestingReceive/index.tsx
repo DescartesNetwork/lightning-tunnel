@@ -93,7 +93,6 @@ const VestingReceive = () => {
       startedAt: recipientData.startedAt.toNumber(),
     })
 
-    console.log(status, 'status')
     if (status === State.ready) return -1
 
     return 0

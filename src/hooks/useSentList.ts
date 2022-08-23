@@ -35,12 +35,20 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
   const fetchHistory = useCallback(async () => {
     let history: ItemSent[] = []
     const mapReceiptAuth = new Map<string, boolean>()
-    const allRemaining = await getAllRemaining(distributors)
+    const ownDistributorAddress: string[] = []
+
+    for (const address in distributors) {
+      const { authority } = distributors[address]
+      if (authority.toBase58() !== walletAddress) continue
+      ownDistributorAddress.push(address)
+    }
+
+    const allRemaining = await getAllRemaining(ownDistributorAddress)
+
     await Promise.all(
-      Object.keys(distributors).map(async (distributor, index) => {
+      ownDistributorAddress.map(async (distributor, index) => {
         const distributorData = distributors[distributor]
-        // Filter own distributorData
-        if (distributorData.authority.toBase58() !== walletAddress) return
+
         // Filter distributor type
         const merkle = await getMerkle(distributor)
         if (merkle.type !== type) return
@@ -49,9 +57,9 @@ const useSentList = ({ type }: { type: TypeDistribute }) => {
           if (!mapReceiptAuth.has(authority.toBase58()))
             mapReceiptAuth.set(authority.toBase58(), true)
         }
+
         // Build another data
         const remaining = allRemaining[index].amount
-
         const itemSent: ItemSent = {
           distributorAddress: distributor,
           mint: distributorData.mint.toBase58(),

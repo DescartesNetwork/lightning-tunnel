@@ -88,6 +88,19 @@ export const getMetadatas = createAsyncThunk<
   return metadatas
 })
 
+export const setMetadata = createAsyncThunk<
+  MetadataState,
+  { createAt: number; cid: string },
+  { state: any }
+>(`${NAME}/setMetadata`, async ({ cid, createAt }, { getState }) => {
+  const { metadatas } = getState()
+  const nextMetadatas = { ...metadatas }
+
+  nextMetadatas[cid] = { ...nextMetadatas[cid], checked: true, createAt }
+
+  return nextMetadatas
+})
+
 /**
  * Usual procedure
  */
@@ -104,6 +117,10 @@ const slice = createSlice({
       )
       .addCase(
         initMetadatas.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setMetadata.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useWalletAddress } from '@sentre/senhub'
 import { Leaf } from '@sentre/utility'
-import { isEmpty } from 'lodash'
 
 import { AppState } from 'model'
 import configs from 'configs'
@@ -34,7 +33,8 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
   const getMerkle = useGetMerkle()
 
   const fetchReceivedList = useCallback(async () => {
-    if (isEmpty(distributors) || isEmpty(metadatas)) return
+    if (!Object.keys(distributors).length || !Object.keys(metadatas).length)
+      return
 
     const bulk: ReceiveItem[] = []
 

@@ -1,6 +1,5 @@
 import { Fragment } from 'react'
 import { useSelector } from 'react-redux'
-import { isEmpty } from 'lodash'
 
 import Loading from 'components/loading'
 import DistributorWatcher from './distributor.watcher'
@@ -11,7 +10,8 @@ import { AppState } from 'model'
 
 export const AppWatcher: React.FC = ({ children }) => {
   const { distributors, metadatas } = useSelector((state: AppState) => state)
-  const isLoading = isEmpty(distributors) || isEmpty(metadatas)
+  const isLoading =
+    !Object.keys(distributors).length || !Object.keys(metadatas).length
 
   return (
     <Fragment>

@@ -1,12 +1,12 @@
 import { useInfix, Infix } from '@sentre/senhub'
 
 import { Col, Empty, Row, Table } from 'antd'
+import AirdropMobileCard from './airdropMobileCard'
+import VestingMobileCard from './vestingMobileCard'
 
 import { ReceiveItem } from 'hooks/useReceivedList'
 import { TypeDistribute } from 'model/main.controller'
 import { COLUMNS_RECEIVE } from 'view/dashboard/columns'
-import AirdropMobileCard from './airdropMobileCard'
-import VestingMobileCard from './vestingMobileCard'
 
 type ReceivedListProps = { receivedList: ReceiveItem[]; type: TypeDistribute }
 const ReceivedList = ({ receivedList, type }: ReceivedListProps) => {

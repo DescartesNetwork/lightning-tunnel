@@ -11,6 +11,7 @@ import Vesting from './vesting'
 import Airdrop from './airdrop'
 import AddNewAirdrop from './airdrop/addNewAirdrop'
 import AddNewVesting from './vesting/addNewVesting'
+import Statistics from './statistics'
 
 import { useAppRouter } from 'hooks/useAppRoute'
 
@@ -68,6 +69,11 @@ const View = () => {
                   exact
                   path={`${appRoute}/redeem/:distributorAddress`}
                   component={Redeem}
+                />
+                <Route
+                  exact
+                  path={`${appRoute}/statistics`}
+                  component={Statistics}
                 />
                 <Redirect from={appRoute} to={`${appRoute}/dashboard`} />
               </Switch>

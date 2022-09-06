@@ -12,7 +12,7 @@
     "@senswap/sen-js": "^1.4.0",
     "@sentre/antd-ionicon": "^1.0.31",
     "@sentre/antd-numeric-input": "^1.0.25",
-    "@sentre/senhub": "^3.2.17",
+    "@sentre/senhub": "^3.2.23",
     "@sentre/utility": "^1.0.3",
     "antd": "^4.20.2",
     "echarts": "^5.3.3",
@@ -32,7 +32,7 @@
     "web3.storage": "4.2.0"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "REACT_APP_HMR=$PWD/src/bootstrap.app.tsx craco start",
     "build": "npm run build:production",
     "build:production": "craco build",
     "build:staging": "env-cmd -f .env.staging craco build",

@@ -1,0 +1,206 @@
+.main-layout {
+  min-height: calc(100vh - 66px) !important;
+  padding: 0;
+  position: relative;
+  margin-top: -24px;
+  z-index: 9;
+  .lightning_tunnel-layout-content {
+    padding: 51px 16px 24px 245px !important;
+    @media (max-width: 992px) {
+      padding: 51px 12px 12px !important;
+    }
+  }
+}
+.sidebar {
+  top: 64px !important;
+  height: calc(100% + 26px) !important;
+  &.mobile {
+    top: 0 !important;
+    height: 100% !important;
+    .lightning_tunnel-drawer-content {
+      backdrop-filter: blur(8px);
+      padding-top: 64px;
+      @media (max-width: 992px) {
+        padding-top: 0 !important;
+      }
+    }
+  }
+}
+.sidebar-layout {
+  height: calc(100vh - 66px) !important;
+  @media (max-width: 992px) {
+    height: 100vh !important;
+  }
+}
+.sidebar_footer {
+  padding: 16px !important;
+  background: transparent !important;
+}
+.lightning_tunnel-drawer-content-wrapper {
+  box-shadow: unset !important;
+  .lightning_tunnel-drawer-header {
+    display: none !important;
+  }
+  .lightning_tunnel-drawer-content {
+    background-color: rgba(35, 51, 51, 0.4) !important;
+  }
+  .lightning_tunnel-drawer-body {
+    padding: 0 !important;
+    .sidebar-content {
+      background: transparent !important;
+      border: none !important;
+      .lightning_tunnel-menu-item {
+        height: auto !important;
+        padding: 16px !important;
+        line-height: 0 !important;
+        margin-top: 0 !important;
+        display: flex !important;
+        align-items: center;
+        &-selected {
+          background-color: transparent !important;
+          border-left: solid 3px;
+        }
+      }
+    }
+  }
+}
+
+//Table
+.lightning_tunnel-table {
+  background: transparent !important;
+  &-thead {
+    & > tr > th {
+      border-bottom: solid 1px #4f5b5c !important;
+      &::before {
+        display: none;
+      }
+      background-color: #233333 !important;
+    }
+
+    th {
+      font-size: 12px;
+      line-height: 20px;
+      font-weight: 400 !important;
+      color: #a7adad !important;
+    }
+  }
+  &-tbody {
+    & > tr > td {
+      .action-icon {
+        font-size: 24px;
+      }
+      background-color: transparent !important;
+      border-color: #4f5b5c !important;
+
+      .lightning_tunnel-table-row-indent
+        + .lightning_tunnel-table-row-expand-icon {
+        background-color: rgba(35, 51, 51, 0.6) !important;
+        border-radius: 4px !important;
+      }
+    }
+
+    & > tr.lightning_tunnel-table-row-level-0:hover > td {
+      background-color: unset !important;
+    }
+  }
+}
+
+// Expend Card
+.expand-card {
+  border: 1px solid transparent;
+  border-image-slice: 0 0 1 0;
+  border-image-width: 1;
+  border-image-source: linear-gradient(
+    90deg,
+    transparent,
+    #4f5b5c,
+    transparent
+  );
+}
+
+.expand-card-collapse {
+  .lightning_tunnel-collapse-header {
+    padding: 0 !important;
+    border: none !important;
+  }
+  .lightning_tunnel-collapse-item {
+    border: none !important;
+  }
+  .lightning_tunnel-collapse-content-box {
+    padding: 0 !important;
+  }
+  & *:not(button) {
+    background-color: transparent !important;
+  }
+}
+
+// Btn sidebar in mobile
+.btn-sidebar {
+  position: fixed !important;
+  width: 44px !important;
+  height: 44px !important;
+  background: #233333 !important;
+  border: none !important;
+  bottom: 24px;
+  z-index: 99;
+}
+
+.lightning_tunnel-btn-text[disabled] {
+  color: #7b8485 !important;
+}
+
+.overview-data {
+  border-left: solid 1px #4f5b5c;
+  padding-left: 24px !important;
+  @media (max-width: 1200px) {
+    border-top: solid 1px #4f5b5c;
+    border-left: none;
+    padding-top: 8px !important;
+    padding-left: 0 !important;
+  }
+}
+
+// Select existed mint token
+.select-existed-token {
+  .lightning_tunnel-select-selector {
+    background-color: transparent !important;
+    height: 32px !important;
+    padding: 0 12px !important;
+    .lightning_tunnel-select-selection-item {
+      line-height: 30px !important;
+    }
+  }
+}
+// filter
+.filter-lighning-radio-btn {
+  width: 100%;
+  .lightning_tunnel-radio-button-wrapper {
+    width: 100%;
+    text-align: center;
+    background: transparent !important;
+  }
+}
+
+//switch
+.lightning_tunnel-switch {
+  &-checked {
+    background: #42e6eb !important;
+
+    .lightning_tunnel-switch-handle {
+      &::before {
+        background-color: #233333 !important;
+      }
+    }
+  }
+  .lightning_tunnel-switch-handle {
+    &::before {
+      background-color: #233333 !important;
+    }
+  }
+}
+
+//common
+.amount-airdrop {
+  padding: 2px 7px;
+  border: solid 1px #f4f5f5 !important;
+}

@@ -55,7 +55,7 @@ const View = () => {
           <Button
             shape="circle"
             className="btn-sidebar"
-            icon={<IonIcon name={visible ? 'close-outline' : 'menu-outline'} />}
+            icon={<IonIcon name="menu-outline" />}
             onClick={() => setVisible(!visible)}
           />
         )}

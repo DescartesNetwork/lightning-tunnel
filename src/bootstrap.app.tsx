@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Provider } from 'react-redux'
 import { AntdProvider, useSetBackground } from '@sentre/senhub'
 
@@ -19,17 +19,7 @@ const {
   manifest: { appId },
 } = configs
 
-export const Layout = memo(() => {
-  return (
-    <Provider store={model}>
-      <AppLoader>
-        <View />
-      </AppLoader>
-    </Provider>
-  )
-})
-
-export const Background = () => {
+export const Page = () => {
   const setBackground = useSetBackground()
 
   useEffect(() => {
@@ -37,16 +27,14 @@ export const Background = () => {
   }, [setBackground])
 
   return (
-    <AnimationBackground>
-      <Layout />
-    </AnimationBackground>
-  )
-}
-
-export const Page = () => {
-  return (
     <AntdProvider appId={appId} prefixCls={appId}>
-      <Background />
+      <Provider store={model}>
+        <AppLoader>
+          <AnimationBackground>
+            <View />
+          </AnimationBackground>
+        </AppLoader>
+      </Provider>
     </AntdProvider>
   )
 }

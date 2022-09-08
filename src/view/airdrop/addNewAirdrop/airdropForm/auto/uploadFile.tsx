@@ -48,7 +48,7 @@ const UploadFile = () => {
     async (file: any) => {
       setLoading(true)
       const recipients = await parse(file)
-      if (!mintDecimals) return
+      if (mintDecimals === undefined) return
 
       const recipientInfos: RecipientInfos = {}
       let isDuplicate = false

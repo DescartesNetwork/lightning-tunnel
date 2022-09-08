@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { getAnchorProvider } from '@sen-use/web3'
 import { rpc, useWalletAddress } from '@sentre/senhub'
+import { Utility } from '@sentre/utility'
 
 import configs from 'configs'
-import { Utility } from '@sentre/utility'
 import { AppWatcher } from 'watcher'
 import { HistoryWatcher } from 'hooks/useSentList'
 

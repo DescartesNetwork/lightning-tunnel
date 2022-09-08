@@ -45,7 +45,7 @@ const ConfirmTransfer = () => {
   const backupMetadata = useBackupMetadata()
 
   const treeData = useMemo(() => {
-    if (!recipientInfos || !mintDecimals) return
+    if (!recipientInfos || mintDecimals === undefined) return
     let listRecipient: RecipientInfo[] = []
     for (const walletAddress in recipientInfos) {
       listRecipient = listRecipient.concat(recipientInfos[walletAddress])

@@ -12,6 +12,7 @@ export const useGetMetadata = () => {
     (distributorAddress: string) => {
       const { metadata } = distributors[distributorAddress]
       const cid = ipfs.decodeCID(metadata)
+      if (!metadatas[cid]) return { data: [] }
       return metadatas[cid]
     },
     [distributors, metadatas],

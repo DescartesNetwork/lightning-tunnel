@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { utils } from '@senswap/sen-js'
 import { useGetMintDecimals, useWalletAddress } from '@sentre/senhub'
 import { DistributorData, FeeOptions, MerkleDistributor } from '@sentre/utility'
 import { BN } from '@project-serum/anchor'
@@ -49,7 +48,6 @@ const Redeem = () => {
     fee: new BN(fee),
     feeCollectorAddress: taxman,
   }
-
   const getMerkleDistributor = useCallback(async () => {
     if (!distributorAddress) return
     setLoadingCard(true)
@@ -188,10 +186,10 @@ const Redeem = () => {
                       {amountTaken ? 'You took' : "Let's take"}
                     </Typography.Text>
                     <Typography.Title level={5} style={{ color: '#42E6EB' }}>
-                      {utils.undecimalize(
-                        BigInt(recipientData?.amount.toString() || 0),
+                      {utilsBN.undecimalize(
+                        recipientData?.amount || new BN(0),
                         decimals,
-                      )}{' '}
+                      )}
                       <MintSymbol
                         mintAddress={distributor?.mint.toBase58() || ''}
                       />

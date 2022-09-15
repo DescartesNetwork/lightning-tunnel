@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
-import { account, utils } from '@senswap/sen-js'
+import { account } from '@senswap/sen-js'
 import { useMintDecimals } from '@sentre/senhub'
 import { BN } from '@project-serum/anchor'
+import { utilsBN } from '@sen-use/web3'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'
@@ -54,11 +55,11 @@ const ConfirmTransfer = () => {
       ({ amount, address, unlockTime }, index) => {
         const unitTime = toUnitTime(unlockTime)
         const actualAmount = isDecimal
-          ? utils.decimalize(amount, mintDecimals).toString()
-          : amount
+          ? utilsBN.decimalize(amount, mintDecimals)
+          : new BN(amount)
         return {
           authority: account.fromAddress(address),
-          amount: new BN(actualAmount),
+          amount: actualAmount,
           startedAt: new BN(unitTime / 1000),
           salt: MerkleDistributor.salt(
             `${appId}/${typeDistribute}/${index.toString()}`,

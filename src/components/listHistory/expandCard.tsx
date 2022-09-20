@@ -9,7 +9,7 @@ type ExpandCardProps = {
   cardHeader: ReactNode
 }
 const ExpandCard = ({ cardId, children, cardHeader }: ExpandCardProps) => {
-  const [activeKey, setActiveKey] = useState<string | undefined>()
+  const [activeKey, setActiveKey] = useState<string | undefined>(cardId)
   const iconName = activeKey ? 'chevron-up-outline' : 'chevron-down-outline'
 
   const onActive = () => {

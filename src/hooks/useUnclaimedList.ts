@@ -21,6 +21,17 @@ export const useUnclaimedList = (distributorAddress: string) => {
   const receipts = useReceipts({ distributorAddress })
   const getMetaData = useGetMetadata()
 
+  const checkIsClaimed = useCallback(
+    (salt: Buffer) => {
+      for (const address in receipts) {
+        const { salt: receiptSalt } = receipts[address]
+        if (!Buffer.compare(Buffer.from(receiptSalt), salt)) return true
+      }
+      return false
+    },
+    [receipts],
+  )
+
   const getUnclaimedList = useCallback(async () => {
     try {
       const { data: bufTreeData } = getMetaData(distributorAddress)
@@ -30,26 +41,17 @@ export const useUnclaimedList = (distributorAddress: string) => {
       const listUnclaimed: Unclaimed[] = []
       const recipients = merkleDistributor.receipients
       for (const { authority, amount, salt } of recipients) {
-        if (!receipts[authority.toBase58()]) {
-          listUnclaimed.push({
-            authority: authority.toBase58(),
-            amount,
-            mintAddress: mint.toBase58(),
-          })
-          continue
-        }
-
-        const receiptSalt = Buffer.from(receipts[authority.toBase58()].salt)
-        if (Buffer.compare(receiptSalt, salt) !== 0)
-          listUnclaimed.push({
-            authority: authority.toBase58(),
-            amount,
-            mintAddress: mint.toBase58(),
-          })
+        const isClaimed = checkIsClaimed(salt)
+        if (isClaimed) continue
+        listUnclaimed.push({
+          amount,
+          authority: authority.toBase58(),
+          mintAddress: mint.toBase58(),
+        })
       }
       return setUnclaimed(listUnclaimed)
     } catch (error) {}
-  }, [distributorAddress, getMetaData, mint, receipts])
+  }, [checkIsClaimed, distributorAddress, getMetaData, mint])
 
   useEffect(() => {
     getUnclaimedList()

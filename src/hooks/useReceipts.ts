@@ -26,7 +26,7 @@ const useReceipts = ({
     let bulk: Record<string, ReceiptData> = {}
 
     for (const receipt of receipts)
-      bulk[receipt.account.authority.toBase58()] = receipt.account
+      bulk[receipt.publicKey.toBase58()] = receipt.account
 
     return setReceipts(bulk)
   }, [distributorAddress])

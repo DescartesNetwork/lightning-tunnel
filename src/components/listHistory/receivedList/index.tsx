@@ -13,10 +13,10 @@ const ReceivedList = ({ receivedList, type }: ReceivedListProps) => {
   const infix = useInfix()
   const isMobile = infix < Infix.md
 
-  if (!isMobile)
+  if (!isMobile && receivedList.length)
     return (
       <Table
-        key={type}
+        key={`lightning-tunnel-${type}`}
         dataSource={receivedList}
         pagination={false}
         columns={COLUMNS_RECEIVE}

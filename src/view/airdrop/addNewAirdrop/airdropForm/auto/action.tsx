@@ -7,7 +7,11 @@ import CommonModal from 'components/commonModal'
 import { AppDispatch, AppState } from 'model'
 import { onSelectStep } from 'model/steps.controller'
 import { onSelectMethod } from 'model/main.controller'
-import { removeRecipients } from 'model/recipients.controller'
+import {
+  removeRecipients,
+  setExpiration,
+  setGlobalUnlockTime,
+} from 'model/recipients.controller'
 import { RecipientFileType, Method, Step } from '../../../../../constants'
 import useValidateAmount from 'hooks/useValidateAmount'
 import useRemainingBalance from 'hooks/useRemainingBalance'
@@ -36,6 +40,8 @@ const Action = () => {
     amountError
 
   const onBack = useCallback(async () => {
+    await dispatch(setGlobalUnlockTime(0))
+    await dispatch(setExpiration(0))
     await dispatch(onSelectStep(Step.SelectMethod))
     await dispatch(onSelectMethod(Method.manual))
     await dispatch(removeRecipients())

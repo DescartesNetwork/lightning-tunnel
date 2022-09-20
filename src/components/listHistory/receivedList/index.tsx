@@ -16,10 +16,12 @@ const ReceivedList = ({ receivedList, type }: ReceivedListProps) => {
   if (!isMobile)
     return (
       <Table
+        key={type}
         dataSource={receivedList}
         pagination={false}
         columns={COLUMNS_RECEIVE}
         rowKey={(record) => record.distributorAddress + record.index}
+        defaultExpandAllRows={true}
       />
     )
 

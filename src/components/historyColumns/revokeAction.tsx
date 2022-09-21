@@ -143,7 +143,7 @@ const RevokeAction = ({
         disabled={disabled}
         style={{ color: '#42E6EB' }}
       >
-        revoke
+        {disabled ? 'revoked' : 'revoke'}
       </Button>
       <Modal
         visible={visible}

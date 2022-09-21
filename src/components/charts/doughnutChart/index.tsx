@@ -38,7 +38,7 @@ const buildOptions = ({
           .numeric(params.data.value)
           .format(
             '0,0.[0000]',
-          )}</span></span> <span style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 400">Token amount</span> <span style="font-size: 16px; font-weight: 700">${util
+          )}$</span></span> <span style="display: flex; justify-content: space-between;"><span style="font-size: 14px; font-weight: 400">Token amount</span> <span style="font-size: 16px; font-weight: 700">${util
           .numeric(params.data.tokenAmount)
           .format('0,0.[0000]')}</span></span></div>`
       },

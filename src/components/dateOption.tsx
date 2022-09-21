@@ -10,11 +10,11 @@ type DateOptionProps = {
   placeholder: string
   switchText: string
   onChange: (value: number) => void
-  onSwitch: (value: boolean) => void
+  onSwitch?: (value: boolean) => void
   label: string
   value: number
   error: string
-  checked: boolean
+  checked?: boolean
   explain?: ReactNode
 }
 
@@ -30,6 +30,7 @@ const DateOption = ({
   explain,
 }: DateOptionProps) => {
   const onSwitchChange = (isDisable: boolean) => {
+    if (!onSwitch) return
     onChange(0) //clear time
     onSwitch(isDisable)
   }
@@ -43,20 +44,22 @@ const DateOption = ({
               {explain}
             </Space>
           </Col>
-          <Col>
-            <Row gutter={[8, 8]}>
-              <Col xs={{ order: 2 }} lg={{ order: 1 }}>
-                <Typography.Text>{switchText}</Typography.Text>
-              </Col>
-              <Col xs={{ order: 1 }} lg={{ order: 2 }}>
-                <Switch
-                  size="small"
-                  checked={checked}
-                  onChange={onSwitchChange}
-                />
-              </Col>
-            </Row>
-          </Col>
+          {explain && (
+            <Col>
+              <Row gutter={[8, 8]}>
+                <Col xs={{ order: 2 }} lg={{ order: 1 }}>
+                  <Typography.Text>{switchText}</Typography.Text>
+                </Col>
+                <Col xs={{ order: 1 }} lg={{ order: 2 }}>
+                  <Switch
+                    size="small"
+                    checked={checked}
+                    onChange={onSwitchChange}
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
         </Row>
       </Col>
       <Col span={24}>

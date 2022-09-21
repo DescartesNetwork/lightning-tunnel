@@ -7,6 +7,7 @@ import SelectToken, { EMPTY_SELECT_VAL } from 'components/selectTokens'
 import Header from 'components/header'
 import DateOption from 'components/dateOption'
 import MintInfo from 'components/mintInfo'
+import ChooseMethodTransfer from './chooseMethodTransfer'
 
 import { AppState } from 'model'
 import { Method, Step } from '../../../../../constants'
@@ -14,7 +15,6 @@ import { onSelectStep } from 'model/steps.controller'
 import { onSelectedMint, onSelectMethod } from 'model/main.controller'
 import { setExpiration, setGlobalUnlockTime } from 'model/recipients.controller'
 import { useAppRouter } from 'hooks/useAppRoute'
-import ChooseMethodTransfer from './chooseMethodTransfer'
 
 const SelectInputMethod = () => {
   const dispatch = useDispatch()
@@ -23,29 +23,20 @@ const SelectInputMethod = () => {
   )
   const mintSelected = useSelector((state: AppState) => state.main.mintSelected)
   const [method, setMethod] = useState<Method>(Method.manual)
-  const [unlockTime, setUnlockTime] = useState(globalUnlockTime)
+  const [unlockTime, setUnlockTime] = useState(Date.now())
   const [expirationTime, setExpirationTime] = useState(endDate)
-  const [unlockImmediately, setUnlockImmediately] = useState(true)
   const [isUnlimited, setIsUnlimited] = useState(true)
   const { pushHistory } = useAppRouter()
-
-  const startTime = useMemo(() => {
-    return unlockImmediately ? 0 : unlockTime
-  }, [unlockImmediately, unlockTime])
 
   const endTime = useMemo(() => {
     return isUnlimited ? 0 : expirationTime
   }, [expirationTime, isUnlimited])
 
   const validStartDate = useMemo(() => {
-    if (
-      expirationTime < globalUnlockTime &&
-      !unlockImmediately &&
-      expirationTime
-    )
+    if (expirationTime < globalUnlockTime && expirationTime)
       return 'Must be less than the expiration time.'
     return ''
-  }, [expirationTime, globalUnlockTime, unlockImmediately])
+  }, [expirationTime, globalUnlockTime])
 
   const validEndDate = useMemo(() => {
     if (expirationTime < Date.now() && !isUnlimited && expirationTime)
@@ -65,15 +56,15 @@ const SelectInputMethod = () => {
   const disabled =
     mintSelected === EMPTY_SELECT_VAL ||
     !method ||
-    (!unlockTime && !unlockImmediately) ||
+    !unlockTime ||
     (!expirationTime && !isUnlimited) ||
     (expirationTime < globalUnlockTime && !isUnlimited) ||
     (expirationTime < Date.now() && !isUnlimited)
 
   useEffect(() => {
-    dispatch(setGlobalUnlockTime(startTime))
+    dispatch(setGlobalUnlockTime(unlockTime))
     dispatch(setExpiration(endTime))
-  }, [dispatch, endTime, startTime])
+  }, [dispatch, endTime, unlockTime])
 
   return (
     <Card className="card-lightning" bordered={false}>
@@ -103,13 +94,11 @@ const SelectInputMethod = () => {
                 <Col xs={24} lg={12}>
                   <DateOption
                     label="Unlock time"
-                    onSwitch={setUnlockImmediately}
                     switchText="Send immediately"
                     onChange={setUnlockTime}
                     placeholder="Select unlock time"
                     value={unlockTime}
                     error={validStartDate}
-                    checked={unlockImmediately}
                   />
                 </Col>
                 <Col xs={24} lg={12}>

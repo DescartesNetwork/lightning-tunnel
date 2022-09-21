@@ -39,6 +39,7 @@ const SelectToken = ({
           <Space>
             <MintAvatar mintAddress={activeMintAddress} />
             <Typography.Text>Select a token</Typography.Text>
+            <IonIcon name="chevron-down-outline" />
           </Space>
         )}
       </Button>

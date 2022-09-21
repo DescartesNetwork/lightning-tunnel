@@ -139,6 +139,8 @@ const ConfirmTransfer = () => {
                     color: 'rgb(66, 230, 235)',
                     background: 'rgba(66, 230, 235, 0.1)',
                     border: 'unset',
+                    fontSize: 16,
+                    padding: '4px 12px',
                   }}
                 >
                   <MintSymbol mintAddress={mintSelected} />

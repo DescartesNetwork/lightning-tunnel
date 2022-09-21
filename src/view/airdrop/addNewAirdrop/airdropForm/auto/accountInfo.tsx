@@ -111,19 +111,25 @@ const AccountInfo = ({
           </Tooltip>
         )}
       </Col>
+
       <Col span={4}>
-        <NumericInput
-          value={nextAmount}
-          bordered={false}
-          disabled={!isEdit}
-          style={{ padding: 0 }}
-          onChange={(val: string) => {
-            setNextAmount(val)
-          }}
-          className={
-            validateAmount ? 'recipient-input-error' : 'recipient-input'
-          }
-        />
+        {isEdit ? (
+          <NumericInput
+            value={nextAmount}
+            bordered={false}
+            style={{ padding: 0 }}
+            onChange={(val: string) => {
+              setNextAmount(val)
+            }}
+            className={
+              validateAmount ? 'recipient-input-error' : 'recipient-input'
+            }
+          />
+        ) : (
+          <Typography.Text style={{ color: validateAmount ? '#F9575E' : '' }}>
+            {nextAmount}
+          </Typography.Text>
+        )}
       </Col>
       <Col span={4} className={!isEdit ? 'vesting-action' : ''}>
         {isEdit ? (

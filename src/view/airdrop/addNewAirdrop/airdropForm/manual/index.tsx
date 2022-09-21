@@ -61,7 +61,7 @@ const Manual = () => {
         <Col span={24}>
           <Row gutter={[24, 24]}>
             <Col span={24}>
-              <Row gutter={[8, 8]}>
+              <Row gutter={[16, 16]}>
                 {listRecipient &&
                   listRecipient.map(({ address, amount }, index) => (
                     <Col span={24} key={address + index}>

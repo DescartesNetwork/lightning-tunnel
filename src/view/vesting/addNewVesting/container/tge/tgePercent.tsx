@@ -13,9 +13,11 @@ const TgePercent = () => {
   return (
     <Row gutter={[8, 8]}>
       <Col span={24}>
-        <Space align="baseline">
-          <Typography.Text className="caption">TGE Percentage</Typography.Text>
-          <Tooltip title="Percent of token allocation for the first time">
+        <Space align="baseline" style={{ display: 'inline-flex' }}>
+          <Typography.Text className="caption">
+            TGE Percentage (Optional)
+          </Typography.Text>
+          <Tooltip title="Percent of token allocation for the first time. You can leave it blank and the value will be automatically calculated as 0%.">
             <IonIcon name="information-circle-outline" />
           </Tooltip>
         </Space>

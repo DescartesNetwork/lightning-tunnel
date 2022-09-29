@@ -24,7 +24,7 @@ const TgePercent = () => {
       </Col>
       <Col span={24}>
         <InputNumber
-          onChange={(TGE) => dispatch(setTGE(TGE))}
+          onChange={(TGE) => dispatch(setTGE(TGE || ''))}
           value={TGE}
           className="TGE-input"
           placeholder="Input %"

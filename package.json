@@ -11,7 +11,7 @@
     "@senswap/sen-js": "^1.4.0",
     "@sentre/antd-ionicon": "^1.0.31",
     "@sentre/antd-numeric-input": "^1.0.25",
-    "@sentre/senhub": "^3.3.7",
+    "@sentre/senhub": "^4.0.0",
     "@sentre/utility": "^1.0.3",
     "antd": "^4.23.1",
     "echarts": "^5.3.3",

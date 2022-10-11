@@ -63,7 +63,7 @@ const ColumAction = ({
       const provider = await getAnchorProvider(
         rpc,
         walletAddress,
-        window.sentre.wallet,
+        window.sentre.solana,
       )
       const txId = await provider.sendAndConfirm(tx, [])
       notifySuccess('Redeem', txId)

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { utils, web3 } from '@project-serum/anchor'
-import { net } from '@sentre/senhub'
+import { net, splt } from '@sentre/senhub'
 
 import moment from 'moment'
 
@@ -37,11 +37,10 @@ const ColumnCreatedAt = ({
   }, [distributorAddress, mint])
 
   const fetchCreatedAt = useCallback(async () => {
-    const transactions =
-      await window.sentre.lamports.connection.getSignaturesForAddress(
-        new web3.PublicKey(distributorAddress),
-        { limit: 1000 },
-      )
+    const transactions = await splt.connection.getSignaturesForAddress(
+      new web3.PublicKey(distributorAddress),
+      { limit: 1000 },
+    )
 
     if (transactions.length)
       return setCreatedAt(transactions.pop()?.blockTime || 0)

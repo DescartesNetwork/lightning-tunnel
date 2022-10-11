@@ -3,7 +3,7 @@ import { AnchorWallet } from '@sentre/utility'
 import { WalletInterface } from '@senswap/sen-js'
 
 class SafeWallet implements AnchorWallet {
-  private _wallet: WalletInterface = window.sentre.wallet
+  private _wallet: WalletInterface = window.sentre.solana
   private _publicKey: PublicKey = new PublicKey(
     'GuestAccount11111111111111111111111111111111',
   )

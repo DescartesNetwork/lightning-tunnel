@@ -1,5 +1,5 @@
 import { CSSProperties, Fragment, useState } from 'react'
-import { Infix, useInfix, util } from '@sentre/senhub'
+import { useWidth, util } from '@sentre/senhub'
 
 import { Button, Col, Modal, Row, Select, Space, Typography } from 'antd'
 import { MintAvatar, MintSymbol } from '@sen-use/app'
@@ -118,9 +118,9 @@ const FilterSelection = ({
   values = {},
 }: FilterSelectionProps) => {
   const [visible, setVisible] = useState(false)
-  const infix = useInfix()
+  const width = useWidth()
 
-  const isMobile = infix < Infix.sm
+  const isMobile = width < 875
 
   const onFilterChange = (key: string, val: string) => {
     const nextData = { ...values }

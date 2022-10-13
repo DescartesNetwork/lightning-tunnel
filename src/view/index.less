@@ -1,9 +1,14 @@
 .main-layout {
   min-height: calc(100vh - 66px) !important;
-  padding: 0;
   position: relative;
-  margin-top: -24px;
   z-index: 9;
+  &_content {
+    padding: 36px 40px;
+    @media (max-width: 575px) {
+      padding: 4px 16px !important;
+    }
+  }
+
   .lightning_tunnel-layout-content {
     padding: 51px 16px 24px 245px !important;
     @media (max-width: 992px) {
@@ -11,58 +16,31 @@
     }
   }
 }
-.sidebar {
-  top: 64px !important;
-  height: calc(100% + 26px) !important;
-  &.mobile {
-    top: 0 !important;
-    height: 100% !important;
-    .lightning_tunnel-drawer-content {
-      backdrop-filter: blur(8px);
-      padding-top: 64px;
-      @media (max-width: 992px) {
-        padding-top: 0 !important;
-      }
-    }
-  }
-}
-.sidebar-layout {
-  height: calc(100vh - 66px) !important;
-  @media (max-width: 992px) {
-    height: 100vh !important;
-  }
-  backdrop-filter: blur(96px) !important;
-}
-.sidebar_footer {
-  padding: 16px !important;
-  background: transparent !important;
-}
-.lightning_tunnel-drawer-content-wrapper {
-  box-shadow: unset !important;
-  .lightning_tunnel-drawer-header {
-    display: none !important;
-  }
-  .lightning_tunnel-drawer-content {
-    background-color: rgba(35, 51, 51, 0.4) !important;
-  }
-  .lightning_tunnel-drawer-body {
-    padding: 0 !important;
-    .sidebar-content {
-      background: transparent !important;
+.header {
+  position: relative;
+  width: calc(100% + 24px);
+  top: -12px;
+  left: -12px;
+  background-color: rgba(35, 51, 51, 0.4) !important;
+  padding: 16px 40px !important;
+  backdrop-filter: blur(48px);
+  .lightning_tunnel-menu {
+    background: transparent !important;
+    &-horizontal {
       border: none !important;
-      .lightning_tunnel-menu-item {
-        height: auto !important;
-        padding: 16px !important;
-        line-height: 0 !important;
-        margin-top: 0 !important;
-        display: flex !important;
-        align-items: center;
-        &-selected {
-          background-color: transparent !important;
-          border-left: solid 3px;
-        }
+    }
+    &-item {
+      color: #a7adad !important;
+      &-selected {
+        color: #42e6eb !important;
       }
     }
+  }
+  @media (max-width: 632px) {
+    .lightning_tunnel-menu-title-content {
+      display: none !important;
+    }
+    padding: 16px !important;
   }
 }
 

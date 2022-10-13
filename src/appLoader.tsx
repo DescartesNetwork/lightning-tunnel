@@ -17,7 +17,7 @@ export const AppLoader: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (loaded) return
-    const provider = getAnchorProvider(rpc, address, window.sentre.wallet)
+    const provider = getAnchorProvider(rpc, address, window.sentre.solana)
     const senUtility = new Utility(provider.wallet, rpc, utilityProgram)
     window.senUtility = senUtility
     setLoaded(true)

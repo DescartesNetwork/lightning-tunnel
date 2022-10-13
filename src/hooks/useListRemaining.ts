@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { web3 } from '@project-serum/anchor'
 import { getMultipleAccounts } from '@sen-use/web3'
+import { splt } from '@sentre/senhub'
 
 import configs from 'configs'
 import { DistributorState } from 'model/distributor.controller'
@@ -12,7 +13,6 @@ const {
 export const useGetAllRemaining = () => {
   const getAllTokenAccounts = useCallback(
     async (distributors: DistributorState) => {
-      const { splt } = window.sentre
       return Promise.all(
         Object.keys(distributors).map(async (address) => {
           const { mint } = distributors[address]
@@ -33,7 +33,6 @@ export const useGetAllRemaining = () => {
       const allTokenAccounts = await getAllTokenAccounts(distributors)
       if (!Object.values(allTokenAccounts).length) return []
       // Fetch account data
-      const { splt } = window.sentre
       const listRemaining: Record<string, number> = {}
       const accountInfos = await getMultipleAccounts(
         splt.connection,

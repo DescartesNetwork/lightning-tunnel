@@ -1,4 +1,4 @@
-import { useInfix, Infix } from '@sentre/senhub'
+import { useWidth } from '@sentre/senhub'
 
 import { Col, Empty, Row, Table } from 'antd'
 import AirdropMobileCard from './airdropMobileCard'
@@ -10,8 +10,8 @@ import { COLUMNS_RECEIVE } from 'view/dashboard/columns'
 
 type ReceivedListProps = { receivedList: ReceiveItem[]; type: TypeDistribute }
 const ReceivedList = ({ receivedList, type }: ReceivedListProps) => {
-  const infix = useInfix()
-  const isMobile = infix < Infix.md
+  const width = useWidth()
+  const isMobile = width < 1050
 
   if (!isMobile && receivedList.length)
     return (

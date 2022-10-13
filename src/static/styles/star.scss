@@ -65,16 +65,16 @@
       width: $circleSize + px;
       height: $circleSize + px;
 
-      $startPositionX: random(85);
-      $startPositionY: random(85);
+      $startPositionX: random(60);
+      $startPositionY: random(60);
       $endPositionX: 0;
       $endPositionY: 0;
 
       @if $startPositionX < 50 {
-        $endPositionX: 85;
+        $endPositionX: 60;
       }
       @if $startPositionY < 50 {
-        $endPositionY: 85;
+        $endPositionY: 60;
       }
 
       $framesName: 'move-frames-' + $i;

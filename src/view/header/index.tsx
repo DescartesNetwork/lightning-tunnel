@@ -2,16 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 
-import {
-  Avatar,
-  Col,
-  Layout,
-  Menu,
-  MenuProps,
-  Row,
-  Space,
-  Typography,
-} from 'antd'
+import { Col, Menu, MenuProps, Row, Space, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { useAppRouter } from 'hooks/useAppRoute'
@@ -19,8 +10,7 @@ import { AppDispatch } from 'model'
 import { setTypeDistribute } from 'model/main.controller'
 import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
 import { SIDE_BAR_ITEMS } from '../../constants'
-
-import LOGO from 'static/images/logo.svg'
+import { useWidth } from '@sentre/senhub'
 
 const LIST_MENU_ITEM = [
   {
@@ -42,14 +32,13 @@ const LIST_MENU_ITEM = [
 
 const URL_GUIDE_LINE = 'https://academy.sentre.io/lightning-tunnel-version-2/'
 
-const SideBar = () => {
+const Header = () => {
   const [sideBarKey, setSideBarKey] = useState(SIDE_BAR_ITEMS.Dashboard)
   const { pathname } = useLocation()
   const { appRoute } = useAppRouter()
   const { onPushAndClear } = useRedirectAndClear()
   const dispatch = useDispatch<AppDispatch>()
-
-  const { Content, Footer } = Layout
+  const width = useWidth()
 
   const onSelect: MenuProps['onClick'] = async (e) => {
     return onPushAndClear(`/${e.key}`)
@@ -77,37 +66,29 @@ const SideBar = () => {
   }, [fetchDistributeType])
 
   return (
-    <Layout className="sidebar-layout">
-      <Content>
-        <Row>
-          <Col span={24} style={{ padding: '24px 16px' }}>
-            <Space>
-              <Avatar size={24} src={LOGO} shape="square" />
-              <Typography.Title level={5}>Lightning tunnel</Typography.Title>
-            </Space>
-          </Col>
-          <Col span={24}>
-            <Menu
-              selectedKeys={[sideBarKey]}
-              onClick={onSelect}
-              className="sidebar-content"
-              items={LIST_MENU_ITEM}
-            />
-          </Col>
-        </Row>
-      </Content>
-      <Footer className="sidebar_footer">
+    <Row className="header" align="middle">
+      <Col flex="auto">
+        <Menu
+          selectedKeys={[sideBarKey]}
+          onClick={onSelect}
+          items={LIST_MENU_ITEM}
+          mode="horizontal"
+        />
+      </Col>
+      <Col>
         <Space
           size={12}
           style={{ cursor: 'pointer' }}
           onClick={() => window.open(URL_GUIDE_LINE, '_blank')}
         >
           <IonIcon style={{ fontSize: 24 }} name="information-circle-outline" />
-          <Typography.Title level={5}>Guidelines</Typography.Title>
+          {width >= 632 && (
+            <Typography.Title level={5}>Guidelines</Typography.Title>
+          )}
         </Space>
-      </Footer>
-    </Layout>
+      </Col>
+    </Row>
   )
 }
 
-export default SideBar
+export default Header

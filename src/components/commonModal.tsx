@@ -22,7 +22,7 @@ const CommonModal = ({
 }: CommonModalProps) => {
   return (
     <Modal
-      visible={visible}
+      open={visible}
       closeIcon={<IonIcon name="close-outline" />}
       onCancel={() => setVisible(false)}
       footer={null}

@@ -55,7 +55,7 @@ const ModalShare = ({
 
   return (
     <Modal
-      visible={visible}
+      open={visible}
       closeIcon={<IonIcon name="close-outline" />}
       onCancel={onClose}
       footer={null}
@@ -82,7 +82,7 @@ const ModalShare = ({
               <Typography.Text>{shortenRedeemLink(redeemLink)}</Typography.Text>
             </Col>
             <Col span={4}>
-              <Tooltip title="Copied" visible={copied}>
+              <Tooltip title="Copied" open={copied}>
                 <CopyToClipboard text={redeemLink}>
                   <Button size="large" type="ghost" onClick={onCopy}>
                     copy

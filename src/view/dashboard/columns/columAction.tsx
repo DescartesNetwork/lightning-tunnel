@@ -77,7 +77,7 @@ const ColumAction = ({
   const getMerkleDistributor = useCallback(async () => {
     if (!distributorAddress) return
     try {
-      const { data } = getMetaData(distributorAddress)
+      const { data } = await getMetaData(distributorAddress)
       const merkleDistributor = MerkleDistributor.fromBuffer(Buffer.from(data))
 
       return setMerkle(merkleDistributor)

@@ -5,7 +5,6 @@ import { Leaf } from '@sentre/utility'
 
 import { AppState } from 'model'
 import configs from 'configs'
-import { ipfs } from 'model/metadatas.controller'
 import { useGetMerkle } from './useGetMerkle'
 import { TypeDistribute } from 'model/main.controller'
 
@@ -28,13 +27,11 @@ export type ReceivedList = Record<string, ReceiveItem>
 export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
   const [receivedList, setReceivedList] = useState<ReceiveItem[]>()
   const distributors = useSelector((state: AppState) => state.distributors)
-  const metadatas = useSelector((state: AppState) => state.metadatas)
   const walletAddress = useWalletAddress()
   const getMerkle = useGetMerkle()
 
   const fetchReceivedList = useCallback(async () => {
-    if (!Object.keys(distributors).length || !Object.keys(metadatas).length)
-      return
+    if (!Object.keys(distributors).length) return
 
     const bulk: ReceiveItem[] = []
 
@@ -47,11 +44,6 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
       listDistributor.map(
         async ({ metadata: digest, mint, authority, address }) => {
           try {
-            const cid = ipfs.decodeCID(digest)
-            const metadata = metadatas[cid]
-
-            if (!metadata) return
-
             const merkle = await getMerkle(address)
             if (merkle.type !== type) return
 
@@ -82,7 +74,7 @@ export const useReceivedList = ({ type }: { type: TypeDistribute }) => {
       ),
     )
     return setReceivedList(bulk)
-  }, [distributors, getMerkle, metadatas, type, walletAddress])
+  }, [distributors, getMerkle, type, walletAddress])
 
   useEffect(() => {
     fetchReceivedList()

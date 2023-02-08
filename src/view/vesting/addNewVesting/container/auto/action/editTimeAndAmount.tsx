@@ -91,7 +91,7 @@ const EditTimeAndAmount = ({
       className="card-lightning"
       style={{ paddingBottom: 0 }}
       closeIcon={<IonIcon name="close-outline" />}
-      visible={visible}
+      open={visible}
       onCancel={(e) => {
         e.stopPropagation()
         return setVisible(false)

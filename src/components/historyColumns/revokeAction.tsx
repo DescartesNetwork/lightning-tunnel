@@ -146,7 +146,7 @@ const RevokeAction = ({
         {disabled ? 'revoked' : 'revoke'}
       </Button>
       <Modal
-        visible={visible}
+        open={visible}
         onCancel={() => setVisible(false)}
         footer={
           <Space>

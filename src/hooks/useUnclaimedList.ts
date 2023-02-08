@@ -34,7 +34,7 @@ export const useUnclaimedList = (distributorAddress: string) => {
 
   const getUnclaimedList = useCallback(async () => {
     try {
-      const { data: bufTreeData } = getMetaData(distributorAddress)
+      const { data: bufTreeData } = await getMetaData(distributorAddress)
       const merkleDistributor = MerkleDistributor.fromBuffer(
         Buffer.from(bufTreeData),
       )

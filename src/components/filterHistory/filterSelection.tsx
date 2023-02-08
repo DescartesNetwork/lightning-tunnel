@@ -138,7 +138,7 @@ const FilterSelection = ({
         />
 
         <Modal
-          visible={visible}
+          open={visible}
           onCancel={() => setVisible(false)}
           closable={false}
           footer={false}

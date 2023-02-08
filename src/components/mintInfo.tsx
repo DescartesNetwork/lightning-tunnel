@@ -51,7 +51,7 @@ const MintInfo = ({ mintAddress }: MintInfoProps) => {
               <Typography.Text>
                 {util.shortenAddress(mintAddress)}
               </Typography.Text>
-              <Tooltip title="Copied" visible={copied}>
+              <Tooltip title="Copied" open={copied}>
                 <CopyToClipboard text={mintAddress}>
                   <Button
                     type="text"

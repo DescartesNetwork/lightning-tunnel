@@ -11,7 +11,7 @@ type ModalErrorProps = {
 const ModalError = ({ visible, description, onClose }: ModalErrorProps) => {
   return (
     <Modal
-      visible={visible}
+      open={visible}
       closeIcon={<IonIcon name="close-outline" />}
       onCancel={onClose}
       footer={null}

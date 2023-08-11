@@ -16,6 +16,7 @@ const useValidateAmount = () => {
       listRecipient = listRecipient.concat(recipientInfos[address])
     }
     for (const { amount } of listRecipient) {
+      if (!Number(amount) || Number(amount) < 0) return true
       if (!decimal && Number(amount) % 1 !== 0) return true
     }
     return false

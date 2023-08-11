@@ -39,7 +39,7 @@ const useTotal = () => {
     }
 
     for (const { amount } of listRecipient) {
-      if (isDecimal) {
+      if (isDecimal && !!Number(amount)) {
         lamports = lamports.add(utilsBN.decimalize(amount, mintDecimals))
       } else if (Number(amount) % 1 === 0)
         lamports = lamports.add(new BN(amount))

@@ -1,8 +1,9 @@
 import { useCallback } from 'react'
 import { useSelector } from 'react-redux'
+import { encode } from 'bs58'
 
 import { AppState } from 'model'
-import { ipfs } from 'model/metadatas.controller'
+import { MetadataBackup } from 'helper/aws'
 
 export const useGetMetadata = () => {
   const distributors = useSelector((state: AppState) => state.distributors)
@@ -11,8 +12,11 @@ export const useGetMetadata = () => {
   const getMetaData = useCallback(
     (distributorAddress: string) => {
       const { metadata } = distributors[distributorAddress]
-      const cid = ipfs.decodeCID(metadata)
-      if (!metadatas[cid]) return { data: [] }
+      let cid = encode(Buffer.from(metadata))
+      if (MetadataBackup[distributorAddress])
+        cid = MetadataBackup[distributorAddress]
+
+      if (!metadatas[cid]) return { data: [], createAt: 0, checked: false }
       return metadatas[cid]
     },
     [distributors, metadatas],

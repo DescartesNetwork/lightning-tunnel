@@ -1,8 +1,6 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { FeeOptions, Leaf, MerkleDistributor } from '@sentre/utility'
 import { BN } from '@project-serum/anchor'
-import { getAnchorProvider } from '@sen-use/web3'
-import { rpc, useWalletAddress } from '@sentre/senhub'
 
 import { Button } from 'antd'
 
@@ -11,7 +9,6 @@ import configs from 'configs'
 import useStatus from 'hooks/useStatus'
 import { useGetMetadata } from 'hooks/metadata/useGetMetadata'
 import { State } from '../../../constants'
-import { useBackupMetadata } from 'hooks/metadata/useBackupMetadata'
 
 type ColumActionProps = {
   distributorAddress: string
@@ -36,8 +33,6 @@ const ColumAction = ({
     distributor: distributorAddress,
   })
   const getMetaData = useGetMetadata()
-  const backupMetadata = useBackupMetadata()
-  const walletAddress = useWalletAddress()
 
   const onClaim = async () => {
     if (!merkle) return
@@ -47,26 +42,18 @@ const ColumAction = ({
 
     try {
       setLoading(true)
-      const ixBackup = await backupMetadata()
       const feeOptions: FeeOptions = {
         fee: new BN(fee),
         feeCollectorAddress: taxman,
       }
-      const { tx } = await utility.claim({
+      const { txId } = await utility.claim({
         distributorAddress,
         proof,
         data: recipientData,
         feeOptions,
-        sendAndConfirm: false,
       })
-      tx.add(ixBackup)
-      const provider = await getAnchorProvider(
-        rpc,
-        walletAddress,
-        window.sentre.solana,
-      )
-      const txId = await provider.sendAndConfirm(tx, [])
-      notifySuccess('Redeem', txId)
+
+      notifySuccess('Claimed token', txId)
     } catch (error) {
       notifyError(error)
     } finally {

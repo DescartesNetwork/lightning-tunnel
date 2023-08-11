@@ -25,6 +25,7 @@ const useFilteredVestingRecipient = ({ type }: { type: RecipientFileType }) => {
     (recipientData: RecipientInfo[]) => {
       if (!expirationTime) return true
       for (const { unlockTime } of recipientData) {
+        if (!new Date(unlockTime).getTime()) return false
         if (unlockTime > expirationTime) return false
       }
       return true
@@ -32,19 +33,29 @@ const useFilteredVestingRecipient = ({ type }: { type: RecipientFileType }) => {
     [expirationTime],
   )
 
+  const checkAmount = useCallback((recipientData: RecipientInfo[]) => {
+    for (const { amount } of recipientData) {
+      if (!Number(amount) || Number(amount) < 0) return false
+    }
+    return true
+  }, [])
+
   const listRecipient = useMemo(() => {
     let nextRecipient: RecipientInfo[] = []
     const vestingList: VestingItem[] = []
     for (const address in recipientInfos) {
       const validTime = checkUnLockTime(recipientInfos[address])
+      const validAmount = checkAmount(recipientInfos[address])
+
       if (
         account.isAddress(address) &&
         validTime &&
+        validAmount &&
         type === RecipientFileType.invalid
       )
         continue
       if (
-        (!account.isAddress(address) || !validTime) &&
+        (!account.isAddress(address) || !validTime || !validAmount) &&
         type === RecipientFileType.valid
       )
         continue
@@ -63,7 +74,7 @@ const useFilteredVestingRecipient = ({ type }: { type: RecipientFileType }) => {
       vestingList.push({ address, config: [{ unlockTime, amount }] })
     }
     return vestingList
-  }, [checkUnLockTime, recipientInfos, type])
+  }, [checkAmount, checkUnLockTime, recipientInfos, type])
 
   return listRecipient
 }

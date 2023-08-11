@@ -5,6 +5,7 @@ import { account } from '@senswap/sen-js'
 import { useMintDecimals } from '@sentre/senhub'
 import { BN } from '@project-serum/anchor'
 import { utilsBN } from '@sen-use/web3'
+import { decode } from 'bs58'
 
 import { Button, Card, Col, Row, Space, Tag, Typography } from 'antd'
 import Header from 'components/header'
@@ -19,10 +20,10 @@ import { onSelectStep } from 'model/steps.controller'
 import { Step } from '../../constants'
 import { toUnitTime, notifySuccess } from 'helper'
 import { RecipientInfo } from 'model/recipients.controller'
-import configs from 'configs'
 import { useRedirectAndClear } from 'hooks/useRedirectAndClear'
-import { getMetaData, ipfs } from 'model/metadatas.controller'
-import { useBackupMetadata } from 'hooks/metadata/useBackupMetadata'
+import { uploadFileToAws } from 'helper/aws'
+
+import configs from 'configs'
 
 const {
   sol: { utility, fee, taxman },
@@ -43,7 +44,6 @@ const ConfirmTransfer = () => {
   const { total } = useTotal()
   const remainingBalance = useRemainingBalance(mintSelected)
   const { onPushAndClear } = useRedirectAndClear()
-  const backupMetadata = useBackupMetadata()
 
   const treeData = useMemo(() => {
     if (!recipientInfos || mintDecimals === undefined) return
@@ -83,24 +83,23 @@ const ConfirmTransfer = () => {
       setLoading(true)
       const merkleDistributor = MerkleDistributor.fromBuffer(treeData)
 
-      const { digest } = await ipfs.methods.metadata.set({
-        checked: false,
+      const data = {
         createAt: Math.floor(Date.now() / 1000),
         data: treeData,
-      })
-
-      const metadata = Buffer.from(digest)
-      // Don't need await backupMetadata
-      try {
-        await dispatch(getMetaData({ cid: ipfs.decodeCID(digest) }))
-        backupMetadata()
-      } catch (error) {}
+      }
+      const blob = [
+        new Blob([JSON.stringify({ ...data }, null, 2)], {
+          type: 'application/json',
+        }),
+      ]
+      const file = new File(blob, 'metadata.txt')
+      const cid = await uploadFileToAws(file)
 
       const { txId, distributorAddress } = await utility.initializeDistributor({
         tokenAddress: mintSelected,
         total: merkleDistributor.getTotal(),
         merkleRoot: merkleDistributor.deriveMerkleRoot(),
-        metadata,
+        metadata: decode(cid),
         endedAt: expirationTime / 1000,
         feeOptions,
       })

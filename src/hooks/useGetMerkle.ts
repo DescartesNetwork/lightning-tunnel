@@ -1,11 +1,8 @@
-import { useDispatch } from 'react-redux'
 import { useCallback } from 'react'
 import { MerkleDistributor } from '@sentre/utility'
 
-import { AppDispatch } from 'model'
 import { TypeDistribute } from 'model/main.controller'
-import { getMetaData, ipfs } from 'model/metadatas.controller'
-import { getDistributor } from 'model/distributor.controller'
+import { useGetMetadata } from './metadata/useGetMetadata'
 import configs from 'configs'
 
 const {
@@ -32,32 +29,22 @@ function parseMerkleType(merkle: MerkleDistributor): TypeDistribute {
 }
 
 export const useGetMerkle = () => {
-  const dispatch = useDispatch<AppDispatch>()
+  const getMetaData = useGetMetadata()
 
   const getMerkle = useCallback(
     async (distributorAddress: string) => {
-      // Fetch distributor data
-      const { [distributorAddress]: distributorData } = await dispatch(
-        getDistributor({ address: distributorAddress }),
-      ).unwrap()
-      // Fetch meta data
-      const cidString = ipfs.decodeCID(distributorData.metadata)
-      const { [cidString]: metadata } = await dispatch(
-        getMetaData({ cid: cidString }),
-      ).unwrap()
+      const metadata = getMetaData(distributorAddress)
       // Build result data
-      let root = MerkleDistributor.fromBuffer(Buffer.from([]))
-      try {
-        root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
-      } catch (error) {}
-
+      const root = MerkleDistributor.fromBuffer(
+        Buffer.from(metadata.data || []),
+      )
       return {
         root,
         type: parseMerkleType(root),
         metadata,
       }
     },
-    [dispatch],
+    [getMetaData],
   )
 
   return getMerkle

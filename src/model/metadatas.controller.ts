@@ -1,19 +1,6 @@
+import axios from 'axios'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { IPFS } from 'helper/ipfs'
-
-/**
- * IPFS configs
- */
-const KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDU4M0Q5MmIwMGJlNjZDNjg2NDUyY0JkNTZEMTlmOWZlMTRhNjhCYTQiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NTg4MDM1NjE3MTcsIm5hbWUiOiJCb29zdGVyRGV2In0.kaP_EXFB2q7Zo8_CWZfGI1n5R-AoZzfVTWpDdZ_REcM'
-
-type MapTypes = {
-  metadata: MetaData
-  backupMetadata: MetadataState
-}
-type Idl = ['metadata', 'backupMetadata']
-const IDL: Idl = ['metadata', 'backupMetadata']
-export const ipfs = new IPFS<MapTypes, Idl>(KEY, IDL)
+import { toFilename } from 'helper/aws'
 
 /**
  * Interface & Utility
@@ -36,37 +23,25 @@ const initialState: MetadataState = {}
  * Actions
  */
 
-export const getMetaData = createAsyncThunk<
-  MetadataState,
-  { cid: string },
-  { state: any }
->(`${NAME}/getMetaData`, async ({ cid }, { getState }) => {
-  // Check metadata cache
-  const { metadatas } = getState()
-  const cache = metadatas[cid]
-
-  if (cache) return { [cid]: cache }
-  // Fetch metadata
-  let metadata: MetaData = Buffer.from([]) as any
-  try {
-    metadata = await ipfs.methods.metadata.get(cid)
-  } catch (error) {
-    metadata = Buffer.from([]) as any
-  }
-
-  // Convert from version 1 to version 2
-  if (metadata.checked === undefined || metadata.createAt === undefined) {
-    return {
-      [cid]: {
-        checked: false,
-        createAt: 0,
-        data: Buffer.from(metadata as any),
-      },
+export const getMetaData = createAsyncThunk<MetadataState, { cid: string }>(
+  `${NAME}/getMetaData`,
+  async ({ cid }) => {
+    try {
+      const fileName = toFilename(cid)
+      const url = 'https://sen-storage.s3.us-west-2.amazonaws.com/' + fileName
+      const { data: metadata } = await axios.get(url)
+      return { [cid]: { ...metadata, data: Buffer.from(metadata.data) } }
+    } catch (error) {
+      return {
+        [cid]: {
+          checked: false,
+          createAt: 0,
+          data: Buffer.from([]),
+        },
+      }
     }
-  }
-  return { [cid]: { ...metadata, data: Buffer.from(metadata.data) } }
-})
-
+  },
+)
 export const initMetadatas = createAsyncThunk(
   `${NAME}/initMetadatas`,
   async (bulk: MetadataState) => {

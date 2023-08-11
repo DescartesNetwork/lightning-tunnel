@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { utils, web3 } from '@project-serum/anchor'
 import { net, splt } from '@sentre/senhub'
-
+import { encode } from 'bs58'
 import moment from 'moment'
 
 import { Typography } from 'antd'
 import configs from 'configs'
 import { AppDispatch, AppState } from 'model'
-import { ipfs, setMetadata } from 'model/metadatas.controller'
+import { setMetadata } from 'model/metadatas.controller'
 
 const ColumnCreatedAt = ({
   distributorAddress,
@@ -52,7 +52,7 @@ const ColumnCreatedAt = ({
 
   const updateMetadata = useCallback(() => {
     if (!createdAt) return
-    const cid = ipfs.decodeCID(digest)
+    const cid = encode(digest)
     return dispatch(setMetadata({ createAt: createdAt, cid }))
   }, [createdAt, digest, dispatch])
 
